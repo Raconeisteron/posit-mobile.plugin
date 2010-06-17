@@ -47,70 +47,80 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 /**
- *  Implements the main activity and the main screen for the POSIT application. 
+ * Implements the main activity and the main screen for the POSIT application.
  */
-public class PositMain extends Activity implements OnClickListener, RWGConstants{
+public class PositMain extends Activity implements OnClickListener,
+		RWGConstants {
 
-	private static final int CONFIRM_EXIT=0;
+	private static final int CONFIRM_EXIT = 0;
 	private static final String TAG = "PositMain";
-	//public static AdhocClient mAdhocClient;
+	// public static AdhocClient mAdhocClient;
 	public static WifiManager wifiManager;
 	public RWGService rwgService;
 	public Intent rwg;
-	
+
 	NotificationManager mNotificationManager;
-	
+
 	/**
-	 * Called when the activity is first created.  Sets the UI layout, adds
-	 * the buttons, checks whether the phone is registered with a POSIT server.
+	 * Called when the activity is first created. Sets the UI layout, adds the
+	 * buttons, checks whether the phone is registered with a POSIT server.
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		rwgService =new RWGService();
+		// TODO has to be enabled only if SharedPreference says so or a similar
+		// version of that
+		// rwgService =new RWGService();
+		if (savedInstanceState == null) {
+			checkPhoneRegistrationAndInitialSync();
+		}
 		setContentView(R.layout.main);
 
-		final Button addFindButton = (Button)findViewById(R.id.addFindButton);
-		if(addFindButton!=null)
+		final Button addFindButton = (Button) findViewById(R.id.addFindButton);
+		if (addFindButton != null)
 			addFindButton.setOnClickListener(this);
 
-		final Button listFindButton = (Button)findViewById(R.id.listFindButton);
-		if(listFindButton!=null) {
-			Log.i(TAG,listFindButton.getText()+"");
+		final Button listFindButton = (Button) findViewById(R.id.listFindButton);
+		if (listFindButton != null) {
+			Log.i(TAG, listFindButton.getText() + "");
 			listFindButton.setOnClickListener(this);
 		}
 
-//		final Button sahanaButton = (Button)findViewById(R.id.sahanaSMS);
-//		if(sahanaButton!=null)
-//			sahanaButton.setOnClickListener(this);
+		// final Button sahanaButton = (Button)findViewById(R.id.sahanaSMS);
+		// if(sahanaButton!=null)
+		// sahanaButton.setOnClickListener(this);
 
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sp.edit();
 		Log.i(TAG, "onCreate(), Preferences= " + sp.getAll().toString());
-		
-		// NOTE: If the shared preferences get left in a state with the Tracker's not set to IDLE,
-		//  it will be impossible to start the Tracker.  To do so, use the statements here to reset
-		//  Tracker State to IDLE.  
-		//  This is an area that could use a better algorithm based on Android's life cycle. 
-//			editor.putInt(BackgroundTrackerActivity.SHARED_STATE, BackgroundTrackerActivity.IDLE);
-//			editor.commit();
 
-		// If this is the first run on this device, let the user register the phone.
-		if(savedInstanceState==null)  {
-			checkPhoneRegistrationAndInitialSync();
-		}
+		// NOTE: If the shared preferences get left in a state with the
+		// Tracker's not set to IDLE,
+		// it will be impossible to start the Tracker. To do so, use the
+		// statements here to reset
+		// Tracker State to IDLE.
+		// This is an area that could use a better algorithm based on Android's
+		// life cycle.
+		// editor.putInt(BackgroundTrackerActivity.SHARED_STATE,
+		// BackgroundTrackerActivity.IDLE);
+		// editor.commit();
 
-		Utils.showToast(this, "Current Project: "+sp.getString("PROJECT_NAME", ""));
-		
-		/*  ******* POLICY:  RWG should not be running at start up  */
-		
-		if (RWGService.isRunning())  {
-			Log.i(TAG, "RWG running");
-			Utils.showToast(this, "RWG running");
-		}
-		
+		// If this is the first run on this device, let the user register the
+		// phone.
+
+		Utils.showToast(this, "Current Project: "
+				+ sp.getString("PROJECT_NAME", ""));
+
+		/*   ******* POLICY: RWG should not be running at start up */
+
+		// if (RWGService.isRunning()) {
+		// Log.i(TAG, "RWG running");
+		// Utils.showToast(this, "RWG running");
+		// }
+
 	}
 
 	/**
@@ -119,27 +129,27 @@ public class PositMain extends Activity implements OnClickListener, RWGConstants
 	public void onClick(View view) {
 		Intent intent = new Intent();
 
-		switch(view.getId()) {
-		case R.id.addFindButton :
+		switch (view.getId()) {
+		case R.id.addFindButton:
 			intent.setClass(this, FindActivity.class);
 			intent.setAction(Intent.ACTION_INSERT);
 			startActivity(intent);
 			break;
-		case R.id.listFindButton :
+		case R.id.listFindButton:
 			intent.setClass(this, ListFindsActivity.class);
 			startActivity(intent);
 			break;
-//		case R.id.sahanaSMS:
-//			intent.setClass(this, SahanaSMSActivity.class);
-//			startActivity(intent);
-//			break;
-		}	
+		// case R.id.sahanaSMS:
+		// intent.setClass(this, SahanaSMSActivity.class);
+		// startActivity(intent);
+		// break;
+		}
 	}
 
-	
 	/**
-	 * Creates the menu options for the PositMain screen.  Menu items are inflated
-	 *  from a resource file.
+	 * Creates the menu options for the PositMain screen. Menu items are
+	 * inflated from a resource file.
+	 * 
 	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
 	 */
 	@Override
@@ -148,46 +158,44 @@ public class PositMain extends Activity implements OnClickListener, RWGConstants
 		inflater.inflate(R.menu.positmain_menu, menu);
 		return true;
 	}
-	
+
 	/**
 	 * Updates the RWG Start/End menus based on whether RWG is running or not.
+	 * 
 	 * @see android.app.Activity#onPrepareOptionsMenu(android.view.Menu)
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (RWGService.isRunning()) {
-			menu.findItem(R.id.rwg_start).setEnabled(false);
-			menu.findItem(R.id.rwg_end).setEnabled(true);
-		} else {
-			menu.findItem(R.id.rwg_start).setEnabled(true);
-			menu.findItem(R.id.rwg_end).setEnabled(false);
-		}
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		int trackerState = sp
+				.getInt(BackgroundTrackerActivity.SHARED_STATE, -1);
+		/*
+		 * TODO should be more like
+		 * "is RWG running and is RWG enabled in the settings" /* if
+		 * (RWGService.isRunning()) {
+		 * menu.findItem(R.id.rwg_start).setEnabled(false);
+		 * menu.findItem(R.id.rwg_end).setEnabled(true); } else {
+		 * menu.findItem(R.id.rwg_start).setEnabled(true);
+		 * menu.findItem(R.id.rwg_end).setEnabled(false); }
+		 */
 
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);	
-		int trackerState = sp.getInt(BackgroundTrackerActivity.SHARED_STATE, -1);
-//		Log.i(TAG, " Preferences= " + sp.getAll().toString());
-//		Log.i(TAG, "onPrepareOptionsMenu trackerState = " + trackerState);
-//		if (trackerState != BackgroundTrackerActivity.RUNNING &&
-//				trackerState != BackgroundTrackerActivity.PAUSED) {
-//			menu.findItem(R.id.track_menu_item).setEnabled(true);
-//		} else {
-//			menu.findItem(R.id.track_menu_item).setEnabled(false);
-//		}
 		return super.onPrepareOptionsMenu(menu);
 	}
 
 	/**
-	 * Manages the selection of menu items. 
+	 * Manages the selection of menu items.
+	 * 
 	 * @see android.app.Activity#onMenuItemSelected(int, android.view.MenuItem)
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		switch(item.getItemId()) {
+		switch (item.getItemId()) {
 		case R.id.settings_menu_item:
 			startActivity(new Intent(this, SettingsActivity.class));
 			break;
 		case R.id.about_menu_item:
-			startActivity(new Intent(this,AboutActivity.class));
+			startActivity(new Intent(this, AboutActivity.class));
 			break;
 		case R.id.projects_menu_item:
 			startActivity(new Intent(this, ShowProjectsActivity.class));
@@ -196,22 +204,23 @@ public class PositMain extends Activity implements OnClickListener, RWGConstants
 			startActivity(new Intent(this, BackgroundTrackerActivity.class));
 			break;
 		case R.id.rwg_start:
-			wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE); 
-			//mAdhocClient = new AdhocClient(this);		
+			wifiManager = (WifiManager) this
+					.getSystemService(Context.WIFI_SERVICE);
+			// mAdhocClient = new AdhocClient(this);
 			rwg = new Intent(this, RWGService.class);
-	        //rwgService.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	        RWGService.setActivity(this);
+			// rwgService.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			RWGService.setActivity(this);
 
 			startService(rwg);
 			break;
 		case R.id.rwg_end:
-			if(RWGService.isRunning() && rwg!=null)  // Kill RWG if already running
+			if (RWGService.isRunning() && rwg != null) // Kill RWG if already
+														// running
 				stopService(rwg);
-			try{
+			try {
 				rwgService.killProcessRunning("./rwgexec");
-			}
-			catch(Exception e) {
-				Log.e(TAG,e.getClass().toString(),e);
+			} catch (Exception e) {
+				Log.e(TAG, e.getClass().toString(), e);
 			}
 			mNotificationManager.cancel(Utils.ADHOC_ON_ID);
 			Utils.showToast(this, "RWG Service Stopped");
@@ -219,35 +228,34 @@ public class PositMain extends Activity implements OnClickListener, RWGConstants
 		}
 		return true;
 	}
-	
 
 	/**
-	 * Checks whether the phone is registered with POSIT server.
-	 * The phone is registered if it has an authentication key that matches one of
-	 * the projects on the server specified in the phone's preferences. If the phone is not registered, 
-	 * the user will be prompted to go to the server site and register their phone.
-	 * Shared preferences are also checked to see whether the phone should
-	 * sync up with the server.
+	 * Checks whether the phone is registered with POSIT server. The phone is
+	 * registered if it has an authentication key that matches one of the
+	 * projects on the server specified in the phone's preferences. If the phone
+	 * is not registered, the user will be prompted to go to the server site and
+	 * register their phone. Shared preferences are also checked to see whether
+	 * the phone should sync up with the server.
 	 */
 	private void checkPhoneRegistrationAndInitialSync() {
 		loadInstanceSettings();
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		String AUTH_KEY = sp.getString("AUTHKEY", null);
-		if (AUTH_KEY == null || AUTH_KEY.equals("") || AUTH_KEY.equals(null))
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		String AUTH_KEY = sp.getString("AUTHKEY", "");
+		if (AUTH_KEY.equals("") || AUTH_KEY.equals(null))
 			startActivity(new Intent(this, RegisterPhoneActivity.class));
 	}
-
 
 	/**
 	 * Reads the settings file and loads certain settings to SharedPreferences
 	 * 
-	 * The settings are passed as a JSON object and
-	 * include serverAddress, projectId, projectName, authKey, syncOn,
-	 * instanceName, instanceDescription.
+	 * The settings are passed as a JSON object and include serverAddress,
+	 * projectId, projectName, authKey, syncOn, instanceName,
+	 * instanceDescription.
 	 */
 	private void loadInstanceSettings() {
 		InstanceSettingsReader i = new InstanceSettingsReader(this);
-		i.parseSettingsFile(); 
+		i.parseSettingsFile();
 	}
 
 	/**
@@ -256,17 +264,17 @@ public class PositMain extends Activity implements OnClickListener, RWGConstants
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//  REMOVED:  To allow navigating back to Tracker		
-//		if(keyCode==KeyEvent.KEYCODE_BACK){
-//			showDialog(confirm_exit);
-//			return true;
-//		}
-//		Log.i("code", keyCode+"");
+		// REMOVED: To allow navigating back to Tracker
+		// if(keyCode==KeyEvent.KEYCODE_BACK){
+		// showDialog(confirm_exit);
+		// return true;
+		// }
+		// Log.i("code", keyCode+"");
 		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
-	protected void onStop(){
+	protected void onStop() {
 		super.onStop();
 	}
 
@@ -277,40 +285,42 @@ public class PositMain extends Activity implements OnClickListener, RWGConstants
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_EXIT:
-			return new AlertDialog.Builder(this)
-			.setIcon(R.drawable.alert_dialog_icon)
-			.setTitle(R.string.exit)
-			.setPositiveButton(R.string.alert_dialog_ok, 
-					new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-					// User clicked OK so do some stuff 
-					finish();
-				}
-			}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-					/* User clicked Cancel so do nothing */
-				}
-			}).create();
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(R.string.exit)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									// User clicked OK so do some stuff
+									finish();
+								}
+							}).setNegativeButton(R.string.alert_dialog_cancel,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									/* User clicked Cancel so do nothing */
+								}
+							}).create();
 
 		default:
 			return null;
 		}
 	}
-	
 
-	/** 
+	/**
 	 * Makes sure RWG is stopped before exiting the Activity
+	 * 
 	 * @see android.app.Activity#finish()
 	 */
 	@Override
 	public void finish() {
-		if(RWGService.isRunning() && rwg!=null)  // Kill RWG if already running
+		if (RWGService.isRunning() && rwg != null) // Kill RWG if already
+													// running
 			stopService(rwg);
-		try{
+		try {
 			rwgService.killProcessRunning("./rwgexec");
-		}
-		catch(Exception e) {
-			Log.e(TAG,e.getClass().toString(),e);
+		} catch (Exception e) {
+			Log.e(TAG, e.getClass().toString(), e);
 		}
 		mNotificationManager.cancel(Utils.ADHOC_ON_ID);
 		Utils.showToast(this, "RWG Service Stopped");
