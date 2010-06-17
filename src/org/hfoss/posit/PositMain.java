@@ -234,7 +234,7 @@ public class PositMain extends Activity implements OnClickListener, RWGConstants
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		String AUTH_KEY = sp.getString("AUTHKEY", null);
 		if (AUTH_KEY == null || AUTH_KEY.equals("") || AUTH_KEY.equals(null))
-			startActivity(new Intent(this, ServerRegistrationActivity.class));
+			startActivity(new Intent(this, RegisterPhoneActivity.class));
 	}
 
 

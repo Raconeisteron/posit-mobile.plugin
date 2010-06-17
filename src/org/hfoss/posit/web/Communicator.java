@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -187,6 +186,46 @@ public class Communicator {
 		else return true;
 	}
 	
+	/**
+	 * Registers the phone being used with the given server address, email,
+	 * password and imei.
+	 * 
+	 * @param server 
+	 * @param authKey
+	 * @param imei
+	 * @return authentication key if successful and null if unsuccessful
+	 */
+	public String registerDevice(String server, String email, String password, String imei){
+		String url = server + "/api/login?email=" +email+ "&password="+password
+		+ "&imei=" + imei;
+		Log.i(TAG, "registerDevice URL=" + url);
+
+		try {
+			responseString = doHTTPGET(url);
+		} catch (Exception e) {
+			Utils.showToast(mContext, e.getMessage());
+		}
+		if (responseString.equals(RESULT_FAIL))
+			return null;
+		else 
+			return responseString;
+	}
+	
+	public String registerUser(String server, String firstname, String lastname, String email, String password, String imei){
+		String url = server + "/api/registerUser?email=" +email+ "&password="+password
+		+ "&firstname=" + firstname +"&lastname="+lastname;
+		Log.i(TAG, "registerDevice URL=" + url+"&imei=" + imei);
+
+		try {
+			responseString = doHTTPGET(url);
+		} catch (Exception e) {
+			Utils.showToast(mContext, e.getMessage());
+		}
+		if (responseString.equals(RESULT_FAIL))
+			return null;
+		else 
+			return responseString;
+	}		
 	/*
 	 * TODO: This method is a little long and could be split up.
 	 * Send one find to the server, including its images.

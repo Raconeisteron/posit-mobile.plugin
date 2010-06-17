@@ -1,6 +1,13 @@
 <resources>
 	<!-- Application name and the Strings seen in the PositMain -->
     <string name="app_name">POSIT</string>
+    <string name="accountNotFoundMessage">Your email or username is incorrect</string>
+    <string name="emailLabelText">Email:</string>
+    <string name="passwordLabelText">Password:</string>
+    <string name="serverNameLabelText">Server Name:</string>
+	<string name="passCheckLabelText">Confirm Password:</string>
+	<string name="firstNameLabelText">First Name:</string>
+	<string name="lastNameLabelText">Last Name:</string>
 	<string name="new_find">New Find</string>
 	<string name="list_find">List Finds</string>
 	<string name="friends">Connected Friends: </string>

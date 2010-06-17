@@ -50,7 +50,7 @@ public class SettingsActivity extends PreferenceActivity {
 		Preference barcodePref = (Preference) findPreference("APP_KEY");
 		barcodePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {	
-				Intent intent = new Intent(SettingsActivity.this, ServerRegistrationActivity.class);
+				Intent intent = new Intent(SettingsActivity.this, RegisterPhoneActivity.class);
 				try {
 					startActivity(intent);
 				} catch(ActivityNotFoundException e) {
