@@ -93,12 +93,20 @@
 					android:layout_height="wrap_content" 
 					android:text="@string/barcodeText" 
 					android:layout_toRightOf="@id/idLabel"/>
+					
+				<TextView 
+					android:id="@+id/idNumberText" 
+					android:layout_width="fill_parent" 
+					android:layout_height="wrap_content" 
+					android:text="@string/idLabel" />
+					
 				<EditText 
 					android:id="@+id/idText" 
 					android:freezesText="true" 
 					android:layout_width="fill_parent" 
 					android:layout_height="wrap_content" 
-					android:layout_toRightOf="@id/idBarcodeButton"/>
+					android:layout_toRightOf="@id/idBarcodeButton"
+					android:visibility = "gone"/>
 				
 			
 				<EditText android:id="@+id/nameText"
@@ -146,6 +154,28 @@
 				android:src="@drawable/about"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"/>
+			
+			<RelativeLayout 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:orientation="vertical">
+
+				<ImageButton 
+					android:id="@+id/idSaveButton" 
+					android:layout_width="120dp" 
+					android:layout_height="wrap_content" 
+					android:src="@android:drawable/ic_menu_save"
+					android:text="Save Find" 
+					android:layout_toRightOf="@id/idLabel"/>
+					
+				<ImageButton 
+					android:id="@+id/idTakePictureButton" 
+					android:layout_width="120dp" 
+					android:layout_height="wrap_content" 
+					android:src="@android:drawable/ic_menu_camera"
+					android:text="Take Picture"
+					android:layout_toRightOf="@id/idSaveButton"/>
+			</RelativeLayout>
 				
 		</LinearLayout>
 

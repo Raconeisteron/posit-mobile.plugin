@@ -21,17 +21,19 @@
  */
 package org.hfoss.posit;
 
-import java.io.ByteArrayOutputStream;
+// NOTE: for now the barcode scanner and the base64coder has been commented out at the following lines:
+// 37,  206, 207, 216, and 279-281
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.hfoss.posit.adhoc.RWGService;
 import org.hfoss.posit.provider.PositDbHelper;
 import org.hfoss.posit.utilities.ImageAdapter;
 import org.hfoss.posit.utilities.Utils;
-import org.hfoss.third.Base64Coder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -69,6 +71,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Gallery;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -198,8 +201,13 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 
 		mGallery = (Gallery)findViewById(R.id.picturesTaken);
 
+		
+		//
 		Button scanButton = (Button)findViewById(R.id.idBarcodeButton);
 		scanButton.setOnClickListener(this);
+		
+		// scan button has been removed from the visibility for now and IDs are now randomly assigned by a UUID
+		scanButton.setVisibility(TextView.GONE);
 		TextView barcodeError = (TextView)findViewById(R.id.barcodeReaderError);
 		Button barcodeDownload = (Button)findViewById(R.id.barcodeDownloadButton);
 		TextView barcodeRestart = (TextView)findViewById(R.id.barcodeReaderRestart);
@@ -207,12 +215,15 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		barcodeError.setVisibility(TextView.GONE);
 		barcodeDownload.setVisibility(Button.GONE);
 		barcodeRestart.setVisibility(TextView.GONE);
-		if(!isIntentAvailable(this,"com.google.zxing.client.android.SCAN")) {
-			scanButton.setClickable(false);
-			barcodeError.setVisibility(TextView.VISIBLE);
-			barcodeDownload.setVisibility(Button.VISIBLE);
-			barcodeRestart.setVisibility(TextView.VISIBLE);
-		}
+		
+//		 removed this inquiry to ensure user has bar code 
+//		 scanner since program currently doesn't use the scanner
+//		if(!isIntentAvailable(this,"com.google.zxing.client.android.SCAN")) {
+//			scanButton.setClickable(false);
+//			barcodeError.setVisibility(TextView.VISIBLE);
+//			barcodeDownload.setVisibility(Button.VISIBLE);
+//			barcodeRestart.setVisibility(TextView.VISIBLE);
+//		}
 		if (action.equals(Intent.ACTION_EDIT)) {
 			doEditAction();
 			INTENT_CHECK=1;
@@ -220,6 +231,13 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			doInsertAction();
 
 		}
+		
+		// new save and take picture buttons have been added to make working
+		// with finds simpler and more intuitive
+		ImageButton saveButton = (ImageButton)findViewById(R.id.idSaveButton);
+		saveButton.setOnClickListener(this);
+		ImageButton takePictureButton = (ImageButton)findViewById(R.id.idTakePictureButton);
+		takePictureButton.setOnClickListener(this);
 	} // onCreate()
 
 	@Override
@@ -267,9 +285,14 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		TextView tView = (TextView) findViewById(R.id.timeText);
 		tView.setText(getDateText());
 		tView.addTextChangedListener(textChangedWatcher);
+		
+		// instead of reading a bar code, ID's are now randomly assigned by a UUID
 		TextView idView = (TextView) findViewById(R.id.idText);
-		idView.setText("");
+		idView.setText(UUID.randomUUID().toString());
 		idView.addTextChangedListener(textChangedWatcher);
+		
+		//		 set to gone for now because we don't want to display the ID
+		idView.setVisibility(TextView.GONE);
 		TextView nameView = (TextView) findViewById(R.id.nameText);
 		nameView.setText("");
 		nameView.addTextChangedListener(textChangedWatcher);
@@ -706,6 +729,37 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			intent = new Intent(Intent.ACTION_VIEW);
 			intent.setData(Uri.parse("market://search?q=pname:com.google.zxing.client.android"));
 			startActivity(intent);
+			break;
+			
+			//			new idTakePicture and idSave buttons have been added main view
+			//			to make posit's use simpler
+		case R.id.idTakePictureButton:
+			intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+			intent.putExtra("rowId", mFindId);
+			if (mFind == null) {
+				Log.i(TAG,"New Find " + mFindId);
+				startActivityForResult(intent, NEW_FIND_CAMERA_ACTIVITY); //camera for new find
+			} else {
+				Log.i(TAG, "Existing FInd " + mFindId);
+				startActivityForResult(intent, CAMERA_ACTIVITY); //camera for existing find
+			}
+			break;
+		case R.id.idSaveButton:
+			long start;
+			Log.i("start",(start=System.currentTimeMillis())+"");
+			ContentValues contentValues = retrieveContentFromView();
+			Log.i("after retrive", (System.currentTimeMillis()-start)+"");
+			//if (IS_ADHOC)
+			if (RWGService.isRunning())
+				sendAdhocFind(contentValues,null);//imageBase64String);
+			Log.i("after adhoc check", (System.currentTimeMillis()-start)+"");
+			
+			doSave(contentValues);
+			//Intent in = new Intent(this, ListFindsActivity.class); //redirect to list finds
+			//startActivity(in);
+			
+			break;
+			
 		}
 			
 	}
@@ -729,11 +783,13 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 
 		switch (requestCode) {
 
+		// right now the barcoder reader is invisible, making this case unnecessary
 		case BARCODE_READER:
 			String value = data.getStringExtra("SCAN_RESULT");
 			EditText eText = (EditText) findViewById(R.id.idText);
 			eText.setText(value);
 			break;
+			
 		case CAMERA_ACTIVITY: //for existing find: saves image to db when user clicks "attach"
 			rowId = data.getIntExtra("rowId", -1);
 			Bitmap tempImage = (Bitmap) data.getExtras().get("data");
