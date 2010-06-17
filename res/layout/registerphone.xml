@@ -39,7 +39,7 @@
         android:layout_gravity="fill_horizontal"
         android:password="true"/>
  	<Button 
-		android:id="@+id/registerAltButton" 
+		android:id="@+id/registerDeviceButton" 
     android:layout_width="140dp"
     android:layout_height="40dp"
     	android:layout_gravity="right"
@@ -87,7 +87,7 @@
         android:visibility="gone"/>
   
 	<Button 
-		android:id="@+id/registerButton" 
+		android:id="@+id/registerUsingBarcodeButton" 
    		 android:layout_width="180dp"
     	android:layout_height="40dp"
 		android:text="Register with Barcode"

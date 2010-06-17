@@ -314,16 +314,17 @@ public class PositMain extends Activity implements OnClickListener,
 	 */
 	@Override
 	public void finish() {
-		if (RWGService.isRunning() && rwg != null) // Kill RWG if already
-													// running
+		if (RWGService.isRunning() && rwg != null) // Kill RWG if already running
 			stopService(rwg);
+			
 		try {
 			rwgService.killProcessRunning("./rwgexec");
+			Utils.showToast(this, "RWG Service Stopped");
 		} catch (Exception e) {
 			Log.e(TAG, e.getClass().toString(), e);
 		}
 		mNotificationManager.cancel(Utils.ADHOC_ON_ID);
-		Utils.showToast(this, "RWG Service Stopped");
+		
 		super.finish();
 	}
 
