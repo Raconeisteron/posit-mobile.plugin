@@ -47,6 +47,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -100,6 +101,15 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener{
 		registerButton.setOnClickListener(this);
 		registerAltButton.setOnClickListener(this);
 		registerUserButton.setOnClickListener(this);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (keyCode){
+		case KeyEvent.KEYCODE_BACK:
+			return false;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	/**
