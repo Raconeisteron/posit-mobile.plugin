@@ -40,7 +40,7 @@
 		<activity android:name=".ListFindsActivity" />
 		<activity android:name=".MapFindsActivity" />
 		<!-- <activity android:name=".PositMain" /> -->
-		<activity android:name=".ServerRegistrationActivity" />
+		<activity android:name=".BarcodeBasedRegistrationActivity" />
 		<activity android:name=".SettingsActivity" />	
 		<activity android:name=".ShowProjectsActivity" />
 		<activity android:name=".SyncActivity" />

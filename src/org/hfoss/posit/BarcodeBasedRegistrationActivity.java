@@ -52,7 +52,7 @@ import android.widget.TextView;
  * 
  *
  */
-public class ServerRegistrationActivity extends Activity {
+public class BarcodeBasedRegistrationActivity extends Activity {
 
 	private static final int BARCODE_READER = 0;
 	private static final String TAG = "ServerRegistration";
@@ -68,11 +68,11 @@ public class ServerRegistrationActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.registerphone);
+		setContentView(R.layout.barcode_registration);
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		String server = sp.getString("SERVER_ADDRESS", null);
 		
-		final Button registerButton = (Button)findViewById(R.id.registerButton);
+		final Button registerButton = (Button)findViewById(R.id.registerUsingBarcodeButton);
 		final TextView barcodeError = (TextView)findViewById(R.id.barcodeReaderError);
 		
 		if(!isIntentAvailable(this,"com.google.zxing.client.android.SCAN")) {
@@ -88,8 +88,8 @@ public class ServerRegistrationActivity extends Activity {
         			Utils.showToast(registerButton.getContext(), "Registration Error:No Network Available");
         		}
         		else{
-            	if (ServerRegistrationActivity.isIntentAvailable(
-            			ServerRegistrationActivity.this,"com.google.zxing.client.android.SCAN"))
+            	if (BarcodeBasedRegistrationActivity.isIntentAvailable(
+            			BarcodeBasedRegistrationActivity.this,"com.google.zxing.client.android.SCAN"))
         		{
             		
         			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
