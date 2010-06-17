@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+<LinearLayout
+ 
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+
+  
+  	<TextView 
+		android:id="@+id/firstNameLabel"
+		android:text="@string/firstNameLabelText"
+		android:textSize="14.5sp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="left"/>
+
+	<EditText
+        android:id="@+id/firstName"
+        android:layout_height="40dp"
+        android:layout_width="fill_parent"
+        android:layout_gravity="fill_horizontal"/>
+	
+	  	<TextView 
+		android:id="@+id/lastNameLabel"
+		android:text="@string/lastNameLabelText"
+		android:textSize="14.5sp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="left"/>
+
+	<EditText
+        android:id="@+id/lastName"
+        android:layout_height="40dp"
+        android:layout_width="fill_parent"
+        android:layout_gravity="fill_horizontal"/>
+	
+	  	<TextView 
+		android:id="@+id/emailLabel"
+		android:text="@string/emailLabelText"
+		android:textSize="14.5sp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="left"/>
+
+	<EditText
+        android:id="@+id/email"
+        android:layout_height="40dp"
+        android:layout_width="fill_parent"
+        android:layout_gravity="fill_horizontal"/>
+	
+    <TextView 
+		android:id="@+id/passwordLabel"
+		android:text="@string/passwordLabelText"
+		android:textSize="14.5sp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="left"
+		/>
+	<EditText
+        android:id="@+id/password"
+        android:layout_height="40dp"
+        android:layout_width="fill_parent"
+        android:layout_gravity="fill_horizontal"
+        android:password="true"/>
+        
+            <TextView 
+		android:id="@+id/passCheckLabel"
+		android:text="@string/passCheckLabelText"
+		android:textSize="14.5sp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="left"
+		/>
+	<EditText
+        android:id="@+id/passCheck"
+        android:layout_height="40dp"
+        android:layout_width="fill_parent"
+        android:layout_gravity="fill_horizontal"
+        android:password="true"/>
+        
+        
+ <Button android:id="@+id/submitInfo"
+    android:layout_width="150dp"
+    android:layout_height="40dp"
+    android:layout_gravity="left"
+    android:text="Create Account" />
+    
+		
+
+	</LinearLayout>
+</ScrollView>
