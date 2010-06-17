@@ -32,6 +32,8 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<activity android:name=".RegisterPhoneActivity"/>
+		<activity android:name=".RegisterUserActivity"/>		
 		<activity android:name=".AboutActivity" />
 		<activity android:name=".FindActivity" />
 		<activity android:name=".ImageViewActivity" />

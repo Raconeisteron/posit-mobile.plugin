@@ -68,23 +68,11 @@ public class ServerRegistrationActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.registration);
+		setContentView(R.layout.registerphone);
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		String server = sp.getString("SERVER_ADDRESS", null);
 		
-		if (server != null) {
-			TextView notRegisteredTv = (TextView) findViewById(R.id.phoneNotRegistered);
-			TextView registeredTv = (TextView) findViewById(R.id.phoneRegistered);
-			TextView serverAddress = (TextView) findViewById(R.id.serverAddress);
-			
-			notRegisteredTv.setVisibility(View.GONE);
-			registeredTv.setVisibility(View.VISIBLE);
-			
-			serverAddress.setVisibility(View.VISIBLE);
-			serverAddress.setText(server);
-		}
 		final Button registerButton = (Button)findViewById(R.id.registerButton);
-		//final Button sandboxButton = (Button)findViewById(R.id.sandboxButton);
 		final TextView barcodeError = (TextView)findViewById(R.id.barcodeReaderError);
 		
 		if(!isIntentAvailable(this,"com.google.zxing.client.android.SCAN")) {
