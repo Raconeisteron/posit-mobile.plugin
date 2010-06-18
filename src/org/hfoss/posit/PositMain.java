@@ -45,6 +45,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 /**
  * Implements the main activity and the main screen for the POSIT application.
@@ -76,13 +77,13 @@ public class PositMain extends Activity implements OnClickListener,
 		}
 		setContentView(R.layout.main);
 
-		final Button addFindButton = (Button) findViewById(R.id.addFindButton);
+		final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 		if (addFindButton != null)
 			addFindButton.setOnClickListener(this);
 
-		final Button listFindButton = (Button) findViewById(R.id.listFindButton);
+		final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
 		if (listFindButton != null) {
-			Log.i(TAG, listFindButton.getText() + "");
+			//Log.i(TAG, listFindButton.getText() + "");
 			listFindButton.setOnClickListener(this);
 		}
 

@@ -182,9 +182,9 @@ public class BarcodeBasedRegistrationActivity extends Activity {
 				String imei = manager.getDeviceId();
 				Communicator communicator = new Communicator(this);				
 				try{
-				boolean registered = communicator.registerDevice(server, authKey, imei);
+				String registered = communicator.registerDevice(server, authKey, imei);
 				
-				if (registered == true) {
+				if (registered != null) {
 					SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 					Editor spEditor = sp.edit();
 					

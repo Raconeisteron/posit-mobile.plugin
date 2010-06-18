@@ -169,7 +169,7 @@ public class Communicator {
 	 * @param imei
 	 * @return whether the registration was successful
 	 */
-	public boolean registerDevice(String server, String authKey, String imei){
+	public String registerDevice(String server, String authKey, String imei){
 		  // server = "http://192.168.1.105/posit";
 		String url = server + "/api/registerDevice?authKey=" +authKey 
 		+ "&imei=" + imei;
@@ -182,8 +182,10 @@ public class Communicator {
 		}
 
 		if (responseString.equals(RESULT_FAIL))
-			return false;
-		else return true;
+			return null;
+		else{ 
+			return responseString;
+			}
 	}
 	
 	/**
@@ -195,7 +197,7 @@ public class Communicator {
 	 * @param imei
 	 * @return authentication key if successful and null if unsuccessful
 	 */
-	public String registerDevice(String server, String email, String password, String imei){
+	public String loginUser(String server, String email, String password, String imei){
 		String url = server + "/api/login?email=" +email+ "&password="+password
 		+ "&imei=" + imei;
 		Log.i(TAG, "registerDevice URL=" + url);
@@ -207,8 +209,13 @@ public class Communicator {
 		}
 		if (responseString.equals(RESULT_FAIL))
 			return null;
-		else 
-			return responseString;
+		else{
+			responseString=registerDevice(server, responseString, imei);
+			if(responseString.equals(RESULT_FAIL))
+				return null;
+			else
+				return responseString;
+		}
 	}
 	
 	public String registerUser(String server, String firstname, String lastname, String email, String password, String imei){

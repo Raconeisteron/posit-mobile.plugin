@@ -178,10 +178,10 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 				String imei = manager.getDeviceId();
 				Communicator communicator = new Communicator(this);
 				try {
-					boolean registered = communicator.registerDevice(server,
+					String registered = communicator.registerDevice(server,
 							authKey, imei);
 
-					if (registered == true) {
+					if (registered != null) {
 						SharedPreferences sp = PreferenceManager
 								.getDefaultSharedPreferences(this);
 						Editor spEditor = sp.edit();
@@ -253,12 +253,13 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 				Utils.showToast(cont, "Please enter a valid email address");
 				break;
 			}
+			
 			Communicator com = new Communicator(cont);
 			TelephonyManager manager = (TelephonyManager) this
 					.getSystemService(Context.TELEPHONY_SERVICE);
 			String imei = manager.getDeviceId();
-			String result = com.registerDevice(servername, email, password,
-					imei);
+			String result = com.loginUser(servername, email, password, imei);
+			
 			if (result != null) {
 				SharedPreferences sp = PreferenceManager
 						.getDefaultSharedPreferences(this);
