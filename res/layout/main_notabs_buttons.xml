@@ -2,26 +2,47 @@
 	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:gravity="center"
+		android:gravity="center_horizontal|top"
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android">
 		<TextView
 			android:id="@+id/applicationTypeLabel"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:textSize="14sp"
+			android:textSize="18sp"
 			android:textColor="#ffffff"
 			android:text="Crisis Management Tool"
-			android:layout_marginBottom="15dp"/>
+			android:layout_marginBottom="10dp"/>
 		<TextView
 			android:id="@+id/version"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:textSize="14sp"
+			android:textSize="18sp"
 			android:textColor="#ffffff"
-			android:text="Version 0.6.0r alpha"
+			android:text="Version 0.7.0r beta"
 			android:layout_marginBottom="10dp"/>
-		<Button
+
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    			android:orientation="horizontal"
+    			android:layout_width="wrap_content"
+    			android:layout_height="fill_parent"
+    			android:layout_gravity="center">
+
+				<ImageButton 
+					android:id="@+id/listFindButton" 
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:src="@drawable/ic_menu_view"
+					android:text="List Find"/>
+					
+				<ImageButton 
+					android:id="@+id/addFindButton" 
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:src="@drawable/ic_menu_add_text"
+					android:text="Add Find"/>
+		</LinearLayout>
+		<!--  <Button
 			android:id="@+id/listFindButton"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
@@ -32,7 +53,7 @@
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:text="Add Find"
-			/>
+			/> -->
 			<!--  
 		<Button
 			android:id="@+id/sahanaSMS"
