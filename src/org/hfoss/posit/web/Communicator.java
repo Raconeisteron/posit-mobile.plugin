@@ -196,25 +196,27 @@ public class Communicator {
 	 * @param authKey
 	 * @param imei
 	 * @return authentication key if successful and null if unsuccessful
+	 * @throws JSONException 
 	 */
-	public String loginUser(String server, String email, String password, String imei){
+	public HashMap<String,String> loginUser(String server, String email, String password, String imei) throws JSONException{
 		String url = server + "/api/login?email=" +email+ "&password="+password
 		+ "&imei=" + imei;
+		HashMap<String,String> responseMap = null;
 		Log.i(TAG, "registerDevice URL=" + url);
 
 		try {
 			responseString = doHTTPGET(url);
+			ResponseParser parser = new ResponseParser(responseString);
+			responseMap = parser.parseResponse();
 		} catch (Exception e) {
 			Utils.showToast(mContext, e.getMessage());
 		}
-		if (responseString.equals(RESULT_FAIL))
-			return null;
+		if ((responseMap.get("errorMessage")!=null))
+			return responseMap;
 		else{
-			responseString=registerDevice(server, responseString, imei);
-			if(responseString.equals(RESULT_FAIL))
-				return null;
-			else
-				return responseString;
+			responseString=registerDevice(server, responseMap.get("authKey"), imei);
+			ResponseParser parser = new ResponseParser(responseString);
+			return parser.parseResponse();
 		}
 	}
 	
@@ -469,6 +471,7 @@ public class Communicator {
 		
 		return responseString;
 	}
+	
 	/**
 	 * A wrapper(does some cleanup too) for sending HTTP GET requests to the URI 
 	 * 

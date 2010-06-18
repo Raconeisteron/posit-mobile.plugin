@@ -2,6 +2,10 @@
 	<!-- Application name and the Strings seen in the PositMain -->
     <string name="app_name">POSIT</string>
     <string name="accountNotFoundMessage">Your email or username is incorrect</string>
+    <string name="finishButton">Finish</string> 
+    <string name="skipButton">Skip</string> 
+    <string name="nextButton">Next</string> 
+    <string name="previousButton">Previous</string> 
     <string name="emailLabelText">Email:</string>
     <string name="passwordLabelText">Password:</string>
     <string name="serverNameLabelText">Server Name:</string>

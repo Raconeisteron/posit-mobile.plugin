@@ -75,6 +75,12 @@ public class PositMain extends Activity implements OnClickListener,
 		if (savedInstanceState == null) {
 			checkPhoneRegistrationAndInitialSync();
 		}
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+		if(!sp.getBoolean("tutorialComplete", false)){
+			Intent i = new Intent(this, TutorialActivity.class);
+			startActivity(i);
+		}
 		setContentView(R.layout.main);
 
 		final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
@@ -93,7 +99,7 @@ public class PositMain extends Activity implements OnClickListener,
 
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		SharedPreferences sp = PreferenceManager
+		sp = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sp.edit();
 		Log.i(TAG, "onCreate(), Preferences= " + sp.getAll().toString());

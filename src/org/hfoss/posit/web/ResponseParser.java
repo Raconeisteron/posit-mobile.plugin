@@ -64,4 +64,25 @@ public class ResponseParser {
 		return findsList;
 	}
 	
+	public HashMap<String,String> parseResponse() {
+		HashMap<String,String> responseMessage = new HashMap<String,String>();
+		if (response.equals(null)) throw new NullPointerException("Pass a response first");
+		JSONObject j;
+		try {
+			j = new JSONObject(response);
+
+			if(j.has("errorCode")){
+				responseMessage.put("errorMessage",(String) j.get("errorMessage"));
+			}else{
+				responseMessage.put("authKey",(String) j.get("message"));
+			}
+		} catch (JSONException e) {
+			Log.i("JSON","JSON Error");
+		}
+		responseMessage.put("errorMessage","JSON Error");
+		return responseMessage;
+	}
+	
+	
+	
 }
