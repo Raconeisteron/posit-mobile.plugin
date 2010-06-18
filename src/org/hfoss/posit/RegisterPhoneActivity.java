@@ -22,6 +22,7 @@
 
 package org.hfoss.posit;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.validator.EmailValidator;
@@ -108,9 +109,8 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			
-				return false;
-			
+
+			break;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -232,7 +232,8 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 			} else {
 				findViewById(R.id.serverName).setVisibility(EditText.GONE);
 				findViewById(R.id.serverNameLabel).setVisibility(TextView.GONE);
-				findViewById(R.id.registerUsingBarcodeButton).setVisibility(TextView.GONE);
+				findViewById(R.id.registerUsingBarcodeButton).setVisibility(
+						TextView.GONE);
 			}
 			break;
 
@@ -253,22 +254,29 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 				Utils.showToast(cont, "Please enter a valid email address");
 				break;
 			}
-			
+
 			Communicator com = new Communicator(cont);
 			TelephonyManager manager = (TelephonyManager) this
 					.getSystemService(Context.TELEPHONY_SERVICE);
 			String imei = manager.getDeviceId();
-			String result = com.loginUser(servername, email, password, imei);
-			
-			if (result != null) {
+			HashMap<String, String> result;
+			try {
+				result = com.loginUser(servername, email, password, imei);
+			} catch (JSONException e1) {
+				result = new HashMap<String, String>();
+				result.put("errorMessage", "JSON error");
+			}
+
+			if (result.get("authKey") != null) {
 				SharedPreferences sp = PreferenceManager
 						.getDefaultSharedPreferences(this);
 				Editor spEditor = sp.edit();
 				spEditor.putString("SERVER_ADDRESS", servername);
-				spEditor.putString("AUTHKEY", result);
+				spEditor.putString("AUTHKEY", result.get("authKey"));
 				spEditor.commit();
 			} else
-				Utils.showToast(cont, "Registration Error");
+				Utils.showToast(cont, "Registration Error: "
+						+ result.get("errorMessage"));
 			break;
 
 		case R.id.registerUsingBarcodeButton:
