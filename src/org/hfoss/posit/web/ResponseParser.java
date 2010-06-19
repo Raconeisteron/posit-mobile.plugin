@@ -42,12 +42,29 @@ public class ResponseParser {
 	public ResponseParser(String response) {
 		this.response = response;
 	}
+	
+	/**
+	 * check the first character and parse it accordingly if it's a list or an object
+	 * @return
+	 * @throws JSONException
+	 */
+	public Object parse() throws JSONException {
+		if (response.equals(null)) throw new NullPointerException("Pass a response first");
+		if (response.charAt(0) == '['){
+			return parseList();
+		}else if (response.charAt(0) == '{'){
+			return parseObject();
+		}else {
+			return null;
+		}
+	}
+	
 	/**
 	 * Parses the response and returns the HashMap equivalent for the program to use.
 	 * @return
 	 * @throws JSONException
 	 */
-	public List<HashMap<String, Object>> parse() throws JSONException  {
+	public List<HashMap<String, Object>> parseList() throws JSONException  {
 		if (response.equals(null)) throw new NullPointerException("Pass a response first");
 		List<HashMap<String, Object>> findsList = new ArrayList<HashMap<String,Object>>();
 		JSONArray j = new JSONArray(response);
@@ -64,7 +81,8 @@ public class ResponseParser {
 		return findsList;
 	}
 	
-	public HashMap<String,String> parseResponse() {
+	
+	public HashMap<String,String> parseObject() {
 		HashMap<String,String> responseMessage = new HashMap<String,String>();
 		if (response.equals(null)) throw new NullPointerException("Pass a response first");
 		JSONObject j;

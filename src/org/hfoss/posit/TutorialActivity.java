@@ -27,7 +27,7 @@ public class TutorialActivity extends Activity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		mWebView = new WebView(this);
-		this.setContentView(R.layout.tutorial_view);
+		setContentView(R.layout.tutorial_view);
 		pageNumber = 1;
 		skip= (Button) findViewById(R.id.skipButton);
 		next= (Button) findViewById(R.id.nextButton);

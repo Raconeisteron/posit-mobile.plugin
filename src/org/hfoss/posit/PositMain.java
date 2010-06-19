@@ -44,7 +44,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 /**
@@ -75,9 +74,10 @@ public class PositMain extends Activity implements OnClickListener,
 		if (savedInstanceState == null) {
 			checkPhoneRegistrationAndInitialSync();
 		}
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(this);
 
-		if(!sp.getBoolean("tutorialComplete", false)){
+		if (!sp.getBoolean("tutorialComplete", false)) {
 			Intent i = new Intent(this, TutorialActivity.class);
 			startActivity(i);
 		}
@@ -89,7 +89,7 @@ public class PositMain extends Activity implements OnClickListener,
 
 		final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
 		if (listFindButton != null) {
-			//Log.i(TAG, listFindButton.getText() + "");
+			// Log.i(TAG, listFindButton.getText() + "");
 			listFindButton.setOnClickListener(this);
 		}
 
@@ -99,8 +99,7 @@ public class PositMain extends Activity implements OnClickListener,
 
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		sp = PreferenceManager
-				.getDefaultSharedPreferences(this);
+		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sp.edit();
 		Log.i(TAG, "onCreate(), Preferences= " + sp.getAll().toString());
 
@@ -121,7 +120,7 @@ public class PositMain extends Activity implements OnClickListener,
 		Utils.showToast(this, "Current Project: "
 				+ sp.getString("PROJECT_NAME", ""));
 
-		/*   ******* POLICY: RWG should not be running at start up */
+		/*    ******* POLICY: RWG should not be running at start up */
 
 		// if (RWGService.isRunning()) {
 		// Log.i(TAG, "RWG running");
@@ -222,7 +221,7 @@ public class PositMain extends Activity implements OnClickListener,
 			break;
 		case R.id.rwg_end:
 			if (RWGService.isRunning() && rwg != null) // Kill RWG if already
-														// running
+				// running
 				stopService(rwg);
 			try {
 				rwgService.killProcessRunning("./rwgexec");
@@ -321,9 +320,10 @@ public class PositMain extends Activity implements OnClickListener,
 	 */
 	@Override
 	public void finish() {
-		if (RWGService.isRunning() && rwg != null) // Kill RWG if already running
+		if (RWGService.isRunning() && rwg != null) // Kill RWG if already
+													// running
 			stopService(rwg);
-			
+
 		try {
 			rwgService.killProcessRunning("./rwgexec");
 			Utils.showToast(this, "RWG Service Stopped");
@@ -331,7 +331,7 @@ public class PositMain extends Activity implements OnClickListener,
 			Log.e(TAG, e.getClass().toString(), e);
 		}
 		mNotificationManager.cancel(Utils.ADHOC_ON_ID);
-		
+
 		super.finish();
 	}
 
