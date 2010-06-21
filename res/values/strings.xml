@@ -2,6 +2,9 @@
 	<!-- Application name and the Strings seen in the PositMain -->
 	<string name="app_name">POSIT</string>
 	<string name="accountNotFoundMessage">Your email or username is incorrect</string>
+	<string name="projectNameLabel">Project Name:</string>
+	<string name="projectDescriptionLabel">Project Description:</string>
+	<string name="createProjectButton">Create Project</string>
 	<string name="finishButton">Finish</string>
 	<string name="skipButton">Skip</string>
 	<string name="nextButton">Next</string>

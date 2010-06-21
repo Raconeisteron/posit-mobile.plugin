@@ -157,10 +157,11 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 	 * preferences so it can be remembered when the application is closed
 	 */
 	public void onClick(View v) {
-		Intent intent;
+		Intent i = new Intent(this, NewProjectActivity.class);;
 		switch (v.getId()) {
 
 		case R.id.idAddProjButton:
+			startActivity(i);
 
 			break;
 
