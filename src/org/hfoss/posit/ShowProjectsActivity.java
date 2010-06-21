@@ -25,30 +25,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.hfoss.posit.adhoc.RWGService;
 import org.hfoss.posit.utilities.Utils;
 import org.hfoss.posit.web.Communicator;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences.Editor;
-import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * This activity shows a list of all the projects on the server that the phone is registered with,
@@ -57,7 +56,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * 
  *
  */
-public class ShowProjectsActivity extends ListActivity {
+public class ShowProjectsActivity extends ListActivity implements OnClickListener{
 
 	private static final String TAG = "ShowProjectsActivity";
 	private static final int CONFIRM_PROJECT_CHANGE = 0;
@@ -75,9 +74,15 @@ public class ShowProjectsActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.list_proj);
+		Button addProjectButton = (Button)findViewById(R.id.idAddProjButton);
+		addProjectButton.setOnClickListener(this);
+
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		currentProjectId = sp.getInt("PROJECT_ID", 0);
 		tryToRegister();
+		
+
 	}
 
 
@@ -86,9 +91,8 @@ public class ShowProjectsActivity extends ListActivity {
 	 */
 	@Override
 	protected void onResume() {
-		//tryToRegister();
 		super.onResume();
-	
+	//	tryToRegister();
 	}
 
 	private void tryToRegister() {
@@ -153,6 +157,15 @@ public class ShowProjectsActivity extends ListActivity {
 	 * preferences so it can be remembered when the application is closed
 	 */
 	public void onClick(View v) {
+		Intent intent;
+		switch (v.getId()) {
+
+		case R.id.idAddProjButton:
+
+			break;
+
+			
+		}
 		
 	}
 
