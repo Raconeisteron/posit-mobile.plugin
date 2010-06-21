@@ -50,77 +50,98 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 /**
- * Prompts the user to register their phone if the phone is not registered, or shows the phone's current 
- * registration status and allows the user to register their phone again with a different server.
+ * Prompts the user to register their phone if the phone is not registered, or
+ * shows the phone's current registration status and allows the user to register
+ * their phone again with a different server.
  * 
- *
+ * 
  */
-public class RegisterUserActivity extends Activity implements OnClickListener{
+public class RegisterUserActivity extends Activity implements OnClickListener {
 
 	private Button registerButton;
+	private SharedPreferences sp;
+	private static final int CREATE_ACCOUNT = 1;
+	private static final String TAG = "RegisterUserActivity";
+
 	/**
-	 * Called when the Activity is first started.  If the phone is not registered, tells the user
-	 * so and gives the user instructions on how to register the phone.  If the phone is registered, tells
-	 * the user the server address that the phone is registered to in case the user would like to
+	 * Called when the Activity is first started. If the phone is not
+	 * registered, tells the user so and gives the user instructions on how to
+	 * register the phone. If the phone is registered, tells the user the server
+	 * address that the phone is registered to in case the user would like to
 	 * change it.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		setContentView(R.layout.registeruser);
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		registerButton = (Button)findViewById(R.id.submitInfo);
-		registerButton.setOnClickListener(this);
-		
-		
 
+		setContentView(R.layout.registeruser);
+		sp = PreferenceManager.getDefaultSharedPreferences(this);
+		registerButton = (Button) findViewById(R.id.submitInfo);
+		registerButton.setOnClickListener(this);
 
 	}
 
-
 	public void onClick(View v) {
-		switch(v.getId()){
-			case(R.id.submitInfo):
-				Intent i = getIntent();
-				EmailValidator emV = EmailValidator.getInstance();
-				String password = (((TextView)findViewById(R.id.password)).getText()).toString();
-				String check = (((TextView)findViewById(R.id.passCheck)).getText()).toString();
-				String email = (((TextView)findViewById(R.id.email)).getText()).toString();
-				String lastname = (((TextView)findViewById(R.id.lastName)).getText()).toString();
-				String firstname = (((TextView)findViewById(R.id.firstName)).getText()).toString();
-				String server = i.getStringExtra("server");
-				if(password.equals("") || check.equals("") || lastname.equals("") || firstname.equals("") || email.equals("")){
-					Utils.showToast(registerButton.getContext(), "Please fill in all the fields");
-					break;
-				}
-				
-				if(emV.isValid(email)!=true){
-					Utils.showToast(registerButton.getContext(), "Please enter a valid email address");
-					break;
-				}
-				if(!check.equals(password)){
-					Utils.showToast(registerButton.getContext(), "Your passwords do not match");
-					break;
-				}
-				
-				TelephonyManager manager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-				String imei = manager.getDeviceId();
-
-				Communicator com = new Communicator(registerButton.getContext());
-				String result =com.registerUser(server, firstname, lastname, email, password, imei);
-				if(result!=null){
-					SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-					Editor spEditor = sp.edit();
-					spEditor.putString("SERVER_ADDRESS", server);
-					spEditor.putString("AUTHKEY", result);
-					spEditor.commit();		
-					}
-				else
-					Utils.showToast(registerButton.getContext(), "Registration Error");
+		switch (v.getId()) {
+		case (R.id.submitInfo):
+			Intent i = getIntent();
+			EmailValidator emV = EmailValidator.getInstance();
+			String password = (((TextView) findViewById(R.id.password))
+					.getText()).toString();
+			String check = (((TextView) findViewById(R.id.passCheck)).getText())
+					.toString();
+			String email = (((TextView) findViewById(R.id.email)).getText())
+					.toString();
+			String lastname = (((TextView) findViewById(R.id.lastName))
+					.getText()).toString();
+			String firstname = (((TextView) findViewById(R.id.firstName))
+					.getText()).toString();
+			String server = i.getStringExtra("server");
+			if (password.equals("") || check.equals("") || lastname.equals("")
+					|| firstname.equals("") || email.equals("")) {
+				Utils.showToast(registerButton.getContext(),
+						"Please fill in all the fields");
 				break;
-				
+			}
+
+			if (emV.isValid(email) != true) {
+				Utils.showToast(registerButton.getContext(),
+						"Please enter a valid email address");
+				break;
+			}
+			if (!check.equals(password)) {
+				Utils.showToast(registerButton.getContext(),
+						"Your passwords do not match");
+				break;
+			}
+
+			TelephonyManager manager = (TelephonyManager) this
+					.getSystemService(Context.TELEPHONY_SERVICE);
+			String imei = manager.getDeviceId();
+
+			Communicator com = new Communicator(registerButton.getContext());
+			String result = com.registerUser(server, firstname, lastname,
+					email, password, check, imei);
+			Log.i(TAG, result);
+			if (result != null) {
+				String[] message = result.split(":");
+				if (message.length != 2) {
+					Utils.showToast(this, "Malformed message");
+					break;
+				}
+				if (message[0].equals("" + Constants.AUTHN_OK)) {
+					Intent data = new Intent();
+					data.putExtra("email", email);
+					data.putExtra("password", password);
+					setResult(CREATE_ACCOUNT, data);
+					finish();
+				} else{
+					Utils.showToast(this, message[1]);
+				}
+				break;
+
+			}
+
 		}
-		
 	}
 }

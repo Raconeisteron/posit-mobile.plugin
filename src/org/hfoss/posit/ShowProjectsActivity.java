@@ -86,8 +86,9 @@ public class ShowProjectsActivity extends ListActivity {
 	 */
 	@Override
 	protected void onResume() {
+		//tryToRegister();
 		super.onResume();
-	//	tryToRegister();
+	
 	}
 
 	private void tryToRegister() {

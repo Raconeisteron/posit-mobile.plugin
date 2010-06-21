@@ -76,6 +76,14 @@ import android.util.Log;
  * 
  */
 public class Communicator {
+	private static final String MESSAGE = "message";
+
+	private static final String MESSAGE_CODE = "messageCode";
+
+	private static final String ERROR_MESSAGE = "errorMessage";
+
+	private static final String ERROR_CODE = "errorCode";
+
 	private static final String COLUMN_IMEI = "imei";
 
 	/*
@@ -216,19 +224,23 @@ public class Communicator {
 		try {
 			responseString = doHTTPGET(url);
 			Log.i(TAG, responseString);
+			if (responseString.contains("[ERROR]")){
+				Utils.showToast(mContext, responseString);
+				return Constants.AUTHN_FAILED+":"+ "Error";
+			}
 			ResponseParser parser = new ResponseParser(responseString);
 			responseMap = parser.parseObject();
 		} catch (Exception e) {
-			Utils.showToast(mContext, e.getMessage());
+			Utils.showToast(mContext, e.getMessage()+"");
 		}
 		try {
-			if (responseMap.containsKey("errorCode"))
-				return responseMap.get("errorCode") + ":"
-						+ responseMap.get("errorMessage");
-			else if (responseMap.containsKey("messageCode")) {
-				if (responseMap.get("messageCode").equals(Constants.AUTHN_OK)) {
+			if (responseMap.containsKey(ERROR_CODE))
+				return responseMap.get(ERROR_CODE) + ":"
+						+ responseMap.get(ERROR_MESSAGE);
+			else if (responseMap.containsKey(MESSAGE_CODE)) {
+				if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
 					return Constants.AUTHN_OK + ":"
-							+ responseMap.get("message");
+							+ responseMap.get(MESSAGE);
 
 				}
 			} else {
@@ -236,6 +248,7 @@ public class Communicator {
 						+ "Malformed message from server.";
 			}
 		} catch (Exception e) {
+			Log.e(TAG, e.getMessage()+" ");
 			return Constants.AUTHN_FAILED + ":"
 					+ "Malformed message from server.";
 		}
@@ -243,21 +256,36 @@ public class Communicator {
 	}
 
 	public String registerUser(String server, String firstname,
-			String lastname, String email, String password, String imei) {
-		String url = server + "/api/registerUser?email=" + email + "&password="
-				+ password + "&firstname=" + firstname + "&lastname="
+			String lastname, String email, String password, String check, String imei) {
+		String url = server + "/api/registerUser?email=" + email + "&password1="
+				+ password + "&password2="+check + "&firstname=" + firstname + "&lastname="
 				+ lastname;
 		Log.i(TAG, "registerUser URL=" + url + "&imei=" + imei);
 
 		try {
 			responseString = doHTTPGET(url);
-		} catch (Exception e) {
-			Utils.showToast(mContext, e.getMessage());
+			Log.i(TAG, responseString);
+			if (responseString.contains("[ERROR]")){
+				Utils.showToast(mContext, responseString);
+				return Constants.AUTHN_FAILED+":"+ responseString;
+			}
+			ResponseParser parser = new ResponseParser(responseString);
+			HashMap<String, Object> responseMap = parser.parseObject();
+			if (responseMap.containsKey(ERROR_CODE))
+				return responseMap.get(ERROR_CODE)+":"+responseMap.get(ERROR_MESSAGE);
+			else if (responseMap.containsKey(MESSAGE_CODE)){
+				if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)){
+					return Constants.AUTHN_OK+":"+responseMap.get(MESSAGE);
+				}
+			}else {
+				return Constants.AUTHN_FAILED+":"+"Malformed message from the server.";
+			}
+		}catch (Exception e){
+			Log.e(TAG, e.getMessage()+" ");
+			return Constants.AUTHN_FAILED + ":"
+			+ "Malformed message from server.";
 		}
-		if (responseString.equals(RESULT_FAIL))
-			return null;
-		else
-			return responseString;
+		return null;
 	}
 
 	/*
