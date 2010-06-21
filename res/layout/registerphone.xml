@@ -22,6 +22,7 @@
         android:layout_height="40dp"
         android:layout_width="fill_parent"
         android:layout_gravity="fill_horizontal"
+        android:inputType="textEmailAddress|textAutoComplete"
 	/>
 	
     <TextView 
@@ -37,7 +38,8 @@
         android:layout_height="40dp"
         android:layout_width="fill_parent"
         android:layout_gravity="fill_horizontal"
-        android:password="true"/>
+        android:password="true"
+        android:inputType="textPassword"/>
  	<Button 
 		android:id="@+id/registerDeviceButton" 
     android:layout_width="140dp"
@@ -83,7 +85,7 @@
         android:layout_height="40dp"
         android:layout_gravity="left"
         android:textSize="10.5sp"
-        android:text="http://www.cs.trincoll.edu/~ram/positweb"
+        android:text="http://www.cs.trincoll.edu/~pgautam/positweb"
         android:visibility="gone"/>
   
 	<Button 

@@ -24,11 +24,13 @@ package org.hfoss.posit;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.validator.EmailValidator;
 import org.apache.commons.validator.UrlValidator;
 import org.hfoss.posit.utilities.Utils;
 import org.hfoss.posit.web.Communicator;
+import org.hfoss.posit.web.ResponseParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -62,13 +64,14 @@ import android.widget.TextView;
 public class RegisterPhoneActivity extends Activity implements OnClickListener {
 
 	private static final int BARCODE_READER = 0;
-	private static final String TAG = "ServerRegistration";
+	private static final String TAG = "RegisterPhoneActivity";
 	public boolean isSandbox = false;
 	public boolean readerInstalled = false;
 	private Button registerUserButton;
 	private Button moreButton;
 	private Button registerUsingBarcodeButton;
 	private Button registerDeviceButton;
+	private SharedPreferences sp;
 
 	/**
 	 * Called when the Activity is first started. If the phone is not
@@ -82,7 +85,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.registerphone);
-		SharedPreferences sp = PreferenceManager
+		sp = PreferenceManager
 				.getDefaultSharedPreferences(this);
 
 		String server = sp.getString("SERVER_ADDRESS", null);
@@ -182,8 +185,6 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 							authKey, imei);
 
 					if (registered != null) {
-						SharedPreferences sp = PreferenceManager
-								.getDefaultSharedPreferences(this);
 						Editor spEditor = sp.edit();
 
 						spEditor.putString("SERVER_ADDRESS", server);
@@ -194,8 +195,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 					Utils.showToast(this, "Registration Error");
 				}
 
-				SharedPreferences sp = PreferenceManager
-						.getDefaultSharedPreferences(this);
+				
 				int projectId = sp.getInt("PROJECT_ID", 0);
 				if (projectId == 0) {
 					Intent intent = new Intent(this, ShowProjectsActivity.class);
@@ -213,8 +213,8 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 
 	public void onClick(View v) {
 
-		Context cont = moreButton.getContext();
-		String servername = (((TextView) findViewById(R.id.serverName))
+		
+		String serverName = (((TextView) findViewById(R.id.serverName))
 				.getText()).toString();
 		EmailValidator emV = EmailValidator.getInstance();
 		UrlValidator urV = new UrlValidator();
@@ -222,7 +222,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 		switch (v.getId()) {
 
 		case R.id.more:
-			Log.i("blar", "" + findViewById(R.id.serverName).getVisibility());
+			Log.i(TAG, "" + findViewById(R.id.serverName).getVisibility());
 			if (findViewById(R.id.serverName).getVisibility() != 0) {
 				findViewById(R.id.serverName).setVisibility(EditText.VISIBLE);
 				findViewById(R.id.serverNameLabel).setVisibility(
@@ -243,51 +243,65 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 			String email = (((TextView) findViewById(R.id.email)).getText())
 					.toString();
 
-			if (urV.isValid(servername) != true) {
-				Utils.showToast(cont, "Please enter a valid server URL");
+			if (urV.isValid(serverName) != true) {
+				Utils.showToast(this, "Please enter a valid server URL");
 			}
 			if (password.equals("") || email.equals("")) {
-				Utils.showToast(cont, "Please fill in all the fields");
+				Utils.showToast(this, "Please fill in all the fields");
 				break;
 			}
 			if (emV.isValid(email) != true) {
-				Utils.showToast(cont, "Please enter a valid email address");
+				Utils.showToast(this, "Please enter a valid email address");
 				break;
 			}
 
-			Communicator com = new Communicator(cont);
+			Communicator com = new Communicator(this);
 			TelephonyManager manager = (TelephonyManager) this
 					.getSystemService(Context.TELEPHONY_SERVICE);
 			String imei = manager.getDeviceId();
-			HashMap<String, String> result;
-			try {
-				result = com.loginUser(servername, email, password, imei);
-			} catch (JSONException e1) {
-				result = new HashMap<String, String>();
-				result.put("errorMessage", "JSON error");
+			String result = com.loginUser(serverName, email, password, imei);
+			String authKey;
+			if (null==result){
+				Utils.showToast(this, "Failed to get authentication key from server.");
+				break;
 			}
-
-			if (result.get("authKey") != null) {
-				SharedPreferences sp = PreferenceManager
-						.getDefaultSharedPreferences(this);
-				Editor spEditor = sp.edit();
-				spEditor.putString("SERVER_ADDRESS", servername);
-				spEditor.putString("AUTHKEY", result.get("authKey"));
-				spEditor.commit();
-			} else
-				Utils.showToast(cont, "Registration Error: "
-						+ result.get("errorMessage"));
+			//TODO this is still little uglyish
+			String[] message = result.split(":");
+			if (message.length != 2){
+				Utils.showToast(this, "Malformed message");
+				break;
+			}
+			if (message[0].equals(""+Constants.AUTHN_OK)){
+				authKey = message[1];
+				Log.i(TAG, "AuthKey "+ authKey +" obtained, registering device");
+				//potential spot for multiple devices registration message of some sort
+				String responseString = com.registerDevice(serverName, authKey, imei);
+				if (responseString.equals("true")){
+					Editor spEditor = sp.edit();
+					spEditor.putString("SERVER_ADDRESS", serverName);
+					spEditor.putString("EMAIL", email);
+					spEditor.putString("PASSWORD", password);
+					spEditor.putString("AUTHKEY", authKey);
+					spEditor.commit();
+					Utils.showToast(this, "Successfully logged in.");
+					finish();
+				}
+			}else {
+				Utils.showToast(this, "Failed to get authentication key from server.");
+				break;
+			}
+			
 			break;
 
 		case R.id.registerUsingBarcodeButton:
 			if (!readerInstalled) {
-				Utils.showToast(cont,
+				Utils.showToast(this,
 						"Please install the Zxing Barcode Scanner");
 				break;
 			}
-			if (!Utils.isNetworkAvailable(cont)) {
+			if (!Utils.isNetworkAvailable(this)) {
 				Utils
-						.showToast(cont,
+						.showToast(this,
 								"Registration Error:No Network Available");
 				break;
 			}
@@ -309,11 +323,11 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 
 		case (R.id.createaccount):
 
-			if (urV.isValid(servername) != true) {
-				Utils.showToast(cont, "Please enter a valid server URL");
+			if (urV.isValid(serverName) != true) {
+				Utils.showToast(this, "Please enter a valid server URL");
 				break;
 			}
-			Intent i = new Intent(cont, RegisterUserActivity.class);
+			Intent i = new Intent(this, RegisterUserActivity.class);
 			i.putExtra("server", (((TextView) findViewById(R.id.serverName))
 					.getText()).toString());
 			this.startActivity(i);

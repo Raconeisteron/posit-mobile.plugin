@@ -48,6 +48,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
+import org.hfoss.posit.Constants;
 import org.hfoss.posit.Find;
 import org.hfoss.posit.R;
 import org.hfoss.posit.provider.PositDbHelper;
@@ -205,28 +206,40 @@ public class Communicator {
 	 * @return authentication key if successful and null if unsuccessful
 	 * @throws JSONException
 	 */
-	public HashMap<String, String> loginUser(String server, String email,
-			String password, String imei) throws JSONException {
+	public String loginUser(String server, String email, String password,
+			String imei) {
 		String url = server + "/api/login?email=" + email + "&password="
 				+ password + "&imei=" + imei;
-		HashMap<String, String> responseMap = null;
-		Log.i(TAG, "registerDevice URL=" + url);
+		HashMap<String, Object> responseMap = null;
+		Log.i(TAG, "loginUser URL=" + url);
 
 		try {
 			responseString = doHTTPGET(url);
+			Log.i(TAG, responseString);
 			ResponseParser parser = new ResponseParser(responseString);
 			responseMap = parser.parseObject();
 		} catch (Exception e) {
 			Utils.showToast(mContext, e.getMessage());
 		}
-		if ((responseMap.get("errorMessage") != null))
-			return responseMap;
-		else {
-			responseString = registerDevice(server, responseMap.get("authKey"),
-					imei);
-			ResponseParser parser = new ResponseParser(responseString);
-			return parser.parseObject();
+		try {
+			if (responseMap.containsKey("errorCode"))
+				return responseMap.get("errorCode") + ":"
+						+ responseMap.get("errorMessage");
+			else if (responseMap.containsKey("messageCode")) {
+				if (responseMap.get("messageCode").equals(Constants.AUTHN_OK)) {
+					return Constants.AUTHN_OK + ":"
+							+ responseMap.get("message");
+
+				}
+			} else {
+				return Constants.AUTHN_FAILED + ":"
+						+ "Malformed message from server.";
+			}
+		} catch (Exception e) {
+			return Constants.AUTHN_FAILED + ":"
+					+ "Malformed message from server.";
 		}
+		return null;
 	}
 
 	public String registerUser(String server, String firstname,
@@ -234,7 +247,7 @@ public class Communicator {
 		String url = server + "/api/registerUser?email=" + email + "&password="
 				+ password + "&firstname=" + firstname + "&lastname="
 				+ lastname;
-		Log.i(TAG, "registerDevice URL=" + url + "&imei=" + imei);
+		Log.i(TAG, "registerUser URL=" + url + "&imei=" + imei);
 
 		try {
 			responseString = doHTTPGET(url);
