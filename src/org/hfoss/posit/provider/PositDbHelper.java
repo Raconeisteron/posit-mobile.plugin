@@ -828,7 +828,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	public long getRowIdFromGuId(String guId) {
 		mDb = getReadableDatabase();
 		long id = 0;
-		Cursor c = mDb.query(FINDS_TABLE, null, FINDS_GUID + "=" + guId, null, null, null, null);
+		Cursor c = mDb.query(FINDS_TABLE, null, FINDS_GUID + "=\"" + guId+"\"", null, null, null, null);
 		if ( c.getCount() != 0) {
 			c.moveToFirst();
 			id = (c.getLong(c.getColumnIndexOrThrow(FINDS_ID)));

@@ -141,6 +141,11 @@ public class Communicator {
 		projectId = projId;
 	}
 
+	private boolean createProject(String serverAddress, String authKey, String projectName, String projectDescription){
+		
+		return false;
+	}
+	
 	/**
 	 * NOTE: Calls doHTTPGet
 	 * 
