@@ -160,7 +160,7 @@ public class Communicator {
 							+ "\nUse settings menu to register phone.");
 			return null;
 		}
-		String url = server + "/api/listOpenProjects?authKey=" + authKey;
+		String url = server + "/api/listMyProjects?authKey=" + authKey;
 		ArrayList<HashMap<String, Object>> list;
 		responseString = doHTTPGET(url);
 		if (Utils.debug)
