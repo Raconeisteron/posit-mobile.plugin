@@ -141,11 +141,6 @@ public class Communicator {
 		projectId = projId;
 	}
 
-	private boolean createProject(String serverAddress, String authKey, String projectName, String projectDescription){
-		
-		return false;
-	}
-	
 	/**
 	 * NOTE: Calls doHTTPGet
 	 * 
@@ -258,6 +253,39 @@ public class Communicator {
 					+ "Malformed message from server.";
 		}
 		return null;
+	}
+	
+	public String createProject(String server, String projectName, String projectDescription, String imei, String authKey) {
+		String url = server + "/api/createProject?name=" + projectName + "&description="+ projectDescription + "&imei=" + imei +"&authkey="+authKey;
+		HashMap<String, Object> responseMap = null;
+		Log.i(TAG, "Create Project URL=" + url);
+
+		try {
+			responseString = doHTTPGET(url);
+			Log.i(TAG, responseString);
+			if (responseString.contains("[ERROR]")){
+				Utils.showToast(mContext, responseString);
+				return Constants.AUTHN_FAILED+":"+ "Error";
+			}
+			ResponseParser parser = new ResponseParser(responseString);
+			responseMap = parser.parseObject();
+		} catch (Exception e) {
+			Utils.showToast(mContext, e.getMessage()+"");
+		}
+		try {
+			if (responseMap.containsKey(ERROR_CODE))
+				return responseMap.get(ERROR_CODE) + ":"
+						+ responseMap.get(ERROR_MESSAGE);
+			else if (responseMap.containsKey(MESSAGE_CODE)) {
+					return (String) responseMap.get(MESSAGE);
+
+			} else {
+				return "Malformed message from server.";
+			}
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage()+" ");
+			return "Malformed message from server.";
+		}
 	}
 
 	public String registerUser(String server, String firstname,
