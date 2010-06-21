@@ -31,76 +31,75 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
+
 /**
  * Class to parse JSON response from the server and convert to required formats.
- *
- *
+ * 
+ * 
  */
 public class ResponseParser {
-	String response=null;
+	String response = null;
 
 	public ResponseParser(String response) {
 		this.response = response;
 	}
-	
+
 	/**
-	 * check the first character and parse it accordingly if it's a list or an object
+	 * check the first character and parse it accordingly if it's a list or an
+	 * object
+	 * 
 	 * @return
 	 * @throws JSONException
 	 */
 	public Object parse() throws JSONException {
-		if (response.equals(null)) throw new NullPointerException("Pass a response first");
-		if (response.charAt(0) == '['){
+		if (response.equals(null))
+			throw new NullPointerException("Pass a response first");
+		if (response.charAt(0) == '[') {
 			return parseList();
-		}else if (response.charAt(0) == '{'){
+		} else if (response.charAt(0) == '{') {
 			return parseObject();
-		}else {
+		} else {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * Parses the response and returns the HashMap equivalent for the program to use.
+	 * Parses the response and returns the HashMap equivalent for the program to
+	 * use.
+	 * 
 	 * @return
 	 * @throws JSONException
 	 */
-	public List<HashMap<String, Object>> parseList() throws JSONException  {
-		if (response.equals(null)) throw new NullPointerException("Pass a response first");
-		List<HashMap<String, Object>> findsList = new ArrayList<HashMap<String,Object>>();
+	public List<HashMap<String, Object>> parseList() throws JSONException {
+		if (response.equals(null))
+			throw new NullPointerException("Pass a response first");
+		List<HashMap<String, Object>> findsList = new ArrayList<HashMap<String, Object>>();
 		JSONArray j = new JSONArray(response);
-		for (int i= 0; i < j.length(); i++){
-			HashMap<String,Object> map = new HashMap<String,Object>();
+		for (int i = 0; i < j.length(); i++) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
 			JSONObject json = j.getJSONObject(i);
-			Iterator<String> iterKeys = json.keys();
-			while(iterKeys.hasNext()) {
-				String key = iterKeys.next();
-				map.put(key, json.get(key));
-			}
-			findsList.add(map);
+			findsList.add(jsonObjectToMap(json));
 		}
 		return findsList;
 	}
-	
-	
-	public HashMap<String,String> parseObject() {
-		HashMap<String,String> responseMessage = new HashMap<String,String>();
-		if (response.equals(null)) throw new NullPointerException("Pass a response first");
-		JSONObject j;
-		try {
-			j = new JSONObject(response);
 
-			if(j.has("errorCode")){
-				responseMessage.put("errorMessage",(String) j.get("errorMessage"));
-			}else{
-				responseMessage.put("authKey",(String) j.get("message"));
-			}
-		} catch (JSONException e) {
-			Log.i("JSON","JSON Error");
-		}
-		responseMessage.put("errorMessage","JSON Error");
-		return responseMessage;
+	public HashMap<String, Object> parseObject() throws JSONException {
+		HashMap<String, String> responseMessage = new HashMap<String, String>();
+		if (response.equals(null))
+			throw new NullPointerException("Pass a response first");
+		JSONObject json = new JSONObject(response);
+		return jsonObjectToMap(json);
+
 	}
-	
-	
-	
+
+	private HashMap<String, Object> jsonObjectToMap(JSONObject json)
+			throws JSONException {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		Iterator<String> iterKeys = json.keys();
+		while (iterKeys.hasNext()) {
+			String key = iterKeys.next();
+			map.put(key, json.get(key));
+		}
+		return map;
+	}
 }
