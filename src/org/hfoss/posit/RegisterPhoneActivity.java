@@ -65,6 +65,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 
 	private static final int BARCODE_READER = 0;
 	private static final String TAG = "RegisterPhoneActivity";
+	private static final int CREATE_ACCOUNT = 1;
 	public boolean isSandbox = false;
 	public boolean readerInstalled = false;
 	private Button registerUserButton;
@@ -117,6 +118,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 		}
 		return super.onKeyDown(keyCode, event);
 	}
+
 
 	/**
 	 * This method is used to check whether or not the user has an intent
@@ -208,6 +210,13 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 					Log.e(TAG, e.toString());
 			}
 			break;
+		case CREATE_ACCOUNT:
+			String email = data.getStringExtra("email");
+			String password = data.getStringExtra("password");
+			String serverName = (((TextView) findViewById(R.id.serverName))
+					.getText()).toString();
+			loginUser(serverName, email, password);
+			break;
 		}
 	}
 
@@ -255,41 +264,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 				break;
 			}
 
-			Communicator com = new Communicator(this);
-			TelephonyManager manager = (TelephonyManager) this
-					.getSystemService(Context.TELEPHONY_SERVICE);
-			String imei = manager.getDeviceId();
-			String result = com.loginUser(serverName, email, password, imei);
-			String authKey;
-			if (null==result){
-				Utils.showToast(this, "Failed to get authentication key from server.");
-				break;
-			}
-			//TODO this is still little uglyish
-			String[] message = result.split(":");
-			if (message.length != 2){
-				Utils.showToast(this, "Malformed message");
-				break;
-			}
-			if (message[0].equals(""+Constants.AUTHN_OK)){
-				authKey = message[1];
-				Log.i(TAG, "AuthKey "+ authKey +" obtained, registering device");
-				//potential spot for multiple devices registration message of some sort
-				String responseString = com.registerDevice(serverName, authKey, imei);
-				if (responseString.equals("true")){
-					Editor spEditor = sp.edit();
-					spEditor.putString("SERVER_ADDRESS", serverName);
-					spEditor.putString("EMAIL", email);
-					spEditor.putString("PASSWORD", password);
-					spEditor.putString("AUTHKEY", authKey);
-					spEditor.commit();
-					Utils.showToast(this, "Successfully logged in.");
-					finish();
-				}
-			}else {
-				Utils.showToast(this, "Failed to get authentication key from server.");
-				break;
-			}
+			loginUser(serverName,email, password);
 			
 			break;
 
@@ -330,10 +305,48 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 			Intent i = new Intent(this, RegisterUserActivity.class);
 			i.putExtra("server", (((TextView) findViewById(R.id.serverName))
 					.getText()).toString());
-			this.startActivity(i);
+			this.startActivityForResult(i, CREATE_ACCOUNT);
 			break;
 
 		}
 
+	}
+
+	private void loginUser(String serverName, String email, String password) {
+		Communicator com = new Communicator(this);
+		TelephonyManager manager = (TelephonyManager) this
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei = manager.getDeviceId();
+		String result = com.loginUser(serverName, email, password, imei);
+		String authKey;
+		if (null==result){
+			Utils.showToast(this, "Failed to get authentication key from server.");
+			return;
+		}
+		//TODO this is still little uglyish
+		String[] message = result.split(":");
+		if (message.length != 2){
+			Utils.showToast(this, "Malformed message");
+			return;
+		}
+		if (message[0].equals(""+Constants.AUTHN_OK)){
+			authKey = message[1];
+			Log.i(TAG, "AuthKey "+ authKey +" obtained, registering device");
+			String responseString = com.registerDevice(serverName, authKey, imei);
+			if (responseString.equals("true")){
+				Editor spEditor = sp.edit();
+				spEditor.putString("SERVER_ADDRESS", serverName);
+				spEditor.putString("EMAIL", email);
+				spEditor.putString("PASSWORD", password);
+				spEditor.putString("AUTHKEY", authKey);
+				spEditor.commit();
+				Utils.showToast(this, "Successfully logged in.");
+				finish();
+			}
+		}else {
+			Utils.showToast(this, message[1]);
+			return;
+		}
+		
 	}
 }
