@@ -53,8 +53,6 @@ import android.widget.TextView;
  * Prompts the user to register their phone if the phone is not registered, or
  * shows the phone's current registration status and allows the user to register
  * their phone again with a different server.
- * 
- * 
  */
 public class RegisterUserActivity extends Activity implements OnClickListener {
 
@@ -81,6 +79,10 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 
 	}
 
+	/**
+	 * Method that handles when user clicks on create account button (after
+	 * having filled out the server user information)
+	 */
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case (R.id.submitInfo):
@@ -135,7 +137,7 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 					data.putExtra("password", password);
 					setResult(CREATE_ACCOUNT, data);
 					finish();
-				} else{
+				} else {
 					Utils.showToast(this, message[1]);
 				}
 				break;

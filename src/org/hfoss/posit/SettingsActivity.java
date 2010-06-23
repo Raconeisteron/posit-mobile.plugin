@@ -30,12 +30,14 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
 
 /**
- * Offers the user various options on how things should work in POSIT.  The user can choose whether or
- * not they want automatic syncing to be on and whether they want notifications about syncing.  The user
- * can also register their phone from this screen in case they need to register with a different web server.
- * Lastly, the user can also set their group size should they need to be in ad hoc mode. 
+ * Offers the user various options on how things should work in POSIT. The user
+ * can choose whether or not they want automatic syncing to be on and whether
+ * they want notifications about syncing. The user can also register their phone
+ * from this screen in case they need to register with a different web server.
+ * Lastly, the user can also set their group size should they need to be in ad
+ * hoc mode.
  * 
- *
+ * 
  */
 public class SettingsActivity extends PreferenceActivity {
 	private static final String TAG = "SettingsActivity";
@@ -46,18 +48,20 @@ public class SettingsActivity extends PreferenceActivity {
 		super.onCreate(icicle);
 		addPreferencesFromResource(R.xml.posit_preferences);
 
-		//Get the custom barcode preference
+		// Get the custom barcode preference
 		Preference barcodePref = (Preference) findPreference("APP_KEY");
-		barcodePref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			public boolean onPreferenceClick(Preference preference) {	
-				Intent intent = new Intent(SettingsActivity.this, RegisterPhoneActivity.class);
-				try {
-					startActivity(intent);
-				} catch(ActivityNotFoundException e) {
-					Log.e(TAG, e.toString());
-				}
-				return true;
-			}
-		});
+		barcodePref
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+					public boolean onPreferenceClick(Preference preference) {
+						Intent intent = new Intent(SettingsActivity.this,
+								RegisterPhoneActivity.class);
+						try {
+							startActivity(intent);
+						} catch (ActivityNotFoundException e) {
+							Log.e(TAG, e.toString());
+						}
+						return true;
+					}
+				});
 	}
 }

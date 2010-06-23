@@ -50,60 +50,62 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 
 /**
- * This activity shows a list of all the projects on the server that the phone is registered with,
- * and allows the user to pick one from the list.  When the user picks one, the phone automatically
- * syncs with the server to get all the finds from that project
+ * This activity shows a list of all the projects on the server that the phone
+ * is registered with, and allows the user to pick one from the list. When the
+ * user picks one, the phone automatically syncs with the server to get all the
+ * finds from that project
  * 
- *
+ * 
  */
-public class ShowProjectsActivity extends ListActivity implements OnClickListener{
+public class ShowProjectsActivity extends ListActivity implements
+		OnClickListener {
 
 	private static final String TAG = "ShowProjectsActivity";
 	private static final int CONFIRM_PROJECT_CHANGE = 0;
 	private int mClickedPosition = 0;
 
 	private ArrayList<HashMap<String, Object>> projectList;
-	private RadioGroup mRadio;	
+	private RadioGroup mRadio;
 	private int currentProjectId;
 
 	/**
-	 * Called when the activity is first started.  Shows a list of 
-	 * radio buttons, each representing
-	 * a different project on the server.
+	 * Called when the activity is first started. Shows a list of radio buttons,
+	 * each representing a different project on the server.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_proj);
-		Button addProjectButton = (Button)findViewById(R.id.idAddProjButton);
+		Button addProjectButton = (Button) findViewById(R.id.idAddProjButton);
 		addProjectButton.setOnClickListener(this);
 
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		currentProjectId = sp.getInt("PROJECT_ID", 0);
 		tryToRegister();
-		
 
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
-	//	tryToRegister();
+		// tryToRegister();
 	}
 
 	private void tryToRegister() {
 		if (!Utils.isConnected(this)) {
 			reportNetworkError("No Network connection ... exiting");
 			return;
-		} 
+		}
 		Communicator comm = new Communicator(this);
-		try{
+		try {
 			projectList = comm.getProjects();
-		} catch(Exception e){
+		} catch (Exception e) {
 			Log.i(TAG, "Communicator error " + e.getMessage());
 			e.printStackTrace();
 			this.reportNetworkError(e.getMessage());
@@ -112,22 +114,22 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 		if (projectList != null) {
 			Iterator<HashMap<String, Object>> it = projectList.iterator();
 			ArrayList<String> projList = new ArrayList<String>();
-			for(int i = 0; it.hasNext(); i++) {
-				HashMap<String,Object> next = it.next();
-				projList.add((String)(next.get("name")));
+			for (int i = 0; it.hasNext(); i++) {
+				HashMap<String, Object> next = it.next();
+				projList.add((String) (next.get("name")));
 			}
 			setListAdapter(new ArrayAdapter<String>(this,
-			          android.R.layout.simple_list_item_1, projList));
-			
+					android.R.layout.simple_list_item_1, projList));
+
 		} else {
-			this.reportNetworkError("Null project list returned.\nCheck network connection.");
+			this
+					.reportNetworkError("Null project list returned.\nCheck network connection.");
 		}
 	}
-	
 
-	
 	/**
 	 * Reports as much information as it can about the error.
+	 * 
 	 * @param str
 	 */
 	private void reportNetworkError(String str) {
@@ -136,14 +138,16 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 		finish();
 	}
 
-	public void onListItemClick(ListView lv, View v, int position, long idFull){
+	public void onListItemClick(ListView lv, View v, int position, long idFull) {
 		mClickedPosition = position;
 		ArrayAdapter mAdapter = (ArrayAdapter) this.getListAdapter();
 		String projectId = (String) projectList.get(mClickedPosition).get("id");
-		int id  = Integer.parseInt(projectId);
-		String projectName = (String) projectList.get(mClickedPosition).get("name");
-		
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		int id = Integer.parseInt(projectId);
+		String projectName = (String) projectList.get(mClickedPosition).get(
+				"name");
+
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		Editor editor = sp.edit();
 
 		editor.putInt("PROJECT_ID", id);
@@ -152,12 +156,15 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 
 		showDialog(CONFIRM_PROJECT_CHANGE);
 	}
+
 	/**
-	 * Called when the user clicks on a project in the list.  Sets the project id in the shared
-	 * preferences so it can be remembered when the application is closed
+	 * Called when the user clicks on a project in the list. Sets the project id
+	 * in the shared preferences so it can be remembered when the application is
+	 * closed
 	 */
 	public void onClick(View v) {
-		Intent i = new Intent(this, NewProjectActivity.class);;
+		Intent i = new Intent(this, NewProjectActivity.class);
+		;
 		switch (v.getId()) {
 
 		case R.id.idAddProjButton:
@@ -165,32 +172,37 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 
 			break;
 
-			
 		}
-		
+
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see android.app.Activity#onCreateDialog(int)
-	 * Confirms with the user that they have changed their project and automatically syncs with the server
+	 * 
+	 * @see android.app.Activity#onCreateDialog(int) Confirms with the user that
+	 * they have changed their project and automatically syncs with the server
 	 * to get all the project finds
 	 */
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_PROJECT_CHANGE:
-			return new AlertDialog.Builder(this)
-			.setIcon(R.drawable.alert_dialog_icon)
-			.setTitle("You have changed your project to: " 
-					+ (String) projectList.get(mClickedPosition).get("name"))
-					.setPositiveButton(R.string.alert_dialog_ok, 
-							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(
-									ShowProjectsActivity.this);
-							boolean syncIsOn = sp.getBoolean("SYNC_ON_OFF", true);
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(
+					"You have changed your project to: "
+							+ (String) projectList.get(mClickedPosition).get(
+									"name")).setPositiveButton(
+					R.string.alert_dialog_ok,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							SharedPreferences sp = PreferenceManager
+									.getDefaultSharedPreferences(ShowProjectsActivity.this);
+							boolean syncIsOn = sp.getBoolean("SYNC_ON_OFF",
+									true);
 							if (syncIsOn) {
-								Intent intent = new Intent(ShowProjectsActivity.this, SyncActivity.class);
+								Intent intent = new Intent(
+										ShowProjectsActivity.this,
+										SyncActivity.class);
 								intent.setAction(Intent.ACTION_SYNC);
 								startActivity(intent);
 							}
@@ -203,11 +215,9 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 		}
 	}
 
-
 	public void onClick(DialogInterface dialog, int which) {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 }

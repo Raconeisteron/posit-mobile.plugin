@@ -222,7 +222,11 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 			break;
 		}
 	}
-
+/**
+ *  Handles when user clicks on one of the buttons: more, register device, register using barcode,
+ *   or create account 
+ * 
+ */
 	public void onClick(View v) {
 
 		
@@ -315,6 +319,14 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 
 	}
 
+	
+	/**
+	 * Handles user logging in to the server. It is called when user clicks on 
+	 * the register button on RegisterPhoneActivity
+	 * @param serverName name of the server user is registering with
+	 * @param email email account user is using to register with a given server
+	 * @param password password used to register and sign in to a server
+	 */
 	private void loginUser(String serverName, String email, String password) {
 		Communicator com = new Communicator(this);
 		TelephonyManager manager = (TelephonyManager) this

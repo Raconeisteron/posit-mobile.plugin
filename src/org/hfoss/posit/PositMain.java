@@ -93,10 +93,6 @@ public class PositMain extends Activity implements OnClickListener,
 			listFindButton.setOnClickListener(this);
 		}
 
-		// final Button sahanaButton = (Button)findViewById(R.id.sahanaSMS);
-		// if(sahanaButton!=null)
-		// sahanaButton.setOnClickListener(this);
-
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -120,7 +116,7 @@ public class PositMain extends Activity implements OnClickListener,
 		Utils.showToast(this, "Current Project: "
 				+ sp.getString("PROJECT_NAME", ""));
 
-		/*    ******* POLICY: RWG should not be running at start up */
+		/*     ******* POLICY: RWG should not be running at start up */
 
 		// if (RWGService.isRunning()) {
 		// Log.i(TAG, "RWG running");
@@ -321,7 +317,7 @@ public class PositMain extends Activity implements OnClickListener,
 	@Override
 	public void finish() {
 		if (RWGService.isRunning() && rwg != null) // Kill RWG if already
-													// running
+			// running
 			stopService(rwg);
 
 		try {

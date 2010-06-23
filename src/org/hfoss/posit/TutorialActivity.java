@@ -1,6 +1,5 @@
 package org.hfoss.posit;
 
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -12,39 +11,53 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 
+/**
+ * Tutorial activity is a class designed to make the user more comfortable with
+ * posit the first time posit is opened. contains 4 pages of information, with
+ * previous, next, skip, and finish buttons.
+ * 
+ */
 
-
-public class TutorialActivity extends Activity implements OnClickListener{
+public class TutorialActivity extends Activity implements OnClickListener {
 
 	private int pageNumber;
-	private WebView mWebView; 
+	private WebView mWebView;
 	private Button next;
 	private Button previous;
 	private Button finish;
 	private Button skip;
-	
-	
-	protected void onCreate(Bundle savedInstanceState){
+
+	/**
+	 * Method that is executed the first time the user opens the program.
+	 * Creates the activity space and displays the first page with the
+	 * accompanying buttons.
+	 */
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mWebView = new WebView(this);
 		setContentView(R.layout.tutorial_view);
 		pageNumber = 1;
-		skip= (Button) findViewById(R.id.skipButton);
-		next= (Button) findViewById(R.id.nextButton);
-		previous= (Button) findViewById(R.id.previousButton);
-		finish= (Button) findViewById(R.id.finishButton);
-		
+		skip = (Button) findViewById(R.id.skipButton);
+		next = (Button) findViewById(R.id.nextButton);
+		previous = (Button) findViewById(R.id.previousButton);
+		finish = (Button) findViewById(R.id.finishButton);
+
 		skip.setOnClickListener(this);
 		next.setOnClickListener(this);
 		previous.setOnClickListener(this);
 		finish.setOnClickListener(this);
-		
+
 		updateView();
-		
+
 	}
 
+	/**
+	 * Method that handles what happens when user changes the page. Receives the
+	 * requested page number and then displays that page with appropriate
+	 * buttons.
+	 */
 	private void updateView() {
-		switch(pageNumber){
+		switch (pageNumber) {
 		case 1:
 			findViewById(R.id.previousButton).setVisibility(EditText.GONE);
 			mWebView = (WebView) (findViewById(R.id.tutorialView));
@@ -68,34 +81,39 @@ public class TutorialActivity extends Activity implements OnClickListener{
 			mWebView.loadUrl("file:///android_asset/tutorialpage4.html");
 			break;
 		}
-		
+
 	}
 
+	/**
+	 * Method that handles when a user clicks on Buttons: skip, finish,
+	 * previous, or next.
+	 */
 	@Override
 	public void onClick(View v) {
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		Editor mEdit = sp.edit();
-		switch(v.getId()){
-			case (R.id.skipButton):
-				mEdit.putBoolean("tutorialComplete", true);
-				mEdit.commit();
-				finish();
-				break;
-			case (R.id.finishButton):
-				mEdit.putBoolean("tutorialComplete", true);
-				mEdit.commit();
-				finish();
-				break;				
-			case R.id.previousButton:
-				if(pageNumber>0)
-					pageNumber--;
-				updateView();
-				break;
-			case R.id.nextButton:
-				if(pageNumber<4)
-					pageNumber++;
-				updateView();
-				break;
+		switch (v.getId()) {
+		case (R.id.skipButton):
+			mEdit.putBoolean("tutorialComplete", true);
+			mEdit.commit();
+			finish();
+			break;
+		case (R.id.finishButton):
+			mEdit.putBoolean("tutorialComplete", true);
+			mEdit.commit();
+			finish();
+			break;
+		case R.id.previousButton:
+			if (pageNumber > 0)
+				pageNumber--;
+			updateView();
+			break;
+		case R.id.nextButton:
+			if (pageNumber < 4)
+				pageNumber++;
+			updateView();
+			break;
 		}
 	}
 }
