@@ -38,12 +38,12 @@ import android.util.Log;
 import android.view.KeyEvent;
 
 /**
- * Manages synchronization between the phone and a server.  The phone
- * must be registered on the server.
+ * Manages synchronization between the phone and a server. The phone must be
+ * registered on the server.
  */
-public class SyncActivity extends Activity  {
+public class SyncActivity extends Activity {
 
-	private boolean syncSuccess=true;
+	private boolean syncSuccess = true;
 	private ProgressDialog mProgressDialog;
 	private static final String TAG = "SyncActivity";
 	private NetworkConnectivityListener ncl;
@@ -60,8 +60,8 @@ public class SyncActivity extends Activity  {
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		if (getIntent().getAction().equals(Intent.ACTION_SYNC)) {
-			mConman = 
-				(ConnectivityManager) this.getSystemService(this.CONNECTIVITY_SERVICE);
+			mConman = (ConnectivityManager) this
+					.getSystemService(this.CONNECTIVITY_SERVICE);
 			mHandler = new ConnectivityHandler();
 
 			ncl = new NetworkConnectivityListener();
@@ -69,9 +69,10 @@ public class SyncActivity extends Activity  {
 			ncl.startListening(this);
 		}
 	}
-	
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onResume()
 	 */
 	@Override
@@ -82,31 +83,32 @@ public class SyncActivity extends Activity  {
 	}
 
 	/**
-	 * Creates a progress dialog and a message handler and starts 
-	 * SyncThread which handles the synchronization actions.
+	 * Creates a progress dialog and a message handler and starts SyncThread
+	 * which handles the synchronization actions.
 	 * 
-	 * When SyncThread finishes or stops because of an error a
-	 * message is sent to the message handler, which stops the Activity.
+	 * When SyncThread finishes or stops because of an error a message is sent
+	 * to the message handler, which stops the Activity.
 	 */
 	private void syncFinds() {
 		mProgressDialog = ProgressDialog.show(this, "Synchronizing",
 				"Please wait.", true, true);
 		mStart = System.currentTimeMillis();
-		
-		
+
 		mSyncThread = new SyncThread(this, mHandler);
-		Log.i(TAG,"SyncThread " + mSyncThread.getState().toString());
+		Log.i(TAG, "SyncThread " + mSyncThread.getState().toString());
 		mSyncThread.start();
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#finish()
 	 */
 	@Override
 	public void finish() {
-		
-		Log.i(TAG, "TOTAL ACTIVITY TIME = " + (System.currentTimeMillis()-mStart) + " millisecs");
+
+		Log.i(TAG, "TOTAL ACTIVITY TIME = "
+				+ (System.currentTimeMillis() - mStart) + " millisecs");
 		Log.i(TAG, "TOTAL COMM TIME = " + Communicator.mTotalTime);
 
 		Log.i(TAG, "Stopping listener");
@@ -123,38 +125,38 @@ public class SyncActivity extends Activity  {
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(keyCode==KeyEvent.KEYCODE_BACK){
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			mSyncThread.stopThread();
 			Log.i(TAG, "Stopping thread");
 			finish();
 			return true;
 		}
-		Log.i("code", keyCode+"");
+		Log.i("code", keyCode + "");
 		return super.onKeyDown(keyCode, event);
 	}
-	
 
 	/**
-	 * Listens for messages from the ConnectivityListener and
-	 * takes appropriate action.
+	 * Listens for messages from the ConnectivityListener and takes appropriate
+	 * action.
+	 * 
 	 * @author rmorelli
-	 *
+	 * 
 	 */
-	private class ConnectivityHandler extends Handler  {
+	private class ConnectivityHandler extends Handler {
 
-		public ConnectivityHandler () {
+		public ConnectivityHandler() {
 			super();
 		}
 
 		/**
-		 * Receives and handles messages from the ConnectivityListener.
-		 * The messages are sent each time the network status changes. 
-		 * In its current form, we really only check before the Sync 
-		 * thread starts.  A more refined SyncThread would be able to
-		 * resume syncing if it loses the network connection in the middle.
+		 * Receives and handles messages from the ConnectivityListener. The
+		 * messages are sent each time the network status changes. In its
+		 * current form, we really only check before the Sync thread starts. A
+		 * more refined SyncThread would be able to resume syncing if it loses
+		 * the network connection in the middle.
 		 */
 		public void handleMessage(Message msg) {
-			Log.i(TAG,"Message = " + msg);
+			Log.i(TAG, "Message = " + msg);
 			switch (msg.what) {
 			case NetworkConnectivityListener.STATE_UNKNOWN:
 				Log.i(TAG, "Connectivity: UNKNOWN");
@@ -167,47 +169,48 @@ public class SyncActivity extends Activity  {
 			case NetworkConnectivityListener.STATE_CONNECTED_MOBILE:
 				mProgressDialog.setMessage("Syncing over MOBILE");
 				Log.i(TAG, "Connectivity: CONNECTED on MOBILE");
-				mSyncThread.setConnected(true);				
+				mSyncThread.setConnected(true);
 				break;
 			case NetworkConnectivityListener.STATE_UNCONNECTED:
 				Log.i(TAG, "Connectivity: UNCONNECTED");
-				mProgressDialog.setMessage("No network connection. " 
+				mProgressDialog.setMessage("No network connection. "
 						+ PRESS_BACK);
-//				Utils.showToast(mContext, "Sync Exiting: No network connection");
+				// Utils.showToast(mContext,
+				// "Sync Exiting: No network connection");
 				mSyncThread.setConnected(false);
-//				finish();
-				break;						
-			case SyncThread.DONE: 
-				if(syncSuccess=true){
-				mProgressDialog.setMessage("Sync completed successfully. " 
-						+ PRESS_BACK);
-				Utils.showToast(mContext, "Sync completed successfully.");
-				}else{
-				mProgressDialog.setMessage("Sync failed." 
-						+ PRESS_BACK);
-				Utils.showToast(mContext, "Sync failed.");
+				// finish();
+				break;
+			case SyncThread.DONE:
+				if (syncSuccess = true) {
+					mProgressDialog.setMessage("Sync completed successfully. "
+							+ PRESS_BACK);
+					Utils.showToast(mContext, "Sync completed successfully.");
+				} else {
+					mProgressDialog.setMessage("Sync failed." + PRESS_BACK);
+					Utils.showToast(mContext, "Sync failed.");
 				}
 				finish();
 				break;
 			case SyncThread.NETWORKERROR:
-				mProgressDialog.setMessage("No network avaiable. "
-						+ PRESS_BACK);
+				mProgressDialog
+						.setMessage("No network avaiable. " + PRESS_BACK);
 				Utils.showToast(mContext, "Sync Exiting: No network available");
 				mSyncThread.setConnected(false);
-				syncSuccess=false;
-//				finish();
+				syncSuccess = false;
+				// finish();
 				break;
 			case SyncThread.SYNCERROR:
-				mProgressDialog.setMessage("Sync failed. An unknown error has occurred. "
-						+ PRESS_BACK);
+				mProgressDialog
+						.setMessage("Sync failed. An unknown error has occurred. "
+								+ PRESS_BACK);
 				mSyncThread.stopThread();
-//				mSyncThread.setConnected(false);
-				syncSuccess=false;
+				// mSyncThread.setConnected(false);
+				syncSuccess = false;
 				finish();
 				break;
 			default:
 				Log.i(TAG, "What does " + msg.what + " mean?");
-			break;		
+				break;
 			}
 		}
 	}
