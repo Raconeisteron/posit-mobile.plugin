@@ -495,8 +495,8 @@ public class Communicator {
 	 */
 	public static void cleanupOnReceive(HashMap<String, Object> rMap) {
 		rMap.put(PositDbHelper.FINDS_SYNCED, PositDbHelper.FIND_IS_SYNCED);
-		rMap.put(PositDbHelper.FINDS_GUID, rMap.get("barcode_id"));
-		// rMap.put(PositDbHelper.FINDS_GUID, rMap.get("barcode_id"));
+		rMap.put(PositDbHelper.FINDS_GUID, rMap.get("guid"));
+		// rMap.put(PositDbHelper.FINDS_GUID, rMap.get("guid"));
 
 		rMap.put(PositDbHelper.FINDS_PROJECT_ID, projectId);
 		if (rMap.containsKey("add_time")) {
@@ -639,16 +639,17 @@ public class Communicator {
 		Log.i(TAG, "getRemoteFindById = " + responseString);
 		try {
 			JSONObject jobj = new JSONObject(responseString);
-			cv.put(PositDbHelper.FINDS_GUID, jobj.getString("barcode_id"));
-			cv.put(PositDbHelper.FINDS_PROJECT_ID, jobj.getInt("project_id"));
-			cv.put(PositDbHelper.FINDS_NAME, jobj.getString("name"));
+			cv.put(PositDbHelper.FINDS_GUID, jobj.getString(PositDbHelper.FINDS_GUID));
+			cv.put(PositDbHelper.FINDS_PROJECT_ID, jobj.getInt(PositDbHelper.FINDS_PROJECT_ID));
+			cv.put(PositDbHelper.FINDS_NAME, jobj.getString(PositDbHelper.FINDS_NAME));
 			cv.put(PositDbHelper.FINDS_DESCRIPTION, jobj
-					.getString("description"));
+					.getString(PositDbHelper.FINDS_DESCRIPTION));
+			//FIXME add add_time and modify_time for this
 			cv.put(PositDbHelper.FINDS_TIME, jobj.getString("add_time"));
 			cv.put(PositDbHelper.FINDS_TIME, jobj.getString("modify_time"));
-			cv.put(PositDbHelper.FINDS_LATITUDE, jobj.getDouble("latitude"));
-			cv.put(PositDbHelper.FINDS_LONGITUDE, jobj.getDouble("longitude"));
-			cv.put(PositDbHelper.FINDS_REVISION, jobj.getInt("revision"));
+			cv.put(PositDbHelper.FINDS_LATITUDE, jobj.getDouble(PositDbHelper.FINDS_LATITUDE));
+			cv.put(PositDbHelper.FINDS_LONGITUDE, jobj.getDouble(PositDbHelper.FINDS_LONGITUDE));
+			cv.put(PositDbHelper.FINDS_REVISION, jobj.getInt(PositDbHelper.FINDS_REVISION));
 			return cv;
 		} catch (JSONException e) {
 			Log.i(TAG, e.getMessage());

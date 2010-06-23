@@ -116,7 +116,7 @@ public class SyncThread extends Thread {
 	 */
     public synchronized void stopThread() {
     	mStopRequested = true;
-    	mConnected = true;
+    	//mConnected = true;
         notify();
 		Log.i(TAG,"Requesting a stop");
     }
