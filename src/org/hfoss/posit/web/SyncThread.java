@@ -86,11 +86,19 @@ public class SyncThread extends Thread {
 		mContext = context;
 		mConnected = false;
 		mStopRequested = false;	
+		sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+		//		sp.setDefaultValues(mContext, R.xml.posit_preferences, false);
+		server=sp.getString("SERVER_ADDRESS", null);
+		authKey = sp.getString("AUTHKEY", null);
+		mProjectid = sp.getInt("PROJECT_ID", 0);
+		manager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+		imei = manager.getDeviceId();
+		comm = new Communicator(mContext);
 	}
 	
 	/**
 	 * Must be called when a network WIFI connection is detected
-	 * in order for the synchronization to run. It notify's the
+	 * in order for the synchronization to run. It notifies the
 	 * waiting thread.
 	 * 
 	 * @param connected
@@ -161,18 +169,11 @@ public class SyncThread extends Thread {
 		boolean success = false;
 		mdbh = new PositDbHelper(mContext);
  
-		sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-		//		sp.setDefaultValues(mContext, R.xml.posit_preferences, false);
-		server=sp.getString("SERVER_ADDRESS", null);
-		authKey = sp.getString("AUTHKEY", null);
-		mProjectid = sp.getInt("PROJECT_ID", 0);
-		manager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-		imei = manager.getDeviceId();
-		comm = new Communicator(mContext);
+		
 		Log.i(TAG,"server="+server+" key="+authKey+" pid="+mProjectid+" imei="+imei);
 
 		// Wait here to make sure there is a WIFI connection
-		waitHere();
+//		waitHere();
 		
 		// Get finds from the server since last sync with this device
 		// (NEEDED: should be made project specific)

@@ -192,6 +192,9 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 						spEditor.putString("SERVER_ADDRESS", server);
 						spEditor.putString("AUTHKEY", authKey);
 						spEditor.commit();
+						
+						Intent intent = new Intent(this, ShowProjectsActivity.class);
+						startActivity(intent);
 					}
 				} catch (NullPointerException e) {
 					Utils.showToast(this, "Registration Error");
