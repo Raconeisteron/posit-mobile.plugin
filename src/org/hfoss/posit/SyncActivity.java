@@ -92,7 +92,8 @@ public class SyncActivity extends Activity  {
 		mProgressDialog = ProgressDialog.show(this, "Synchronizing",
 				"Please wait.", true, true);
 		mStart = System.currentTimeMillis();
-
+		
+		
 		mSyncThread = new SyncThread(this, mHandler);
 		Log.i(TAG,"SyncThread " + mSyncThread.getState().toString());
 		mSyncThread.start();
@@ -104,8 +105,7 @@ public class SyncActivity extends Activity  {
 	 */
 	@Override
 	public void finish() {
-		// TODO Auto-generated method stub
-		super.finish();
+		
 		Log.i(TAG, "TOTAL ACTIVITY TIME = " + (System.currentTimeMillis()-mStart) + " millisecs");
 		Log.i(TAG, "TOTAL COMM TIME = " + Communicator.mTotalTime);
 
@@ -114,6 +114,7 @@ public class SyncActivity extends Activity  {
 		ncl.unregisterHandler(mHandler);
 		Log.i(TAG, "Sync thread is " + mSyncThread.getState().toString());
 		mProgressDialog.dismiss();
+		super.finish();
 	}
 
 	/**
