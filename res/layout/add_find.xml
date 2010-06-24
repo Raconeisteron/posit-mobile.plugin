@@ -86,7 +86,8 @@
 					android:id="@+id/idLabel" 
 					android:layout_width="20sp" 
 					android:layout_height="wrap_content" 
-					android:text="@string/idLabel" />
+					android:text="@string/idLabel" 
+					android:visibility="gone"/>
 				<Button 
 					android:id="@+id/idBarcodeButton" 
 					android:layout_width="120dp" 
@@ -98,14 +99,16 @@
 					android:id="@+id/idNumberText" 
 					android:layout_width="fill_parent" 
 					android:layout_height="wrap_content" 
-					android:text="@string/idLabel" />
+					android:text="@string/idLabel"
+					android:visibility="gone" />
 					
 				<EditText 
 					android:id="@+id/idText" 
 					android:freezesText="true" 
 					android:layout_width="fill_parent" 
 					android:layout_height="wrap_content" 
-					android:layout_toRightOf="@id/idBarcodeButton"/>
+					android:layout_toRightOf="@id/idBarcodeButton"
+					android:visibility="gone"/>
 				
 			
 				<EditText android:id="@+id/nameText"

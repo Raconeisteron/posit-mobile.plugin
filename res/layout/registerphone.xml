@@ -85,7 +85,7 @@
         android:layout_height="40dp"
         android:layout_gravity="left"
         android:textSize="10.5sp"
-        android:text="http://www.cs.trincoll.edu/~pgautam/positweb"
+        android:text="http://posit-project.org/sandbox"
         android:visibility="gone"/>
   
 	<Button 
