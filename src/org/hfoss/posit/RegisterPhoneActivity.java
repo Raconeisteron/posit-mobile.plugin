@@ -337,10 +337,10 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei = manager.getDeviceId();
 
-
-		String result = com.loginUser(serverName, email, password, imei);
-		mProgressDialog = ProgressDialog.show(this, "Synchronizing",
+		mProgressDialog = ProgressDialog.show(this, "Registering device",
 				"Please wait.", true, true);
+		String result = com.loginUser(serverName, email, password, imei);
+		
 		String authKey;
 		if (null==result){
 			Utils.showToast(this, "Failed to get authentication key from server.");
