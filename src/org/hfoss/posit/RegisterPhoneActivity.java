@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -73,7 +74,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 	private Button registerUsingBarcodeButton;
 	private Button registerDeviceButton;
 	private SharedPreferences sp;
-
+	private ProgressDialog mProgressDialog;
 	/**
 	 * Called when the Activity is first started. If the phone is not
 	 * registered, tells the user so and gives the user instructions on how to
@@ -113,6 +114,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
+			setResult(PositMain.LOGIN_CANCELED);
 			finish();
 		}
 		return super.onKeyDown(keyCode, event);
@@ -181,6 +183,8 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 						.getSystemService(Context.TELEPHONY_SERVICE);
 				String imei = manager.getDeviceId();
 				Communicator communicator = new Communicator(this);
+				mProgressDialog = ProgressDialog.show(this, "Registering device",
+						"Please wait.", true, true);
 				try {
 					String registered = communicator.registerDevice(server,
 							authKey, imei);
@@ -199,7 +203,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 					Utils.showToast(this, "Registration Error");
 				}
 
-				
+				mProgressDialog.dismiss();
 				int projectId = sp.getInt("PROJECT_ID", 0);
 				if (projectId == 0) {
 					Intent intent = new Intent(this, ShowProjectsActivity.class);
@@ -269,8 +273,9 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 				Utils.showToast(this, "Please enter a valid email address");
 				break;
 			}
-
+			
 			loginUser(serverName,email, password);
+			
 			
 			break;
 
@@ -331,7 +336,11 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 		TelephonyManager manager = (TelephonyManager) this
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei = manager.getDeviceId();
+
+
 		String result = com.loginUser(serverName, email, password, imei);
+		mProgressDialog = ProgressDialog.show(this, "Synchronizing",
+				"Please wait.", true, true);
 		String authKey;
 		if (null==result){
 			Utils.showToast(this, "Failed to get authentication key from server.");
@@ -355,12 +364,13 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 				spEditor.putString("AUTHKEY", authKey);
 				spEditor.commit();
 				Utils.showToast(this, "Successfully logged in.");
+				setResult(PositMain.LOGIN_SUCCESSFUL);
 				finish();
 			}
 		}else {
 			Utils.showToast(this, message[1]);
 			return;
 		}
-		
+		mProgressDialog.dismiss();
 	}
 }

@@ -54,6 +54,9 @@ public class PositMain extends Activity implements OnClickListener,
 
 	private static final int CONFIRM_EXIT = 0;
 	private static final String TAG = "PositMain";
+	private static final int LOGIN_ACTIVITY = 1;
+	public static final int LOGIN_CANCELED = 3;
+	public static final int LOGIN_SUCCESSFUL = 4;
 	// public static AdhocClient mAdhocClient;
 	public static WifiManager wifiManager;
 	public RWGService rwgService;
@@ -125,7 +128,22 @@ public class PositMain extends Activity implements OnClickListener,
 		// }
 
 	}
-
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	switch (requestCode){
+	case LOGIN_ACTIVITY:
+		if (resultCode == LOGIN_CANCELED)
+			finish();
+		else if (resultCode == LOGIN_SUCCESSFUL){
+			Intent intent = new Intent(this, ShowProjectsActivity.class);
+			startActivity(intent);
+		}
+		break;
+	default:
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+}
 	/**
 	 * Handles clicks on PositMain's buttons.
 	 */
@@ -255,7 +273,7 @@ public class PositMain extends Activity implements OnClickListener,
 				.getDefaultSharedPreferences(this);
 		String AUTH_KEY = sp.getString("AUTHKEY", "");
 		if (AUTH_KEY.equals("") || AUTH_KEY.equals(null))
-			startActivity(new Intent(this, RegisterPhoneActivity.class));
+			startActivityForResult(new Intent(this, RegisterPhoneActivity.class),LOGIN_ACTIVITY);
 	}
 
 	/**
