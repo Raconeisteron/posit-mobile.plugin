@@ -257,12 +257,16 @@ public class Communicator {
 	
 
 	public String createProject(String server, String projectName, String projectDescription, String authKey) {
-		String url = server + "/api/newProject?name=" + projectName + "&description="+ projectDescription + "&authKey="+authKey;
+		String url = server + "/api/newProject?authKey="+authKey;
+		HashMap<String,String> sendMap = new HashMap<String,String>();
+		sendMap.put("name", projectName);
+		sendMap.put("description", projectDescription);
+		
 		HashMap<String, Object> responseMap = null;
 		Log.i(TAG, "Create Project URL=" + url);
 
 		try {
-			responseString = doHTTPGET(url);
+			responseString = doHTTPPost(url, sendMap);
 			Log.i(TAG, responseString);
 			if (responseString.contains("[ERROR]")){
 				Utils.showToast(mContext, responseString);
