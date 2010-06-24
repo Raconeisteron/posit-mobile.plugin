@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,7 +39,6 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -257,6 +255,7 @@ public class Communicator {
 		return null;
 	}
 	
+
 	public String createProject(String server, String projectName, String projectDescription, String authKey) {
 		String url = server + "/api/newProject?name=" + projectName + "&description="+ projectDescription + "&authKey="+authKey;
 		HashMap<String, Object> responseMap = null;
@@ -585,7 +584,6 @@ public class Communicator {
 		HttpGet httpGet = new HttpGet();
 
 		try {
-		
 			httpGet.setURI(new URI(Uri));
 		} catch (URISyntaxException e) {
 			Log.e(TAG, e.getMessage());
