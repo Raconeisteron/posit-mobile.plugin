@@ -81,6 +81,7 @@ public class PositMain extends Activity implements OnClickListener,
 			Intent i = new Intent(this, TutorialActivity.class);
 			startActivity(i);
 		}
+	
 		setContentView(R.layout.main);
 
 		final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
@@ -129,22 +130,31 @@ public class PositMain extends Activity implements OnClickListener,
 	 * Handles clicks on PositMain's buttons.
 	 */
 	public void onClick(View view) {
-		Intent intent = new Intent();
+		//Make sure the user has chosen a project before trying to add finds
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		if (sp.getString("PROJECT_NAME", null)==null) {
+			Utils.showToast(this, "To get started, you must choose a project.");
+			Intent i = new Intent(this, ShowProjectsActivity.class);
+			startActivity(i);
+		}
+		else {
+			Intent intent = new Intent();
 
-		switch (view.getId()) {
-		case R.id.addFindButton:
-			intent.setClass(this, FindActivity.class);
-			intent.setAction(Intent.ACTION_INSERT);
-			startActivity(intent);
-			break;
-		case R.id.listFindButton:
-			intent.setClass(this, ListFindsActivity.class);
-			startActivity(intent);
-			break;
-		// case R.id.sahanaSMS:
-		// intent.setClass(this, SahanaSMSActivity.class);
-		// startActivity(intent);
-		// break;
+			switch (view.getId()) {
+			case R.id.addFindButton:
+				intent.setClass(this, FindActivity.class);
+				intent.setAction(Intent.ACTION_INSERT);
+				startActivity(intent);
+				break;
+			case R.id.listFindButton:
+				intent.setClass(this, ListFindsActivity.class);
+				startActivity(intent);
+				break;
+				// case R.id.sahanaSMS:
+				// intent.setClass(this, SahanaSMSActivity.class);
+				// startActivity(intent);
+				// break;
+			}
 		}
 	}
 
