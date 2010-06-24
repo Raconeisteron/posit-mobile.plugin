@@ -105,8 +105,7 @@
 					android:freezesText="true" 
 					android:layout_width="fill_parent" 
 					android:layout_height="wrap_content" 
-					android:layout_toRightOf="@id/idBarcodeButton"
-					android:visibility = "gone"/>
+					android:layout_toRightOf="@id/idBarcodeButton"/>
 				
 			
 				<EditText android:id="@+id/nameText"
@@ -114,7 +113,8 @@
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
 					android:hint="@string/ghostData_name"
-					android:layout_below="@+id/idText" />
+					android:layout_below="@+id/idText"
+					android:inputType ="textCapSentences" />
 			
 				<EditText 
 					android:id="@+id/descriptionText"
@@ -126,7 +126,8 @@
 					android:scrollbarStyle="insideOverlay" 
 					android:layout_height="fill_parent" 
 					android:hint="@string/ghostData_description"
-					android:layout_below="@+id/nameText"/>
+					android:layout_below="@+id/nameText"
+					android:inputType ="textCapSentences"/>
 				<TextView 
 					android:id="@+id/barcodeReaderError"
 					android:layout_width="wrap_content" 

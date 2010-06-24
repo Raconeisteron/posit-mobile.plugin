@@ -226,8 +226,8 @@ public class BackgroundTrackerActivity extends MapActivity implements LocationLi
 		mExpeditionTextView = (TextView)findViewById(R.id.trackerExpedition);
 		mPointsTextView = (TextView)findViewById(R.id.trackerPoints);
 		mSwathTextView = (TextView)findViewById(R.id.trackerSwath);
-		linearLayout = (LinearLayout) findViewById(R.id.zoomview);
-		mMapView = (MapView) findViewById(R.id.mapFinds);
+		linearLayout = (LinearLayout) findViewById(R.id.zoomView);
+		mMapView = (MapView) findViewById(R.id.mapView);
 		mZoom = (ZoomControls) mMapView.getZoomControls();
 		linearLayout.addView(mZoom);
 		if (!doSetup()) {

@@ -219,4 +219,5 @@
 	<string name="new_expedition_menu_item">New expedition</string>
 	<string name="nativeActivity">Native Activity</string>
 	<string name="idAddProjButton">+ Add New Project</string>
+<string name="login">Login</string>
 </resources>

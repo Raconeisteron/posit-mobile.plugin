@@ -6,15 +6,15 @@
     android:layout_height="fill_parent" >
 
     <com.google.android.maps.MapView
-        android:id="@+id/mapview"
+        android:id="@+id/mapView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:clickable="true"
-        android:apiKey="0bvEMJ9m96_flCs4DFXRuaFy6UTZfOlZ7-xB1Sg"/>
+        android:apiKey="0jDofiyQNYc4RdmdN3SzLHPlIVb6uawsWRrsGiA"/>
 	<LinearLayout
-    	android:id="@+id/zoomview"
+    	android:id="@+id/zoomView"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:layout_alignBottom="@id/mapview"
+    	android:layout_alignBottom="@id/mapView"
     	android:layout_centerHorizontal="true"/>
 </RelativeLayout>

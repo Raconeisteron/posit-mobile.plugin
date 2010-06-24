@@ -70,8 +70,8 @@ public class MapFindsActivity extends MapActivity {
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.map_finds);
-		linearLayout = (LinearLayout) findViewById(R.id.zoomview);
-		mMapView = (MapView) findViewById(R.id.mapFinds);
+		linearLayout = (LinearLayout) findViewById(R.id.zoomView);
+		mMapView = (MapView) findViewById(R.id.mapView);
 		mZoom = (ZoomControls) mMapView.getZoomControls();
 		linearLayout.addView(mZoom);
 
