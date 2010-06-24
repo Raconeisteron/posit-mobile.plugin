@@ -113,7 +113,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
-			return false;
+			finish();
 		}
 		return super.onKeyDown(keyCode, event);
 	}
