@@ -22,7 +22,8 @@
         android:id="@+id/firstName"
         android:layout_height="40dp"
         android:layout_width="fill_parent"
-        android:layout_gravity="fill_horizontal"/>
+        android:layout_gravity="fill_horizontal"
+ 		android:inputType ="textCapSentences"/>
 	
 	  	<TextView 
 		android:id="@+id/lastNameLabel"
@@ -36,7 +37,8 @@
         android:id="@+id/lastName"
         android:layout_height="40dp"
         android:layout_width="fill_parent"
-        android:layout_gravity="fill_horizontal"/>
+        android:layout_gravity="fill_horizontal"
+        android:inputType ="textCapSentences"/>
 	
 	  	<TextView 
 		android:id="@+id/emailLabel"
