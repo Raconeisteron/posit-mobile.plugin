@@ -178,10 +178,11 @@ public class SyncActivity extends Activity {
 				// Utils.showToast(mContext,
 				// "Sync Exiting: No network connection");
 				mSyncThread.setConnected(false);
-				// finish();
+				syncSuccess = false;
+				finish();
 				break;
 			case SyncThread.DONE:
-				if (syncSuccess = true) {
+				if (syncSuccess == true) {
 					mProgressDialog.setMessage("Sync completed successfully. "
 							+ PRESS_BACK);
 					Utils.showToast(mContext, "Sync completed successfully.");
