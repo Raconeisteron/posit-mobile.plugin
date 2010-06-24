@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -58,6 +59,7 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 
 	private Button registerButton;
 	private SharedPreferences sp;
+	private ProgressDialog mProgressDialog;
 	private static final int CREATE_ACCOUNT = 1;
 	private static final String TAG = "RegisterUserActivity";
 
@@ -122,6 +124,8 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 			String imei = manager.getDeviceId();
 
 			Communicator com = new Communicator(registerButton.getContext());
+			mProgressDialog = ProgressDialog.show(this, "Registering device",
+					"Please wait.", true, true);
 			String result = com.registerUser(server, firstname, lastname,
 					email, password, check, imei);
 			Log.i(TAG, result);
@@ -143,6 +147,7 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 				break;
 
 			}
+			mProgressDialog.dismiss();
 
 		}
 	}
