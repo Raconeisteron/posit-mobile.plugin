@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 public class NewProjectActivity extends Activity implements OnClickListener{
 
 	private Button mCreateProject;
+	private static final String TAG = "NewProjectActivity";
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,16 +40,19 @@ public class NewProjectActivity extends Activity implements OnClickListener{
 			SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(this);
 			String authkey = prefManager.getString("AUTHKEY",null);
 			String server = prefManager.getString("SERVER_ADDRESS", null);
-			TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-			String imei = manager.getDeviceId();
 			Communicator com = new Communicator(this);
-			String response = com.createProject(server, projectName, projectDescription, imei, authkey);
-				if(null!=Integer.getInteger(response))
-					Utils.showToast(this, "Registration Successful");
+			String response = com.createProject(server, projectName, projectDescription, authkey);
+			Log.i(TAG,response);
+			if(response.contains("success")){
+				
+				Utils.showToast(this, response);
+				setResult(ShowProjectsActivity.NEW_PROJECT);
+				finish();
+			}
+			else
 				Utils.showToast(this, response);
 			break;
 		}
-		
 	}
 
 }
