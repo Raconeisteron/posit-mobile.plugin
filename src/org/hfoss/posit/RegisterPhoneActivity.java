@@ -75,7 +75,6 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 	private Button editServer;
 	private Button registerUsingBarcodeButton;
 	private Button registerDeviceButton;
-	private Context mContext;
 	private SharedPreferences sp;
 	private ProgressDialog mProgressDialog;
 	private Dialog mServerDialog;
@@ -95,10 +94,11 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 				.getDefaultSharedPreferences(this);
 		mServerDialog = new Dialog(this);
 		String server = sp.getString("SERVER_ADDRESS", null);
-		if (server != null) {
+		String email = sp.getString("EMAIL", null);
+		if (server != null) 
 			((TextView) findViewById(R.id.serverName)).setText(server);
-		}
-
+		if(email != null)
+			((TextView) findViewById(R.id.email)).setText(server);
 		if (isIntentAvailable(this, "com.google.zxing.client.android.SCAN")) {
 			readerInstalled = true;
 		}
@@ -249,6 +249,8 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 			mServerDialog.setTitle("Change Server");
 			TextView text = (TextView) mServerDialog.findViewById(R.id.editServerMessage);
 			text.setText("Please enter the name of the server");
+			EditText eText = (EditText) mServerDialog.findViewById(R.id.newServer);
+			eText.setText("http://");
 			Button blar = (Button) mServerDialog.findViewById(R.id.confirmChange);
 			blar.setOnClickListener(this);
 			mServerDialog.show();

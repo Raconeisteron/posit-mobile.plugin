@@ -21,6 +21,8 @@
  */
 package org.hfoss.posit;
 
+import org.hfoss.posit.utilities.Utils;
+
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
@@ -39,7 +41,7 @@ import android.util.Log;
  * 
  * 
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener{
 	private static final String TAG = "SettingsActivity";
 	protected static final int BARCODE_READER = 0;
 
@@ -47,21 +49,26 @@ public class SettingsActivity extends PreferenceActivity {
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		addPreferencesFromResource(R.xml.posit_preferences);
+		Preference regUser = this.findPreference("regUser");
+		Preference regDevice = this.findPreference("regDevice");
+		
+		regUser.setOnPreferenceClickListener(this);
+		regDevice.setOnPreferenceClickListener(this);
 
-		// Get the custom barcode preference
-		Preference barcodePref = (Preference) findPreference("APP_KEY");
-		barcodePref
-				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-					public boolean onPreferenceClick(Preference preference) {
-						Intent intent = new Intent(SettingsActivity.this,
-								RegisterPhoneActivity.class);
-						try {
-							startActivity(intent);
-						} catch (ActivityNotFoundException e) {
-							Log.e(TAG, e.toString());
-						}
-						return true;
-					}
-				});
+	}
+
+	@Override
+	public boolean onPreferenceClick(Preference preference) {
+
+		if(preference.getTitle().toString().equals("Add a phone")){
+			Intent i = new Intent(this, RegisterPhoneActivity.class);
+			startActivity(i);
+		}
+		if(preference.getTitle().toString().equals("Create an account")){
+			Intent i = new Intent(this, RegisterUserActivity.class);
+			startActivity(i);
+		}
+		
+		return false;
 	}
 }
