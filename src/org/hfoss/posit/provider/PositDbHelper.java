@@ -174,6 +174,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ FINDS_HISTORY_TABLE + "("
 		+ HISTORY_ID + " integer primary key autoincrement,"
 		+ FINDS_TIME + " timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+//		+ FINDS_PROJECT_ID + " integer DEFAULT 0,"
 		+ FINDS_GUID + " varchar(50) NOT NULL,"
 		+ FINDS_ACTION + " varchar(20) NOT NULL"
 		+ ")";
@@ -302,9 +303,9 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		// Note this query will select finds that were created and then deleted since last sync
 		// It is necessary to remove the created/updated if there's a deletion.
 
-		Cursor c = mDb.rawQuery("SELECT DISTINCT " + FINDS_GUID + "," + FINDS_ACTION 
-				+ " FROM " + FINDS_HISTORY_TABLE 
-				+ " WHERE " + FINDS_PROJECT_ID + " = "+projectId+ " AND " + FINDS_ACTION + "= 'delete' AND " + FINDS_TIME + " > ? " , args);
+		Cursor c = mDb.rawQuery("SELECT DISTINCT " + FINDS_HISTORY_TABLE+"."+FINDS_GUID + "," + FINDS_HISTORY_TABLE+"."+FINDS_ACTION 
+				+ " FROM " + FINDS_HISTORY_TABLE+","+FINDS_TABLE
+				+ " WHERE " + FINDS_TABLE+"."+FINDS_PROJECT_ID + " = "+projectId+ " AND " + FINDS_HISTORY_TABLE+"."+FINDS_ACTION + "= 'delete' AND " + FINDS_HISTORY_TABLE+"."+FINDS_TIME + " > ? " , args);
 		
 		String result = "";
 		c.moveToFirst();
@@ -312,9 +313,9 @@ public class PositDbHelper extends SQLiteOpenHelper {
 			result += c.getString(0) + ":" + c.getString(1) + ",";
 			c.moveToNext();
 		}
-		c = mDb.rawQuery("SELECT DISTINCT " + FINDS_GUID + "," + FINDS_ACTION 
-				+ " FROM " + FINDS_HISTORY_TABLE
-				+ " WHERE "+ FINDS_PROJECT_ID+ " = "+ projectId +" AND "+ FINDS_ACTION + " != 'delete' AND " + FINDS_TIME + " > ? " , args);
+		c = mDb.rawQuery("SELECT DISTINCT " + FINDS_HISTORY_TABLE+"."+FINDS_GUID + "," + FINDS_HISTORY_TABLE+"."+FINDS_ACTION 
+				+ " FROM " + FINDS_HISTORY_TABLE+","+FINDS_TABLE
+				+ " WHERE " + FINDS_TABLE+"."+FINDS_PROJECT_ID + " = "+projectId+ " AND " + FINDS_HISTORY_TABLE+"."+FINDS_ACTION + "!= 'delete' AND " + FINDS_HISTORY_TABLE+"."+FINDS_TIME + " > ? " , args);
 		c.moveToFirst();
 		for (int k = 0; k < c.getCount(); k++) {
 			String id = c.getString(0);
