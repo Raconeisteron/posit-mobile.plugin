@@ -581,6 +581,15 @@ public class Communicator {
 		return responseString;
 	}
 
+	public boolean projectExists(String projectId, String server){
+		String url = server+"/api/projectExists?projectId="+projectId;
+		String response = doHTTPGET(url);
+		if(response.equals("true"))
+			return true;
+		if(response.equals("false"))
+			return false;
+		return false;
+	}
 	/**
 	 * A wrapper(does some cleanup too) for sending HTTP GET requests to the URI
 	 * 

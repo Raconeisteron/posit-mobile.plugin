@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -58,6 +59,8 @@ import android.widget.TextView;
 public class RegisterUserActivity extends Activity implements OnClickListener {
 
 	private Button registerButton;
+	private Button editServer;
+	private Dialog mServerDialog;
 	private SharedPreferences sp;
 	private ProgressDialog mProgressDialog;
 	private static final int CREATE_ACCOUNT = 1;
@@ -80,6 +83,10 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 		((TextView) findViewById(R.id.serverName)).setText(server);
 		((TextView) findViewById(R.id.email)).setText(email);
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
+		mServerDialog = new Dialog(this);
+		editServer = (Button) findViewById(R.id.editServer);
+		editServer.setOnClickListener(this);
+		
 		registerButton = (Button) findViewById(R.id.submitInfo);
 		registerButton.setOnClickListener(this);
 
@@ -91,6 +98,25 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 	 */
 	public void onClick(View v) {
 		switch (v.getId()) {
+		case R.id.editServer:
+			mServerDialog.setContentView(R.layout.edit_server_dialog);
+			mServerDialog.setTitle("Change Server");
+			TextView text = (TextView) mServerDialog.findViewById(R.id.editServerMessage);
+			text.setText("Please enter the name of the server");
+			EditText eText = (EditText) mServerDialog.findViewById(R.id.newServer);
+			eText.setText("http://");
+			Button blar = (Button) mServerDialog.findViewById(R.id.confirmChange);
+			blar.setOnClickListener(this);
+			mServerDialog.show();
+			break;
+		case R.id.confirmChange:
+			String edServer = ((EditText) mServerDialog.findViewById(R.id.newServer)).getText().toString();
+			((TextView) this.findViewById(R.id.serverName)).setText(edServer);
+			Editor editor = sp.edit();
+			editor.putString("SERVER_ADDRESS", edServer);
+			editor.commit();
+			mServerDialog.dismiss();
+			break;			
 		case (R.id.submitInfo):
 			Intent i = getIntent();
 			EmailValidator emV = EmailValidator.getInstance();

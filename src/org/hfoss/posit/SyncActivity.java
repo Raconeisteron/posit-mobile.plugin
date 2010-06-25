@@ -209,6 +209,17 @@ public class SyncActivity extends Activity {
 				syncSuccess = false;
 				finish();
 				break;
+			case SyncThread.PROJECTERROR:
+				mProgressDialog
+				.setMessage("Sync failed. An unknown error has occurred. "
+						+ PRESS_BACK);
+				mSyncThread.stopThread();
+				syncSuccess = false;
+				Utils.showToast(mContext, "Project does not exist. Please choose another project.");
+				Intent i = new Intent(mContext, ShowProjectsActivity.class);
+				SyncActivity.this.startActivity(i);
+				Log.i(TAG, "Project does not exist");
+				break;				
 			default:
 				Log.i(TAG, "What does " + msg.what + " mean?");
 				break;

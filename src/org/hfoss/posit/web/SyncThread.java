@@ -52,6 +52,7 @@ public class SyncThread extends Thread {
 	public volatile boolean shutdownRequested = false;
 	public static final int SYNCERROR = 10;
 	public static final int INTERRUPTED = 30;
+	public static final int PROJECTERROR = 42;
 
 	private Handler mHandler;
 	private Context mContext;
@@ -170,7 +171,9 @@ public class SyncThread extends Thread {
 
 		// Wait here to make sure there is a WIFI connection
 		waitHere();
-
+		if(!comm.projectExists(""+mProjectId, server))
+			mHandler.sendEmptyMessage(PROJECTERROR);
+		
 		// Get finds from the server since last sync with this device
 		// (NEEDED: should be made project specific)
 
