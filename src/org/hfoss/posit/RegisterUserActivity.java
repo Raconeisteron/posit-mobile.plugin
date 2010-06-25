@@ -128,8 +128,7 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 			String imei = manager.getDeviceId();
 
 			Communicator com = new Communicator(registerButton.getContext());
-			mProgressDialog = ProgressDialog.show(this, "Registering device",
-					"Please wait.", true, true);
+
 			String result = com.registerUser(server, firstname, lastname,
 					email, password, check, imei);
 			Log.i(TAG, result);
@@ -140,6 +139,8 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 					break;
 				}
 				if (message[0].equals("" + Constants.AUTHN_OK)) {
+					mProgressDialog = ProgressDialog.show(this, "Registering device",
+							"Please wait.", true, true);
 					Intent data = new Intent();
 					data.putExtra("email", email);
 					data.putExtra("password", password);

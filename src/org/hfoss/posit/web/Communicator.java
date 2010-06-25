@@ -216,13 +216,16 @@ public class Communicator {
 	 */
 	public String loginUser(String server, String email, String password,
 			String imei) {
-		String url = server + "/api/login?email=" + email + "&password="
-				+ password + "&imei=" + imei;
+		String url = server + "/api/login";
+		
 		HashMap<String, Object> responseMap = null;
 		Log.i(TAG, "loginUser URL=" + url);
-
+		HashMap<String,String> sendMap = new HashMap<String, String>();
+		sendMap.put("email", email);
+		sendMap.put("password", password);
+		sendMap.put("imei", imei);
 		try {
-			responseString = doHTTPGET(url);
+			responseString = doHTTPPost(url,sendMap);
 			Log.i(TAG, responseString);
 			if (responseString.contains("[ERROR]")){
 				Utils.showToast(mContext, responseString);
@@ -295,13 +298,16 @@ public class Communicator {
 
 	public String registerUser(String server, String firstname,
 			String lastname, String email, String password, String check, String imei) {
-		String url = server + "/api/registerUser?email=" + email + "&password1="
-				+ password + "&password2="+check + "&firstname=" + firstname + "&lastname="
-				+ lastname;
+		String url = server + "/api/registerUser";
 		Log.i(TAG, "registerUser URL=" + url + "&imei=" + imei);
-
+		HashMap<String,String>sendMap = new HashMap<String, String>();
+		sendMap.put("email", email);
+		sendMap.put("password1", password);
+		sendMap.put("password2", check);
+		sendMap.put("firstname", firstname);
+		sendMap.put("lastname", lastname);
 		try {
-			responseString = doHTTPGET(url);
+			responseString = doHTTPPost(url,sendMap);
 			Log.i(TAG, responseString);
 			if (responseString.contains("[ERROR]")){
 				Utils.showToast(mContext, responseString);
