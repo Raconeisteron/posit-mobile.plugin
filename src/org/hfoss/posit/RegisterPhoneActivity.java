@@ -344,8 +344,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei = manager.getDeviceId();
 
-		mProgressDialog = ProgressDialog.show(this, "Registering device",
-				"Please wait.", true, true);
+		
 		String result = com.loginUser(serverName, email, password, imei);
 		
 		String authKey;
@@ -360,6 +359,8 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 			return;
 		}
 		if (message[0].equals(""+Constants.AUTHN_OK)){
+			mProgressDialog = ProgressDialog.show(this, "Registering device",
+					"Please wait.", true, true);
 			authKey = message[1];
 			Log.i(TAG, "AuthKey "+ authKey +" obtained, registering device");
 			String responseString = com.registerDevice(serverName, authKey, imei);
