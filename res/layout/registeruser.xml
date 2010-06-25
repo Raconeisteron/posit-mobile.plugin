@@ -9,7 +9,18 @@
   android:layout_height="wrap_content"
   android:orientation="vertical">
 
-  
+     <TextView 
+		android:id="@+id/registerUserTitle"
+		android:text="@string/registerUserTitle"
+		android:textSize="15.5sp"
+		android:textColor="#FFF"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="left"
+		android:layout_marginBottom="10dp"
+		android:visibility="visible"/>
+
+
   	<TextView 
 		android:id="@+id/firstNameLabel"
 		android:text="@string/firstNameLabelText"
@@ -84,7 +95,20 @@
         android:layout_gravity="fill_horizontal"
         android:password="true"/>
         
-        
+	<TextView
+   	     android:id="@+id/serverLabel"
+       	 android:layout_width="fill_parent"
+    	 android:layout_height="20dp"
+       	 android:textSize="14.5sp"
+       	 android:text="@string/serverLabel"/>  
+       	 
+	<TextView
+   	     android:id="@+id/serverName"
+       	 android:layout_width="fill_parent"
+    	 android:layout_height="20dp"
+       	 android:textSize="14.5sp"
+       	 android:text="@string/defaultServer"/> 
+      
  <Button android:id="@+id/submitInfo"
     android:layout_width="150dp"
     android:layout_height="40dp"

@@ -292,7 +292,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 *  
 	 * @return a comma, delimited list of Find guIds
 	 */
-	public String getDeltaFindsIds(){
+	public String getDeltaFindsIds(long projectId){
 		String maxtime = getTimeOfLastSync();
 		
 		mDb = getReadableDatabase();
@@ -304,7 +304,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 
 		Cursor c = mDb.rawQuery("SELECT DISTINCT " + FINDS_GUID + "," + FINDS_ACTION 
 				+ " FROM " + FINDS_HISTORY_TABLE 
-				+ " WHERE " + FINDS_ACTION + "= 'delete' AND " + FINDS_TIME + " > ? " , args);
+				+ " WHERE " + FINDS_PROJECT_ID + " = "+projectId + FINDS_ACTION + "= 'delete' AND " + FINDS_TIME + " > ? " , args);
 		
 		String result = "";
 		c.moveToFirst();
@@ -314,7 +314,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		}
 		c = mDb.rawQuery("SELECT DISTINCT " + FINDS_GUID + "," + FINDS_ACTION 
 				+ " FROM " + FINDS_HISTORY_TABLE
-				+ " WHERE " + FINDS_ACTION + " != 'delete' AND " + FINDS_TIME + " > ? " , args);
+				+ " WHERE "+ FINDS_PROJECT_ID+ " = "+ projectId + FINDS_ACTION + " != 'delete' AND " + FINDS_TIME + " > ? " , args);
 		c.moveToFirst();
 		for (int k = 0; k < c.getCount(); k++) {
 			String id = c.getString(0);
@@ -856,6 +856,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		return guId;
 	}
 	
+	
+	
 	/**
 	 * This helper method is passed a cursor, which points to a row of the DB.
 	 *  It extracts the names of the columns and the values in the columns,
@@ -1097,5 +1099,36 @@ public class PositDbHelper extends SQLiteOpenHelper {
 			mDb.close();
 		}
 		return list;
-	}	
+	}
+
+
+	/**
+	 * This method is called from a Find object, passing its ID. It marks the item
+	 * 'deleted' in the Finds table. (Remember to modify all Select queries to include
+	 * the "where deleted != '1'" clause.)
+	 *   
+	 *   We first get the guId so we can log the deletion in the find_history table.
+	 * @param mRowId
+	 * @return
+	 */
+	public boolean deleteFind(String guid) {
+		ContentValues content = new ContentValues();
+		content.put(FINDS_DELETED, DELETE_FIND);
+		long id = getRowIdFromGuId(guid); 
+		boolean success = updateFind (id, content);  // Just use updateFind()
+		
+
+		// If successful, timestamp this action in FindsHistory table
+		if (success) {   
+			Log.i(TAG, "delete find update log, guid= \"" + guid+"\"");
+			success = logFindHistory(guid, "delete");
+		}
+		if (success) 
+			success = deletePhotosById(id);
+		if (success) {
+			Log.i(TAG, "deleteFind " + id + " deleted photos");
+		}
+		
+		return success;
+	}
 }

@@ -63,7 +63,7 @@ public class SyncThread extends Thread {
 	private SharedPreferences sp;
 	private String server;
 	private String authKey;
-	private int mProjectid;
+	private int mProjectId;
 	private TelephonyManager manager;
 	private String imei;
 	private Communicator comm;
@@ -88,7 +88,7 @@ public class SyncThread extends Thread {
 		// sp.setDefaultValues(mContext, R.xml.posit_preferences, false);
 		server = sp.getString("SERVER_ADDRESS", null);
 		authKey = sp.getString("AUTHKEY", null);
-		mProjectid = sp.getInt("PROJECT_ID", 0);
+		mProjectId = sp.getInt("PROJECT_ID", 0);
 		manager = (TelephonyManager) mContext
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		imei = manager.getDeviceId();
@@ -166,7 +166,7 @@ public class SyncThread extends Thread {
 		mdbh = new PositDbHelper(mContext);
 
 		Log.i(TAG, "server=" + server + " key=" + authKey + " pid="
-				+ mProjectid + " imei=" + imei);
+				+ mProjectId + " imei=" + imei);
 
 		// Wait here to make sure there is a WIFI connection
 		waitHere();
@@ -178,7 +178,7 @@ public class SyncThread extends Thread {
 
 		// Get finds from the client
 
-		String phoneFindGuIds = mdbh.getDeltaFindsIds();
+		String phoneFindGuIds = mdbh.getDeltaFindsIds(mProjectId);
 		Log.i(TAG, "phoneFindsNeedingSync = " + phoneFindGuIds);
 
 		// Send finds to the server
@@ -229,7 +229,7 @@ public class SyncThread extends Thread {
 		String response = "";
 		String url = "";
 		url = server + "/api/getDeltaFindsIds?authKey=" + authKey + "&imei="
-				+ imei + "&projectId=" + mProjectid;
+				+ imei + "&projectId=" + mProjectId;
 		Log.i(TAG, "getDeltaFindsIds URL=" + url);
 		try {
 			response = comm.doHTTPGET(url);
@@ -300,6 +300,7 @@ public class SyncThread extends Thread {
 			if (cv == null) {
 				mHandler.sendEmptyMessage(SYNCERROR); // Shouldn't be null
 			} else {
+				
 				cv
 						.put(PositDbHelper.FINDS_SYNCED,
 								PositDbHelper.FIND_IS_SYNCED);
@@ -315,6 +316,11 @@ public class SyncThread extends Thread {
 
 				// Update the DB
 				if (dbh.containsFind(guid)) {
+					if (cv.containsKey(PositDbHelper.FINDS_DELETED)){
+						if ((Integer)cv.get(PositDbHelper.FINDS_DELETED)==1){
+							dbh.deleteFind(guid);
+						}
+					}
 					success = dbh.updateFind(guid, cv, photosList); // Should
 																	// use a
 																	// Find?
