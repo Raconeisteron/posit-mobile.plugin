@@ -36,6 +36,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -70,11 +72,13 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 	public boolean isSandbox = false;
 	public boolean readerInstalled = false;
 	private Button registerUserButton;
-	private Button moreButton;
+	private Button editServer;
 	private Button registerUsingBarcodeButton;
 	private Button registerDeviceButton;
+	private Context mContext;
 	private SharedPreferences sp;
 	private ProgressDialog mProgressDialog;
+	private Dialog mServerDialog;
 	/**
 	 * Called when the Activity is first started. If the phone is not
 	 * registered, tells the user so and gives the user instructions on how to
@@ -89,10 +93,10 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.registerphone);
 		sp = PreferenceManager
 				.getDefaultSharedPreferences(this);
-
+		mServerDialog = new Dialog(this);
 		String server = sp.getString("SERVER_ADDRESS", null);
 		if (server != null) {
-			((EditText) findViewById(R.id.serverName)).setText(server);
+			((TextView) findViewById(R.id.serverName)).setText(server);
 		}
 
 		if (isIntentAvailable(this, "com.google.zxing.client.android.SCAN")) {
@@ -100,11 +104,11 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 		}
 
 		registerUserButton = (Button) findViewById(R.id.createaccount);
-		moreButton = (Button) findViewById(R.id.more);
+		editServer = (Button) findViewById(R.id.editServer);
 		registerUsingBarcodeButton = (Button) findViewById(R.id.registerUsingBarcodeButton);
 		registerDeviceButton = (Button) findViewById(R.id.registerDeviceButton);
 
-		moreButton.setOnClickListener(this);
+		editServer.setOnClickListener(this);
 		registerUsingBarcodeButton.setOnClickListener(this);
 		registerDeviceButton.setOnClickListener(this);
 		registerUserButton.setOnClickListener(this);
@@ -231,7 +235,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
  * 
  */
 	public void onClick(View v) {
-
+		
 		
 		String serverName = (((TextView) findViewById(R.id.serverName))
 				.getText()).toString();
@@ -239,23 +243,24 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 		UrlValidator urV = new UrlValidator();
 
 		switch (v.getId()) {
-
-		case R.id.more:
-			Log.i(TAG, "" + findViewById(R.id.serverName).getVisibility());
-			if (findViewById(R.id.serverName).getVisibility() != 0) {
-				findViewById(R.id.serverName).setVisibility(EditText.VISIBLE);
-				findViewById(R.id.serverNameLabel).setVisibility(
-						TextView.VISIBLE);
-				findViewById(R.id.registerUsingBarcodeButton).setVisibility(
-						TextView.VISIBLE);
-			} else {
-				findViewById(R.id.serverName).setVisibility(EditText.GONE);
-				findViewById(R.id.serverNameLabel).setVisibility(TextView.GONE);
-				findViewById(R.id.registerUsingBarcodeButton).setVisibility(
-						TextView.GONE);
-			}
+		
+		case R.id.editServer:
+			mServerDialog.setContentView(R.layout.edit_server_dialog);
+			mServerDialog.setTitle("Change Server");
+			TextView text = (TextView) mServerDialog.findViewById(R.id.editServerMessage);
+			text.setText("Please enter the name of the server");
+			Button blar = (Button) mServerDialog.findViewById(R.id.confirmChange);
+			blar.setOnClickListener(this);
+			mServerDialog.show();
 			break;
-
+		case R.id.confirmChange:
+			String server = ((EditText) mServerDialog.findViewById(R.id.newServer)).getText().toString();
+			((TextView) this.findViewById(R.id.serverName)).setText(server);
+			Editor editor = sp.edit();
+			editor.putString("SERVER_ADDRESS", server);
+			editor.commit();
+			mServerDialog.dismiss();
+			break;			
 		case R.id.registerDeviceButton:
 			String password = (((TextView) findViewById(R.id.password))
 					.getText()).toString();
@@ -315,6 +320,8 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 			}
 			Intent i = new Intent(this, RegisterUserActivity.class);
 			i.putExtra("server", (((TextView) findViewById(R.id.serverName))
+					.getText()).toString());
+			i.putExtra("email", (((TextView) findViewById(R.id.email))
 					.getText()).toString());
 			this.startActivityForResult(i, CREATE_ACCOUNT);
 			break;

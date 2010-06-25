@@ -73,8 +73,12 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		Intent i = getIntent();
+		String server = i.getStringExtra("server");
+		String email = i.getStringExtra("email");
 		setContentView(R.layout.registeruser);
+		((TextView) findViewById(R.id.serverName)).setText(server);
+		((TextView) findViewById(R.id.email)).setText(email);
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		registerButton = (Button) findViewById(R.id.submitInfo);
 		registerButton.setOnClickListener(this);
