@@ -582,7 +582,8 @@ public class Communicator {
 	}
 
 	public boolean projectExists(String projectId, String server){
-		String url = server+"/api/projectExists?projectId="+projectId;
+		String url = server+"/api/projectExists?authKey="+authKey+"&projectId="+projectId;
+		Log.i(TAG, url);
 		String response = doHTTPGET(url);
 		if(response.equals("true"))
 			return true;
