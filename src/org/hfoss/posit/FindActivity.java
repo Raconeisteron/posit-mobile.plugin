@@ -185,7 +185,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//finishActivity(ListFindsActivity.FIND_FROM_LIST);
-
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		PROJECT_ID = sp.getInt("PROJECT_ID", 0);
 //		IS_ADHOC = sp.getBoolean("IS_ADHOC", false);

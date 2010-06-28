@@ -150,7 +150,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	public void onClick(View view) {
 		//Make sure the user has chosen a project before trying to add finds
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		if (sp.getString("PROJECT_NAME", null)==null) {
+		if (sp.getString("PROJECT_NAME", "").equals("")) {
 			Utils.showToast(this, "To get started, you must choose a project.");
 			Intent i = new Intent(this, ShowProjectsActivity.class);
 			startActivity(i);
