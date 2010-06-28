@@ -195,6 +195,7 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 						public void onClick(DialogInterface dialog, int whichButton) {
 							SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(
 									ShowProjectsActivity.this);
+							
 							boolean syncIsOn = sp.getBoolean("SYNC_ON_OFF", true);
 							if (syncIsOn) {
 								Intent intent = new Intent(ShowProjectsActivity.this, SyncActivity.class);
