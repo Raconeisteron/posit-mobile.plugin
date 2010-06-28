@@ -25,11 +25,17 @@ import org.hfoss.posit.utilities.Utils;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.TextView;
 
 /**
  * Offers the user various options on how things should work in POSIT. The user
@@ -41,21 +47,48 @@ import android.util.Log;
  * 
  * 
  */
-public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener{
+public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 	private static final String TAG = "SettingsActivity";
 	protected static final int BARCODE_READER = 0;
+	private String server;
+	private Preference serverAddress;
+	private Preference project;
+	private Preference user;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		addPreferencesFromResource(R.xml.posit_preferences);
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		sp.registerOnSharedPreferenceChangeListener(this);
+		
+		server = sp.getString("SERVER_ADDRESS", "");
+		String email = sp.getString("EMAIL","");
+		String projectName = sp.getString("PROJECT_NAME","");
+		
 		Preference regUser = this.findPreference("regUser");
 		Preference regDevice = this.findPreference("regDevice");
+		user = this.findPreference("EMAIL");
+		project = this.findPreference("PROJECT_NAME");	
+		serverAddress = this.findPreference("SERVER_ADDRESS");
 		
+		if (server != null && serverAddress != null) {
+			serverAddress.setSummary(server); 
+			serverAddress.setOnPreferenceClickListener(this);
+		}
+		if (email != null && user != null){
+			user.setSummary(email);
+			user.setOnPreferenceClickListener(this);
+		}
+		if (projectName != null && project != null) {
+			project.setSummary(projectName);
+			project.setOnPreferenceClickListener(this);
+		}
+			
 		regUser.setOnPreferenceClickListener(this);
 		regDevice.setOnPreferenceClickListener(this);
-
 	}
+	
 
 	@Override
 	public boolean onPreferenceClick(Preference preference) {
@@ -68,7 +101,41 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 			Intent i = new Intent(this, RegisterUserActivity.class);
 			startActivity(i);
 		}
+		if(preference.getTitle().toString().equals("Current server")){
+			if (preference instanceof EditTextPreference) {
+				EditTextPreference textPreference = (EditTextPreference) preference;
+				EditText eText =  textPreference.getEditText();
+				eText.setText(server);
+			}
+		}
+		if(preference.getTitle().toString().equals("Current user")){
+			Intent i = new Intent(this, RegisterPhoneActivity.class);
+			startActivity(i);
+		}
+		if(preference.getTitle().toString().equals("Current project")){
+			Intent i = new Intent(this, ShowProjectsActivity.class);
+			startActivity(i);
+		}
 		
 		return false;
 	}
+	
+	 public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
+		 if (key.equals("SERVER_ADDRESS")){
+			server = sp.getString("SERVER_ADDRESS", "");
+			if (server != null) 
+				serverAddress.setSummary(server); 
+		 }
+		 else if (key.equals("PROJECT_NAME")){
+				String projectName = sp.getString("PROJECT_NAME", "");
+				if (projectName != null) 
+					project.setSummary(projectName); 
+		 }
+		 else if (key.equals("EMAIL")){
+				String email = sp.getString("EMAIL", "");
+				if (email != null) 
+					user.setSummary(email); 
+		 }
+	 }
+
 }

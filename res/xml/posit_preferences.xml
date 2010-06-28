@@ -3,15 +3,23 @@
 	<PreferenceCategory 
 		android:title="@string/general">
 
-		<Preference
-		   android:key="regDevice"
-		   android:title="@string/prefDevice"  
-		   android:summary="@string/registerDeviceTitle"  />
+	<Preference android:key="regDevice" android:title="@string/prefDevice"
+		android:summary="@string/registerDeviceTitle" />
 
-		<Preference 
-		   android:key="regUser"
-		   android:title="@string/prefUser"  
-		   android:summary="@string/registerUserTitle"  />
+	<Preference 
+		android:key="regUser"
+		android:title="@string/prefUser"
+		android:summary="@string/registerUserTitle" />
+		
+	<EditTextPreference
+   	 	android:title="@string/serverPrefLabel"
+    	android:key="SERVER_ADDRESS"/>
+    	
+    <Preference 
+    	android:key="PROJECT_NAME" android:title="@string/currProjectLabel"/>
+
+	<Preference 
+		android:key="EMAIL" android:title="@string/currUserLabel"/>
 		   
 	</PreferenceCategory>
 <!-- 		

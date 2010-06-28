@@ -12,6 +12,8 @@
 	<string name="createProjectButton">Create Project</string>
 	<string name="editServer">Change Server</string>
 	<string name="serverLabel">Current Server:</string>
+	<string name="currProjectLabel">Current project</string>
+	<string name="currUserLabel">Current user</string>
 	<string name="defaultServer">http://posit-project.org/sandbox</string>	
 	<string name="finishButton">Finish</string>
 	<string name="skipButton">Skip</string>
@@ -173,6 +175,7 @@
 	<string name="date_time_label">Date and Time</string>
 	<string name="settings">Settings</string>
 	<string name="barcodeText">Read Barcode</string>
+	<string name="serverPrefLabel">Current server</string>
 
 
 	<!-- Related to Configuration -->

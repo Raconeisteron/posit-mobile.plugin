@@ -79,6 +79,8 @@ public class PositMain extends Activity implements OnClickListener,
 		}
 		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(this);
+		
+		
 
 		if (!sp.getBoolean("tutorialComplete", false)) {
 			Intent i = new Intent(this, TutorialActivity.class);
@@ -101,6 +103,8 @@ public class PositMain extends Activity implements OnClickListener,
 
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sp.edit();
+		
+		editor.putString("PROJECT_NAME", "");
 		Log.i(TAG, "onCreate(), Preferences= " + sp.getAll().toString());
 
 		// NOTE: If the shared preferences get left in a state with the
