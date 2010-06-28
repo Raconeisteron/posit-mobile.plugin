@@ -98,7 +98,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 		if (server != null) 
 			((TextView) findViewById(R.id.serverName)).setText(server);
 		if(email != null)
-			((TextView) findViewById(R.id.email)).setText(server);
+			((TextView) findViewById(R.id.email)).setText(email);
 		if (isIntentAvailable(this, "com.google.zxing.client.android.SCAN")) {
 			readerInstalled = true;
 		}
@@ -368,10 +368,12 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 			String responseString = com.registerDevice(serverName, authKey, imei);
 			if (responseString.equals("true")){
 				Editor spEditor = sp.edit();
+				spEditor.putInt("PROJECT_ID", 0);
 				spEditor.putString("SERVER_ADDRESS", serverName);
 				spEditor.putString("EMAIL", email);
 				spEditor.putString("PASSWORD", password);
 				spEditor.putString("AUTHKEY", authKey);
+				spEditor.putString("PROJECT_NAME", "");
 				spEditor.commit();
 				Utils.showToast(this, "Successfully logged in.");
 				setResult(PositMain.LOGIN_SUCCESSFUL);
