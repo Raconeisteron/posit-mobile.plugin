@@ -42,6 +42,8 @@
 	<string name="devTeamText2">Ralph Morelli\tAntonio Alcorn</string>
 	<string name="devTeamText3">Chris Fei\tQianqian Lin\tGong Chen</string>
 	<string name="devTeamText4">Khanh Pham\tPhil Fritzsche\tJames Jackson</string>
+	<string name="devTeamText5">Scotty Eckenthal\tRachel Foecking\tBen Hartung</string>
+	<string name="devTeamText6">Greg Vaughan</string>
 	<string name="exit">Are you sure you want to exit?</string>
 	<string name="check_saving">Save the data before going back?</string>
 	<string name="aboutItem">About</string>
@@ -231,4 +233,5 @@
 	<string name="nativeActivity">Native Activity</string>
 	<string name="idAddProjButton">+ Add New Project</string>
 <string name="login">Add Phone</string>
+<string name="idTutorial">Tutorial</string>
 </resources>

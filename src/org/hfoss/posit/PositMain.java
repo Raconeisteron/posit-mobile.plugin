@@ -44,6 +44,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 /**
@@ -57,6 +58,8 @@ public class PositMain extends Activity implements OnClickListener,
 	private static final int LOGIN_ACTIVITY = 1;
 	public static final int LOGIN_CANCELED = 3;
 	public static final int LOGIN_SUCCESSFUL = 4;
+	private static final int REGISTRATION_CANCELLED = 5;
+	private SharedPreferences sp;
 	// public static AdhocClient mAdhocClient;
 	public static WifiManager wifiManager;
 	public RWGService rwgService;
@@ -74,19 +77,23 @@ public class PositMain extends Activity implements OnClickListener,
 		// TODO has to be enabled only if SharedPreference says so or a similar
 		// version of that
 		// rwgService =new RWGService();
-		if (savedInstanceState == null) {
-			checkPhoneRegistrationAndInitialSync();
-		}
-		SharedPreferences sp = PreferenceManager
+
+		sp = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		
 		
 
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
 		if (!sp.getBoolean("tutorialComplete", false)) {
 			Intent i = new Intent(this, TutorialActivity.class);
 			startActivity(i);
+		}else{
+		if(!checkPhoneRegistrationAndInitialSync()){
+			Intent i = new Intent(this, RegisterActivity.class);
+			startActivity(i);
 		}
-	
+		else{	
 		setContentView(R.layout.main);
 
 		final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
@@ -98,9 +105,7 @@ public class PositMain extends Activity implements OnClickListener,
 			// Log.i(TAG, listFindButton.getText() + "");
 			listFindButton.setOnClickListener(this);
 		}
-
-		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
+		}
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor = sp.edit();
 		
@@ -130,8 +135,76 @@ public class PositMain extends Activity implements OnClickListener,
 		// Log.i(TAG, "RWG running");
 		// Utils.showToast(this, "RWG running");
 		// }
+		}
 
 	}
+
+	public void OnResume(){
+		super.onResume();
+		if(!checkPhoneRegistrationAndInitialSync()){
+			Intent i = new Intent(this, RegisterActivity.class);
+			startActivity(i);
+		}
+		else{	
+		setContentView(R.layout.main);
+
+		final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
+		if (addFindButton != null)
+			addFindButton.setOnClickListener(this);
+
+		final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
+		if (listFindButton != null) {
+			// Log.i(TAG, listFindButton.getText() + "");
+			listFindButton.setOnClickListener(this);
+			}
+		}
+	}
+	
+	public void onRestart(){
+		super.onRestart();
+		if(!checkPhoneRegistrationAndInitialSync()){
+			Intent i = new Intent(this, RegisterActivity.class);
+			startActivity(i);
+		}
+		else{	
+		setContentView(R.layout.main);
+
+		final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
+		if (addFindButton != null)
+			addFindButton.setOnClickListener(this);
+
+		final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
+		if (listFindButton != null) {
+			// Log.i(TAG, listFindButton.getText() + "");
+			listFindButton.setOnClickListener(this);
+			}
+		}
+	}
+	
+	public void onRestoreInstanceState(Bundle savedInstanceState){
+		super.onRestoreInstanceState(savedInstanceState);
+		if(!checkPhoneRegistrationAndInitialSync()){
+			Intent i = new Intent(this, RegisterActivity.class);
+			startActivity(i);
+		}
+		else{	
+		setContentView(R.layout.main);
+
+		final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
+		if (addFindButton != null)
+			addFindButton.setOnClickListener(this);
+
+		final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
+		if (listFindButton != null) {
+			// Log.i(TAG, listFindButton.getText() + "");
+			listFindButton.setOnClickListener(this);
+			}
+		}		
+		
+	}
+	
+	
+	
 @Override
 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	switch (requestCode){
@@ -142,6 +215,9 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 			Intent intent = new Intent(this, ShowProjectsActivity.class);
 			startActivity(intent);
 		}
+		break;
+	case REGISTRATION_CANCELLED:
+		finish();
 		break;
 	default:
 		super.onActivityResult(requestCode, resultCode, data);
@@ -231,6 +307,9 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		case R.id.about_menu_item:
 			startActivity(new Intent(this, AboutActivity.class));
 			break;
+		case R.id.tutorial_menu_item:
+			startActivity(new Intent(this, TutorialActivity.class));
+			break;
 		case R.id.projects_menu_item:
 			startActivity(new Intent(this, ShowProjectsActivity.class));
 			break;
@@ -264,33 +343,16 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	}
 
 	/**
-	 * Checks whether the phone is registered with POSIT server. The phone is
-	 * registered if it has an authentication key that matches one of the
-	 * projects on the server specified in the phone's preferences. If the phone
-	 * is not registered, the user will be prompted to go to the server site and
-	 * register their phone. Shared preferences are also checked to see whether
-	 * the phone should sync up with the server.
+	 * Returns True if the phone has an authentication key and False if it does not
 	 */
-	private void checkPhoneRegistrationAndInitialSync() {
-		loadInstanceSettings();
-		SharedPreferences sp = PreferenceManager
-				.getDefaultSharedPreferences(this);
+	private boolean checkPhoneRegistrationAndInitialSync() {
 		String AUTH_KEY = sp.getString("AUTHKEY", "");
-		if (AUTH_KEY.equals("") || AUTH_KEY.equals(null))
-			startActivityForResult(new Intent(this, RegisterPhoneActivity.class),LOGIN_ACTIVITY);
+		if (AUTH_KEY.equals("") || AUTH_KEY.equals(null)){
+			return false;
+		}else
+			return true;
 	}
 
-	/**
-	 * Reads the settings file and loads certain settings to SharedPreferences
-	 * 
-	 * The settings are passed as a JSON object and include serverAddress,
-	 * projectId, projectName, authKey, syncOn, instanceName,
-	 * instanceDescription.
-	 */
-	private void loadInstanceSettings() {
-		InstanceSettingsReader i = new InstanceSettingsReader(this);
-		i.parseSettingsFile();
-	}
 
 	/**
 	 * Intercepts the back key (KEYCODE_BACK) and displays a confirmation dialog
