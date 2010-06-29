@@ -32,6 +32,7 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<activity android:name=".RegisterActivity"/>
 		<activity android:name=".NewProjectActivity"/>
 		<activity android:name=".RegisterPhoneActivity"/>
 		<activity android:name=".RegisterUserActivity"/>		

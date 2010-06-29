@@ -89,18 +89,32 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.registerphone);
+
 		sp = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		mServerDialog = new Dialog(this);
 		String server = sp.getString("SERVER_ADDRESS", null);
 		String email = sp.getString("EMAIL", null);
+		
+		setContentView(R.layout.registerphone);
+					
 		if (server != null) 
 			((TextView) findViewById(R.id.serverName)).setText(server);
 		if(email != null)
 			((TextView) findViewById(R.id.email)).setText(email);
 		if (isIntentAvailable(this, "com.google.zxing.client.android.SCAN")) {
 			readerInstalled = true;
+		}
+		
+		Intent regI = getIntent();
+		if(regI.getBooleanExtra("regUser", false)&&!regI.getBooleanExtra("regComplete", false)){
+			Intent i = new Intent(this, RegisterUserActivity.class);
+			i.putExtra("server", (((TextView) findViewById(R.id.serverName))
+					.getText()).toString());
+			i.putExtra("email", (((TextView) findViewById(R.id.email))
+					.getText()).toString());
+			regI.putExtra("regComplete", true);
+			this.startActivityForResult(i, CREATE_ACCOUNT);
 		}
 
 		registerUserButton = (Button) findViewById(R.id.createaccount);
@@ -127,7 +141,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 
 	/**
 	 * This method is used to check whether or not the user has an intent
-	 * available before an activity is actually started. This is only invoked on
+	 * available before an activitythis is actually started. This is only invoked on
 	 * the register view to check whether or not the intent for the barcode
 	 * scanner is available. Since the barcode scanner requires a downloadable
 	 * dependency, the user will not be allowed to click the "Read Barcode"

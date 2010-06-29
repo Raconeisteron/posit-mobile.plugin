@@ -77,28 +77,16 @@
 	       	 android:textSize="14.5sp"
 	       	 android:text="@string/defaultServer"/>   
 		</LinearLayout> 
-	       	 
-	     <Button 
-			android:id="@+id/registerDeviceButton" 
-	    	android:layout_width="140dp"
-	    	android:layout_height="40dp"
-	    	android:layout_gravity="right"
-			android:text="@string/login" 
-			android:layout_marginBottom="40dp"
-			android:layout_marginLeft="120dp"/>
+	       	
 	 
 	</LinearLayout>
         	      
 	 <LinearLayout
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:orientation="horizontal">
+	    android:orientation="horizontal"
+	    android:gravity="center_horizontal">
 	
-		 	<Button android:id="@+id/createaccount"
-	    		android:layout_width="150dp"
-		    	android:layout_height="40dp"
-		    	android:layout_gravity="left"
-		    	android:text="Create Account"/>
 	 
 	 		 <Button 
 	 		 	android:id="@+id/editServer"
@@ -115,18 +103,24 @@
 				android:text="Register with Barcode"
 				android:layout_toRightOf="@+id/editServer" />
 				
+		  	     <Button 
+			android:id="@+id/registerDeviceButton" 
+	    	android:layout_width="140dp"
+	    	android:layout_height="40dp"
+			android:text="@string/login" />
+				
 	
 	</LinearLayout>	
 
 
 	       
 		
-	<TextView 
-		android:id="@+id/accountNotFound"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/accountNotFoundMessage"
-		android:visibility="gone"/>
+		 	<Button android:id="@+id/createaccount"
+	    		android:layout_width="150dp"
+		    	android:layout_height="40dp"
+		    	android:layout_gravity="left"
+		    	android:text="Create Account"
+		    	android:visibility="gone"/>
 
    
 	

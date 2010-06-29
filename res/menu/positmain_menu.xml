@@ -11,6 +11,10 @@
 		android:id="@+id/projects_menu_item" 
 		android:icon="@drawable/list_projects_icon"
 		android:title="@string/projects"></item>
+	<item 
+		android:id="@+id/tutorial_menu_item" 
+		android:icon="@drawable/maps"
+		android:title="@string/idTutorial"></item>
 	<!-- <item android:id="@+id/rwg_start_activity" android:title="Start RWG Test Activity"></item>-->
 	<item android:id = "@+id/rwg_submenu" android:title="Adhoc Mode" android:icon="@drawable/ic_menu_share" android:enabled="false" android:visible="false">
 	<menu>

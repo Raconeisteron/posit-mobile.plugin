@@ -63,6 +63,7 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 	private Dialog mServerDialog;
 	private SharedPreferences sp;
 	private ProgressDialog mProgressDialog;
+	private String server="http://posit-project.org/sandbox";
 	private static final int CREATE_ACCOUNT = 1;
 	private static final String TAG = "RegisterUserActivity";
 
@@ -77,12 +78,18 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Intent i = getIntent();
-		String server = i.getStringExtra("server");
+		sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+		if (sp.getString("SERVER_ADDRESS", "").equals("")){
+			 server = i.getStringExtra("server");
+		}else {
+			server = sp.getString("SERVER_ADDRESS", "");
+		}
+		
 		String email = i.getStringExtra("email");
 		setContentView(R.layout.registeruser);
 		((TextView) findViewById(R.id.serverName)).setText(server);
 		((TextView) findViewById(R.id.email)).setText(email);
-		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		mServerDialog = new Dialog(this);
 		editServer = (Button) findViewById(R.id.editServer);
 		editServer.setOnClickListener(this);
@@ -130,7 +137,7 @@ public class RegisterUserActivity extends Activity implements OnClickListener {
 					.getText()).toString();
 			String firstname = (((TextView) findViewById(R.id.firstName))
 					.getText()).toString();
-			String server = i.getStringExtra("server");
+			server = ((TextView)findViewById(R.id.serverName)).getText().toString();
 			if (password.equals("") || check.equals("") || lastname.equals("")
 					|| firstname.equals("") || email.equals("")) {
 				Utils.showToast(registerButton.getContext(),

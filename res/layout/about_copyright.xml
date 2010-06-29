@@ -98,5 +98,21 @@
 			android:textColor="#ffffff"
 			android:text="@string/devTeamText4"
 			android:layout_centerHorizontal="true" />
+		<TextView 
+			android:id="@+id/developmentTeamText"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"
+			android:textSize="12sp" 
+			android:textColor="#ffffff"
+			android:text="@string/devTeamText5"
+			android:layout_centerHorizontal="true" />
+		<TextView 
+			android:id="@+id/developmentTeamText"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"
+			android:textSize="12sp" 
+			android:textColor="#ffffff"
+			android:text="@string/devTeamText6"
+			android:layout_centerHorizontal="true" />
 	</LinearLayout>
 </LinearLayout>
