@@ -316,8 +316,8 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 			startActivity(new Intent(this, ShowProjectsActivity.class));
 			break;
 		case R.id.track_menu_item:
-			startActivity(new Intent(this, BackgroundTrackerActivity.class));
-			break;
+    			startActivity(new Intent(this, CoverageTrackerActivity.class));
+            break;
 		case R.id.rwg_start:
 			wifiManager = (WifiManager) this
 					.getSystemService(Context.WIFI_SERVICE);

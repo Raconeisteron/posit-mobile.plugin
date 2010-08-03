@@ -234,4 +234,8 @@
 	<string name="idAddProjButton">+ Add New Project</string>
 <string name="login">Login</string>
 <string name="idTutorial">Tutorial</string>
+<string name="local_service_started">Tracker Started</string>
+<string name="local_service_stopped">Tracker Stopped</string>
+<string name="local_service_label">Coverage Tracker</string>
+<string name="tracker_settings_menu_item">Settings</string>
 </resources>
