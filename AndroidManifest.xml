@@ -51,7 +51,9 @@
 		<activity android:name=".NativeActivity"/>
 		<activity android:name=".TutorialActivity"/>
 		<activity android:name="org.hfoss.posit.android.sms.SahanaSMSActivity"/>
+		<activity android:name="org.hfoss.posit.android.CoverageTrackerActivity"/>
 		<service android:name="org.hfoss.posit.android.adhoc.RWGService" />
+		<service android:name="org.hfoss.posit.android.TrackerService"/>
 		<provider android:name="org.hfoss.posit.android.provider.PositContentProvider" android:authorities="org.hfoss.provider.POSIT" />
 	</application>
 </manifest>

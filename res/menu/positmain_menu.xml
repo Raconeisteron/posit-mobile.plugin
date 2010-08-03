@@ -25,6 +25,6 @@
 
 	
 
-	<item android:id="@+id/track_menu_item" android:title="@string/trackItem" android:icon="@drawable/radar" android:enabled="false" android:visible="false"></item>
+	<item android:id="@+id/track_menu_item" android:title="@string/trackItem" android:icon="@drawable/radar" android:visible="true" android:enabled="true"></item>
 	<!-- <item android:id="@+id/native_activity" android:title="@string/nativeActivity"></item>-->
 </menu>

@@ -102,12 +102,27 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	public static final String FINDS_HISTORY_TABLE = "finds_history";
 	public static final String SYNC_COLUMN_SERVER = "server";
 	public static final String SYNC_ID = "_id";
-	public static final String HISTORY_ID = "_id";
+	public static final String HISTORY_ID = "_id" ;
+	
+	public static final String EXPEDITION_TABLE = "expeditions";
+	public static final String EXPEDITION_ROW_ID = "_id";
+	public static final String EXPEDITION_NUM = "expedition_number";
+	public static final String EXPEDITION_PROJECT_ID = "project_id";  
+	
+	public static final String EXPEDITION_GPS_POINTS_TABLE = "points";
+	public static final String EXPEDITION_GPS_POINT_ROW_ID = "_id";
+	public static final String GPS_POINT_LATITUDE = "latitude";
+	public static final String GPS_POINT_LONGITUDE = "longitude";
+	public static final String GPS_POINT_ALTITUDE = "altitude";
+	public static final String GPS_POINT_SWATH = "swath";
+
+	
 	
 	// The following two arrays go together to form a <DB value, UI View> pair
 	// except for the first DB value, which is just a filler.
 	//	 GUID commented out so that in the list of finds the ID is no longer displayed
 	//	 in an attempt to deal with the length of the new UUIDs
+	//   -->UPDATED UUID is now truncated in display 
 	public static final String[] list_row_data = { 
 		FINDS_ID,
 		FINDS_GUID,  
@@ -206,6 +221,23 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ FINDS_MODIFY_TIME + " = " 
 		+ " datetime('now') ";
 	
+	private static final String CREATE_EXPEDITION_TABLE =
+		"CREATE TABLE IF NOT EXISTS " 
+		+ EXPEDITION_TABLE + "("
+		+ EXPEDITION_ROW_ID + " integer primary key autoincrement, "
+		+ EXPEDITION_NUM + " integer DEFAULT 0, "
+		+ EXPEDITION_PROJECT_ID + " integer DEFAULT 0 "
+		+ ")";
+	private static final String CREATE_EXPEDITION_GPS_POINTS_TABLE =
+		"CREATE TABLE IF NOT EXISTS " 
+		+ EXPEDITION_GPS_POINTS_TABLE + "("
+		+ EXPEDITION_GPS_POINT_ROW_ID +" integer DEFAULT 0, "
+	    + GPS_POINT_LATITUDE + " double DEFAULT 0, "
+	    + GPS_POINT_LONGITUDE + " double DEFAULT 0, "
+	    + GPS_POINT_ALTITUDE + " double DEFAULT 0, "
+	    + GPS_POINT_SWATH + " integer DEFAULT 0 "
+	    +")";
+	
 	private Context mContext;   // The Activity
 	private SQLiteDatabase mDb;  // Pointer to the DB	
   
@@ -247,6 +279,10 @@ public class PositDbHelper extends SQLiteOpenHelper {
 //		if (DBG) Log.i(TAG, "Created " + FINDS_HISTORY_TABLE);
 		db.execSQL(CREATE_SYNC_HISTORY_TABLE);
 //		if (DBG) Log.i(TAG, "Created " + SYNC_HISTORY_TABLE);
+		db.execSQL(CREATE_EXPEDITION_TABLE);
+//		if (DBG) Log.i(TAG, "Created " +EXPEDITION_TABLE);
+		db.execSQL(CREATE_EXPEDITION_GPS_POINTS_TABLE);
+//		if (DBG) Log.i(TAG, "Created " + EXPEDITION_GPS_POINTS_TABLE);
 	}
 
 	/**
@@ -433,7 +469,28 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		}
 		return rowId;
 	}
+	
+//?? needs documentation
+	// TODO Auto-generated method stub
+	public long addNewExpedition(ContentValues values1) {
+		mDb = getWritableDatabase();  // Either create the DB or open it.
+		long rowId = mDb.insert(EXPEDITION_TABLE, null, values1);
+		ContentValues values2 = new ContentValues();
+		values2.put(EXPEDITION_GPS_POINT_ROW_ID, rowId);
+		mDb.insert(EXPEDITION_GPS_POINTS_TABLE, null, values2);
+		
+		return rowId;
+	}
 
+	//?? needs documentation
+	// TODO Auto-generated method stub
+	public void addNewGPSPoint(ContentValues values) {
+		mDb = getWritableDatabase();  // Either create the DB or open it.
+		mDb.insert(EXPEDITION_GPS_POINTS_TABLE, null, values);
+
+
+		
+	}
 	/**
 	 * Updates a Find using it primary key, id. This should increment its
 	 *  revision number.
@@ -743,6 +800,85 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		ContentValues values = null;
 		if (c.getCount() != 0)
 			values = this.getContentValuesFromRow(c);
+		c.close();
+		mDb.close();
+		return values;
+	}
+	
+	
+	//TODO
+	public Cursor fetchExpeditionDataByExpeditionNumReturnCursor(long expedNum) {
+		String[] columns =null;
+		mDb = getReadableDatabase();  // Either open or create the DB    	
+		String[] selectionArgs = null;
+		String groupBy = null, having = null, orderBy = null;
+		Cursor c = mDb.query(EXPEDITION_TABLE, columns, 
+				EXPEDITION_NUM+"="+expedNum, selectionArgs, groupBy, having, orderBy);
+		c.moveToFirst();
+		ContentValues values1 = null;
+		if (c.getCount() != 0)
+			values1 = this.getContentValuesFromRow(c);
+		c.close();
+		c = fetchExpeditionDataByRowIdReturnCursor(values1.getAsLong(EXPEDITION_ROW_ID));
+		
+		mDb.close();
+		return c;
+	}
+	private Cursor fetchExpeditionDataByRowIdReturnCursor(long rowId) {
+		mDb = getReadableDatabase();  // Either open or create the DB    	
+		String[] selectionArgs = null;
+		String[] columns =null;
+		String groupBy = null, having = null, orderBy = null;
+		Cursor c = mDb.query(EXPEDITION_GPS_POINTS_TABLE, columns, 
+				 EXPEDITION_GPS_POINT_ROW_ID+"="+rowId, selectionArgs, groupBy, having, orderBy);
+		c.moveToFirst();
+//		ContentValues[] values = new ContentValues[c.getCount()];
+//		if (c.getCount() != 0)
+//			for (int i =0; i<c.getCount();i++){
+//			values[i] = this.getContentValuesFromRow(c);
+//			c.moveToNext();
+//			}
+//		c.close();
+		mDb.close();
+		return c;
+	}
+	
+	// this method is used to call expeditions from the database, decided to return as an
+	//array of content values for simplicity but a has map maybe a better choice for the future.
+	// As it is this, method is the one that gets called in posit and fetchExpeditionDataByRowId 
+	// is the method that gets the actual data points.
+	public ContentValues[] fetchExpeditionDataByExpeditionNum(Long expedNum) {
+		String[] columns =null;
+		mDb = getReadableDatabase();  // Either open or create the DB    	
+		String[] selectionArgs = null;
+		String groupBy = null, having = null, orderBy = null;
+		Cursor c = mDb.query(EXPEDITION_TABLE, columns, 
+				EXPEDITION_NUM+"="+expedNum, selectionArgs, groupBy, having, orderBy);
+		c.moveToFirst();
+		ContentValues values1 = null;
+		if (c.getCount() != 0)
+			values1 = this.getContentValuesFromRow(c);
+		c.close();
+		ContentValues[] values = fetchExpeditionDataByRowId(values1.getAsLong(EXPEDITION_ROW_ID));
+		
+		mDb.close();
+		return values;
+	}
+	
+	private ContentValues[] fetchExpeditionDataByRowId(long rowId) {
+		mDb = getReadableDatabase();  // Either open or create the DB    	
+		String[] selectionArgs = null;
+		String[] columns =null;
+		String groupBy = null, having = null, orderBy = null;
+		Cursor c = mDb.query(EXPEDITION_GPS_POINTS_TABLE, columns, 
+				 EXPEDITION_GPS_POINT_ROW_ID+"="+rowId, selectionArgs, groupBy, having, orderBy);
+		c.moveToFirst();
+		ContentValues[] values = new ContentValues[c.getCount()];
+		if (c.getCount() != 0)
+			for (int i =0; i<c.getCount();i++){
+			values[i] = this.getContentValuesFromRow(c);
+			c.moveToNext();
+			}
 		c.close();
 		mDb.close();
 		return values;
