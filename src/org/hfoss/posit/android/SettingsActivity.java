@@ -106,7 +106,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 				eText.setText(server);
 			}
 		}
-		if(preference.getTitle().toString().equals("Current user")){
+		if(preference.getTitle().toString().equals("Login")){
 			Intent i = new Intent(this, RegisterPhoneActivity.class);
 			startActivity(i);
 		}

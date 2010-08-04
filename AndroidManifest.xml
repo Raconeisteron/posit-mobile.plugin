@@ -46,8 +46,6 @@
 		<activity android:name=".SettingsActivity" />	
 		<activity android:name=".ShowProjectsActivity" />
 		<activity android:name=".SyncActivity" />
-		<!-- <activity android:name="org.hfoss.posit.adhoc.AdhocClientActivity" />-->
-		<activity android:name=".BackgroundTrackerActivity" android:configChanges="orientation|keyboardHidden"/>
 		<activity android:name=".NativeActivity"/>
 		<activity android:name=".TutorialActivity"/>
 		<activity android:name="org.hfoss.posit.android.sms.SahanaSMSActivity"/>

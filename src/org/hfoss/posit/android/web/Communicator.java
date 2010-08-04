@@ -194,7 +194,7 @@ public class Communicator {
 		} catch (Exception e) {
 			Utils.showToast(mContext, e.getMessage());
 		}
-
+		Log.i(TAG, responseString);
 		if (responseString.equals(RESULT_FAIL))
 			return null;
 		else {

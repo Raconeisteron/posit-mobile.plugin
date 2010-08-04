@@ -208,6 +208,7 @@ public class RegisterPhoneActivity extends Activity implements OnClickListener {
 							authKey, imei);
 
 					if (registered != null) {
+						Log.i(TAG, "registered");
 						Editor spEditor = sp.edit();
 
 						spEditor.putString("SERVER_ADDRESS", server);
