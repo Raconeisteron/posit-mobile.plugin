@@ -281,7 +281,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		int trackerState = sp
-				.getInt(BackgroundTrackerActivity.SHARED_STATE, -1);
+				.getInt(CoverageTrackerActivity.SHARED_STATE, -1);
 		/*
 		 * TODO should be more like
 		 * "is RWG running and is RWG enabled in the settings" /* if
