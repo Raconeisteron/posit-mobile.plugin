@@ -820,9 +820,10 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		if (c.getCount() != 0)
 			values1 = this.getContentValuesFromRow(c);
 		c.close();
+		mDb.close();
+
 		c = fetchExpeditionDataByRowIdReturnCursor(values1.getAsLong(EXPEDITION_ROW_ID));
 		
-		mDb.close();
 		return c;
 	}
 	private Cursor fetchExpeditionDataByRowIdReturnCursor(long rowId) {
