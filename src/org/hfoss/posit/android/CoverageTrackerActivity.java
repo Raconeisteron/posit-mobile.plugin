@@ -205,7 +205,7 @@ public class CoverageTrackerActivity extends MapActivity implements OnSharedPref
 		int latitude = 0;
 		int longitude = 0;
 
-		MyItemizedOverlay mPoints1 = new MyItemizedOverlay(this.getResources().getDrawable(R.drawable.redbutton),this,false);
+		MyItemizedOverlay mPoints1 = new MyItemizedOverlay(this.getResources().getDrawable(R.drawable.red_dot),this,false);
 		c.moveToFirst();
 
 		do {
