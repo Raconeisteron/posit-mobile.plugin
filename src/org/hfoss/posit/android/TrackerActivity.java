@@ -65,7 +65,6 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	public static final int RUNNING = 1;
 	public static final int PAUSED = 2;  // Currently unused
 	
-	private int mPoints = 0;
 	private int mState = IDLE;
 	private int mSwath = DEFAULT_SWATH_WIDTH;
 	private TextView mPointsTextView;
@@ -90,7 +89,9 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	private TextView mSwathTextView;
 	
 	private TrackerState mTrackerState;
-
+	private int mPoints = 0;
+	private int mExpeditionNumber;
+	
 	/** 
 	 * Called when the activity is first created. Note that if the "Back" key is used while this
 	 *  (or any) activity is running, the Activity will be stopped and destroyed.  So if it is started
@@ -213,6 +214,8 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 			Log.i(TAG,"Restoring state");
 			mTrackerState = mBackgroundService.getTrackerState();
 			mPoints =  mTrackerState.mPoints;
+			mExpeditionNumber = mTrackerState.mExpeditionNumber;
+
 			mTrackerOverlay = new TrackerOverlay(mTrackerState);
 			mOverlays.add(mTrackerOverlay);
 		}
@@ -234,10 +237,8 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	private void updateView(Location location) {
 //		++mPoints;
 		mPointsTextView.setText(" " + mPoints);
-		
-//		mExpeditionNumber = mPreferences.getInt("Expedition Num", -1);
+		mExpeditionTextView.setText(" "+mExpeditionNumber);
 //		Log.i(TAG,"updateView(), mPoints = " + mPoints +"  " + mExpeditionNumber);
-//		mExpeditionTextView.setText(" "+mExpeditionNumber);
 		
 		String s = " Idle ";
 		if (mState == RUNNING) 
