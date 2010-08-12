@@ -88,7 +88,6 @@ public class TutorialActivity extends Activity implements OnClickListener {
 	 * Method that handles when a user clicks on Buttons: skip, finish,
 	 * previous, or next.
 	 */
-	@Override
 	public void onClick(View v) {
 		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(this);

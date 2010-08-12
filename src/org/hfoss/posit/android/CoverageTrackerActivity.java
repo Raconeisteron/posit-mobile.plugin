@@ -150,12 +150,12 @@ public class CoverageTrackerActivity extends MapActivity implements OnSharedPref
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
-		
+
 		mDbHelper = new PositDbHelper(getApplicationContext());
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-		
-			
+
+
 		setContentView(R.layout.tracker);
 		mLocationTextView = (TextView)findViewById(R.id.trackerLocation);
 		mStatusTextView = (TextView)findViewById(R.id.trackerStatus);
@@ -166,19 +166,19 @@ public class CoverageTrackerActivity extends MapActivity implements OnSharedPref
 		mMapView = (MapView) findViewById(R.id.mapView);
 		mZoom = (ZoomControls) mMapView.getZoomControls();
 		linearLayout.addView(mZoom);
-		
+
 		points = new MyItemizedOverlay(this.getResources().getDrawable(R.drawable.red_dot),this,false);
 		reloadPoints = new MyItemizedOverlay(this.getResources().getDrawable(R.drawable.red_dot),this,false);
 		mapController = mMapView.getController();
 		mapController.setZoom(17);
-		
-		
+
+
 
 		tracking = mPreferences.getBoolean("Tracking",false);
 		mState = mPreferences.getInt("state", IDLE);
 
-			
-		
+
+
 		mPoints = 0;
 		if (!doSetup()) {
 			finish();
@@ -193,30 +193,30 @@ public class CoverageTrackerActivity extends MapActivity implements OnSharedPref
 			mapOverlays = mMapView.getOverlays();
 			// we assume that this activity will call the service at some point instead of 
 			// the service being called in Posit Main
-//			ContentValues[] GPSValues = mDbHelper.fetchExpeditionDataByExpeditionNum((long)mExpeditionNumber);
-		    mPoints = mPreferences.getInt("Points", 0);
-//			for (int i = 0; i<GPSValues.length; i++)
-//			{
-//			mLatitude = GPSValues[i].getAsDouble(GPS_POINT_LATITUDE);
-//			mLatitude = GPSValues[i].getAsDouble(GPS_POINT_LONGITUDE);
-//				
-////			int lat = (int)(mLatitude * 1E6);
-////			int lon = (int)(mLongitude * 1E6);
-//			
-//			
-////			reloadPoints.addOverlay(new OverlayItem(new GeoPoint(lat,lon),null,null));
-////			mapOverlays.add(reloadPoints);
-//			Log.i(TAG,"Point added " +points.size()+" "+ GPSValues.length + "  " + mPreferences.getInt("Points", 0) );
-//			updateView();
-//			}
+			//			ContentValues[] GPSValues = mDbHelper.fetchExpeditionDataByExpeditionNum((long)mExpeditionNumber);
+			mPoints = mPreferences.getInt("Points", 0);
+			//			for (int i = 0; i<GPSValues.length; i++)
+			//			{
+			//			mLatitude = GPSValues[i].getAsDouble(GPS_POINT_LATITUDE);
+			//			mLatitude = GPSValues[i].getAsDouble(GPS_POINT_LONGITUDE);
+			//				
+			////			int lat = (int)(mLatitude * 1E6);
+			////			int lon = (int)(mLongitude * 1E6);
+			//			
+			//			
+			////			reloadPoints.addOverlay(new OverlayItem(new GeoPoint(lat,lon),null,null));
+			////			mapOverlays.add(reloadPoints);
+			//			Log.i(TAG,"Point added " +points.size()+" "+ GPSValues.length + "  " + mPreferences.getInt("Points", 0) );
+			//			updateView();
+			//			}
 			mapOverlays.add(mapLayoutPoints(mDbHelper.fetchExpeditionDataByExpeditionNumReturnCursor((long)mExpeditionNumber)));
 			mapController = mMapView.getController();
-			
-			
-			
-			
-	}
-        updateView();
+
+
+
+
+		}
+		updateView();
 		mPreferences.registerOnSharedPreferenceChangeListener(this);
 
 	}
@@ -649,7 +649,6 @@ public class CoverageTrackerActivity extends MapActivity implements OnSharedPref
 	}
 
 
-	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		Log.i(TAG, "Hey there " + key);
