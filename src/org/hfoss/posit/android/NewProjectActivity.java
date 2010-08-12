@@ -25,7 +25,6 @@ public class NewProjectActivity extends Activity implements OnClickListener{
 		mCreateProject.setOnClickListener(this);
 	}
 
-	@Override
 	public void onClick(View v) {
 		switch(v.getId()){
 		case R.id.createProject:

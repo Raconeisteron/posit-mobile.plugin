@@ -73,7 +73,7 @@ public class PositMain extends Activity implements OnClickListener,
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// TODO has to be enabled only if SharedPreference says so or a similar
+		// has to be enabled only if SharedPreference says so or a similar
 		// version of that
 		// rwgService =new RWGService();
 
@@ -274,7 +274,6 @@ public class PositMain extends Activity implements OnClickListener,
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		int trackerState = sp.getInt(CoverageTrackerActivity.SHARED_STATE, -1);
 		/*
 		 * TODO should be more like
 		 * "is RWG running and is RWG enabled in the settings" /* if
@@ -309,7 +308,7 @@ public class PositMain extends Activity implements OnClickListener,
 			startActivity(new Intent(this, ShowProjectsActivity.class));
 			break;
 		case R.id.track_menu_item:
-			startActivity(new Intent(this, CoverageTrackerActivity.class));
+			startActivity(new Intent(this, TrackerActivity.class));
 			break;
 		case R.id.rwg_start:
 			wifiManager = (WifiManager) this

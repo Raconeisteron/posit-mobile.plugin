@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:clickable="true"
-        android:apiKey="0jDofiyQNYc4RdmdN3SzLHPlIVb6uawsWRrsGiA"/>
+        android:apiKey="0bvEMJ9m96_dErQO9edJAzhIxs3xDXhIVcrScXw"/>
 	<LinearLayout
     	android:id="@+id/zoomView"
     	android:layout_width="wrap_content"
@@ -18,3 +18,9 @@
     	android:layout_alignBottom="@id/mapView"
     	android:layout_centerHorizontal="true"/>
 </RelativeLayout>
+
+<!--    
+
+0jDofiyQNYc4RdmdN3SzLHPlIVb6uawsWRrsGiA
+     
+-->

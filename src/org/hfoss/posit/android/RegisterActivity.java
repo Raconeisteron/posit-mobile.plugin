@@ -47,7 +47,6 @@ public class RegisterActivity extends Activity implements OnClickListener{
 		return true;	
 	}
 	
-	@Override
 	public void onClick(View v) {
 		Intent intent = new Intent();
 		switch (v.getId()) {

@@ -442,10 +442,11 @@ public class TrackerService extends Service implements LocationListener {
 	}
 
 	private class SendExpeditionPointTask extends
-			AsyncTask<Location, Void, Void> {
+		AsyncTask<Location, Void, Void> {
 
 		@Override
 		protected Void doInBackground(Location... location) {
+			
 			for (Location loc : location) {
 				double latitude = loc.getLatitude();
 				double longitude = loc.getLongitude();
@@ -460,6 +461,8 @@ public class TrackerService extends Service implements LocationListener {
 					String result = mCommunicator.registerExpeditionPoint(
 							latitude, longitude, altitude, mSwath,
 							mExpeditionNumber);
+
+					
 					Log.i(TAG, result);
 					mPoints++;
 //					spEditor.putFloat("Longitude", (float) mLongitude);

@@ -86,7 +86,6 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	}
 	
 
-	@Override
 	public boolean onPreferenceClick(Preference preference) {
 
 		if(preference.getTitle().toString().equals("Add a phone")){
