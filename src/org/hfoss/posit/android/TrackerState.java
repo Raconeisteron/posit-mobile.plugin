@@ -53,8 +53,8 @@ public class TrackerState {
 	public int mPoints = 0;
 	public Location mLocation;
 
-	public long mSwath = DEFAULT_SWATH_WIDTH;
-	public long mMinDistanceMoved = DEFAULT_MIN_DISTANCE;  // meters
+	public int mSwath = DEFAULT_SWATH_WIDTH;
+	public int mMinDistance = DEFAULT_MIN_DISTANCE;  // meters
 	
 	private List<PointAndTime> pointsAndTimes;
 

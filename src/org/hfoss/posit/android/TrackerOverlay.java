@@ -26,6 +26,7 @@ import java.util.List;
 import org.hfoss.posit.android.TrackerState.PointAndTime;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import com.google.android.maps.MapView;
@@ -57,23 +58,29 @@ public class TrackerOverlay extends Overlay {
 		}
 		Projection projection = mapView.getProjection();
 		Paint paint = new Paint();
+		paint.setColor(Color.RED);
 		paint.setAlpha(150);
+		paint.setStrokeWidth(5);
+		Point point;
+		Point nextPoint;
+		PointAndTime pointAndTime;
+		PointAndTime nextPointAndTime;
+		long nextTime;
+
 		for (int i = 0; i < pointsAndTimes.size(); i++) {
-			PointAndTime pointAndTime = pointsAndTimes.get(i);
-			Point point = projection.toPixels(pointAndTime.getGeoPoint(), null);
-			long nextTime;
+			pointAndTime = pointsAndTimes.get(i);
+			point = projection.toPixels(pointAndTime.getGeoPoint(), null);
 			if (i == pointsAndTimes.size() - 1) {
 				nextTime = System.currentTimeMillis();
 			} else {
-				PointAndTime nextPointAndTime = pointsAndTimes.get(i + 1);
+				nextPointAndTime = pointsAndTimes.get(i + 1);
 				nextTime = nextPointAndTime.getTime();
-				Point nextPoint = projection.toPixels(nextPointAndTime
+				nextPoint = projection.toPixels(nextPointAndTime
 						.getGeoPoint(), null);
-				canvas.drawLine(point.x, point.y, nextPoint.x, nextPoint.y,
-						paint);
+				canvas.drawLine(point.x, point.y, nextPoint.x, nextPoint.y, paint);
 			}
-			canvas.drawCircle(point.x, point.y, (float) Math
-					.log((nextTime - pointAndTime.getTime()) / 100), paint);
+//			canvas.drawCircle(point.x, point.y, (float) Math
+//					.log((nextTime - pointAndTime.getTime()) / 100), paint);
 		}
 	}
 	

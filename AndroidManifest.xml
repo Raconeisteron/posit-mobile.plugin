@@ -49,7 +49,7 @@
 		<activity android:name=".TrackerActivity"/>
 		
 		<activity android:name="org.hfoss.posit.android.sms.SahanaSMSActivity"/>
-		<activity android:name="org.hfoss.posit.android.CoverageTrackerActivity"/>
+		<activity android:name="org.hfoss.posit.android.TrackerActivity"/>
 		<service android:name="org.hfoss.posit.android.adhoc.RWGService" />
 		<service android:name="org.hfoss.posit.android.TrackerBackgroundService"/>
 		<provider android:name="org.hfoss.posit.android.provider.PositContentProvider" android:authorities="org.hfoss.provider.POSIT" />

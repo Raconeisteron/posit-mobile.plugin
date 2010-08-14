@@ -25,10 +25,13 @@ import java.util.List;
 
 import org.hfoss.posit.android.utilities.Utils;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -37,10 +40,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.maps.MapActivity;
@@ -64,9 +69,11 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	public static final int IDLE = 0;
 	public static final int RUNNING = 1;
 	public static final int PAUSED = 2;  // Currently unused
+	public static final int SET_MINIMUM_DISTANCE = 0;
 	
 	private int mState = IDLE;
 	private int mSwath = DEFAULT_SWATH_WIDTH;
+	private int mMinDistance = TrackerBackgroundService.MINIMUM_DISTANCE;
 	private TextView mPointsTextView;
 
     private SharedPreferences mPreferences ;
@@ -87,6 +94,8 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	private TextView mStatusTextView;
 	private TextView mExpeditionTextView;
 	private TextView mSwathTextView;
+	private TextView mMinDistTextView;
+
 	
 	private TrackerState mTrackerState;
 	private int mPoints = 0;
@@ -121,6 +130,7 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 		mStatusTextView = (TextView)findViewById(R.id.trackerStatus);
 		mExpeditionTextView = (TextView)findViewById(R.id.trackerExpedition);
 		mSwathTextView = (TextView)findViewById(R.id.trackerSwath);
+		mMinDistTextView = (TextView)findViewById(R.id.trackerMinDistance);
 
 		// Set up the UI -- now the map view and its current location overlay. The points overlay is
 		//  created in updateView, after the Tracker Service is started. 
@@ -129,22 +139,12 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 		mOverlays = mapView.getOverlays();
 		myLocationOverlay = new MyLocationOverlay(this, mapView);
 		mOverlays.add(myLocationOverlay);
-		
+	
 		// Get a reference to the shared preferences. The Tracker's state (RUNNING or IDLE) is
 		//  saved as a preference.
 	    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 	    spEditor = mPreferences.edit();
 	    
-		// See whether the Tracker service is running and if so restore the state
-		mState = mPreferences.getInt(TRACKER_STATE, IDLE);
-		if (mState == RUNNING)  {
-			Utils.showToast(this, "The Tracker is RUNNING.");
-			restoreState();
-			if (mTrackerState != null)  
-				updateUI(mTrackerState.mLocation);
-		} else {
-			Utils.showToast(this, "The Tracker is IDLE.");
-		}
 		Log.i(TAG,"Created with state = " + mState);
 	}
 	
@@ -196,10 +196,6 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
         		Log.i(TAG,"updatingUI  <" + location.getLatitude() + "," + location.getLongitude() + ">");
               }
             });
-//		restoreState(); 
-//		updateView(location);
-//		myLocationOverlay.onLocationChanged(location);
-//		Log.i(TAG,"updatingUI  <" + location.getLatitude() + "," + location.getLongitude() + ">");
 	}
 	
 	/**
@@ -211,10 +207,11 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	private void restoreState() {
 		mBackgroundService = TrackerBackgroundService.getInstance();
 		if (mBackgroundService != null) {
-			Log.i(TAG,"Restoring state");
 			mTrackerState = mBackgroundService.getTrackerState();
 			mPoints =  mTrackerState.mPoints;
 			mExpeditionNumber = mTrackerState.mExpeditionNumber;
+			mMinDistance = mTrackerState.mMinDistance;
+			Log.i(TAG,"Restoring state, minDistance = " + mMinDistance);
 
 			mTrackerOverlay = new TrackerOverlay(mTrackerState);
 			mOverlays.add(mTrackerOverlay);
@@ -235,11 +232,11 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	 * @param location
 	 */
 	private void updateView(Location location) {
-//		++mPoints;
 		mPointsTextView.setText(" " + mPoints);
 		mExpeditionTextView.setText(" "+mExpeditionNumber);
+		mMinDistTextView.setText(" " + mMinDistance);
 //		Log.i(TAG,"updateView(), mPoints = " + mPoints +"  " + mExpeditionNumber);
-		
+		 
 		String s = " Idle ";
 		if (mState == RUNNING) 
 			s = " Running ";
@@ -261,8 +258,21 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	public void onResume() {
 		super.onResume();
 		myLocationOverlay.enableMyLocation();
-		int state = mPreferences.getInt(TRACKER_STATE, IDLE);
-		Log.i(TAG,"Resumed in state " + state);
+		//int state = mPreferences.getInt(TRACKER_STATE, IDLE);
+		
+		// See whether the Tracker service is running and if so restore the state
+		mState = mPreferences.getInt(TRACKER_STATE, IDLE);
+		if (mState == RUNNING)  {
+			Utils.showToast(this, "The Tracker is RUNNING.");
+			restoreState();
+			if (mTrackerState != null)  
+				updateUI(mTrackerState.mLocation);
+		} else {
+			showDialog(SET_MINIMUM_DISTANCE);
+			Utils.showToast(this, "The Tracker is IDLE.");
+		}
+
+		Log.i(TAG,"Resumed in state " + mState);
 	}
 	
 	@Override
@@ -301,7 +311,10 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch(item.getItemId()) {
 		case R.id.start_tracking_menu_item:
-			startService(new Intent(this, TrackerBackgroundService.class));
+			//showDialog(SET_MINIMUM_DISTANCE);
+			Intent intent = new Intent(this, TrackerBackgroundService.class);
+			intent.putExtra("MinimumDistance", mMinDistance);
+			startService(intent);
 			mState = RUNNING;
 			spEditor.putInt(TRACKER_STATE, RUNNING);
 			spEditor.commit();
@@ -370,6 +383,47 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 		Log.i(TAG,"Stopped");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see android.app.Activity#onCreateDialog(int)
+	 * Confirms with the user that they have changed their project and automatically syncs with the server
+	 * to get all the project finds
+	 */
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case SET_MINIMUM_DISTANCE:
+			final EditText input = new EditText(this); 
+			return new AlertDialog.Builder(this)
+			.setIcon(R.drawable.icon)
+			.setTitle("Set Minimum Plotting Distance")
+			.setMessage("5 meters is good for walking, 50 meters for biking, 500 meters for driving")
+			.setView(input)
+			.setPositiveButton("Ok", 
+					new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					Editable value = input.getText(); 
+					String s = value.toString();
+					if (!s.equals("")) {
+						mMinDistance = Integer.parseInt(s);
+						if (mMinDistance < 0)
+							mMinDistance = 1;  // 1 meter
+					} 
+					Log.i(TAG,"min distance = " + mMinDistance);
+				}
+			})
+			.setNegativeButton("Cancel", 
+					new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					// Do nothing.
+				}
+			})
+			.create();
+		default:
+			return null;
+		}
+	}
+	
+	
 	/**
 	 * Required for MapActivity
 	 * @see com.google.android.maps.MapActivity#isRouteDisplayed()

@@ -54,6 +54,19 @@ android:text="@string/trackerPoints"
 android:layout_centerHorizontal="true"
 />
 
+</LinearLayout>
+
+</TableRow>
+
+
+<TableRow 
+	android:layout_width="fill_parent" 
+	android:layout_height="24sp">
+
+<LinearLayout 
+android:layout_width="fill_parent" 
+android:layout_height="24sp">
+
 <TextView android:id="@+id/trackerSwathLabel" 
 android:text="@string/trackerSwathLabel" 
 android:layout_width="wrap_content" 
@@ -71,9 +84,29 @@ android:textColor="#ffffff"
 android:text="@string/trackerSwath"
 android:layout_centerHorizontal="true"
 />
+
+
+<TextView android:id="@+id/trackerMinDistLabel" 
+android:text="@string/trackerMinDistLabel" 
+android:layout_width="wrap_content" 
+android:layout_height="wrap_content" 
+android:layout_marginLeft="30sp"
+/>
+
+<TextView
+android:id="@+id/trackerMinDistance"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:textSize="12sp"
+android:textColor="#ffffff"
+android:text="@string/trackerMinDistance"
+android:layout_centerHorizontal="true"
+/>
+
 </LinearLayout>
 
 </TableRow>
+
 
 <TableRow 
 	android:layout_width="fill_parent" 

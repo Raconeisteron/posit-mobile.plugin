@@ -67,6 +67,9 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	private Location mLocation  = null;
 	private TrackerState mState;
 	
+	private int mPointsSent = 0;
+	private int mUpdates = 0;
+	
 	/**
 	 * These next two STATIC methods allow data to pass between Service and Activity (UI)
 	 * @param activity
@@ -104,7 +107,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	public void onCreate() {
 		// Set up the Service so it can communicate with the Activity (UI)
 		serviceInstance = this;      // Reference to this Service object used by the UI
-		mState = new TrackerState(); // Create a TrackerState object to keep track of the track.
+		mState = new TrackerState(); // Create a TrackerState object to keep track of the track. 
 		
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		
@@ -120,10 +123,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		// Register a new expedition
 		mCommunicator = new Communicator(this);
 		mState.mExpeditionNumber =  mCommunicator.registerExpeditionId(mState.mProjId);
-		
-		// Start location update service
-		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE); 
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_INTERVAL, MINIMUM_DISTANCE, this);
 		
 		// Create a network manager
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -142,12 +141,20 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.i(TAG, "Received start id " + startId + ": " + intent);
+		mState.mMinDistance = intent.getIntExtra("MinimumDistance", 5);
+		Log.i(TAG, "Received start id " + startId + ": " + mState.mMinDistance);
+
+		// Start location update service
+		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE); 
+		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_INTERVAL, MINIMUM_DISTANCE, this);
+	//	mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+		
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
 		return START_STICKY;
 	}
 	
+
 	/**
 	 * This method is called whenever a new location update is received from the GPS. It
 	 * updates the TrackerState object (mState) and sends the GeoPoint to the POSIT Server.
@@ -155,7 +162,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 */
 	private void setCurrentGpsLocation(Location newLocation) {
 		Log.i(TAG, "Setting current GPS");
-		if (mLocation == null || mLocation.distanceTo(newLocation) >= MINIMUM_DISTANCE) {
+		if (mLocation == null || mLocation.distanceTo(newLocation) >= mState.mMinDistance) {
 			mLocation = newLocation;
 			
 			// Update the TrackerState object, used to keep track of things and send data to UI
@@ -180,7 +187,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		super.onDestroy();
 		mLocationManager.removeUpdates(this); 
 		mLocationManager = null;
-		Log.i(TAG,"Destroyed");
+		Log.i(TAG,"Destroyed, updates = " + mUpdates + " points sent to server = " + mPointsSent);
 	}
 	
 	// ------------------------ LocationListener Methods
@@ -189,6 +196,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 */
 	public void onLocationChanged(Location newLocation) {
 		setCurrentGpsLocation(newLocation);
+		++mUpdates;
 //		Log.i(TAG, "point found");
 	}
 
@@ -226,21 +234,20 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	@Override
 	protected Void doInBackground(Location... location) {
 		
+		String result;
 		for (Location loc : location) {
-			double latitude = loc.getLatitude();
-			double longitude = loc.getLongitude();
-			double altitude = loc.getAltitude();
 
 			// Try to handle a change in network connectivity
 			// We may lose a few points, but try not to crash
 			try {
-				int networkType = mConnectivityMgr.getActiveNetworkInfo().getType();
+				mConnectivityMgr.getActiveNetworkInfo().getType();
 
 				// Send the point to the Server
-				String result = mCommunicator.registerExpeditionPoint(
-									latitude, longitude, altitude, mState.mSwath, mState.mExpeditionNumber);
-
-				Log.i(TAG, result);
+				result = mCommunicator.registerExpeditionPoint(
+						loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), 
+						mState.mSwath, mState.mExpeditionNumber);
+				++mPointsSent;
+				//Log.i(TAG, result);
 
 			} catch (Exception e) {
 				Log.i(TAG, "Error handleMessage " + e.getMessage());
