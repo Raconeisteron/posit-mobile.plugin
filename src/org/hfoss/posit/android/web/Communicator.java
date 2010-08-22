@@ -71,7 +71,7 @@ import android.telephony.TelephonyManager;
  * The communication module for POSIT. Handles most calls to the server to get
  * information regarding projects and finds.
  * 
- * 
+ *  
  */
 public class Communicator {
 	private static final String MESSAGE = "message";
@@ -224,7 +224,7 @@ public class Communicator {
 		sendMap.put("imei", imei);
 		try {
 			responseString = doHTTPPost(url,sendMap);
-			Log.i(TAG, responseString);
+			Log.i(TAG, "longinUser response = " + responseString);
 			if (responseString.contains("[ERROR]")){
 				Utils.showToast(mContext, responseString);
 				return Constants.AUTHN_FAILED+":"+ "Error";
@@ -246,12 +246,12 @@ public class Communicator {
 				}
 			} else {
 				return Constants.AUTHN_FAILED + ":"
-						+ "Malformed message from server.";
+						+ "repsonseMap = " + responseMap.toString(); //"Malformed message from server.";
 			}
 		} catch (Exception e) {
-			Log.e(TAG, e.getMessage()+" ");
-			return Constants.AUTHN_FAILED + ":"
-					+ "Malformed message from server.";
+			Log.e(TAG, "loginUser " + e.getMessage()+" ");
+			return Constants.AUTHN_FAILED + ": "
+					+ e.getMessage();
 		}
 		return null;
 	}
@@ -289,8 +289,8 @@ public class Communicator {
 				return "Malformed message from server.";
 			}
 		} catch (Exception e) {
-			Log.e(TAG, e.getMessage());
-			return "Malformed message from server.";
+			Log.e(TAG,  "createProject " + e.getMessage());
+			return e.getMessage();
 		}
 	}
 
@@ -323,9 +323,9 @@ public class Communicator {
 				return Constants.AUTHN_FAILED+":"+"Malformed message from the server.";
 			}
 		}catch (Exception e){
-			Log.e(TAG, e.getMessage()+" ");
+			Log.e(TAG, "registerUser " + e.getMessage()+" ");
 			return Constants.AUTHN_FAILED + ":"
-			+ "Malformed message from server.";
+			+ e.getMessage();
 		}
 		return null;
 	}
@@ -530,7 +530,7 @@ public class Communicator {
 	 * @return the response from the URL
 	 */
 	private String doHTTPPost(String Uri, HashMap<String, String> sendMap) {
-
+		long startTime = System.currentTimeMillis();
 		if (Uri == null)
 			throw new NullPointerException("The URL has to be passed");
 		String responseString = null;
@@ -555,6 +555,7 @@ public class Communicator {
 
 		try {
 			responseString = mHttpClient.execute(post, responseHandler);
+			//Log.i(TAG, "responseString = " + responseString);
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, "ClientProtocolExcpetion" + e.getMessage());
 			e.printStackTrace();
@@ -572,9 +573,9 @@ public class Communicator {
 			e.printStackTrace();
 			return e.getMessage();
 		}
-		long time = System.currentTimeMillis() - mStart;
+		long time = System.currentTimeMillis() - startTime;
 		mTotalTime += time;
-		Log.i(TAG, "TIME = " + time + " millisecs");
+		Log.i(TAG, "respose = " + responseString + " TIME = " + time + " millisecs");
 
 		return responseString;
 	}
@@ -604,7 +605,7 @@ public class Communicator {
 		try {
 			httpGet.setURI(new URI(Uri));
 		} catch (URISyntaxException e) {
-			Log.e(TAG, e.getMessage());
+			Log.e(TAG, "doHTTPGet " + e.getMessage());
 			e.printStackTrace();
 			return "[Error]" + e.getMessage();
 		}
@@ -753,31 +754,38 @@ public class Communicator {
 			return true;
 	}
 
-	public String registerExpeditionPoint(double lat, double lng, int expedition) {
-		String result = doHTTPGET(server + "/api/addExpeditionPoint?authKey="
-				+ authKey + "&lat=" + lat + "&lng=" + lng + "&expedition="
-				+ expedition);
-		return result;
-	}
+//	public String registerExpeditionPoint(double lat, double lng, int expedition) {
+//		String result = doHTTPGET(server + "/api/addExpeditionPoint?authKey="
+//				+ authKey + "&lat=" + lat + "&lng=" + lng + "&expedition="
+//				+ expedition);
+//		return result;
+//	}
 
+	
+	/**
+	 * Sends a GPS point and associated data to the Posit server. Called from 
+	 *  Tracker Activity or TrackerBackgroundService.  
+	 */
 	public String registerExpeditionPoint(double lat, double lng, double alt,
-			long swath, int expedition) {
+			int swath, int expedition, long time) {
+			//long swath, int expedition) {
 		if (Utils.debug)
-			Log.i(TAG, "registerExpeditionPoint " + lat + " " + lng);
+			Log.i(TAG, "registerExpeditionPoint " + lat + " " + lng + " " + time);
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(sendMap);
 		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="
 				+ authKey;
-		sendMap.put("lat", "" + lat);
-		sendMap.put("lng", lng + "");
-		sendMap.put("alt", "" + alt);
-		sendMap.put("swath", "" + swath);
-		sendMap.put("expeditionId", expedition + "");
+		sendMap.put(PositDbHelper.GPS_POINT_LATITUDE, "" + lat);
+		sendMap.put(PositDbHelper.GPS_POINT_LONGITUDE, lng + "");
+		sendMap.put(PositDbHelper.GPS_POINT_ALTITUDE, "" + alt);
+		sendMap.put(PositDbHelper.GPS_POINT_SWATH, "" + swath);
+		sendMap.put(PositDbHelper.EXPEDITION, expedition + "");
+		sendMap.put(PositDbHelper.GPS_TIME, time + "");
 		String addExpeditionResponseString = doHTTPPost(addExpeditionUrl,
 				sendMap);
-		if (Utils.debug) {
-			Log.i(TAG, "response: " + addExpeditionResponseString);
-		}
+//		if (Utils.debug) {
+//			Log.i(TAG, "response: " + addExpeditionResponseString);
+//		}
 		return addExpeditionResponseString;
 	}
 

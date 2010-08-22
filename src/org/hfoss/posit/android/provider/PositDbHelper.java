@@ -110,11 +110,14 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	public static final String EXPEDITION_PROJECT_ID = "project_id";  
 	
 	public static final String EXPEDITION_GPS_POINTS_TABLE = "points";
+	public static final String EXPEDITION = "expedition";
 	public static final String EXPEDITION_GPS_POINT_ROW_ID = "_id";
 	public static final String GPS_POINT_LATITUDE = "latitude";
 	public static final String GPS_POINT_LONGITUDE = "longitude";
 	public static final String GPS_POINT_ALTITUDE = "altitude";
 	public static final String GPS_POINT_SWATH = "swath";
+	public static final String GPS_TIME = "time";
+
 
 	
 	
@@ -231,11 +234,15 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	private static final String CREATE_EXPEDITION_GPS_POINTS_TABLE =
 		"CREATE TABLE IF NOT EXISTS " 
 		+ EXPEDITION_GPS_POINTS_TABLE + "("
-		+ EXPEDITION_GPS_POINT_ROW_ID +" integer DEFAULT 0, "
-	    + GPS_POINT_LATITUDE + " double DEFAULT 0, "
-	    + GPS_POINT_LONGITUDE + " double DEFAULT 0, "
+		+ EXPEDITION + " integer DEFAULT 0, "
+		+ EXPEDITION_GPS_POINT_ROW_ID + " integer primary key autoincrement, "
+//	    + GPS_POINT_LATITUDE + " double DEFAULT 0, "
+//	    + GPS_POINT_LONGITUDE + " double DEFAULT 0, "
+	    + GPS_POINT_LATITUDE + " varchar(30) DEFAULT 0, "
+	    + GPS_POINT_LONGITUDE + " varchar(30) DEFAULT 0, "	    
 	    + GPS_POINT_ALTITUDE + " double DEFAULT 0, "
-	    + GPS_POINT_SWATH + " integer DEFAULT 0 "
+	    + GPS_POINT_SWATH + " integer DEFAULT 0, "
+	    + GPS_TIME + " long DEFAULT 0 " 
 	    +")";
 	
 	private Context mContext;   // The Activity
@@ -279,8 +286,10 @@ public class PositDbHelper extends SQLiteOpenHelper {
 //		if (DBG) Log.i(TAG, "Created " + FINDS_HISTORY_TABLE);
 		db.execSQL(CREATE_SYNC_HISTORY_TABLE);
 //		if (DBG) Log.i(TAG, "Created " + SYNC_HISTORY_TABLE);
-		db.execSQL(CREATE_EXPEDITION_TABLE);
+//		db.execSQL("DROP TABLE IF EXISTS " + EXPEDITION_TABLE);
+//		db.execSQL(CREATE_EXPEDITION_TABLE);
 //		if (DBG) Log.i(TAG, "Created " +EXPEDITION_TABLE);
+//		db.execSQL("DROP TABLE IF EXISTS " + EXPEDITION_GPS_POINTS_TABLE);
 		db.execSQL(CREATE_EXPEDITION_GPS_POINTS_TABLE);
 //		if (DBG) Log.i(TAG, "Created " + EXPEDITION_GPS_POINTS_TABLE);
 	}
@@ -297,6 +306,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		db.execSQL("DROP TABLE IF EXISTS " + PHOTOS_TABLE);
 		db.execSQL("DROP TABLE IF EXISTS " + FINDS_HISTORY_TABLE );
 		db.execSQL("DROP TABLE IF EXISTS " + SYNC_HISTORY_TABLE);
+		db.execSQL("DROP TABLE IF EXISTS " + EXPEDITION_GPS_POINTS_TABLE);
 		onCreate(db);	
 		db.execSQL(INITIALIZE_SYNC_HISTORY_TABLE);
 	}
@@ -487,11 +497,46 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	// TODO Auto-generated method stub
 	public void addNewGPSPoint(ContentValues values) {
 		mDb = getWritableDatabase();  // Either create the DB or open it.
+		Log.i(TAG, "<" + values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE)
+				+ "," + values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) + ">");
 		mDb.insert(EXPEDITION_GPS_POINTS_TABLE, null, values);
-
-
-		
+		mDb.close();
 	}
+	
+	/**
+	 * For a given expedition number, retrieves all the geopoints for that expedition.
+	 * @param exped
+	 * @return
+	 */
+	public ArrayList<ContentValues> getGeoPoints(int exped) {
+		mDb = getReadableDatabase();
+		ArrayList<ContentValues> list = new ArrayList<ContentValues>();
+   
+		if (DBG) Log.i(TAG, "expedition  = " + exped + "");
+		Cursor cursor = mDb.rawQuery("SELECT * FROM " + EXPEDITION_GPS_POINTS_TABLE 
+		//		+ " WHERE " + EXPEDITION  + " = " + exped, null);
+		+ " WHERE " + EXPEDITION  + " = " + exped + " ORDER BY " + EXPEDITION_GPS_POINT_ROW_ID, null);
+		cursor.moveToFirst();
+		
+		while (!cursor.isAfterLast()) {
+			ContentValues values = new ContentValues();
+
+			for (String column : cursor.getColumnNames()) {
+				
+				if(Utils.debug)
+					if (DBG) Log.i(TAG, "Column " + column + " = " + 
+						cursor.getString(cursor.getColumnIndexOrThrow(column)));
+				values.put(column, cursor.getString(cursor.getColumnIndexOrThrow(column)));
+			}
+			list.add(values);
+			cursor.moveToNext(); 
+		}
+		cursor.close();
+		mDb.close();  
+		return list;
+	}
+	
+	
 	/**
 	 * Updates a Find using it primary key, id. This should increment its
 	 *  revision number.

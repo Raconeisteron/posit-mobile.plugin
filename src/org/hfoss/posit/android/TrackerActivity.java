@@ -24,6 +24,7 @@ package org.hfoss.posit.android;
 import java.util.List;
 
 import org.hfoss.posit.android.utilities.Utils;
+import org.hfoss.posit.android.web.Communicator;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -34,7 +35,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -42,26 +42,29 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
 /**
- * Code adapted from on online tutorial.
+ * This class tracks and maps the phone's location in real time.  The track is displayed
+ * on this activity's View.  Listening for Location updates and sending points to the POSIT
+ * server are handled by the TrackerBackgroundService. 
+ * 
  * @see http://www.calvin.edu/~jpr5/android/tracker.html
  *
  */
-public class TrackerActivity extends MapActivity implements ServiceUpdateUIListener { // implements Runnable , LocationListener{
+public class TrackerActivity extends MapActivity 
+	implements ServiceUpdateUIListener, View.OnClickListener { 
 
 	private static final String TAG = "TrackerActivity";
 	public static final String TRACKER_STATE = "TrackerState";
+	public static final String MINIMUM_DISTANCE_STR = "MinimumDistance";
 	public static final int DEFAULT_SWATH_WIDTH = 50;  // 50 meters
 	private static final boolean ENABLED_ONLY = true;
 	private static final String NO_PROVIDER = "No location service";
@@ -100,6 +103,7 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	private TrackerState mTrackerState;
 	private int mPoints = 0;
 	private int mExpeditionNumber;
+	private Button mTrackerButton;
 	
 	/** 
 	 * Called when the activity is first created. Note that if the "Back" key is used while this
@@ -115,7 +119,7 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 			this.finish();
 			return;
 		}
-		
+		 
 		// Initialize call back references so that the Tracker Service can pass data to this UI
 		TrackerBackgroundService.setUpdateListener(this);   // The Listener for the Service
 	    TrackerBackgroundService.setMainActivity(this);
@@ -139,12 +143,17 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 		mOverlays = mapView.getOverlays();
 		myLocationOverlay = new MyLocationOverlay(this, mapView);
 		mOverlays.add(myLocationOverlay);
+		
+		new Communicator(this);
 	
 		// Get a reference to the shared preferences. The Tracker's state (RUNNING or IDLE) is
 		//  saved as a preference.
 	    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 	    spEditor = mPreferences.edit();
 	    
+	    mTrackerButton = (Button)findViewById(R.id.idTrackerButton);
+	    mTrackerButton.setOnClickListener(this);
+		
 		Log.i(TAG,"Created with state = " + mState);
 	}
 	
@@ -168,32 +177,37 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 			return false;
 		}
 
-		// Check that we have WIFI or MOBILE (MOBILE works best of course)	
-		mConnectivityMgr = 
-			(ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
-		if (info == null) {
-			Log.e(TAG,"setNetworkType() unable to acquire CONNECTIVITY_SERVICE");
-			Utils.showToast(this,
-					"Aborting Tracker: No Active Network.\nYou must have WIFI or MOBILE enabled.");
-			return false;
-		} else {
-			mNetworkType = info.getType();
-		}
+		// NOTE: This is no longer necessary. We want tracker to work even when
+		// there is no connectivity. 
+//		// Check that we have WIFI or MOBILE (MOBILE works best of course)	
+//		mConnectivityMgr = 
+//			(ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+//		NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
+//		if (info == null) {
+//			Log.e(TAG,"setNetworkType() unable to acquire CONNECTIVITY_SERVICE");
+//			Utils.showToast(this,
+//					"Aborting Tracker: No Active Network.\nYou must have WIFI or MOBILE enabled.");
+//			return false;
+//		} else {
+//			mNetworkType = info.getType();
+//		}
 		return true;
 	}
 	
 	/**
 	 * This method is called by the Tracker Service.  It must run in the UI thread. 
 	 */
-	public void updateUI(final Location location) {
+	public void updateUI(final TrackerState state) {
+		mTrackerState = state;
 		// make sure this runs in the UI thread... since it's messing with views...
 		this.runOnUiThread(new Runnable() {
             public void run() {
         		restoreState(); 
-        		updateView(location);
-        		myLocationOverlay.onLocationChanged(location);
-        		Log.i(TAG,"updatingUI  <" + location.getLatitude() + "," + location.getLongitude() + ">");
+        		//updateView(location);
+        		updateView();
+        		//myLocationOverlay.onLocationChanged(location);
+        		myLocationOverlay.onLocationChanged(state.mLocation);
+        		Log.i(TAG,"updatingUI  <" + state.mLocation.getLatitude() + "," + state.mLocation.getLongitude() + ">");
               }
             });
 	}
@@ -231,23 +245,42 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	 * A helper method to update the UI. 
 	 * @param location
 	 */
-	private void updateView(Location location) {
+	private void updateView() {
 		mPointsTextView.setText(" " + mPoints);
 		mExpeditionTextView.setText(" "+mExpeditionNumber);
 		mMinDistTextView.setText(" " + mMinDistance);
 //		Log.i(TAG,"updateView(), mPoints = " + mPoints +"  " + mExpeditionNumber);
 		 
 		String s = " Idle ";
-		if (mState == RUNNING) 
+		if (mState == RUNNING) {
 			s = " Running ";
+			mTrackerButton.setText("Stop");
+			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
+					getResources().getDrawable(R.drawable.stop_icon),null,null,null); 
+		} else {
+			mTrackerButton.setText("Start");
+			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
+					getResources().getDrawable(R.drawable.play_icon),null,null,null);  
+		}
 		
-		String netStr = (mNetworkType == ConnectivityManager.TYPE_WIFI) ? " WIFI" : " MOBILE";
+		String netStr = "none"; // Assume no network
+		mConnectivityMgr = 
+		(ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
+		if (info != null) 
+			netStr = (mNetworkType == ConnectivityManager.TYPE_WIFI) ? " WIFI" : " MOBILE";
  		mStatusTextView.setText(s + " (GPS = " + LocationManager.GPS_PROVIDER 
 				+ ", Ntwk = " + netStr + ")");
 
 		mSwathTextView.setText(" " + mSwath);
-		mLocationTextView.setText(location.getLatitude() + "," + location.getLongitude() 
-				+ "," + location.getAltitude());
+		
+		if (mTrackerState != null) {
+			String lat = mTrackerState.mLocation.getLatitude() + "";
+			mSwathTextView.setText(" " + mSwath);
+			String lon = mTrackerState.mLocation.getLongitude() + "";		
+			mLocationTextView.setText("(" + lat.substring(0,10) + "...," 
+					+ lon.substring(0,10) + "...," + mTrackerState.mLocation.getAltitude() + ")");		
+		}
 	}
 
 
@@ -258,7 +291,6 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	public void onResume() {
 		super.onResume();
 		myLocationOverlay.enableMyLocation();
-		//int state = mPreferences.getInt(TRACKER_STATE, IDLE);
 		
 		// See whether the Tracker service is running and if so restore the state
 		mState = mPreferences.getInt(TRACKER_STATE, IDLE);
@@ -266,73 +298,51 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 			Utils.showToast(this, "The Tracker is RUNNING.");
 			restoreState();
 			if (mTrackerState != null)  
-				updateUI(mTrackerState.mLocation);
+				//updateUI(mTrackerState.mLocation);
+				updateUI(mTrackerState);
+
 		} else {
-			showDialog(SET_MINIMUM_DISTANCE);
 			Utils.showToast(this, "The Tracker is IDLE.");
+			showDialog(SET_MINIMUM_DISTANCE);
 		}
 
 		Log.i(TAG,"Resumed in state " + mState);
 	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		Log.i(TAG,"Create options menu");
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.tracker_menu, menu);
-		return true;
-	}
 
 	/**
-	 * Updates the Tracker Start/stop menus based on whether Tracker is running or not.
-	 * @see android.app.Activity#onPrepareOptionsMenu(android.view.Menu)
-	 */
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		Log.i(TAG,"Prepare options menu");
-		if (mState == RUNNING) {
-			menu.findItem(R.id.start_tracking_menu_item).setEnabled(false);
-			menu.findItem(R.id.stop_tracking_menu_item).setEnabled(true);
-		} else {
-			menu.findItem(R.id.start_tracking_menu_item).setEnabled(true);
-			menu.findItem(R.id.stop_tracking_menu_item).setEnabled(false);
-		}
-		return super.onPrepareOptionsMenu(menu);
-	}
-
-	/** 
-	 * Here is where we start and stop the Tracker Service, plus handle other book keeping 
-	 * tasks, such as posting and canceling a Notification, displaying a Toast to the UI, and
+	 * Part of the View.OnClickListener interface. Called when the button in 
+	 * the Tracker View is clicked.  This also handles other booking tasks, 
+	 * such as posting and canceling a Notification, displaying a Toast to the UI, and
 	 * saving the changed state in the SharedPreferences. 
-	 * 
-	 * @see android.app.Activity#onMenuItemSelected(int, android.view.MenuItem)
 	 */
-	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		switch(item.getItemId()) {
-		case R.id.start_tracking_menu_item:
-			//showDialog(SET_MINIMUM_DISTANCE);
+	public void onClick(View v) {
+		if (mState == IDLE) {
 			Intent intent = new Intent(this, TrackerBackgroundService.class);
-			intent.putExtra("MinimumDistance", mMinDistance);
+			intent.putExtra(MINIMUM_DISTANCE_STR, mMinDistance);
 			startService(intent);
 			mState = RUNNING;
 			spEditor.putInt(TRACKER_STATE, RUNNING);
 			spEditor.commit();
-			Utils.showToast(this, "Tracking the phone's location.");
-			postNotification();   
-			break;	
-		case R.id.stop_tracking_menu_item:
+			Utils.showToast(this, "Starting background tracking.");
+			postNotification(); 
+			
+			mTrackerButton.setText("Stop");
+			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
+					getResources().getDrawable(R.drawable.stop_icon),null,null,null);  
+		} else {
 			stopService(new Intent(this, TrackerBackgroundService.class));
 			mNotificationMgr.cancel(R.string.local_service_label);  // Cancel the notification
 			mState = IDLE;
 			spEditor.putInt(TRACKER_STATE, IDLE);
 			spEditor.commit();
-			if (mTrackerState != null)
-				updateView(mTrackerState.mLocation); // Null Pointer if stopped before Service starts?
+			myLocationOverlay.disableMyLocation();
+
 			Utils.showToast(this, "Tracking is stopped.");
-			break;
+			mTrackerButton.setText("Start");
+			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
+					getResources().getDrawable(R.drawable.play_icon),null,null,null);  
+			updateView();
 		}
-		return true;
 	}
 	
 	/**
@@ -378,7 +388,6 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 
 	@Override
 	protected void onStop() {
-		// TODO Auto-generated method stub
 		super.onStop();
 		Log.i(TAG,"Stopped");
 	}
@@ -396,7 +405,7 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 			return new AlertDialog.Builder(this)
 			.setIcon(R.drawable.icon)
 			.setTitle("Set Minimum Plotting Distance")
-			.setMessage("5 meters is good for walking, 50 meters for biking, 500 meters for driving")
+			.setMessage("1-2 meters is good for walking, 25 meters for biking, 100 meters for driving")
 			.setView(input)
 			.setPositiveButton("Ok", 
 					new DialogInterface.OnClickListener() {
@@ -409,6 +418,7 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 							mMinDistance = 1;  // 1 meter
 					} 
 					Log.i(TAG,"min distance = " + mMinDistance);
+					mMinDistTextView.setText(" " + mMinDistance);
 				}
 			})
 			.setNegativeButton("Cancel", 
@@ -430,9 +440,10 @@ public class TrackerActivity extends MapActivity implements ServiceUpdateUIListe
 	 */
 	@Override
 	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
+
+
 
 
 }

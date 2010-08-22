@@ -23,10 +23,12 @@ package org.hfoss.posit.android;
 
   
 //import org.hfoss.posit.android.TrackerService.SendExpeditionPointTask;
+import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,6 +36,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -43,6 +46,14 @@ import android.util.Log;
 import com.google.android.maps.GeoPoint;
 
 
+/**
+ * This service manages the tracking of the device in the background.  It uses a
+ * Async Tasks to manage communication with the POSIT server.  It listens for 
+ * Location updates and uses a call back method to update the View in TrackerActivity.
+ * 
+ * @author rmorelli
+ *
+ */
 public class TrackerBackgroundService extends Service implements LocationListener {
 
 	private static final String TAG = "Tracker Service";
@@ -56,12 +67,13 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	private static TrackerActivity TRACKER_ACTIVITY;  // The UI
 	public static ServiceUpdateUIListener UI_UPDATE_LISTENER; // The Listener for the UI
 
-	public static int MINIMUM_INTERVAL = 1000; // millisecs
-	public static int MINIMUM_DISTANCE = 5; // Meters  
+	public static int MINIMUM_INTERVAL = 5000; // millisecs
+	public static int MINIMUM_DISTANCE = 3; // Meters  
 	
 	private Communicator mCommunicator;
 	private ConnectivityManager mConnectivityMgr;
 	private SharedPreferences mPreferences;
+	private PositDbHelper mDbHelper;
 
 	private LocationManager mLocationManager;
 	private Location mLocation  = null;
@@ -118,14 +130,13 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			Utils.showToast(this,"Aborting Tracker:\nDevice must be registered with a project.");
 			return;
 		}
-		Log.i(TAG,"Project id = " + mState.mProjId);
-		
-		// Register a new expedition
-		mCommunicator = new Communicator(this);
-		mState.mExpeditionNumber =  mCommunicator.registerExpeditionId(mState.mProjId);
+		Log.i(TAG,"Created, Project id = " + mState.mProjId);
 		
 		// Create a network manager
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+		
+		// Create a database helper
+		mDbHelper = new PositDbHelper(this);
 		
 		// Let the UI know about this Tracker service.
 		if (TRACKER_ACTIVITY != null)
@@ -133,7 +144,8 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	}
 
 	/**
-	 * This method is used only if the Service does inter process calls (IPCs), which it doesn't.
+	 * This method is used only if the Service does inter process calls (IPCs), 
+	 * which ours does not.
 	 */
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -141,12 +153,18 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		mState.mMinDistance = intent.getIntExtra("MinimumDistance", 5);
-		Log.i(TAG, "Received start id " + startId + ": " + mState.mMinDistance);
+
+		mState.mMinDistance = intent.getIntExtra(TrackerActivity.MINIMUM_DISTANCE_STR, 5);
+		Log.i(TAG, "Started, id " + startId + " minDistance: " + mState.mMinDistance);
+
+		// Register a new expedition
+		mCommunicator = new Communicator(this);
+		new RegisterExpeditionTask().execute();
 
 		// Start location update service
 		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE); 
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MINIMUM_INTERVAL, MINIMUM_DISTANCE, this);
+		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 
+				MINIMUM_INTERVAL, Math.min(MINIMUM_DISTANCE,mState.mMinDistance), this);
 	//	mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 		
 		// We want this service to continue running until it is explicitly
@@ -161,24 +179,42 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 * @param newLocation
 	 */
 	private void setCurrentGpsLocation(Location newLocation) {
-		Log.i(TAG, "Setting current GPS");
 		if (mLocation == null || mLocation.distanceTo(newLocation) >= mState.mMinDistance) {
 			mLocation = newLocation;
 			
 			// Update the TrackerState object, used to keep track of things and send data to UI
 			// Each new point is recorded in the TrackerState object
 			mState.mLocation = mLocation;
-			mState.mPoints++;
-			mState.addGeoPoint(new GeoPoint((int)(mLocation.getLatitude()*1E6), 
-					(int)(mLocation.getLongitude()*1E6)));
+			double latitude = mLocation.getLatitude();
+			double longitude = mLocation.getLongitude();
+			String latStr = String.valueOf(latitude);
+			String longStr = String.valueOf(longitude);
+			//Log.i(TAG, "Lat,long as strings " + latStr + "," + longStr);
 			
+			// Add the point to the ArrayList (used for mapping the points)
+			mState.mPoints++;
+			mState.addGeoPoint(new GeoPoint((int)(latitude*1E6), 
+					(int)(longitude*1E6)));
+			
+			// Add the point to the database (is this really necessary)
+            ContentValues resultGPSPoint = new ContentValues();
+            resultGPSPoint.put(PositDbHelper.EXPEDITION, mState.mExpeditionNumber); // Will be -1 if no network
+            resultGPSPoint.put(PositDbHelper.GPS_POINT_LATITUDE, latStr);
+            resultGPSPoint.put(PositDbHelper.GPS_POINT_LONGITUDE, longStr);
+            resultGPSPoint.put(PositDbHelper.GPS_POINT_ALTITUDE, mLocation.getAltitude());
+            resultGPSPoint.put(PositDbHelper.GPS_POINT_SWATH, mState.mSwath);
+            resultGPSPoint.put(PositDbHelper.GPS_TIME, System.currentTimeMillis());
+            mDbHelper.addNewGPSPoint(resultGPSPoint);
+
 			// Call the UI's Listener. This will update the View if it is visible
+            // Update here rather than in the Async thread so the points are displayed 
+            // even when there is no network.
 			if (UI_UPDATE_LISTENER != null && mLocation != null) {
-				UI_UPDATE_LISTENER.updateUI(mLocation);
+				UI_UPDATE_LISTENER.updateUI(mState);
 			}	
 			
-			// Send the point to the POSIT server in a background Thread
-			new SendExpeditionPointTask().execute(mLocation);
+			// Send the point to the POSIT server using a background Async Thread
+			new SendExpeditionPointTask().execute(resultGPSPoint);
 		}
 	}
 	
@@ -186,8 +222,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	public void onDestroy() {
 		super.onDestroy();
 		mLocationManager.removeUpdates(this); 
-		mLocationManager = null;
-		Log.i(TAG,"Destroyed, updates = " + mUpdates + " points sent to server = " + mPointsSent);
+		Log.i(TAG,"Destroyed, updates = " + mUpdates + " points sent = " + mPointsSent);
 	}
 	
 	// ------------------------ LocationListener Methods
@@ -220,34 +255,89 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 * care about the details.
 	 */
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		setCurrentGpsLocation(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+		if (mLocationManager != null)
+			setCurrentGpsLocation(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
 	}
 	
 	
 	/**
-	 * This class creates a new Thread to handle network access. 
+	 * Registers the expedition with the POSIT server. The server returns the expedition's
+	 * id.  If the phone lacks network connectivity, the expeditions id = -1. 
+	 * 
+	 * The thread will repeatedly wait until network connectivity is obtained.
 	 * @author rmorelli
-	 *
 	 */
-	private class SendExpeditionPointTask extends AsyncTask<Location, Void, Void> {
+	private class RegisterExpeditionTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			
+			// Timed-wait until we have WIFI or MOBILE (MOBILE works best of course)	
+			NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
+			while (info == null) {
+				try {
+					Thread.sleep(2000);
+					info = mConnectivityMgr.getActiveNetworkInfo();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			// Register a new expedition
+			mState.mExpeditionNumber =  mCommunicator.registerExpeditionId(mState.mProjId);
+			Log.i(TAG, "Registered expedition id = " + mState.mExpeditionNumber);
+			
+			// Call the UI's Listener. This will update the View if it is visible
+			if (UI_UPDATE_LISTENER != null && mLocation != null) {
+				UI_UPDATE_LISTENER.updateUI(mState);
+			}
+			return null;
+		}
+		
+	}
+	
+	
+	/**
+	 * This class creates a new Thread to handle sending GPS points to the POSIT server.
+	 * Note that the thread will wait until there is network connectivity and until
+	 * the Expedition has been duly registered on the server--i.e., has an Expedition id != -1.
+	 *  
+	 * @author rmorelli
+	 */
+	private class SendExpeditionPointTask extends AsyncTask<ContentValues, Void, Void> {
+
 
 	@Override
-	protected Void doInBackground(Location... location) {
+	protected Void doInBackground(ContentValues... values) {
 		
 		String result;
-		for (Location loc : location) {
+		for (ContentValues v : values) {
 
-			// Try to handle a change in network connectivity
-			// We may lose a few points, but try not to crash
 			try {
-				mConnectivityMgr.getActiveNetworkInfo().getType();
-
+				
+				// Wait until we have WIFI or MOBILE (MOBILE works best of course)	
+				NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
+				while (info == null || mState.mExpeditionNumber == -1) {
+					try {
+						Thread.sleep(2000);  // Wait for 2 seconds
+						info = mConnectivityMgr.getActiveNetworkInfo();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				// Send the point to the Server
 				result = mCommunicator.registerExpeditionPoint(
-						loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), 
-						mState.mSwath, mState.mExpeditionNumber);
+						v.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE),
+						v.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE), 
+						v.getAsDouble(PositDbHelper.GPS_POINT_ALTITUDE), 
+						v.getAsInteger(PositDbHelper.GPS_POINT_SWATH), 
+						mState.mExpeditionNumber,  //  We need to use the newly made expedition number
+						//v.getAsInteger(PositDbHelper.EXPEDITION), 
+						v.getAsLong(PositDbHelper.GPS_TIME));
+				
 				++mPointsSent;
-				//Log.i(TAG, result);
+				Log.i(TAG, "Sent  point " + mPointsSent + " to server, result = " + result);
 
 			} catch (Exception e) {
 				Log.i(TAG, "Error handleMessage " + e.getMessage());

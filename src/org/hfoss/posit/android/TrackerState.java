@@ -48,7 +48,7 @@ public class TrackerState {
 	public static final int PAUSED = 2;
 	
 	public int mProjId;
-	public int mExpeditionNumber;
+	public int mExpeditionNumber = -1;  // Indicates that an expedition number has not been set
 	
 	public int mPoints = 0;
 	public Location mLocation;
