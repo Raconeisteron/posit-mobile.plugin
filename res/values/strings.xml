@@ -222,19 +222,19 @@
 
 	<!-- Coverage tracking -->
 	<string name="trackItem">Coverage Tracker</string>
-	<string name="trackerLabel">Location (lat, long, alt): </string>
+	<string name="trackerLabel">Loc (lat, long, alt): </string>
 	<string name="trackerStatusLabel">Status: </string>
-	<string name="trackerExpeditionLabel">Expedition: </string>
-	<string name="trackerPointsLabel">Points: </string>
+	<string name="trackerExpeditionLabel">Exped: </string>
+	<string name="trackerPointsLabel">Pts: </string>
 	<string name="trackerSwathLabel">Swath: </string>
-	<string name="trackerMinDistLabel">Min Distance: </string>
-	<string name="trackerMinDistance">5 meters </string>
+	<string name="trackerMinDistLabel">MinDist: </string>
+	<string name="trackerMinDistance">3 m</string>
 	
 	<string name="trackerPoints">0</string>
-	<string name="trackerSwath">50 meters</string>
+	<string name="trackerSwath">50 m</string>
 	<string name="trackerStatus">Unknown </string>
-	<string name="trackerExpedition">Unknown </string>
-	<string name="trackerDefaultLocation">Unknown</string>
+	<string name="trackerExpedition">-1 </string>
+	<string name="trackerDefaultLocation">(0,0,0)</string>
 	<string name="start_tracking_menu_item">Start tracking</string>
 	<string name="stop_tracking_menu_item">Stop tracking</string>
 	<string name="new_expedition_menu_item">New expedition</string>
