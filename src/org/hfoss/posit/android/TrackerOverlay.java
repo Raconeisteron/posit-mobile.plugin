@@ -40,6 +40,8 @@ import com.google.android.maps.Projection;
  */
 public class TrackerOverlay extends Overlay {
 
+	public static final String TAG = "PositTracker";
+	
 	private static TrackerState mTrackerState;
 
 	private List<PointAndTime> pointsAndTimes;

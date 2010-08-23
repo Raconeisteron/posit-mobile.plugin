@@ -26,7 +26,9 @@ import java.util.List;
 
 import com.google.android.maps.GeoPoint;
 
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.Bundle;
 
 /**
  * A class to encapsulate Tracker state data
@@ -35,34 +37,75 @@ import android.location.Location;
  */
 public class TrackerState {
 
-	public static final String SHARED_STATE = "TrackerState";
-	public static final String NO_PROVIDER = "No location service";
+	public static final String TAG = "PositTacker";
 	
-	private static final int DEFAULT_SWATH_WIDTH = 50;  // 50 meters
-	private static final int DEFAULT_MIN_DISTANCE = 10;  // 10 meters
-
-	private static final String PROVIDER = "gps";
-	
-	public static final int IDLE = 0;
-	public static final int RUNNING = 1;
-	public static final int PAUSED = 2;
-	
-	public int mProjId;
-	public int mExpeditionNumber = -1;  // Indicates that an expedition number has not been set
-	
+	public static final String BUNDLE_NAME = "TrackerState";
+	public static final String BUNDLE_PROJECT = "ProjectId";
+	public static final String BUNDLE_SWATH = "Swath";
+	public static final String BUNDLE_MIN_DISTANCE = "MinDistance";
+	public static final String BUNDLE_EXPEDITION = "Expedition";
+		
+	public int mProjId = -1;			// No project id assigned 
+	public int mExpeditionNumber = -1;  // No expedition number assigned yet
 	public int mPoints = 0;
-	public Location mLocation;
 
-	public int mSwath = DEFAULT_SWATH_WIDTH;
-	public int mMinDistance = DEFAULT_MIN_DISTANCE;  // meters
+	public int mSwath = TrackerSettings.DEFAULT_SWATH_WIDTH;
+	public int mMinDistance = TrackerSettings.DEFAULT_MIN_RECORDING_DISTANCE;  // meters
 	
 	private List<PointAndTime> pointsAndTimes;
-
+	public Location mLocation;
 	
+	/**
+	 * Default constructor
+	 */
 	public TrackerState() {
 		pointsAndTimes = new ArrayList<PointAndTime>();
 	}  
 	
+	/**
+	 * Construct from a Bundle.  The Bundle contains only some of the elements
+	 * of the track's state -- e.g., no points
+	 * @param b
+	 */
+	public TrackerState(Bundle b) {
+		mProjId = b.getInt(BUNDLE_PROJECT);
+		mExpeditionNumber = b.getInt(BUNDLE_EXPEDITION);
+		mSwath = b.getInt(BUNDLE_SWATH);
+		mMinDistance = b.getInt(BUNDLE_MIN_DISTANCE);
+		pointsAndTimes = new ArrayList<PointAndTime>();
+	}
+	
+	/**
+	 * Returns a Bundle of some of the elements of the tracker's state. Useful for
+	 * making Intents.
+	 * 
+	 * @return
+	 */
+	public Bundle bundle() {
+		Bundle b = new Bundle();
+		b.putInt(BUNDLE_PROJECT, mProjId);
+		b.putInt(BUNDLE_MIN_DISTANCE, mMinDistance);
+		b.putInt(BUNDLE_EXPEDITION, mExpeditionNumber);
+		b.putInt(BUNDLE_SWATH, mSwath);
+		return b;
+	}
+	
+	/**
+	 * Updates attributes that are settable by the user.  This could be expanded.
+	 * 
+	 * @param preferenceKey the settable attribute
+	 */
+	public void updatePreference (SharedPreferences sp, String preferenceKey) {
+		if (preferenceKey.equals(TrackerSettings.MINIMUM_DISTANCE_PREFERENCE))
+			mMinDistance = Integer.parseInt(
+					sp.getString(preferenceKey,
+							""+TrackerSettings.DEFAULT_MIN_RECORDING_DISTANCE));
+		if (preferenceKey.equals(TrackerSettings.SWATH_PREFERENCE))
+			mSwath = Integer.parseInt(
+					sp.getString(preferenceKey, 
+							""+TrackerSettings.DEFAULT_SWATH_WIDTH));
+	}
+ 	
 	public synchronized void addGeoPoint(GeoPoint geoPoint) {
 		pointsAndTimes.add(new PointAndTime(geoPoint, System
 				.currentTimeMillis()));

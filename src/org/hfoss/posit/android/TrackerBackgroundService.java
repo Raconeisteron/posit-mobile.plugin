@@ -56,7 +56,7 @@ import com.google.android.maps.GeoPoint;
  */
 public class TrackerBackgroundService extends Service implements LocationListener {
 
-	private static final String TAG = "Tracker Service";
+	private static final String TAG = "PositTracker";
 	private static final int START_STICKY = 1;
 	
 	// The static variable allows us to send the Activity a reference to the service through the
@@ -66,13 +66,9 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	
 	private static TrackerActivity TRACKER_ACTIVITY;  // The UI
 	public static ServiceUpdateUIListener UI_UPDATE_LISTENER; // The Listener for the UI
-
-	public static int MINIMUM_INTERVAL = 5000; // millisecs
-	public static int MINIMUM_DISTANCE = 3; // Meters  
 	
 	private Communicator mCommunicator;
 	private ConnectivityManager mConnectivityMgr;
-	private SharedPreferences mPreferences;
 	private PositDbHelper mDbHelper;
 
 	private LocationManager mLocationManager;
@@ -117,20 +113,9 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	
 	  
 	public void onCreate() {
+		Log.d(TAG, "Tracker Service Created");
 		// Set up the Service so it can communicate with the Activity (UI)
 		serviceInstance = this;      // Reference to this Service object used by the UI
-		mState = new TrackerState(); // Create a TrackerState object to keep track of the track. 
-		
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		// Make sure the phone is registered with a Server and has a project selected
-		// Maybe this can be done in the Activity and sent to the Service?
-		mState.mProjId = mPreferences.getInt("PROJECT_ID", 0);
-		if (mState.mProjId == 0) {
-			Utils.showToast(this,"Aborting Tracker:\nDevice must be registered with a project.");
-			return;
-		}
-		Log.i(TAG,"Created, Project id = " + mState.mProjId);
 		
 		// Create a network manager
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -153,9 +138,11 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	}
 
 	public int onStartCommand(Intent intent, int flags, int startId) {
-
-		mState.mMinDistance = intent.getIntExtra(TrackerActivity.MINIMUM_DISTANCE_STR, 5);
-		Log.i(TAG, "Started, id " + startId + " minDistance: " + mState.mMinDistance);
+		
+		Bundle b = intent.getBundleExtra(TrackerState.BUNDLE_NAME);
+		mState = new TrackerState(b);
+		
+		Log.i(TAG, "Tracker Service Started, id " + startId + " minDistance: " + mState.mMinDistance);
 
 		// Register a new expedition
 		mCommunicator = new Communicator(this);
@@ -163,9 +150,13 @@ public class TrackerBackgroundService extends Service implements LocationListene
 
 		// Start location update service
 		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE); 
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 
-				MINIMUM_INTERVAL, Math.min(MINIMUM_DISTANCE,mState.mMinDistance), this);
-	//	mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+		if (mLocationManager != null) {
+			mLocationManager.requestLocationUpdates(
+					LocationManager.GPS_PROVIDER, 
+					TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, 
+					mState.mMinDistance, 
+					this);
+		}
 		
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
@@ -196,16 +187,16 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			mState.addGeoPoint(new GeoPoint((int)(latitude*1E6), 
 					(int)(longitude*1E6)));
 			
-			// Add the point to the database (is this really necessary)
+			// Add the point to the database
             ContentValues resultGPSPoint = new ContentValues();
             resultGPSPoint.put(PositDbHelper.EXPEDITION, mState.mExpeditionNumber); // Will be -1 if no network
             resultGPSPoint.put(PositDbHelper.GPS_POINT_LATITUDE, latStr);
             resultGPSPoint.put(PositDbHelper.GPS_POINT_LONGITUDE, longStr);
             resultGPSPoint.put(PositDbHelper.GPS_POINT_ALTITUDE, mLocation.getAltitude());
             resultGPSPoint.put(PositDbHelper.GPS_POINT_SWATH, mState.mSwath);
-            resultGPSPoint.put(PositDbHelper.GPS_TIME, System.currentTimeMillis());
-            mDbHelper.addNewGPSPoint(resultGPSPoint);
-
+            resultGPSPoint.put(PositDbHelper.GPS_TIME, newLocation.getTime());
+           mDbHelper.addNewGPSPoint(resultGPSPoint);
+            
 			// Call the UI's Listener. This will update the View if it is visible
             // Update here rather than in the Async thread so the points are displayed 
             // even when there is no network.
@@ -222,8 +213,33 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	public void onDestroy() {
 		super.onDestroy();
 		mLocationManager.removeUpdates(this); 
-		Log.i(TAG,"Destroyed, updates = " + mUpdates + " points sent = " + mPointsSent);
+		Log.i(TAG,"Tracker destroyed, updates = " + mUpdates + " points sent = " + mPointsSent);
 	}
+	
+	
+	
+	/**
+	 * Called from TrackerActivity when the user changes preferences. 
+	 * @param sp
+	 * @param key
+	 */
+	public void changePreference(SharedPreferences sp, String key) {
+		Log.d(TAG, "Shared Preference Changed key = " + key);
+		if (key != null) {
+			if (key.equals(getString(R.string.swath_width))) {
+				mState.mSwath = Integer.parseInt(
+						sp.getString(key, ""+TrackerSettings.DEFAULT_SWATH_WIDTH));
+				if (mState.mSwath <= 0) 
+					mState.mSwath = TrackerSettings.DEFAULT_SWATH_WIDTH;
+			} else if (key.equals(getString(R.string.min_recording_distance))) {
+				mState.mMinDistance = Integer.parseInt(
+						sp.getString(key, ""+TrackerSettings.DEFAULT_MIN_RECORDING_DISTANCE));
+				if (mState.mMinDistance < 0) 
+					mState.mMinDistance = 0;
+			}	   
+		}
+	}
+
 	
 	// ------------------------ LocationListener Methods
 	/**
@@ -293,7 +309,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			}
 			return null;
 		}
-		
 	}
 	
 	
@@ -313,8 +328,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		String result;
 		for (ContentValues v : values) {
 
-			try {
-				
+			try {			
 				// Wait until we have WIFI or MOBILE (MOBILE works best of course)	
 				NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
 				while (info == null || mState.mExpeditionNumber == -1) {
@@ -333,7 +347,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 						v.getAsDouble(PositDbHelper.GPS_POINT_ALTITUDE), 
 						v.getAsInteger(PositDbHelper.GPS_POINT_SWATH), 
 						mState.mExpeditionNumber,  //  We need to use the newly made expedition number
-						//v.getAsInteger(PositDbHelper.EXPEDITION), 
 						v.getAsLong(PositDbHelper.GPS_TIME));
 				
 				++mPointsSent;
