@@ -221,13 +221,20 @@
 	<string name="adhoc_groupsize_title">Ad-hoc group size:</string>
 
 	<!-- Coverage tracking -->
+	<string name="tracker_settings">Tracker</string>
+	<string name="tracker_recording">Recording</string>
+	<string name="tracker_settings_swath_summary">Width of path you can see</string>
+	<string name="swath_width">swathWidth</string>
+	<string name="min_recording_distance">minDistance</string>
+	<string name="tracker_settings_min_distance">Minimum Distance</string>
+	<string name="tracker_min_dist_summary">Minimum distance between recorded points</string>
 	<string name="trackItem">Coverage Tracker</string>
 	<string name="trackerLabel">Loc (lat, long, alt): </string>
 	<string name="trackerStatusLabel">Status: </string>
 	<string name="trackerExpeditionLabel">Exped: </string>
-	<string name="trackerPointsLabel">Pts: </string>
-	<string name="trackerSwathLabel">Swath: </string>
-	<string name="trackerMinDistLabel">MinDist: </string>
+	<string name="trackerPointsLabel">Pts </string>
+	<string name="trackerSwathLabel">Swath </string>
+	<string name="trackerMinDistLabel">MinDist </string>
 	<string name="trackerMinDistance">3 m</string>
 	
 	<string name="trackerPoints">0</string>

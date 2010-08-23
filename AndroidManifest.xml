@@ -45,6 +45,8 @@
 		<activity android:name=".SyncActivity" />
 		<activity android:name=".TutorialActivity"/>
 		<activity android:name=".TrackerActivity"/>
+		<activity android:name=".TrackerSettings"/>
+		
 		
 		<activity android:name="org.hfoss.posit.android.sms.SahanaSMSActivity"/>
 		<activity android:name="org.hfoss.posit.android.TrackerActivity"/>
