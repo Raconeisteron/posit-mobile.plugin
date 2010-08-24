@@ -23,6 +23,7 @@ package org.hfoss.posit.android;
 
 import java.util.List;
 
+import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 
@@ -31,6 +32,7 @@ import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -66,7 +68,7 @@ public class TrackerActivity extends MapActivity
 		View.OnClickListener,
 		OnSharedPreferenceChangeListener { 
 
-	private static final String TAG = "PositTracker";
+	public static final String TAG = "PositTracker";
 	private static final boolean ENABLED_ONLY = true;
 	private static final String NO_PROVIDER = "No location service";
 
@@ -96,6 +98,8 @@ public class TrackerActivity extends MapActivity
 	private TextView mMinDistTextView;
 	private Button mTrackerButton;
 	private Button mSettingsButton;
+	private Button mSaveButton;
+
 	
 	// The current track
 	private TrackerState mTrack;
@@ -108,7 +112,7 @@ public class TrackerActivity extends MapActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+						
 		// Abort the Tracker if GPS is unavailable
 		if (!hasNecessaryServices())  {
 			this.finish();
@@ -138,33 +142,17 @@ public class TrackerActivity extends MapActivity
 		
 	    // Get a notification manager
 		mNotificationMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-		// Set up the UI -- first the text views
-		setContentView(R.layout.tracker);
-		mPointsTextView = (TextView)findViewById(R.id.trackerPoints);
-		mLocationTextView = (TextView)findViewById(R.id.trackerLocation);
-		mStatusTextView = (TextView)findViewById(R.id.trackerStatus);
-		mExpeditionTextView = (TextView)findViewById(R.id.trackerExpedition);
-		mSwathTextView = (TextView)findViewById(R.id.trackerSwath);
-		mMinDistTextView = (TextView)findViewById(R.id.trackerMinDistance);
-	    mTrackerButton = (Button)findViewById(R.id.idTrackerButton);
-	    mTrackerButton.setOnClickListener(this);
-	    mSettingsButton = (Button)findViewById(R.id.idTrackerSettingsButton);
-	    mSettingsButton.setOnClickListener(this);
-
-		// Set up the UI -- now the map view and its current location overlay. 
-		// The points overlay is created in updateView, after the Tracker Service is started. 
-		MapView mapView = (MapView) findViewById(R.id.mapView);
-		mapView.setBuiltInZoomControls(true);
-		mOverlays = mapView.getOverlays();
-		myLocationOverlay = new MyLocationOverlay(this, mapView);
-		mOverlays.add(myLocationOverlay);
-			    	    
-		Log.i(TAG,"Tracker Activity created with state = " + mState);
+		
+		setUpTheUI();
+		
+		Log.i(TAG,"TrackerActivity,  created with state = " + mState);
 	}
 	
 	/**
-	 * 
+	 * Handles updating the UI when the Activity is resumed. It also 
+	 * distinguishes between this activity started from the main POSIT menu
+	 * (the default) and started from the TrackerListActivity (action = ACTION_VIEW).
+	 * In the latter case the track is just viewable--the Tracker is IDLE.
 	 */
 	@Override
 	public void onResume() {
@@ -186,8 +174,91 @@ public class TrackerActivity extends MapActivity
 			updateView();
 			Utils.showToast(this, "The Tracker is IDLE.");
 		}
+		
+		// The ACTION_VIEW intent is set by TrackerListActivity. It 
+		// display's an existing track.
+		final Intent intent = getIntent();
+		String action = intent.getAction();
+		
+		if (action != null && action.equals(Intent.ACTION_VIEW)) {
+			displayExistingExpedition(intent);
+			return;
+		}
 
-		Log.i(TAG,"Tracker Activity resumed in state " + mState);
+		Log.i(TAG,"TrackerActivity,  resumed in state " + mState);
+	}
+	
+	/*
+	 * Sets the layout for either the default or the ACTION_VIEW intents.
+	 */
+	private void setUpTheUI() {
+		// Set up the UI -- first the text views
+		setContentView(R.layout.tracker);
+		mPointsTextView = (TextView)findViewById(R.id.trackerPoints);
+		mLocationTextView = (TextView)findViewById(R.id.trackerLocation);
+		mStatusTextView = (TextView)findViewById(R.id.trackerStatus);
+		mExpeditionTextView = (TextView)findViewById(R.id.trackerExpedition);
+		mSwathTextView = (TextView)findViewById(R.id.trackerSwath);
+		mMinDistTextView = (TextView)findViewById(R.id.trackerMinDistance);
+	    mTrackerButton = (Button)findViewById(R.id.idTrackerButton);
+	    mTrackerButton.setOnClickListener(this);
+	    mSettingsButton = (Button)findViewById(R.id.idTrackerSettingsButton);
+	    mSettingsButton.setOnClickListener(this);
+	    mSaveButton = (Button)findViewById(R.id.idTrackerSaveButton);
+	    mSaveButton.setOnClickListener(this);
+//	    mSaveButton.setClickable(false);
+//	    mSaveButton.setEnabled(false);
+	    mSaveButton.setText("List");
+	    
+		// Set up the UI -- now the map view and its current location overlay. 
+		// The points overlay is created in updateView, after the Tracker Service is started. 
+		MapView mapView = (MapView) findViewById(R.id.mapView);
+		mapView.setBuiltInZoomControls(true);
+		mOverlays = mapView.getOverlays();
+		myLocationOverlay = new MyLocationOverlay(this, mapView);
+		mOverlays.add(myLocationOverlay);
+	}
+	
+	/*
+	 * Used by the ACTION_VIEW intent to display a static expedition, one
+	 * that was previously collected and stored in the Db. 
+	 */
+	private void displayExistingExpedition(Intent intent) {
+		Log.d(TAG, "TrackerActivity, displayExistingExpedition() ");
+		
+		long rowId = intent.getLongExtra(PositDbHelper.EXPEDITION_ROW_ID, 1);
+		
+		PositDbHelper dbHelper = new PositDbHelper(this);
+		String expedition = dbHelper.fetchExpeditionId(rowId);
+		
+		dbHelper.fetchExpeditionPointsByExpeditionId(Integer.parseInt(expedition), mTrack);
+	
+		mExpeditionTextView.setText(expedition);
+		mPointsTextView.setText("" + mTrack.getSize());
+		
+		mTrackerButton.setClickable(false);
+		mTrackerButton.setEnabled(false);
+		mSettingsButton.setClickable(false);
+		mSettingsButton.setEnabled(false);	
+		mSaveButton.setText("Delete");
+		mSaveButton.setClickable(true);
+		mSaveButton.setEnabled(true);	
+		
+		// Make invisible the controls and data fields used in the default Intent.
+		((TextView)findViewById(R.id.trackerSwathLabel)).setVisibility(View.GONE);
+		((TextView)findViewById(R.id.trackerSwath)).setVisibility(View.GONE);
+		((TextView)findViewById(R.id.trackerMinDistLabel)).setVisibility(View.GONE);
+		((TextView)findViewById(R.id.trackerMinDistance)).setVisibility(View.GONE);
+		((TextView)findViewById(R.id.trackerStatusLabel)).setVisibility(View.GONE);
+		((TextView)findViewById(R.id.trackerStatus)).setVisibility(View.GONE);
+		((TextView)findViewById(R.id.trackerLabel)).setVisibility(View.GONE);
+		((TextView)findViewById(R.id.trackerLocation)).setVisibility(View.GONE);
+		((Button)findViewById(R.id.idTrackerSettingsButton)).setVisibility(View.GONE);
+		((Button)findViewById(R.id.idTrackerButton)).setVisibility(View.GONE);
+		
+		// Display the expedition
+		mTrackerOverlay = new TrackerOverlay(mTrack);
+		mOverlays.add(mTrackerOverlay);
 	}
 	
 	/**
@@ -195,9 +266,7 @@ public class TrackerActivity extends MapActivity
 	 * 
 	 * @return
 	 */
-	private boolean hasNecessaryServices() {
-		Log.i(TAG, "hasNecessaryServices()");
-		
+	private boolean hasNecessaryServices() {		
 		// First check that we have GPS enabled 
 		LocationManager locationManager = 
 			(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -209,13 +278,17 @@ public class TrackerActivity extends MapActivity
 					+ "\nYou must have GPS enabled. ");
 			return false;
 		}
+		Log.i(TAG, "TrackerActivity,  hasNecessaryServices() = true");
 		return true;
 	}
 	
 	
 	/**
 	 * Create a current track object to store the track's points and its state.
-	 * @return
+	 * 
+	 * @return a TrackerState object stores the expedition's points, its parameters,
+	 * and the current state of the tracking operation. It is used to pass data 
+	 * between the TrackerActivity (this) and the TrackerBackgroundService.
 	 */
 	private TrackerState createTrack() {
 		TrackerState ts = new TrackerState();
@@ -229,7 +302,7 @@ public class TrackerActivity extends MapActivity
 				TrackerSettings.SWATH_PREFERENCE, 
 				""+TrackerSettings.DEFAULT_SWATH_WIDTH));
 		} catch (Exception e) {
-			Log.e(TAG, "Oops. something wrong probably Integer parse error " + e);
+			Log.e(TAG, "TrackerActivity, Oops. something wrong probably Integer parse error " + e);
 		}
 		
 		ts.mProjId = mPreferences.getInt(
@@ -250,9 +323,9 @@ public class TrackerActivity extends MapActivity
         		updateView();
         		if (state.mLocation != null) {
         			myLocationOverlay.onLocationChanged(state.mLocation);
-        			Log.i(TAG,"updatingUI  <" + state.mLocation.getLatitude() + "," + state.mLocation.getLongitude() + ">");
+        			Log.i(TAG,"TrackerActivity, updatingUI  <" + state.mLocation.getLatitude() + "," + state.mLocation.getLongitude() + ">");
         		} else 
-        			Log.w(TAG,"updatingUI  unable to get location from TrackerState");
+        			Log.w(TAG,"TrackerActivity, updatingUI  unable to get location from TrackerState");
 
               }
             });
@@ -268,10 +341,8 @@ public class TrackerActivity extends MapActivity
 		mBackgroundService = TrackerBackgroundService.getInstance();
 		if (mBackgroundService != null) {
 			mTrack = mBackgroundService.getTrackerState();
-//			mPoints =  mTrack.mPoints;
-//			mExpeditionNumber = mTrack.mExpeditionNumber;
-//			mMinDistance = mTrackerState.mMinDistance;
-			Log.i(TAG,"Restoring state, minDistance = " + mTrack.mMinDistance);
+			
+			Log.i(TAG,"TrackerActivity, Restoring state, mSaved = " + mTrack.isSaved());
 
 			mTrackerOverlay = new TrackerOverlay(mTrack);
 			mOverlays.add(mTrackerOverlay);
@@ -288,106 +359,163 @@ public class TrackerActivity extends MapActivity
 	}
 	
 	/**
-	 * A helper method to update the UI. 
-	 * @param location
+	 * A helper method to update the UI. Most of the data displayed in the View
+	 * are taken from the TrackerState object,  mTrack.
 	 */
 	private void updateView() {		 
 		String s = " Idle ";
+		
+		// Manage the control buttons
 		if (mState == TrackerSettings.RUNNING) {
 			s = " Running ";
 			mTrackerButton.setText("Stop");
 			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
 					getResources().getDrawable(R.drawable.stop_icon),null,null,null); 
+			mSaveButton.setText("Save");
+			mSaveButton.setEnabled(false);
+			mSaveButton.setClickable(false);
 		} else {
 			mTrackerButton.setText("Start");
 			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
 					getResources().getDrawable(R.drawable.play_icon),null,null,null);  
+			if (mTrack != null) 
+				if (mTrack.isSaved() || mTrack.mPoints == 0) {
+					Log.d(TAG, "TrackerActivity, updateView() expedition IS saved");
+					mSaveButton.setEnabled(false);
+					mSaveButton.setClickable(false);	
+
+				} else {
+					Log.d(TAG, "TrackerActivity, updateView() expedition NOT saved");
+					mSaveButton.setEnabled(true);
+					mSaveButton.setClickable(true);				
+				}
 		}
-		
+
+		// Display the current state of the GPS and Network services.
 		String netStr = "none"; // Assume no network
 		mConnectivityMgr = 
 			(ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
 		if (info != null) 
 			netStr = (mNetworkType == ConnectivityManager.TYPE_WIFI) ? " WIFI" : " MOBILE";
- 		mStatusTextView.setText(s + " (GPS = " + LocationManager.GPS_PROVIDER 
+		mStatusTextView.setText(s + " (GPS = " + LocationManager.GPS_PROVIDER 
 				+ ", Ntwk = " + netStr + ")");
-		
- 		if (mTrack != null) {
- 			mPointsTextView.setText(" " + mTrack.mPoints);
- 			mExpeditionTextView.setText(" "+ mTrack.mExpeditionNumber);
- 			mSwathTextView.setText(" " + mTrack.mSwath);
- 			mMinDistTextView.setText(" " + mTrack.mMinDistance);
- 			
- 			if (mTrack.mLocation != null) {
- 				String lat = mTrack.mLocation.getLatitude() + "";
- 				String lon = mTrack.mLocation.getLongitude() + "";		
- 				mLocationTextView.setText("(" + lat.substring(0,10) + "...," 
- 						+ lon.substring(0,10) + "...," + mTrack.mLocation.getAltitude() + ")");	
- 			} else
- 				Log.w(TAG, "updateView unable to get Location from TrackerState");
- 		}
- 		Log.d(TAG, "Tracker Activity updated view");
+
+		// Display the tracker's current state.
+		if (mTrack != null) {
+			mPointsTextView.setText(" " + mTrack.mPoints);
+			mExpeditionTextView.setText(" "+ mTrack.mExpeditionNumber);
+			mSwathTextView.setText(" " + mTrack.mSwath);
+			mMinDistTextView.setText(" " + mTrack.mMinDistance);
+
+			if (mTrack.mLocation != null) {
+				String lat = mTrack.mLocation.getLatitude() + "";
+				String lon = mTrack.mLocation.getLongitude() + "";		
+				mLocationTextView.setText("(" + lat.substring(0,10) + "...," 
+						+ lon.substring(0,10) + "...," + mTrack.mLocation.getAltitude() + ")");	
+			} else
+				Log.w(TAG, "TrackerActivity, updateView unable to get Location from TrackerState");
+		}
+		Log.d(TAG, "TrackerActivity,  updated view");
 	}
 
 
 	/**
-	 * Part of the View.OnClickListener interface. Called when the button in 
-	 * the Tracker View is clicked.  This also handles other booking tasks, 
+	 * Part of the View.OnClickListener interface. Called when any button in 
+	 * the Tracker View is clicked.  This also handles other bookkeeping tasks, 
 	 * such as posting and canceling a Notification, displaying a Toast to the UI, and
 	 * saving the changed state in the SharedPreferences. 
 	 */
 	public void onClick(View v) {
 		switch (v.getId()) {
 		
-		case R.id.idTrackerButton: 
+		case R.id.idTrackerButton:   // The play/stop button
 
-		if (mState == TrackerSettings.IDLE) {
-			Log.d(TAG, "Starting Tracker Service");
+		if (mState == TrackerSettings.IDLE) {  // Start the tracker
+			startTrackerService();
+			mSaveButton.setClickable(false);
+		    mSaveButton.setEnabled(false);
 
-			Intent intent = new Intent(this, TrackerBackgroundService.class);
-			intent.putExtra(TrackerState.BUNDLE_NAME, mTrack.bundle());
-			startService(intent);
-			
-			mState = TrackerSettings.RUNNING;
-			spEditor.putInt(
-					TrackerSettings.TRACKER_STATE_PREFERENCE, 
-					TrackerSettings.RUNNING);
-			spEditor.commit();
-			Utils.showToast(this, "Starting background tracking.");
-			postNotification(); 
-			
-			mTrackerButton.setText("Stop");
-			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
-					getResources().getDrawable(R.drawable.stop_icon),null,null,null);  
-		} else  { /* IDLE */ 
-			Log.d(TAG, "Stopping Tracker Service");
-
-			stopService(new Intent(this, TrackerBackgroundService.class));
-			mNotificationMgr.cancel(R.string.local_service_label);  // Cancel the notification
-			mState = TrackerSettings.IDLE;
-			spEditor.putInt(
-					TrackerSettings.TRACKER_STATE_PREFERENCE, 
-					TrackerSettings.IDLE);
-			spEditor.commit();
-			myLocationOverlay.disableMyLocation();
-
-			Utils.showToast(this, "Tracking is stopped.");
-			mTrackerButton.setText("Start");
-			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
-					getResources().getDrawable(R.drawable.play_icon),null,null,null);  
+		} else  { /* RUNNING */            // Stop the tracker
+			stopTrackerService();
+			mSaveButton.setText("Save");
+			mSaveButton.setClickable(true);
+		    mSaveButton.setEnabled(true);
 		}
 		updateView();
 		break;
-		case R.id.idTrackerSettingsButton: 
+		
+		// This button starts the TrackerSettings activity which lets the user
+		//  change the tracker parameters on the fly. Changes are commnicated
+		//  through shared preferences.
+		case R.id.idTrackerSettingsButton:   
 			// Try to get the background service
 			mBackgroundService = TrackerBackgroundService.getInstance();
 			startActivity(new Intent(this, TrackerSettings.class));
 			break;
+			
+		// The "save" button is used for various tasks, including saving, listing,
+		// and deleting tracks. The button's text and icon are changed depending on
+		// the current state of the Activity.
+		case R.id.idTrackerSaveButton:
+			String text = (String) mSaveButton.getText();
+			if (text.equals("List")) {
+				Intent intent = new Intent(this, TrackerListActivity.class); // List tracks
+				startActivity(intent);
+			} else if (text.equals("Save")) { // Save this track
+				saveExpedition();
+				mSaveButton.setEnabled(false);
+				mSaveButton.setClickable(false);
+			} else { 						// Delete this track
+				deleteExpedition();
+				finish();
+			}
+			break;
 		}
 	}
 	
+	/*
+	 * Helper method to delete the current track. Returns to TrackerListActivity
+	 */
+	private void deleteExpedition() {
+		PositDbHelper dbHelper = new PositDbHelper(this);
+		int mExpedNum = Integer.parseInt((String) mExpeditionTextView.getText());
+		boolean success = dbHelper.deleteExpedition(mExpedNum);
+		if (success) {
+			Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
+			Utils.showToast(this, "Deleted expedition " + mExpedNum);
+		} else {
+			Log.i(TAG, "TrackerActivity, Oops, something wrong when deleting expedition " + mExpedNum);
+			Utils.showToast(this, "Oops, something went wrong when deleting " + mExpedNum);
+		}
+	}
 	
+	/*
+	 * Helper method to save the current track. 
+	 */
+	private void saveExpedition() {
+		PositDbHelper dbHelper = new PositDbHelper(this);
+		ContentValues vals = new ContentValues();
+		vals.put(PositDbHelper.EXPEDITION_NUM, mTrack.mExpeditionNumber);
+		vals.put(PositDbHelper.EXPEDITION_PROJECT_ID, mTrack.mProjId);
+
+		long id = dbHelper.addNewExpedition(vals);
+		if (id != -1) {
+			Log.i(TAG, "TrackerActivity, saved expedition " 
+					+ mTrack.mExpeditionNumber + " projid= " + mTrack.mProjId + " in row " + id);
+			Utils.showToast(this, "Saved expedition " + mTrack.mExpeditionNumber);
+			if (mTrack != null)
+				mTrack.setSaved(true);
+			mSaveButton.setClickable(false);
+			mSaveButton.setEnabled(false);
+		} else {
+			Log.i(TAG, "TrackerActivity, Db Error: exped=" + mTrack.mExpeditionNumber + " proj=" 
+					+ mTrack.mProjId);
+			Utils.showToast(this, "Oops, something went wrong when saving " + mTrack.mExpeditionNumber);
+		}
+		Intent intent = new Intent(this, TrackerListActivity.class);
+		startActivity(intent);		
+	}
 	
 	/**
 	 * Post a notification in the status bar while this service is running.
@@ -412,6 +540,49 @@ public class TrackerActivity extends MapActivity
 		mNotificationMgr.notify(R.string.local_service_label, notification);
 	}
 	
+	/*
+	 * Helper method to start the background tracker service.
+	 */
+	private void startTrackerService() {
+		Log.d(TAG, "TrackerActivity, Starting Tracker Service");
+
+		Intent intent = new Intent(this, TrackerBackgroundService.class);
+		intent.putExtra(TrackerState.BUNDLE_NAME, mTrack.bundle());
+		startService(intent);
+		
+		mState = TrackerSettings.RUNNING;
+		spEditor.putInt(
+				TrackerSettings.TRACKER_STATE_PREFERENCE, 
+				TrackerSettings.RUNNING);
+		spEditor.commit();
+		Utils.showToast(this, "Starting background tracking.");
+		postNotification(); 
+		
+		mTrackerButton.setText("Stop");
+		mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
+				getResources().getDrawable(R.drawable.stop_icon),null,null,null);  
+	}
+
+	/*
+	 * Helper method to stop background tracker service.
+	 */
+	private void stopTrackerService () {
+		Log.d(TAG, "TrackerActivity, Stopping Tracker Service");
+
+		stopService(new Intent(this, TrackerBackgroundService.class));
+		mNotificationMgr.cancel(R.string.local_service_label);  // Cancel the notification
+		mState = TrackerSettings.IDLE;
+		spEditor.putInt(
+				TrackerSettings.TRACKER_STATE_PREFERENCE, 
+				TrackerSettings.IDLE);
+		spEditor.commit();
+		myLocationOverlay.disableMyLocation();
+
+		Utils.showToast(this, "Tracking is stopped.");
+		mTrackerButton.setText("Start");
+		mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
+				getResources().getDrawable(R.drawable.play_icon),null,null,null);  		
+	}
 	
 	@Override
 	public void onPause() {
@@ -419,7 +590,7 @@ public class TrackerActivity extends MapActivity
 		myLocationOverlay.disableMyLocation();
 		spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, mState);
 		spEditor.commit();
-		Log.i(TAG,"Paused in state: " + mState);
+		Log.i(TAG,"TrackerActivity, Paused in state: " + mState);
 	}
 	
 	// The following methods don't change the default behavior, but they show (in the Log) the
@@ -427,20 +598,20 @@ public class TrackerActivity extends MapActivity
 
 	@Override protected void onDestroy() {
 		super.onDestroy();
-		Log.i(TAG,"Destroyed");
+		Log.i(TAG,"TrackerActivity, Destroyed");
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.i(TAG,"Stopped");
+		Log.i(TAG,"TrackerActivity, Stopped");
 	}
 
+//  NOTE: Not used but could be brought back depending on UI modifications.	
 //	/*
 //	 * (non-Javadoc)
 //	 * @see android.app.Activity#onCreateDialog(int)
-//	 * Confirms with the user that they have changed their project and automatically syncs with the server
-//	 * to get all the project finds
+//	 * Prompts the user and accepts values for Tracker parameter, minimum recording distance.
 //	 */
 //	protected Dialog onCreateDialog(int id) {
 //		switch (id) {
@@ -461,7 +632,7 @@ public class TrackerActivity extends MapActivity
 //						if (mMinDistance < 0)
 //							mMinDistance = 1;  // 1 meter
 //					} 
-//					Log.i(TAG,"min distance = " + mMinDistance);
+//					Log.i(TAG,"TrackerActivity, min distance = " + mMinDistance);
 //					mMinDistTextView.setText(" " + mMinDistance);
 //				}
 //			})
@@ -483,14 +654,19 @@ public class TrackerActivity extends MapActivity
 	 * the tracker. 
 	 */
 	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-		Log.d(TAG, "Shared Preference Changed, key = " + key);
-			
+		Log.d(TAG, "TrackerActivity, Shared Preference Changed, key = " + key);
+		
+		// This is a hack.  TrackerState is not a shared preference but 
+		// this is called repeatedly throughout the run with this key.
+		
+		if (key.equals("TrackerState")) 
+			return;
+		
 		if (key != null && mBackgroundService != null) {
 			try {
 				mBackgroundService.changePreference(sp, key);
 			} catch (Exception e) {
-		        Log.w(TAG, "Failed to inform Tracker of shared preference change", e);
-
+		        Log.w(TAG, "TrackerActivity, Failed to inform Tracker of shared preference change", e);
 			}
 		}
 		mTrack.updatePreference(sp, key);

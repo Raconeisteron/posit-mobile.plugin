@@ -51,7 +51,10 @@ public class TrackerState {
 
 	public int mSwath = TrackerSettings.DEFAULT_SWATH_WIDTH;
 	public int mMinDistance = TrackerSettings.DEFAULT_MIN_RECORDING_DISTANCE;  // meters
-	
+
+	// Has the expedition been saved by TrackerActivity?
+	private boolean mSaved = false;
+
 	private List<PointAndTime> pointsAndTimes;
 	public Location mLocation;
 	
@@ -60,12 +63,15 @@ public class TrackerState {
 	 */
 	public TrackerState() {
 		pointsAndTimes = new ArrayList<PointAndTime>();
+		mSaved = false;
 	}  
 	
 	/**
 	 * Construct from a Bundle.  The Bundle contains only some of the elements
-	 * of the track's state -- e.g., no points
-	 * @param b
+	 * of the track's state -- e.g., no points.  This is used to construct a
+	 * TrackerState for displaying existing expeditions.
+	 * 
+	 * @param b A bundle storing data provided by an existing expedition.
 	 */
 	public TrackerState(Bundle b) {
 		mProjId = b.getInt(BUNDLE_PROJECT);
@@ -73,11 +79,13 @@ public class TrackerState {
 		mSwath = b.getInt(BUNDLE_SWATH);
 		mMinDistance = b.getInt(BUNDLE_MIN_DISTANCE);
 		pointsAndTimes = new ArrayList<PointAndTime>();
+		mSaved = true;
+		Log.i(TAG, "TrackerState() setting mSaved to true" );
 	}
 	
 	/**
 	 * Returns a Bundle of some of the elements of the tracker's state. Useful for
-	 * making Intents.
+	 * making the Intent used to display an existing expedition.
 	 * 
 	 * @return
 	 */
@@ -91,9 +99,9 @@ public class TrackerState {
 	}
 	
 	/**
-	 * Updates attributes that are settable by the user.  This could be expanded.
+	 * Updates attributes that are set/changed by the user.  
 	 * 
-	 * @param preferenceKey the settable attribute
+	 * @param preferenceKey The attribute that has been changed
 	 */
 	public void updatePreference (SharedPreferences sp, String preferenceKey) {
 		if (preferenceKey.equals(TrackerSettings.MINIMUM_DISTANCE_PREFERENCE))
@@ -105,22 +113,65 @@ public class TrackerState {
 					sp.getString(preferenceKey, 
 							""+TrackerSettings.DEFAULT_SWATH_WIDTH));
 	}
- 	
+	
+ 	/**
+ 	 * Inserts a new point and the time it was gathered into the pointsAndTimes 
+ 	 * list. 
+ 	 * @param geoPoint A latitude and longitude.
+ 	 * @param time The time when the point was marked.
+ 	 */
+	public synchronized void addGeoPointAndTime(GeoPoint geoPoint, long time) {
+		pointsAndTimes.add(new PointAndTime(geoPoint, time));
+	}
+	
+	/**
+	 * Inserts a new point into the pointsAndTimes list. 
+	 * @param geoPoint A latitude and longitude.
+	 */
 	public synchronized void addGeoPoint(GeoPoint geoPoint) {
 		pointsAndTimes.add(new PointAndTime(geoPoint, System
 				.currentTimeMillis()));
 	}
 	
+	/**
+	 *  Returns the list of geopoints associated with this expedition.
+	 */
 	public List<PointAndTime> getPoints() {
 		return pointsAndTimes;
 	}
 	
+	/**
+	 * Passes a list of geopoints to this expeditions.
+	 * @param points
+	 */
 	public void setPoints(List<PointAndTime> points) {
 		pointsAndTimes = points;
 	}
 	
 	/**
+	 * Returns the size of the ArrayList storing the geopoints. This is
+	 * useful for displaying an existing expedition.
+	 * 
+	 * @return
+	 */
+	public int getSize() {
+		return pointsAndTimes.size();
+	}
+	
+	// Getters and setters
+	
+	public boolean isSaved() {
+		return mSaved;
+	}
+
+	public void setSaved(boolean saved) {
+		mSaved = saved;
+	}
+	
+	/**
 	 * Helper class to store a geopoint and its time stamp.
+	 * Code adapted from on online tutorial.
+	 * @see http://www.calvin.edu/~jpr5/android/tracker.html
 	 * @author rmorelli
 	 *
 	 */
