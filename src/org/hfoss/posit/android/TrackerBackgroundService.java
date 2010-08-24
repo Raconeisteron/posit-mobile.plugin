@@ -22,7 +22,6 @@
 package org.hfoss.posit.android;
 
   
-//import org.hfoss.posit.android.TrackerService.SendExpeditionPointTask;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
@@ -76,6 +75,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	private TrackerState mState;
 	
 	private int mPointsSent = 0;
+	private int mPointsSynced = 0;
 	private int mUpdates = 0;
 	
 	/**
@@ -113,7 +113,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	
 	  
 	public void onCreate() {
-		Log.d(TAG, "Tracker Service Created");
+		Log.d(TAG, "TrackerService, onCreate()");
 		// Set up the Service so it can communicate with the Activity (UI)
 		serviceInstance = this;      // Reference to this Service object used by the UI
 		
@@ -137,12 +137,29 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		return null;
 	}
 
+	/**
+	 * Called when the service is started in TrackerActivity. Note that this method is
+	 * called (apparently) BEFORE onCreate(). This is important for the use of objects
+	 * such as the TrackerState.
+	 * 
+	 * The Service is passed a TrackerState object from the Activity and this object
+	 * is used during tracking to communicate data back and forth. It is used by the
+	 * Activity to display data in the View. It is used by the Service to store the
+	 * points that are gathered. 
+	 * 
+	 * @param intent Used to pass a TrackerState object to the service
+	 * @param flags Unused
+	 * @param startId Unused
+	 * @return START_STICKY so the service persists
+	 */
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		
+		// Get the TrackerState object
 		Bundle b = intent.getBundleExtra(TrackerState.BUNDLE_NAME);
 		mState = new TrackerState(b);
+		mState.setSaved(false);
 		
-		Log.i(TAG, "Tracker Service Started, id " + startId + " minDistance: " + mState.mMinDistance);
+		Log.i(TAG, "TrackerService,  Started, id " + startId + " minDistance: " + mState.mMinDistance);
 
 		// Register a new expedition
 		mCommunicator = new Communicator(this);
@@ -178,16 +195,18 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			mState.mLocation = mLocation;
 			double latitude = mLocation.getLatitude();
 			double longitude = mLocation.getLongitude();
+			
+			// The SQLite Db is happier if we store these as strings instead of doubles.
 			String latStr = String.valueOf(latitude);
 			String longStr = String.valueOf(longitude);
-			//Log.i(TAG, "Lat,long as strings " + latStr + "," + longStr);
+			//Log.i(TAG, "TrackerService, Lat,long as strings " + latStr + "," + longStr);
 			
 			// Add the point to the ArrayList (used for mapping the points)
 			mState.mPoints++;
 			mState.addGeoPoint(new GeoPoint((int)(latitude*1E6), 
 					(int)(longitude*1E6)));
 			
-			// Add the point to the database
+			// Create a ContentValues for the Point
             ContentValues resultGPSPoint = new ContentValues();
             resultGPSPoint.put(PositDbHelper.EXPEDITION, mState.mExpeditionNumber); // Will be -1 if no network
             resultGPSPoint.put(PositDbHelper.GPS_POINT_LATITUDE, latStr);
@@ -195,8 +214,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
             resultGPSPoint.put(PositDbHelper.GPS_POINT_ALTITUDE, mLocation.getAltitude());
             resultGPSPoint.put(PositDbHelper.GPS_POINT_SWATH, mState.mSwath);
             resultGPSPoint.put(PositDbHelper.GPS_TIME, newLocation.getTime());
-           mDbHelper.addNewGPSPoint(resultGPSPoint);
-            
+	           
 			// Call the UI's Listener. This will update the View if it is visible
             // Update here rather than in the Async thread so the points are displayed 
             // even when there is no network.
@@ -209,13 +227,17 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		}
 	}
 	
+	/**
+	 * Note that we stop the location update service here.  
+	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		mLocationManager.removeUpdates(this); 
-		Log.i(TAG,"Tracker destroyed, updates = " + mUpdates + " points sent = " + mPointsSent);
+		Log.i(TAG,"TrackerService, Tracker destroyed, updates = " + mUpdates + 
+				" points sent = " + mPointsSent +
+				" points synced = " + mPointsSynced);
 	}
-	
 	
 	
 	/**
@@ -224,7 +246,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 * @param key
 	 */
 	public void changePreference(SharedPreferences sp, String key) {
-		Log.d(TAG, "Shared Preference Changed key = " + key);
+		Log.d(TAG, "TrackerService, Shared Preference Changed key = " + key);
 		if (key != null) {
 			if (key.equals(getString(R.string.swath_width))) {
 				mState.mSwath = Integer.parseInt(
@@ -248,7 +270,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	public void onLocationChanged(Location newLocation) {
 		setCurrentGpsLocation(newLocation);
 		++mUpdates;
-//		Log.i(TAG, "point found");
+//		Log.d(TAG, "TrackerService, point found");
 	}
 
 	/**
@@ -262,7 +284,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 * Resets the GPS location whenever the provider is disabled.
 	 */
 	public void onProviderDisabled(String provider) {
-		// Log.i(TAG, provider + " disabled");
+		// Log.i(TAG, "TrackerService, " + provider + " disabled");
 		setCurrentGpsLocation(null);
 	}
 
@@ -301,7 +323,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			
 			// Register a new expedition
 			mState.mExpeditionNumber =  mCommunicator.registerExpeditionId(mState.mProjId);
-			Log.i(TAG, "Registered expedition id = " + mState.mExpeditionNumber);
+			Log.i(TAG, "TrackerService.Async, Registered expedition id = " + mState.mExpeditionNumber);
 			
 			// Call the UI's Listener. This will update the View if it is visible
 			if (UI_UPDATE_LISTENER != null && mLocation != null) {
@@ -326,7 +348,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	protected Void doInBackground(ContentValues... values) {
 		
 		String result;
-		for (ContentValues v : values) {
+		for (ContentValues vals : values) {
 
 			try {			
 				// Wait until we have WIFI or MOBILE (MOBILE works best of course)	
@@ -342,18 +364,31 @@ public class TrackerBackgroundService extends Service implements LocationListene
 				
 				// Send the point to the Server
 				result = mCommunicator.registerExpeditionPoint(
-						v.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE),
-						v.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE), 
-						v.getAsDouble(PositDbHelper.GPS_POINT_ALTITUDE), 
-						v.getAsInteger(PositDbHelper.GPS_POINT_SWATH), 
+						vals.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE),
+						vals.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE), 
+						vals.getAsDouble(PositDbHelper.GPS_POINT_ALTITUDE), 
+						vals.getAsInteger(PositDbHelper.GPS_POINT_SWATH), 
 						mState.mExpeditionNumber,  //  We need to use the newly made expedition number
-						v.getAsLong(PositDbHelper.GPS_TIME));
+						vals.getAsLong(PositDbHelper.GPS_TIME));
 				
-				++mPointsSent;
-				Log.i(TAG, "Sent  point " + mPointsSent + " to server, result = " + result);
+				// Successful result has the form mmm,nnnn where mmm = expediton_id
+				String s = result.substring(0, result.indexOf(","));
+				
+				++mPointsSent;	
+				if (s.equals("" + mState.mExpeditionNumber)) {
+					++mPointsSynced;
+					vals.put(PositDbHelper.GPS_SYNCED, PositDbHelper.FIND_IS_SYNCED);
+				} else {
+					vals.put(PositDbHelper.GPS_SYNCED, PositDbHelper.FIND_NOT_SYNCED);
+				}
+				Log.i(TAG, "TrackerService.Async, Sent  point " + mPointsSent + " to server, result = |" + result + "|");
+
+	            // Insert the point to the phone's database
+		           mDbHelper.addNewGPSPoint(vals);
+				
 
 			} catch (Exception e) {
-				Log.i(TAG, "Error handleMessage " + e.getMessage());
+				Log.i(TAG, "TrackerService.Async, Error handleMessage " + e.getMessage());
 				e.printStackTrace();
 				// finish();
 			}

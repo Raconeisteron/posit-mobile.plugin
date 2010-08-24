@@ -52,6 +52,7 @@ import org.hfoss.posit.android.Constants;
 import org.hfoss.posit.android.Find;
 import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.TrackerActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.third.Base64Coder;
@@ -555,7 +556,7 @@ public class Communicator {
 
 		try {
 			responseString = mHttpClient.execute(post, responseHandler);
-			//Log.i(TAG, "responseString = " + responseString);
+			Log.d(TAG, "doHTTPpost responseString = " + responseString);
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, "ClientProtocolExcpetion" + e.getMessage());
 			e.printStackTrace();
@@ -575,7 +576,7 @@ public class Communicator {
 		}
 		long time = System.currentTimeMillis() - startTime;
 		mTotalTime += time;
-		Log.i(TAG, "respose = " + responseString + " TIME = " + time + " millisecs");
+		Log.i(TAG, "doHTTPpost response = " + responseString + " TIME = " + time + " millisecs");
 
 		return responseString;
 	}
@@ -770,7 +771,7 @@ public class Communicator {
 			int swath, int expedition, long time) {
 			//long swath, int expedition) {
 		if (Utils.debug)
-			Log.i(TAG, "registerExpeditionPoint " + lat + " " + lng + " " + time);
+			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint " + lat + " " + lng + " " + time);
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(sendMap);
 		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="
@@ -781,14 +782,18 @@ public class Communicator {
 		sendMap.put(PositDbHelper.GPS_POINT_SWATH, "" + swath);
 		sendMap.put(PositDbHelper.EXPEDITION, expedition + "");
 		sendMap.put(PositDbHelper.GPS_TIME, time + "");
-		String addExpeditionResponseString = doHTTPPost(addExpeditionUrl,
-				sendMap);
+		String response = doHTTPPost(addExpeditionUrl, sendMap);
 //		if (Utils.debug) {
-//			Log.i(TAG, "response: " + addExpeditionResponseString);
+//			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint, response: " + addExpeditionResponseString);
 //		}
-		return addExpeditionResponseString;
+		return response;
 	}
 
+	/**
+	 * Registers a new expedition with the server.
+	 * @param projectId  Posit's current project id.
+	 * @return
+	 */
 	public int registerExpeditionId(int projectId) {
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(sendMap);
@@ -798,14 +803,14 @@ public class Communicator {
 		String addExpeditionResponseString = doHTTPPost(addExpeditionUrl,
 				sendMap);
 		if (Utils.debug) {
-			Log.i(TAG, "registerExpeditionId, response: "
+			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionId, response: "
 					+ addExpeditionResponseString);
 		}
 		try {
 			Integer i = Integer.parseInt(addExpeditionResponseString);
 			return i;
 		} catch (NumberFormatException e) {
-			Log.e(TAG, "Invalid response received");
+			Log.e(TrackerActivity.TAG, "Communicator, registerExpeditionId, Invalid response received");
 			return -1;
 		}
 	}

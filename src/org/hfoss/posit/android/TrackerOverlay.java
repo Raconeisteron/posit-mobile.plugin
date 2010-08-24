@@ -34,6 +34,8 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
 
 /**
+ * Creates an overlay to display points along an expedition.
+ * 
  * Code adapted from on online tutorial.
  * @see http://www.calvin.edu/~jpr5/android/tracker.html
  *
@@ -48,7 +50,6 @@ public class TrackerOverlay extends Overlay {
 
 	public TrackerOverlay(TrackerState state) {
 		mTrackerState = state;
-//		pointsAndTimes = new ArrayList<PointAndTime>();
 	}
 
 	@Override

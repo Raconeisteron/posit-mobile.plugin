@@ -29,7 +29,12 @@ import java.util.ListIterator;
 import java.util.Random;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.TrackerActivity;
+import org.hfoss.posit.android.TrackerState;
+import org.hfoss.posit.android.TrackerState.PointAndTime;
 import org.hfoss.posit.android.utilities.Utils;
+
+import com.google.android.maps.GeoPoint;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -117,9 +122,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	public static final String GPS_POINT_ALTITUDE = "altitude";
 	public static final String GPS_POINT_SWATH = "swath";
 	public static final String GPS_TIME = "time";
-
-
-	
+	public static final String GPS_SYNCED = "synced";
 	
 	// The following two arrays go together to form a <DB value, UI View> pair
 	// except for the first DB value, which is just a filler.
@@ -149,8 +152,24 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		R.id.num_photos,
 		R.id.find_image     // Thumbnail in ListFindsActivity
 	};
-
+	
+	/*
+	 * Array of column names used by TrackerListActivity to display a list of Expeditions.
+	 */
+	public static final String[] track_data = {
+		EXPEDITION_NUM, 
+		EXPEDITION_PROJECT_ID 
+	};
+	
 	/**
+	 * Array of view ids used by TrackerListActivity to display a list of Expeditions.
+	 */
+	public static final int[] track_views = {
+		R.id.expedition_id,
+		R.id.project_id
+	};
+
+	/*
 	 * Finds table creation sql statement. 
 	 */
 	private static final String CREATE_FINDS_TABLE = "CREATE TABLE IF NOT EXISTS "
@@ -171,6 +190,9 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ ");";
 	
 	
+	/*
+	 * Creates the Photos table.
+	 */
 	private static final String CREATE_IMAGES_TABLE = "CREATE TABLE IF NOT EXISTS "
 		+ PHOTOS_TABLE  
 		+ " (" + PHOTOS_ID + " integer primary key autoincrement, "  // dB Key
@@ -184,7 +206,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ FINDS_TIME + " timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP" //text, "
 		+ ");" ;
 
-	/**
+	/*
 	 * Keeps track of create, update, and delete actions on Finds.
 	 */
 	private static final String CREATE_FINDS_HISTORY_TABLE = 
@@ -197,7 +219,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ FINDS_ACTION + " varchar(20) NOT NULL"
 		+ ")";
 		
-	/**
+	/*
 	 * Keeps track of sync actions between client (phone) and server
 	 */
 	private static final String CREATE_SYNC_HISTORY_TABLE = 
@@ -208,7 +230,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ SYNC_COLUMN_SERVER + " varchar(50) NOT NULL "
 		+ ")";
 
-	/**
+	/*
 	 * Keeps track of sync actions between client (phone) and server
 	 */
 	private static final String INITIALIZE_SYNC_HISTORY_TABLE = 
@@ -216,7 +238,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ FINDS_TIME + "," + SYNC_COLUMN_SERVER + ")" 
 		+ " VALUES (datetime('now'),'noserver')";
 
-	/**
+	/*
 	 * Keeps track of sync actions between client (phone) and serve
 	 */
 	private static final String TIMESTAMP_FIND_UPDATE = 
@@ -224,6 +246,9 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ FINDS_MODIFY_TIME + " = " 
 		+ " datetime('now') ";
 	
+	/*
+	 * The create statement for the Expedition table.
+	 */
 	private static final String CREATE_EXPEDITION_TABLE =
 		"CREATE TABLE IF NOT EXISTS " 
 		+ EXPEDITION_TABLE + "("
@@ -231,6 +256,14 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ EXPEDITION_NUM + " integer DEFAULT 0, "
 		+ EXPEDITION_PROJECT_ID + " integer DEFAULT 0 "
 		+ ")";
+	
+	/*
+	 *  The create statement for the GPS points table. Note that we 
+	 *  store the lat,long as Strings.  Had problems with precision 
+	 *  between SQLite (on the phone) and MySQL (on the server) when 
+	 *  storing them as doubles.  Might make sense to store them as
+	 *  integer (* 1E6)?
+	 */
 	private static final String CREATE_EXPEDITION_GPS_POINTS_TABLE =
 		"CREATE TABLE IF NOT EXISTS " 
 		+ EXPEDITION_GPS_POINTS_TABLE + "("
@@ -242,7 +275,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	    + GPS_POINT_LONGITUDE + " varchar(30) DEFAULT 0, "	    
 	    + GPS_POINT_ALTITUDE + " double DEFAULT 0, "
 	    + GPS_POINT_SWATH + " integer DEFAULT 0, "
-	    + GPS_TIME + " long DEFAULT 0 " 
+	    + GPS_TIME + " long DEFAULT 0, " 
+	    + GPS_SYNCED + " integer DEFAULT 0 "
 	    +")";
 	
 	private Context mContext;   // The Activity
@@ -286,8 +320,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 //		if (DBG) Log.i(TAG, "Created " + FINDS_HISTORY_TABLE);
 		db.execSQL(CREATE_SYNC_HISTORY_TABLE);
 //		if (DBG) Log.i(TAG, "Created " + SYNC_HISTORY_TABLE);
-//		db.execSQL("DROP TABLE IF EXISTS " + EXPEDITION_TABLE);
-//		db.execSQL(CREATE_EXPEDITION_TABLE);
+//  		db.execSQL("DROP TABLE IF EXISTS " + EXPEDITION_TABLE);
+		db.execSQL(CREATE_EXPEDITION_TABLE);
 //		if (DBG) Log.i(TAG, "Created " +EXPEDITION_TABLE);
 //		db.execSQL("DROP TABLE IF EXISTS " + EXPEDITION_GPS_POINTS_TABLE);
 		db.execSQL(CREATE_EXPEDITION_GPS_POINTS_TABLE);
@@ -481,23 +515,36 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		return rowId;
 	}
 	
-//?? needs documentation
-	// TODO Auto-generated method stub
-	public long addNewExpedition(ContentValues values1) {
+	/**
+	 * Insert an expedition into the database.
+	 * @param values the ContentValues providing the expedition's data
+	 * @return
+	 */
+	@SuppressWarnings("finally")
+	public long addNewExpedition(ContentValues values) {
+		Log.d(TrackerActivity.TAG, "PositDbHelper, addNewExpedition()");
 		mDb = getWritableDatabase();  // Either create the DB or open it.
-		long rowId = mDb.insert(EXPEDITION_TABLE, null, values1);
-		ContentValues values2 = new ContentValues();
-		values2.put(EXPEDITION_GPS_POINT_ROW_ID, rowId);
-		mDb.insert(EXPEDITION_GPS_POINTS_TABLE, null, values2);
-		
-		return rowId;
+		long rowId = 0;
+		try {
+			rowId = mDb.insert(EXPEDITION_TABLE, null, values);
+		} catch (Exception e) {
+			Log.e(TAG, "Error on addNewExpedition " + e.getMessage());
+			e.printStackTrace();
+			rowId = -1;
+		} finally {
+			mDb.close();
+			return rowId;
+		}
 	}
 
-	//?? needs documentation
-	// TODO Auto-generated method stub
+	/**
+	 * Inserts a GPS point into the database.
+	 * @param values the ContentValues storing the point's data.
+	 */
 	public void addNewGPSPoint(ContentValues values) {
+		//Log.d(TrackerActivity.TAG, "PositDbHelper, addNewGPSPoint()");
 		mDb = getWritableDatabase();  // Either create the DB or open it.
-		Log.i(TAG, "<" + values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE)
+		Log.i(TrackerActivity.TAG, "PositDbHelper, addNewGPSPoint, <" + values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE)
 				+ "," + values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) + ">");
 		mDb.insert(EXPEDITION_GPS_POINTS_TABLE, null, values);
 		mDb.close();
@@ -509,6 +556,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @return
 	 */
 	public ArrayList<ContentValues> getGeoPoints(int exped) {
+		Log.d(TrackerActivity.TAG, "PositDbHelper, getGeoPoints()");
+		
 		mDb = getReadableDatabase();
 		ArrayList<ContentValues> list = new ArrayList<ContentValues>();
    
@@ -766,53 +815,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		mDb.close();
 		return result;
 	}
-	
-
-//	/** 
-//	 * DEPRECATED:  PositDbHelper will not return a Cursor for Finds 
-//	 *  unnecssary and causes memory leaks
-//	 * Returns a Cursor with rows of all columns for all Finds.
-//	 * @return
-//	 */
-//	public Cursor fetchAllFinds() {
-//		mDb = getReadableDatabase(); // Either open or create the DB.
-//		Cursor c = mDb.query(FINDS_TABLE,null, WHERE_NOT_DELETED, null, null, null, null);
-//		Log.i(TAG,"fetchAllFinds, count=" + c.getCount());
-//		c.close();  // Can you really close the Cursor before returning it?
-//		mDb.close();
-//		return c;
-//	}
-	
-//	/** 
-//	 * DEPRECATED:  PositDbHelper will not return a Cursor for Finds 
-//	 *  unnecssary and causes memory leaks
-//	 * Returns a Cursor with rows of selected columns for all Finds.
-//	 * @return
-//	 */
-//	public Cursor fetchAllFinds(String[] columns){
-//		mDb = getReadableDatabase(); // Either open or create the DB.
-//		Cursor c = null;
-//		c = mDb.query(FINDS_TABLE, columns, WHERE_NOT_DELETED, null, null, null, null); //  NOTE WELL: Closing causes an error in cursor mgmt
-//		Log.i(TAG,"fetchAllFinds, count=" + c.getCount());
-//		return c;
-//	}
-
-
-//	/**
-//	 * DEPRECATED:  PositDbHelper will not return a Cursor for Finds 
-//	 *  unnecssary and causes memory leaks 
-//	 * Returns a cursor with rows for all Finds
-//	 * @param guid the Finds globally unique Id
-//	 * @return
-//	 */
-//	public Cursor fetchFindsByGuid(String guId) {
-//		mDb = getWritableDatabase();
-//		Cursor cursor = mDb.query(FINDS_TABLE, null, 
-//				WHERE_NOT_DELETED + " AND " + FINDS_GUID + "=" + guId, null, null, null, null);
-//		if (DBG) Log.i(TAG, "fetchFindsByGuid, count = " + cursor.getCount()+"");
-//		mDb.close();
-//		return cursor;
-//	}
 
 
 	/** 
@@ -852,84 +854,102 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	}
 	
 	
-	//TODO
-	public Cursor fetchExpeditionDataByExpeditionNumReturnCursor(long expedNum) {
-		String[] columns =null;
+	/**
+	 * Returns a cursor to expeditions data. The calling object must
+	 * remember to close the cursor. 
+	 * 
+	 * @param pid
+	 * @return
+	 */
+	public Cursor fetchExpeditionsByProjectId(int pid) {
+		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionPointsByProjectId()");
+		
 		mDb = getReadableDatabase();  // Either open or create the DB    	
-		String[] selectionArgs = null;
-		String groupBy = null, having = null, orderBy = null;
-		Cursor c = mDb.query(EXPEDITION_TABLE, columns, 
-				EXPEDITION_NUM+"="+expedNum, selectionArgs, groupBy, having, orderBy);
-		c.moveToFirst();
-		ContentValues values1 = null;
-		if (c.getCount() != 0)
-			values1 = this.getContentValuesFromRow(c);
-		c.close();
+		Cursor c = mDb.query(EXPEDITION_TABLE, null, 
+				EXPEDITION_PROJECT_ID + "=" + pid, 
+				null, null, null, null);
+		Log.d(TAG,"fetchExpeditions cursor size = " + c.getCount());
 		mDb.close();
+		return c;
+	}
+	
+    /**
+     * Returns the expedition's id number given its row id. This method
+     * is used to 
+     * 
+     * @param rowId
+     * @return
+     */
+	public String fetchExpeditionId(long rowId) {
+		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionId()");
+		mDb = getReadableDatabase();  // Either open or create the DB    	
+		Cursor c = mDb.query(EXPEDITION_TABLE, null, 
+				EXPEDITION_ROW_ID + "=" + rowId, 
+				null, null, null, null);
+		Log.d(TAG,"fetchExpeditionId cursor size = " + c.getCount());
+		c.moveToFirst();
+		String expId = c.getString(c.getColumnIndex(EXPEDITION_NUM));
+		mDb.close();
+		c.close();
+		return expId;
+	}
 
-		c = fetchExpeditionDataByRowIdReturnCursor(values1.getAsLong(EXPEDITION_ROW_ID));
-		
-		return c;
-	}
-	private Cursor fetchExpeditionDataByRowIdReturnCursor(long rowId) {
-		mDb = getReadableDatabase();  // Either open or create the DB    	
-		String[] selectionArgs = null;
-		String[] columns =null;
-		String groupBy = null, having = null, orderBy = null;
-		Cursor c = mDb.query(EXPEDITION_GPS_POINTS_TABLE, columns, 
-				 EXPEDITION_GPS_POINT_ROW_ID+"="+rowId, selectionArgs, groupBy, having, orderBy);
-		c.moveToFirst();
-//		ContentValues[] values = new ContentValues[c.getCount()];
-//		if (c.getCount() != 0)
-//			for (int i =0; i<c.getCount();i++){
-//			values[i] = this.getContentValuesFromRow(c);
-//			c.moveToNext();
-//			}
-//		c.close();
-		mDb.close();
-		return c;
-	}
-	
-	// this method is used to call expeditions from the database, decided to return as an
-	//array of content values for simplicity but a has map maybe a better choice for the future.
-	// As it is this, method is the one that gets called in posit and fetchExpeditionDataByRowId 
-	// is the method that gets the actual data points.
-	public ContentValues[] fetchExpeditionDataByExpeditionNum(Long expedNum) {
-		String[] columns =null;
-		mDb = getReadableDatabase();  // Either open or create the DB    	
-		String[] selectionArgs = null;
-		String groupBy = null, having = null, orderBy = null;
-		Cursor c = mDb.query(EXPEDITION_TABLE, columns, 
-				EXPEDITION_NUM+"="+expedNum, selectionArgs, groupBy, having, orderBy);
-		c.moveToFirst();
-		ContentValues values1 = null;
-		if (c.getCount() != 0)
-			values1 = this.getContentValuesFromRow(c);
-		c.close();
-		ContentValues[] values = fetchExpeditionDataByRowId(values1.getAsLong(EXPEDITION_ROW_ID));
-		
-		mDb.close();
-		return values;
-	}
-	
-	private ContentValues[] fetchExpeditionDataByRowId(long rowId) {
-		mDb = getReadableDatabase();  // Either open or create the DB    	
-		String[] selectionArgs = null;
-		String[] columns =null;
-		String groupBy = null, having = null, orderBy = null;
-		Cursor c = mDb.query(EXPEDITION_GPS_POINTS_TABLE, columns, 
-				 EXPEDITION_GPS_POINT_ROW_ID+"="+rowId, selectionArgs, groupBy, having, orderBy);
-		c.moveToFirst();
-		ContentValues[] values = new ContentValues[c.getCount()];
-		if (c.getCount() != 0)
-			for (int i =0; i<c.getCount();i++){
-			values[i] = this.getContentValuesFromRow(c);
+	/**
+	 * Fetches all the points associated with a given expedition, identified by its
+	 * expedition number.  The points are assigned to the TrackerState object 
+	 * passed in as a parameter.  They are stored in the TrackeState's array list
+	 * of PointAndTime objects. 
+	 * 
+	 * @param expId the expedition's identification number
+	 * @param track an object storing the state of an expedition, including all its
+	 *  geopoints. 
+	 */
+	public void fetchExpeditionPointsByExpeditionId (int expId, TrackerState track) {		
+		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionPointsByExpeditionId()");
+
+		mDb = getReadableDatabase();
+		Cursor c = mDb.query((EXPEDITION_GPS_POINTS_TABLE), 
+				null, 
+				EXPEDITION + "=" + expId, 
+				null, null, null, null);
+		c. moveToFirst();
+		while (c.isAfterLast() == false) {
+			int lat_k = c.getColumnIndex(GPS_POINT_LATITUDE);
+			Double latitude = new Double(c.getString(lat_k));
+			int lon_k = c.getColumnIndex(GPS_POINT_LONGITUDE);
+			Double longitude = new Double (c.getString(lon_k));
+			long time = c.getLong(c.getColumnIndex(GPS_TIME));
+			GeoPoint point = new GeoPoint(
+					(int)(latitude*1E6), 
+					(int)(longitude*1E6));
+			track.addGeoPointAndTime(point, time);
 			c.moveToNext();
-			}
-		c.close();
+		}
+	
 		mDb.close();
-		return values;
+		c.close();
 	}
+	
+	/**
+	 * Deletes and expedition and all the points associated with it.
+	 * @param expId the expedition id number
+	 * @return
+	 */
+	public boolean deleteExpedition(int expId) {
+		Log.d(TrackerActivity.TAG, "PositDbHelper, deleteExpedition()");
+		
+		mDb = getWritableDatabase();
+		int deleted =  mDb.delete(EXPEDITION_TABLE, 
+				EXPEDITION_NUM + "=" + expId, null);
+
+		if (deleted > 0) {
+			deleted = mDb.delete(EXPEDITION_GPS_POINTS_TABLE, 
+					EXPEDITION + "=" + expId, null);
+		}
+		mDb.close();
+		return deleted > 0;
+	}
+
 	
 	/**
 	 * Returns selected columns for a find by id.
@@ -1041,8 +1061,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		mDb.close();
 		return guId;
 	}
-	
-	
 	
 	/**
 	 * This helper method is passed a cursor, which points to a row of the DB.

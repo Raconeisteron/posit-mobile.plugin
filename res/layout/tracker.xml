@@ -119,7 +119,15 @@
 					android:layout_width="105dp" 
 					android:layout_height="50dp" 
 					android:drawableLeft  ="@drawable/settings_32"
-					android:text="Settings" />					
+					android:text="Settings" />	
+					
+				<Button 
+					android:id="@+id/idTrackerSaveButton" 
+					android:layout_width="105dp" 
+					android:layout_height="50dp" 
+					android:drawableLeft  ="@drawable/save_32"
+					android:text="Save" />	
+														
 			</LinearLayout>
 		</TableRow>
 					
