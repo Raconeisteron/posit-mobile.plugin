@@ -24,9 +24,11 @@ package org.hfoss.posit.android;
 
 import org.hfoss.posit.android.provider.PositDbHelper;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -116,12 +118,13 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 
-		Intent intent = new Intent(this, TrackerActivity.class);
-		intent.setAction(Intent.ACTION_VIEW);
-		//intent.putExtra(PositDbHelper.EXPEDITION_NUM, mExpeditionIds[position]);
-		intent.putExtra(PositDbHelper.EXPEDITION_ROW_ID, id);
-		startActivity(intent);
+		//Intent result = new Intent(null, data);
+		Intent result = new Intent();
+		result.putExtra(PositDbHelper.EXPEDITION_ROW_ID, id);
+		setResult(Activity.RESULT_OK, result);
+		mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onListItemClick position= " + position + " id = " +  id);
+		finish();
 	}
 
 	/**

@@ -770,8 +770,8 @@ public class Communicator {
 	public String registerExpeditionPoint(double lat, double lng, double alt,
 			int swath, int expedition, long time) {
 			//long swath, int expedition) {
-		if (Utils.debug)
-			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint " + lat + " " + lng + " " + time);
+//		if (Utils.debug)
+//			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint " + lat + " " + lng + " " + time);
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(sendMap);
 		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="
@@ -802,10 +802,10 @@ public class Communicator {
 		sendMap.put("projectId", "" + projectId);
 		String addExpeditionResponseString = doHTTPPost(addExpeditionUrl,
 				sendMap);
-		if (Utils.debug) {
-			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionId, response: "
-					+ addExpeditionResponseString);
-		}
+//		if (Utils.debug) {
+//			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionId, response: "
+//					+ addExpeditionResponseString);
+//		}
 		try {
 			Integer i = Integer.parseInt(addExpeditionResponseString);
 			return i;

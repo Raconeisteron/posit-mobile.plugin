@@ -351,7 +351,7 @@ RWGConstants {
 			return null;
 		}
 	}
-
+ 
 	/**
 	 * Makes sure RWG is stopped before exiting the Activity
 	 * 

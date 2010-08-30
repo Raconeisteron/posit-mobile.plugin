@@ -26,9 +26,12 @@ import java.util.List;
 
 import com.google.android.maps.GeoPoint;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * A class to encapsulate Tracker state data
@@ -48,22 +51,52 @@ public class TrackerState {
 	public int mProjId = -1;			// No project id assigned 
 	public int mExpeditionNumber = -1;  // No expedition number assigned yet
 	public int mPoints = 0;
+	public int mSynced = 0;
+	public int mSent = 0;
+	public int mUpdates = 0;
 
-	public int mSwath = TrackerSettings.DEFAULT_SWATH_WIDTH;
-	public int mMinDistance = TrackerSettings.DEFAULT_MIN_RECORDING_DISTANCE;  // meters
+	public int mSwath; 
+	public int mMinDistance; 
 
 	// Has the expedition been saved by TrackerActivity?
 	private boolean mSaved = false;
+	
+	// Control variables
+	public boolean isRunning = true;
+	public boolean isRegistered = false;
+	public boolean isInLocalMode = false;  // Set to true by TrackerService if no network access
 
 	private List<PointAndTime> pointsAndTimes;
 	public Location mLocation;
+
 	
 	/**
 	 * Default constructor
 	 */
-	public TrackerState() {
+	public TrackerState() {}
+
+	
+	
+	public TrackerState(Context c) {
 		pointsAndTimes = new ArrayList<PointAndTime>();
 		mSaved = false;
+		SharedPreferences sp =  PreferenceManager.getDefaultSharedPreferences(c);
+		try {
+			mMinDistance = Integer.parseInt(
+					sp.getString(
+					TrackerSettings.MINIMUM_DISTANCE_PREFERENCE,
+					""+TrackerSettings.DEFAULT_MIN_RECORDING_DISTANCE));
+			mSwath = Integer.parseInt(
+					sp.getString(
+					TrackerSettings.SWATH_PREFERENCE, 
+					""+TrackerSettings.DEFAULT_SWATH_WIDTH));
+			} catch (Exception e) {
+				Log.e(TrackerActivity.TAG, "TrackerState, Oops. something wrong probably Integer parse error " + e);
+			}
+			
+			mProjId = sp.getInt(
+					TrackerSettings.POSIT_PROJECT_PREFERENCE, 
+					-1);
 	}  
 	
 	/**

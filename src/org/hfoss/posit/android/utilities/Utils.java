@@ -40,6 +40,7 @@ import java.util.ListIterator;
 
 import org.hfoss.posit.android.Find;
 import org.hfoss.posit.android.Log;
+import org.hfoss.posit.android.TrackerActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
 import android.content.BroadcastReceiver;
@@ -389,11 +390,17 @@ public class Utils {
 		return tm.getDeviceId();
 	}
 
-
+	// Not clear whether this method works.
 	public static ContentValues getContentValuesFromCursor(Cursor c) {
 		ContentValues args = new ContentValues();
 		for (int i = 0; i < c.getColumnCount(); i++) {
-			args.put(c.getColumnName(i), c.getString(i));
+			Log.d(TrackerActivity.TAG, "getContentValuesFromCursor i = " + i + " size= " + c.getCount());
+			Log.d(TrackerActivity.TAG, " name = " + c.getString(i));
+			
+			args.put(
+					c.getColumnName(i),
+					c.getString(i));
+			
 		}
 		return args;
 	}

@@ -122,7 +122,7 @@
 					android:text="Settings" />	
 					
 				<Button 
-					android:id="@+id/idTrackerSaveButton" 
+					android:id="@+id/idTrackerListButton" 
 					android:layout_width="105dp" 
 					android:layout_height="50dp" 
 					android:drawableLeft  ="@drawable/save_32"

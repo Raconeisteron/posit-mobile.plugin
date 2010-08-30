@@ -50,9 +50,13 @@ public class TrackerSettings extends PreferenceActivity {
 	  public static final int DEFAULT_MIN_REQUIRED_ACCURACY = 200; // Unused
 	  public static final int DEFAULT_SWATH_WIDTH = 50; // sp
 	  
+	  public static final int MIN_LOCAL_EXP_ID = 10000;  // lowest random exp id number
+	  public static final int LOCAL_EXP_ID_RANGE = 10000; // range of random ids
+	  
 	  public static final int IDLE = 0;
 	  public static final int RUNNING = 1;
 	  public static final int PAUSED = 2;  // Currently unused
+	  public static final int VIEWING_MODE = 3;
 
 	  public static final String TRACKER_STATE_PREFERENCE = "TrackerState";
 	  public static final String POSIT_PROJECT_PREFERENCE = "PROJECT_ID";
