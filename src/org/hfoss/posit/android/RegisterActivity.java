@@ -25,6 +25,7 @@ package org.hfoss.posit.android;
 import java.util.List;
 
 import org.apache.commons.validator.EmailValidator;
+import org.hfoss.posit.android.adhoc.RWGService;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 import org.json.JSONException;
@@ -43,11 +44,15 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -324,7 +329,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 						"Please wait.", true, true);
 				try {
 					String registered = communicator.registerDevice(server, authKey, imei);
-
+					Log.d(TAG, "onActivityResult, registered = " + registered);
 					if (registered != null) {
 						Log.i(TAG, "registered");
 						Editor spEditor = mSharedPrefs.edit();
@@ -342,6 +347,8 @@ public class RegisterActivity extends Activity implements OnClickListener {
 					}
 				} catch (NullPointerException e) {
 					Utils.showToast(this, "Registration Error");
+				} finally {
+					mProgressDialog.dismiss();
 				}
 
 				mProgressDialog.dismiss();
@@ -421,7 +428,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			Utils.showToast(this, "Failed to get authentication key from server.");
 			mProgressDialog.dismiss();
 			return;
-		}
+		} 
 		//TODO this is still little uglyish
 		String[] message = result.split(":");
 		if (message.length != 2 || message[1].equals("null")){
@@ -449,13 +456,55 @@ public class RegisterActivity extends Activity implements OnClickListener {
 				Utils.showToast(this, "Successfully logged in.");
 				setResult(PositMain.LOGIN_SUCCESSFUL);
 				finish();
-			}
+			} 
 		}else {
-			Utils.showToast(this, message[1]);
+			Utils.showToast(this, message[1] + 
+					"\nMake sure you have connectivity" +
+					" and a working server.");
+			mProgressDialog.dismiss();
 			return;
 		}
 		mProgressDialog.dismiss();
 	}
+	
+	/**
+	 * Creates the menu options for the PositMain screen. Menu items are
+	 * inflated from a resource file.
+	 * 
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.positmain_menu, menu);
+		MenuItem item = menu.findItem(R.id.projects_menu_item);
+		item.setEnabled(false);
+		item = menu.findItem(R.id.track_menu_item);
+		item.setEnabled(false);
+		return true;
+	}
+
+	/**
+	 * Manages the selection of menu items.
+	 * 
+	 * @see android.app.Activity#onMenuItemSelected(int, android.view.MenuItem)
+	 */
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.settings_menu_item:
+			startActivity(new Intent(this, SettingsActivity.class));
+			break;
+		case R.id.about_menu_item:
+			startActivity(new Intent(this, AboutActivity.class));
+			break;
+		case R.id.tutorial_menu_item:
+			startActivity(new Intent(this, TutorialActivity.class));
+			break;
+		}
+		return true;
+	}
+	
 	
 	/**
 	 * This method is used to check whether or not the user has an intent
