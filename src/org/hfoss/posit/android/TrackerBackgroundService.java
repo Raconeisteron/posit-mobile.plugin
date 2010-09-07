@@ -338,10 +338,15 @@ public class TrackerBackgroundService extends Service /*implements LocationListe
 				// Register a new expedition
 				// TODO: Embed this in an error check or try/catch block
 				expId = mCommunicator.registerExpeditionId(mState.mProjId);
-				mState.isRegistered = true;
-				mState.isInLocalMode = false;
-				Log.i(TAG, "TrackerService.Async, Registered expedition id = " + expId);
-			} else {
+				Log.d(TrackerActivity.TAG, "Async: Register Expedition expId = " + expId);
+				if (expId != -1) {
+					mState.isRegistered = true;
+					mState.isInLocalMode = false;
+				}
+			}
+			// Either there is no network connectivity or there's a problem with the server
+			// and an expId of -1 was returned. 
+			if (info == null || expId == -1) {
 				expId = TrackerSettings.MIN_LOCAL_EXP_ID 
 					+ (int)(Math.random() * TrackerSettings.LOCAL_EXP_ID_RANGE);  // Create a random expId
 				mState.isInLocalMode = true;

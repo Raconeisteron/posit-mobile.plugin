@@ -57,9 +57,12 @@ public class TrackerSettings extends PreferenceActivity {
 	  public static final int RUNNING = 1;
 	  public static final int PAUSED = 2;  // Currently unused
 	  public static final int VIEWING_MODE = 3;
+	  public static final int SYNCING_POINTS = 4;
 
 	  public static final String TRACKER_STATE_PREFERENCE = "TrackerState";
 	  public static final String POSIT_PROJECT_PREFERENCE = "PROJECT_ID";
+	  public static final String POSIT_SERVER_PREFERENCE = "SERVER_ADDRESS";
+	  public static final String ROW_ID_EXPEDITION_BEING_SYNCED = "RowIdExpeditionBeingSynced";
 	  
 	  // These settable Tracker preferences have to be identical to String resources
 	  public static final String SWATH_PREFERENCE = 

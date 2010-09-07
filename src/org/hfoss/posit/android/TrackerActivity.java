@@ -21,6 +21,12 @@
  */
 package org.hfoss.posit.android;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,22 +87,16 @@ public class TrackerActivity extends MapActivity
 		OnSharedPreferenceChangeListener { 
 
 	public static final String TAG = "PositTracker";
-	
-	// Used by the Async Task
-	private static final int ASYNC_ERROR = 0;
-	private static final int ASYNC_SUCCESS = 1;
-	private static final int ASYNC_WAITING = 2;
-	public int mResultOfRegisterExpeditionTask = ASYNC_SUCCESS;
-
-	
+		
 	private static final boolean ENABLED_ONLY = true;
 	private static final String NO_PROVIDER = "No location service";
+	private static final boolean RESUMING_SYNC = true;
 
 	public static final int SET_MINIMUM_DISTANCE = 0;
 
 	public static final int GET_EXPEDITION_ROW_ID = 1;
 	
-	private int mState = TrackerSettings.IDLE;
+	private int mExecutionState = TrackerSettings.IDLE;
 	private TextView mPointsTextView;
 
     private SharedPreferences mPreferences ;
@@ -130,6 +130,7 @@ public class TrackerActivity extends MapActivity
 	private TrackerState mTrack;
 	
 	// Used when ACTION_VIEW intent -- i.e., for displaying existing expeditions
+	private int mRowIdExpeditionBeingSynced;
 	private int mExpId;
 	private int mPoints;
 	private int mSynced;
@@ -145,6 +146,7 @@ public class TrackerActivity extends MapActivity
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 						
+
 		// Abort the Tracker if GPS is unavailable
 		if (!hasNecessaryServices())  {
 			this.finish();
@@ -155,21 +157,22 @@ public class TrackerActivity extends MapActivity
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		 
-		// Initialize call back references so that the Tracker Service can pass data to this UI
+		// Initialize call backs so that the Tracker Service can pass data to this UI
 		TrackerBackgroundService.setUpdateListener(this);   // The Listener for the Service
 	    TrackerBackgroundService.setMainActivity(this);
 	    
 	    // Get our preferences and register as a listener for changes to tracker preferences. 
-	    // The Tracker's state (RUNNING, IDLE) is saved as a preference
+	    // The Tracker's execution state (RUNNING, IDLE, VIEWING_MODE, SYNCING) is saved as 
+	    // a preference.
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mPreferences.registerOnSharedPreferenceChangeListener(this);
 	    spEditor = mPreferences.edit();
+
 	    
 	    // Create a new track
 	    mTrack = new TrackerState(this);
 	    
 		// Make sure the phone is registered with a Server and has a project selected
-		// Maybe this can be done in the Activity and sent to the Service?
 		if (mTrack.mProjId == -1) {
 			Utils.showToast(this,"Cannot start Tracker:\nDevice must be registered with a project.");
 			Log.e(TAG, "Cannot start Tracker -- device not registered with a project.");
@@ -180,6 +183,14 @@ public class TrackerActivity extends MapActivity
 		mNotificationMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		
 		setUpTheUI();
+
+		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+		//Utils.showToast(this, " TrackerActivity Created in state " + mExecutionState);
+
+		if (mExecutionState == TrackerSettings.SYNCING_POINTS) {
+				mRowIdExpeditionBeingSynced = mPreferences.getInt(TrackerSettings.ROW_ID_EXPEDITION_BEING_SYNCED, -1);
+			displayExistingExpedition(mRowIdExpeditionBeingSynced, RESUMING_SYNC); 
+		}
 		
 		Log.i(TAG,"TrackerActivity,  created with state = " + 
 				mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, -1));
@@ -195,10 +206,12 @@ public class TrackerActivity extends MapActivity
 	public void onResume() {
 		super.onResume();
 		
+		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+		//Utils.showToast(this, " TrackerActivity Resumed in state " + mExecutionState);
+
 		// Create a network manager
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-		
 		myLocationOverlay.enableMyLocation();
 		myLocationOverlay.enableCompass();
 
@@ -208,28 +221,53 @@ public class TrackerActivity extends MapActivity
 		}
 		
 		// See whether the Tracker service is running and if so restore the state
-		mState = mPreferences.getInt(
+		mExecutionState = mPreferences.getInt(
 				TrackerSettings.TRACKER_STATE_PREFERENCE, 
 				TrackerSettings.IDLE);
-		if (mState == TrackerSettings.RUNNING)  {
+		if (mExecutionState == TrackerSettings.RUNNING)  {
 			Utils.showToast(this, "The Tracker is RUNNING.");
-			restoreState();
+			restoreExpeditionState();
 			if (mTrack != null)  
 				updateUI(mTrack);
 			else 
 				updateViewTrackingMode();
-		} else if (mState == TrackerSettings.IDLE){
+		} else if (mExecutionState == TrackerSettings.IDLE){
 			updateViewTrackingMode();
 			Utils.showToast(this, "The Tracker is IDLE.");
-		} else 
+		} else if (mExecutionState == TrackerSettings.VIEWING_MODE)
 			Utils.showToast(this, "Viewing an existing track.");
+		else  // Syncing state
+			Utils.showToast(this, "This expedition is being synced with the server.");
 
-		Log.i(TAG,"TrackerActivity,  resumed in state " + mState);
+		Log.i(TAG,"TrackerActivity,  resumed in state " + mExecutionState);
 	}
 	
+	/**
+	 * A utility method to organize the activity's state transition machine into a 
+	 * single method. Controls the Tracker's execution state. If setFromNewState is true
+	 * the method sets the new state to newState.  If it is false, it figures out the
+	 * new state from the current state and the context. In either case, it saves the
+	 * state in shared Preferences. 
+	 * 
+	 * @param newState Specifies the new state if setFromNewState is true
+	 * @param setFromNewState Forces the state change to new state when true
+	 * @return The new execution state
+	 */
+	private int updateExecutionState(int newState, boolean setFromNewState) {
+		if (setFromNewState)  {
+			mExecutionState = newState;
+			spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, newState);
+			spEditor.commit();
+			return newState;
+		}
+		switch (mExecutionState) {
+		
+		}
+		return TrackerSettings.IDLE;
+	}
 	
 	/*
-	 * Sets the layout for either the default or the ACTION_VIEW intents.
+	 * Sets the layout for tracking mode
 	 */
 	private void setUpTheUI() {
 		// Set up the UI -- first the text views
@@ -246,8 +284,6 @@ public class TrackerActivity extends MapActivity
 	    mSettingsButton.setOnClickListener(this);
 	    mListButton = (Button)findViewById(R.id.idTrackerListButton);
 	    mListButton.setOnClickListener(this);
-//	    mSaveButton.setClickable(false);
-//	    mSaveButton.setEnabled(false);
 	    mListButton.setText("List");
 	    
 		// Set up the UI -- now the map view and its current location overlay. 
@@ -258,7 +294,6 @@ public class TrackerActivity extends MapActivity
 		mapView.setBuiltInZoomControls(true);
 		mOverlays = mapView.getOverlays();
 		myLocationOverlay = new MyLocationOverlay(this, mapView);
-		
 		mOverlays.add(myLocationOverlay);
 		
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -274,23 +309,43 @@ public class TrackerActivity extends MapActivity
 	}
 	
 	/*
-	 * Used by the ACTION_VIEW intent to display a static expedition, one
-	 * that was previously collected and stored in the Db. 
+	 * Displays a static expedition, one that was previously collected and stored in the Db. 
+	 * Call this with -1 (from onCreate() or onResume() if already in VIEWING_MODE. That means
+	 * the Async thread is already syncing the points.  We just want to reset the display.
+	 * 
+	 * @param rowId Either the rowId of the expedition to be displayed or -1 to indicate
+	 * that we are already displaying the track. 
 	 */
-	private void displayExistingExpedition(long rowId) {
+	private void displayExistingExpedition(long rowId, boolean isResuming) {
 		Log.d(TAG, "TrackerActivity, displayExistingExpedition() ");
 			
-		// Retrieve data from this expedition
-		mDbHelper = new PositDbHelper(this);
-		
-		mExpId = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_NUM));
-		mPoints = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_POINTS));
-		mSynced = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_SYNCED));
-		mRegistered = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_REGISTERED));
-		Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
-				" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
-		mDbHelper.fetchExpeditionPointsByExpeditionId(mExpId, mTrack);
+		if (rowId != -1) { // Unless we are already in VIEWING_MODE
+			// Retrieve data from this expedition
+			mDbHelper = new PositDbHelper(this);
+
+			mExpId = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_NUM));
+			mPoints = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_POINTS));
+			mSynced = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_SYNCED));
+			mRegistered = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_REGISTERED));
+			Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
+					" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
+			mDbHelper.fetchExpeditionPointsByExpeditionId(mExpId, mTrack);
+		}
 	
+		// Initialize the View
+		mPointsTextView = (TextView)findViewById(R.id.trackerPoints);
+		mLocationTextView = (TextView)findViewById(R.id.trackerLocation);
+		mStatusTextView = (TextView)findViewById(R.id.trackerStatus);
+		mExpeditionTextView = (TextView)findViewById(R.id.trackerExpedition);
+		mSwathTextView = (TextView)findViewById(R.id.trackerSwath);
+		mMinDistTextView = (TextView)findViewById(R.id.trackerMinDistance);
+	    mTrackerButton = (Button)findViewById(R.id.idTrackerButton);
+	    mTrackerButton.setOnClickListener(this);
+	    mSettingsButton = (Button)findViewById(R.id.idTrackerSettingsButton);
+	    mSettingsButton.setOnClickListener(this);
+	    mListButton = (Button)findViewById(R.id.idTrackerListButton);
+	    mListButton.setOnClickListener(this);
+		
 		// Set up the View for this expedition
 		mExpeditionTextView.setText(""+ mExpId);
 		mPointsTextView.setText("" + mPoints);
@@ -304,8 +359,6 @@ public class TrackerActivity extends MapActivity
 		mListButton.setEnabled(true);	
 		
 		// Make invisible the controls and data fields used in the default Intent.
-//		((TextView)findViewById(R.id.trackerSwathLabel)).setVisibility(View.GONE);
-//		((TextView)findViewById(R.id.trackerSwath)).setVisibility(View.GONE);
 
 		((TextView)findViewById(R.id.trackerSwathLabel)).setText("Synced");
 		((TextView)findViewById(R.id.trackerSwath)).setText("" + mSynced);		
@@ -318,38 +371,48 @@ public class TrackerActivity extends MapActivity
 		((TextView)findViewById(R.id.trackerLabel)).setVisibility(View.GONE);
 		((TextView)findViewById(R.id.trackerLocation)).setVisibility(View.GONE);
 		
-		// Get the unsynced points
-		ArrayList<ContentValues> points = mDbHelper.fetchExpeditionPointsUnsynced(mExpId);
-		// Get middle point in track
-		
-		if (mPoints != 0) {
-			List<PointAndTime> pointsList = mTrack.getPoints();
-			PointAndTime aPoint = pointsList.get(pointsList.size()/2);
-//			Double geoLat = values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE) * 1E6;
-//			Double geoLng = values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) * 1E6;
-			GeoPoint point = aPoint.getGeoPoint();
-			mMapController.animateTo(point);
-		}
-				
-		// If there are points to sync and we have a network connection now
-		if (points.size() > 0 && mConnectivityMgr.getActiveNetworkInfo() != null) {
-			
-			if (mRegistered == PositDbHelper.EXPEDITION_IS_REGISTERED)
-				mSettingsButton.setText("Sync");
-			else  {
-				mSettingsButton.setText("Register");
-				Utils.showToast(this, "This expedition needs to be registered with the server. " +
-						"Please click the register button");
+		if (rowId != -1) {
+			// Get the unsynced points
+			ArrayList<ContentValues> points = mDbHelper.fetchExpeditionPointsUnsynced(mExpId);
+			// Get middle point in track
 
+			if (mPoints != 0) {
+				List<PointAndTime> pointsList = mTrack.getPoints();
+				PointAndTime aPoint = pointsList.get(pointsList.size()/2);
+				//			Double geoLat = values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE) * 1E6;
+				//			Double geoLng = values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) * 1E6;
+				GeoPoint point = aPoint.getGeoPoint();
+				mMapController.animateTo(point);
 			}
-			mSettingsButton.setClickable(true);
-			mSettingsButton.setEnabled(true);	
-//			((Button)findViewById(R.id.idTrackerSettingsButton)).setVisibility(View.GONE);
-//			((Button)findViewById(R.id.idTrackerButton)).setVisibility(View.GONE);
-		} else {
-			mSettingsButton.setVisibility(View.GONE);
+
+			// If there are points to sync and we have a network connection now
+			if (points.size() > 0 && mConnectivityMgr.getActiveNetworkInfo() != null) {
+
+				if (mRegistered == PositDbHelper.EXPEDITION_IS_REGISTERED)
+					mSettingsButton.setText("Sync");
+				else  {
+					mSettingsButton.setText("Register");
+					Utils.showToast(this, "This expedition needs to be registered with the server. " +
+					"Please click the register button");
+
+				}
+				if (isResuming) {
+					mSettingsButton.setClickable(false);
+					mSettingsButton.setEnabled(false);	
+					mListButton.setClickable(false);
+					mListButton.setEnabled(false);
+					//Utils.showToast(this, "This expedition is still being synced.");
+
+				} else {
+					mSettingsButton.setClickable(true);
+					mSettingsButton.setEnabled(true);	
+				}
+				//			((Button)findViewById(R.id.idTrackerSettingsButton)).setVisibility(View.GONE);
+				//			((Button)findViewById(R.id.idTrackerButton)).setVisibility(View.GONE);
+			} else {
+				mSettingsButton.setVisibility(View.GONE);
+			}
 		}
-				
 		// Display the expedition
 		mTrackerOverlay = new TrackerOverlay(mTrack);
 		mOverlays.add(mTrackerOverlay);
@@ -387,7 +450,7 @@ public class TrackerActivity extends MapActivity
 		// make sure this runs in the UI thread... since it's messing with views...
 		this.runOnUiThread(new Runnable() {
             public void run() {
-        		restoreState(); 
+        		restoreExpeditionState(); 
         		updateViewTrackingMode();
         		if (state.mLocation != null) {
         			myLocationOverlay.onLocationChanged(state.mLocation);
@@ -405,7 +468,7 @@ public class TrackerActivity extends MapActivity
 	 * get some of the data from the Service -- namely the TrackerState object, which contains
 	 * an array of all the points collected and the current lat,long,alt. 
 	 */
-	private void restoreState() {
+	private void restoreExpeditionState() {
 		mBackgroundService = TrackerBackgroundService.getInstance();
 		if (mBackgroundService != null) {
 			mTrack = mBackgroundService.getTrackerState();
@@ -428,13 +491,16 @@ public class TrackerActivity extends MapActivity
 	 * are taken from the TrackerState object,  mTrack.
 	 */
 	private void updateViewTrackingMode() {	
-		if (mState == TrackerSettings.VIEWING_MODE)
+		if (mExecutionState == TrackerSettings.VIEWING_MODE || 
+				mExecutionState == TrackerSettings.SYNCING_POINTS) {
 			updateViewViewingMode();
+			return;
+		}
 		
 		String s = " Idle ";
 		
 		// Manage the control buttons
-		if (mState == TrackerSettings.RUNNING) {
+		if (mExecutionState == TrackerSettings.RUNNING) {
 			s = " Running ";
 			mTrackerButton.setText("Stop");
 			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
@@ -460,12 +526,12 @@ public class TrackerActivity extends MapActivity
 				+ ", Ntwk = " + netStr + ")");
 
 
-		// Display the tracker's current state.
+		// Display the expedition's (i.e., mTrack's) current state.
 		if (mTrack != null) {
-			mPointsTextView.setText(" " + mTrack.mPoints + " (" + mTrack.mSynced + ")");
-			mExpeditionTextView.setText(" "+ mTrack.mExpeditionNumber);
-			mSwathTextView.setText(" " + mTrack.mSwath);
-			mMinDistTextView.setText(" " + mTrack.mMinDistance);
+			mPointsTextView.setText("" + mTrack.mPoints + " (" + mTrack.mSynced + ")");
+			mExpeditionTextView.setText(""+ mTrack.mExpeditionNumber);
+			mSwathTextView.setText("" + mTrack.mSwath);
+			mMinDistTextView.setText("" + mTrack.mMinDistance);
 
 			if (mTrack.mLocation != null) {
 				// Center on my location
@@ -492,13 +558,13 @@ public class TrackerActivity extends MapActivity
 	 * the Tracker View is clicked.  This also handles other bookkeeping tasks, 
 	 * such as posting and canceling a Notification, displaying a Toast to the UI, and
 	 * saving the changed state in the SharedPreferences. 
-	 */
+	 */ 
 	public void onClick(View v) {
 		switch (v.getId()) {
 		
 		case R.id.idTrackerButton:   // The play/stop button
 
-		if (mState == TrackerSettings.IDLE) {  // Start the tracker
+		if (mExecutionState == TrackerSettings.IDLE) {  // Start the tracker
 			startTrackerService();
 			mListButton.setClickable(false);
 		    mListButton.setEnabled(false);
@@ -527,21 +593,20 @@ public class TrackerActivity extends MapActivity
 				// This is only reached by clicking on the Sync button in List View	
 				mSettingsButton.setEnabled(false);
 				mSettingsButton.setClickable(false);
+				mListButton.setEnabled(false);
+				mListButton.setClickable(false);
 				syncUnsyncedPoints();
 			} else if (text.equals("Register")) {
+				Utils.showToast(this, "Attempting to register with server. Please wait.");
 				registerUnregisteredExpedition();
 			}
 			break;
 			
-		// The "list" button is used for various tasks, including listing,
-		// and deleting tracks. The button's text and icon are changed depending on
-		// the current state of the Activity.
+		// The "list" button is used for listing and deleting tracks. The button's 
+		//	text and icon are changed depending on the current state of the Activity.
 		case R.id.idTrackerListButton:
 			text = (String) mListButton.getText();
-			if (text.equals("List")) {
-				mState = TrackerSettings.VIEWING_MODE;
-				spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.VIEWING_MODE);
-				spEditor.commit();
+			if (text.equals("List")) {				
 				Intent intent = new Intent(this, TrackerListActivity.class); // List tracks
 				startActivityForResult(intent, GET_EXPEDITION_ROW_ID);
 			} else { 						// Delete this track
@@ -572,11 +637,10 @@ public class TrackerActivity extends MapActivity
 				expRowId = (int) data.getLongExtra(PositDbHelper.EXPEDITION_ROW_ID, -1);
 				Log.d(TrackerActivity.TAG, "onActivityResult expedition rowId = " + expRowId);
 
-				mState = TrackerSettings.VIEWING_MODE;
-				spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, mState);
-				spEditor.commit();
-				displayExistingExpedition(expRowId);
-			}
+				mExecutionState = updateExecutionState(TrackerSettings.VIEWING_MODE,true);
+				mRowIdExpeditionBeingSynced = expRowId;
+				displayExistingExpedition(expRowId, !RESUMING_SYNC);  // i.e., starting a new sync
+ 			}
 			break;
 		}
 	}
@@ -586,19 +650,20 @@ public class TrackerActivity extends MapActivity
 	 */
 	private void registerUnregisteredExpedition() {
 		mCommunicator = new Communicator(this);
-		mResultOfRegisterExpeditionTask = ASYNC_WAITING;
-		new RegisterExpeditionTask().execute();
-
-		if (mResultOfRegisterExpeditionTask == ASYNC_ERROR) {
+		
+		if (registerExpedition() != true) {
 			Log.d(TrackerActivity.TAG, "TrackerActivity.syncUnsyncedPoints Stopping b/c FAILED TO REGISTER expedition");
-			return;
+			return;			
 		} else {
 			Log.d(TrackerActivity.TAG, "TrackerActivity.syncUnsyncedPoints Success! New Expedition Id = " + mExpId);
 		}
 		
-		Utils.showToast(this, "Expedition now registered with the server.");
-		// Now let the user sync
-		mSettingsButton.setText("Sync");
+		Utils.showToast(this, "Expedition now registered as " +mExpId+ " with the server.");
+		
+		// Now let the user sync the unsynced points with the Server
+		mTrack.mExpeditionNumber = mExpId;
+		mExpeditionTextView.setText(""+ mExpId);
+		mSettingsButton.setText("Sync");  
 	}
 	
 	/**
@@ -613,6 +678,8 @@ public class TrackerActivity extends MapActivity
 		if (points.size() == 0) { // There were probably a few lost points 
 			Log.d(TrackerActivity.TAG, "TrackerActivity, Stopping sync " + points.size() + " to sync");
 			mSettingsButton.setVisibility(View.GONE);
+			mListButton.setEnabled(true);
+			mListButton.setClickable(true);
 		}
 		
 		Log.d(TrackerActivity.TAG, "TrackerActivity, Syncing " + points.size() + " unsynced points");
@@ -623,7 +690,11 @@ public class TrackerActivity extends MapActivity
 		
 		ContentValues[] valuesArray = new ContentValues[points.size()];
 		points.toArray(valuesArray);
-		
+
+		mExecutionState = updateExecutionState(TrackerSettings.SYNCING_POINTS,true);
+		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+		//Utils.showToast(this, "Syncing in state " + mExecutionState);
+
 		new SendExpeditionPointTask().execute(valuesArray);	
 	}
 	
@@ -632,7 +703,7 @@ public class TrackerActivity extends MapActivity
 	 */
 	private void deleteExpedition() {
 		PositDbHelper dbHelper = new PositDbHelper(this);
-		int mExpedNum = Integer.parseInt((String) mExpeditionTextView.getText());
+		int mExpedNum = Integer.parseInt((String) mExpeditionTextView.getText().toString().trim());
 		boolean success = dbHelper.deleteExpedition(mExpedNum);
 		if (success) {
 			Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
@@ -642,7 +713,7 @@ public class TrackerActivity extends MapActivity
 			Utils.showToast(this, "Oops, something went wrong when deleting " + mExpedNum);
 		}
 	}
-
+   
 	
 	/**
 	 * Post a notification in the status bar while this service is running.
@@ -684,12 +755,8 @@ public class TrackerActivity extends MapActivity
 		Intent intent = new Intent(this, TrackerBackgroundService.class);
 		intent.putExtra(TrackerState.BUNDLE_NAME, mTrack.bundle());
 		startService(intent);
-		
-		mState = TrackerSettings.RUNNING;
-		spEditor.putInt(
-				TrackerSettings.TRACKER_STATE_PREFERENCE, 
-				TrackerSettings.RUNNING);
-		spEditor.commit();
+	
+		mExecutionState = updateExecutionState(TrackerSettings.RUNNING, true);
 		Utils.showToast(this, "Starting background tracking.");
 		postNotification(); 
 		
@@ -710,11 +777,8 @@ public class TrackerActivity extends MapActivity
 		
 		stopService(new Intent(this, TrackerBackgroundService.class));
 		mNotificationMgr.cancel(R.string.local_service_label);  // Cancel the notification
-		mState = TrackerSettings.IDLE;
-		spEditor.putInt(
-				TrackerSettings.TRACKER_STATE_PREFERENCE, 
-				TrackerSettings.IDLE);
-		spEditor.commit();
+		
+		mExecutionState = updateExecutionState(TrackerSettings.IDLE, true);		
 		myLocationOverlay.disableMyLocation();
 
 		Utils.showToast(this, "Tracking is stopped.");
@@ -728,30 +792,51 @@ public class TrackerActivity extends MapActivity
 		super.onPause();
 		myLocationOverlay.disableMyLocation();
 		myLocationOverlay.enableCompass();
-		spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, mState);
+		spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, mExecutionState);
 		spEditor.commit();
-		Log.i(TAG,"TrackerActivity, Paused in state: " + mState);
+		Log.i(TAG,"TrackerActivity, Paused in state: " + mExecutionState);
+		
+		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+		//Utils.showToast(this, " TrackerActivity Paused in state " + mExecutionState);
+
 	}
-	
+		
 	// The following methods don't change the default behavior, but they show (in the Log) the
 	// life cycle of the Activity.
 
 	@Override protected void onDestroy() {
 		super.onDestroy();
-		// If stopped in Viewing mode, reset the state to IDLE. 
-		mState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
-		if (mState == TrackerSettings.VIEWING_MODE) {
-		Editor spEd = mPreferences.edit();
-		spEd.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
-		spEd.commit();
-		}
-		Log.i(TAG,"TrackerActivity, Destroyed");
+		
+		// If stopped in Viewing mode, reset the state to IDLE if all points have been synced;. 
+		// otherwise leave it in VIEWING_MODE
+		
+		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+		if (mExecutionState == TrackerSettings.VIEWING_MODE)
+			mExecutionState = updateExecutionState(TrackerSettings.IDLE, true);
+		else if (mExecutionState == TrackerSettings.SYNCING_POINTS) {
+			if (mSynced == mPoints) {
+				mExecutionState = updateExecutionState(TrackerSettings.IDLE, true);
+				//				Editor spEd = mPreferences.edit();
+				//				spEd.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+				//				spEd.commit();
+			} else {
+				spEditor.putInt(TrackerSettings.ROW_ID_EXPEDITION_BEING_SYNCED, mRowIdExpeditionBeingSynced);
+				spEditor.commit();
+			}
+		} 
+		
+		Log.i(TAG,"TrackerActivity, Destroyed in state " + mExecutionState);
+		//Utils.showToast(this, " TrackerActivity Destroyed in state " + mExecutionState);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
 		Log.i(TAG,"TrackerActivity, Stopped");
+		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+
+		//Utils.showToast(this, " TrackerActivity Stopped in state " + mExecutionState);
+
 	}
 
 //  NOTE: Not used but could be brought back depending on UI modifications.	
@@ -850,10 +935,14 @@ public class TrackerActivity extends MapActivity
 			
 			this.runOnUiThread(new Runnable() {
 	            public void run() {
+    				Log.d(TrackerActivity.TAG, "TrackerActivity, Updating UI from Async");
+    				mSwathTextView.setText(""+mSynced);
 	        		((TextView)findViewById(R.id.trackerSwath)).setText("" + mSynced);		
 	    			if (mSynced == mPoints) { // Yay. Success!
 	    				Log.d(TrackerActivity.TAG, "TrackerActivity, Syncing --> SUCCESS!");
 	    				mSettingsButton.setVisibility(View.GONE);
+	    				mListButton.setEnabled(true);
+	    				mListButton.setClickable(true);
 	    			}
 	            }
 	            });
@@ -861,6 +950,104 @@ public class TrackerActivity extends MapActivity
 		else
 			Log.i(TAG, "TrackerService.Async, Oops. Failed to update point# " 
 					+ rowId + " synced = " + isSynced);
+	}
+	
+	
+	// From http://teneo.wordpress.com/2008/12/23/java-ip-address-to-integer-and-back/
+	private static Long ipToInt(String addr) {
+        String[] addrArray = addr.split("\\.");
+
+        long num = 0;
+        for (int i=0;i<addrArray.length;i++) {
+            int power = 3-i;
+
+            num += ((Integer.parseInt(addrArray[i])%256 * Math.pow(256,power)));
+        }
+        return num;
+    }
+	
+	/**
+	 * Helper method to check that we have network connectivity and that the server
+	 * is reachable. 
+	 * @return
+	 */
+	private boolean hasNetworkAndServerIsReachable () {
+		NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
+		if (info == null) {
+			Log.d(TrackerActivity.TAG, "registedExpedition: Error,  No network connectivity.");
+			Utils.showToast(this, "Error: Can't register expedition. " +
+			"\nMake sure you have a network connection.");
+
+			return false; 
+		} 
+		return true;
+
+	}
+	
+	/*
+	 * Registers the expedition with the POSIT server, which returns the expedition's id. 
+	 * Then updates all points associated with the old expedition number, assigning them
+	 * the new number.
+	 */ 
+	private boolean registerExpedition () {
+		
+		// Make sure this is doable
+		if (!hasNetworkAndServerIsReachable())
+			return false;
+		
+		int newExpId = 0;
+		
+		// Register a new expedition
+		// TODO: Embed this in an error check or try/catch block
+		newExpId = mCommunicator.registerExpeditionId(mTrack.mProjId);
+
+		// A return value of -1 represents some kind of error on the server side. 
+		if (newExpId != -1) {
+			mTrack.isRegistered = true;
+			mTrack.isInLocalMode = false;
+			Log.i(TAG, "TrackerActivity.Async, Registered expedition id = " + newExpId);
+		} else {
+			Utils.showToast(this, "Error: Can't register expedition. " +
+					"\nPlease check that your server is reachable.");
+			Log.d(TrackerActivity.TAG, "registedExpedition: Error,  Uable to register. Check server.");
+			return false;
+		}
+
+		// Update the expedition table
+		ContentValues values = new ContentValues();
+		values.put(PositDbHelper.EXPEDITION_NUM, newExpId);
+		values.put(PositDbHelper.EXPEDITION_REGISTERED, PositDbHelper.EXPEDITION_IS_REGISTERED);
+
+		// Now update the points table.
+		boolean success = false;
+		try {
+			success = mDbHelper.updateExpedition(mExpId, values);
+
+			// If the expedition is successfully registered, update the 
+			// the associated points to reflect the new expedition id
+			if (success) {
+				values = new ContentValues();
+				values.put(PositDbHelper.EXPEDITION, newExpId);
+				success = mDbHelper.updateGPSPointsNewExpedition(mExpId, values);
+				if (success) {
+					Log.d(TrackerActivity.TAG, "TrackerActivity.RegisterGPSPoints SUCCESS for new ID = " + newExpId);
+				} else {
+					Log.d(TrackerActivity.TAG, "TrackerActivity.RegisterGPSPoints FAILURE for new ID = " + newExpId);
+					return false;
+				}
+			} else {
+				Log.d(TrackerActivity.TAG, "TrackerActivity.RegisterExpedition FAILURE for new ID = " + newExpId);
+				return false;
+			}
+
+		} catch (Exception e) {
+			Log.e(TrackerActivity.TAG, "TrackerService.Async, registeringExpedition " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		} 
+		mExpId = newExpId;
+		Log.e(TrackerActivity.TAG, "TrackerService.Async, returning with SUCCESS");
+		return true;
 	}
 
 	/**
@@ -876,22 +1063,13 @@ public class TrackerActivity extends MapActivity
 	protected Void doInBackground(ContentValues... values) {
 		
 		String result;
-		
-		while (mResultOfRegisterExpeditionTask == ASYNC_WAITING) {
-			try {
-				Thread.sleep(2000);  // Wait for 2 seconds
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}		
-		}
-		
-		if (mResultOfRegisterExpeditionTask == ASYNC_ERROR) {
-			return null;
-		}
-		
+	
 		for (int k = 0; k < values.length; k++) {
 			ContentValues vals = values[k];
 			
+			// TODO:  This will be a problem if we lose connectivity during syncing. 
+			// Syncing won't start if we have no connectivity. But we could lose it
+			// during syncing.
 			try {			
 				// Wait until we have WIFI or MOBILE (MOBILE works best of course)	
 				NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
@@ -949,76 +1127,5 @@ public class TrackerActivity extends MapActivity
 		return null;
 	}
 }
-	
-	/**
-	 * Registers the expedition with the POSIT server, which returns the expedition's id. 
-	 * Then updates all points associated with the old expedition number, assigning them
-	 * the new number. 
-	 * 
-	 * The thread will repeatedly wait until network connectivity is obtained.
-	 * @author rmorelli
-	 */
-	private class RegisterExpeditionTask extends AsyncTask<Void, Void, Integer> {
-		private int newExpId = -1;
-			
-		@Override
-		protected void onPostExecute(Integer result) {
-			Log.d(TrackerActivity.TAG, "TrackerActivity.RegisterExpeditionTask result = " + mResultOfRegisterExpeditionTask);
-			super.onPostExecute(result);
-			mResultOfRegisterExpeditionTask = result;
-			mExpId = newExpId;
-			Log.d(TrackerActivity.TAG, "TrackerActivity.RegisterExpeditionTask result = " + mResultOfRegisterExpeditionTask);
-		}
-
-		@Override
-		protected Integer doInBackground(Void... params) {
-			
-			// Timed-wait until we have WIFI or MOBILE (MOBILE works best of course)	
-			NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
-			if (info == null) {
-				return ASYNC_ERROR; 
-			}
-
-				// Register a new expedition
-				// TODO: Embed this in an error check or try/catch block
-				newExpId = mCommunicator.registerExpeditionId(mTrack.mProjId);
-				
-				mTrack.isRegistered = true;
-				mTrack.isInLocalMode = false;
-				Log.i(TAG, "TrackerActivity.Async, Registered expedition id = " + newExpId);
-
-			ContentValues values = new ContentValues();
-			values.put(PositDbHelper.EXPEDITION_NUM, newExpId);
-			values.put(PositDbHelper.EXPEDITION_REGISTERED, PositDbHelper.EXPEDITION_IS_REGISTERED);
-
-			boolean success = false;
-			try {
-				success = mDbHelper.updateExpedition(mExpId, values);
-				if (success) {
-					values = new ContentValues();
-					values.put(PositDbHelper.EXPEDITION, newExpId);
-					success = mDbHelper.updateGPSPointsNewExpedition(mExpId, values);
-					if (success) {
-						Log.d(TrackerActivity.TAG, "TrackerActivity.RegisterGPSPoints SUCCESS for new ID = " + newExpId);
-					} else {
-						Log.d(TrackerActivity.TAG, "TrackerActivity.RegisterGPSPoints FAILURE for new ID = " + newExpId);
-						return ASYNC_ERROR;
-					}
-				} else {
-					Log.d(TrackerActivity.TAG, "TrackerActivity.RegisterExpedition FAILURE for new ID = " + newExpId);
-					return ASYNC_ERROR;
-				}
-					
-			} catch (Exception e) {
-				Log.e(TrackerActivity.TAG, "TrackerService.Async, registeringExpedition " + e.getMessage());
-				e.printStackTrace();
-				return ASYNC_ERROR;
-			} 
-			mExpId = newExpId;
-			Log.e(TrackerActivity.TAG, "TrackerService.Async, returning with SUCCESS");
-
-			return ASYNC_SUCCESS;
-		}
-	}
 
 }
