@@ -146,7 +146,13 @@ public class TrackerActivity extends MapActivity
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 						
-
+	    // Get our preferences and register as a listener for changes to tracker preferences. 
+	    // The Tracker's execution state (RUNNING, IDLE, VIEWING_MODE, SYNCING) is saved as 
+	    // a preference.
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		mPreferences.registerOnSharedPreferenceChangeListener(this);
+	    spEditor = mPreferences.edit();
+		
 		// Abort the Tracker if GPS is unavailable
 		if (!hasNecessaryServices())  {
 			this.finish();
@@ -156,18 +162,9 @@ public class TrackerActivity extends MapActivity
 		// Create a network manager
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-		 
 		// Initialize call backs so that the Tracker Service can pass data to this UI
 		TrackerBackgroundService.setUpdateListener(this);   // The Listener for the Service
 	    TrackerBackgroundService.setMainActivity(this);
-	    
-	    // Get our preferences and register as a listener for changes to tracker preferences. 
-	    // The Tracker's execution state (RUNNING, IDLE, VIEWING_MODE, SYNCING) is saved as 
-	    // a preference.
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		mPreferences.registerOnSharedPreferenceChangeListener(this);
-	    spEditor = mPreferences.edit();
-
 	    
 	    // Create a new track
 	    mTrack = new TrackerState(this);
