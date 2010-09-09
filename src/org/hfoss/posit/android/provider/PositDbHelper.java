@@ -1089,7 +1089,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	}
 	
 	/**
-	 * Deletes and expedition and all the points associated with it.
+	 * Deletes an expedition from the expedition table
 	 * @param expId the expedition id number
 	 * @return
 	 */
@@ -1099,11 +1099,21 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		mDb = getWritableDatabase();
 		int deleted =  mDb.delete(EXPEDITION_TABLE, 
 				EXPEDITION_NUM + "=" + expId, null);
-
-		if (deleted > 0) {
-			deleted = mDb.delete(EXPEDITION_GPS_POINTS_TABLE, 
+		mDb.close();
+		return deleted > 0;
+	}
+	
+	/**
+	 * Deletes the points associated with expID.
+	 * @param expId the expedition id number
+	 * @return
+	 */
+	public boolean deleteExpeditionPoints(int expId) {
+		Log.d(TrackerActivity.TAG, "PositDbHelper, deleteExpedition()");
+		
+		mDb = getWritableDatabase();
+		int deleted = mDb.delete(EXPEDITION_GPS_POINTS_TABLE, 
 					EXPEDITION + "=" + expId, null);
-		}
 		mDb.close();
 		return deleted > 0;
 	}
