@@ -703,11 +703,22 @@ public class TrackerActivity extends MapActivity
 		int mExpedNum = Integer.parseInt((String) mExpeditionTextView.getText().toString().trim());
 		boolean success = dbHelper.deleteExpedition(mExpedNum);
 		if (success) {
-			Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
-			Utils.showToast(this, "Deleted expedition " + mExpedNum);
+			if (mPoints > 0) {
+				success = dbHelper.deleteExpeditionPoints(mExpedNum);
+				if (success) {
+					Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
+					Utils.showToast(this, "Deleted expedition " + mExpedNum);
+				} else {
+					Log.i(TAG, "TrackerActivity, Oops, something wrong when deleting expedition " + mExpedNum);
+					Utils.showToast(this, "Oops, something went wrong when deleting " + mExpedNum);
+				}
+			} else {
+				Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
+				Utils.showToast(this, "Deleted expedition " + mExpedNum);					
+			}
 		} else {
-			Log.i(TAG, "TrackerActivity, Oops, something wrong when deleting expedition " + mExpedNum);
-			Utils.showToast(this, "Oops, something went wrong when deleting " + mExpedNum);
+			Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
+			Utils.showToast(this, "Deleted expedition " + mExpedNum);			
 		}
 	}
    
@@ -1033,17 +1044,17 @@ public class TrackerActivity extends MapActivity
 					return false;
 				}
 			} else {
-				Log.d(TrackerActivity.TAG, "TrackerActivity.RegisterExpedition FAILURE for new ID = " + newExpId);
+				Log.d(TrackerActivity.TAG, "registerExpedition FAILURE for new ID = " + newExpId);
 				return false;
 			}
 
 		} catch (Exception e) {
-			Log.e(TrackerActivity.TAG, "TrackerService.Async, registeringExpedition " + e.getMessage());
+			Log.e(TrackerActivity.TAG, "registerExpedition, registeringExpedition " + e.getMessage());
 			e.printStackTrace();
 			return false;
 		} 
 		mExpId = newExpId;
-		Log.e(TrackerActivity.TAG, "TrackerService.Async, returning with SUCCESS");
+		Log.e(TrackerActivity.TAG, "registerExpedition, returning with SUCCESS");
 		return true;
 	}
 
