@@ -490,7 +490,7 @@ public class TrackerActivity extends MapActivity
 	private void updateViewTrackingMode() {	
 		if (mExecutionState == TrackerSettings.VIEWING_MODE || 
 				mExecutionState == TrackerSettings.SYNCING_POINTS) {
-			updateViewViewingMode();
+//  			updateViewViewingMode();
 			return;
 		}
 		
@@ -546,9 +546,9 @@ public class TrackerActivity extends MapActivity
 //		Log.d(TAG, "TrackerActivity,  updated view");
 	}
 
-	private void updateViewViewingMode() {
-		//displayExistingExpedition();
-	}
+//	private void updateViewViewingMode() {
+//		//displayExistingExpedition();
+//	}
 
 	/**
 	 * Part of the View.OnClickListener interface. Called when any button in 
@@ -899,6 +899,7 @@ public class TrackerActivity extends MapActivity
 		
 		// This is a hack.  TrackerState is not a shared preference but 
 		// this is called repeatedly throughout the run with this key.
+		// Don't understand why???
 		
 		if (key.equals("TrackerState")) 
 			return;

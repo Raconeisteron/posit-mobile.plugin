@@ -54,6 +54,9 @@ public class TrackerOverlay extends Overlay {
 
 	@Override
 	public synchronized void draw(Canvas canvas, MapView mapView, boolean shadow) {
+		// mTrackerState should never be null unless Tracker Service doesn't start properly
+		if (mTrackerState == null) 
+			return; 
 		pointsAndTimes = mTrackerState.getPoints();
 
 		if (pointsAndTimes.isEmpty()) {

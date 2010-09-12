@@ -111,10 +111,12 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	}
 	
 	public void stopListening() {
-		mState.isRunning = false;
+		// Shouldn't be null unless Tracker Service fails to start
+		if (mState != null)
+			mState.isRunning = false;
 	}
 	
-	  
+		  
 	public void onCreate() {
 		Log.d(TAG, "TrackerService, onCreate()");
 		// Set up the Service so it can communicate with the Activity (UI)
@@ -140,6 +142,15 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		return null;
 	}
 
+	// This is the old onStart method that will be called on the pre-2.0
+	// platform.  On 2.0 or later we override onStartCommand() so this
+	// method will not be called.
+	@Override
+	public void onStart(Intent intent, int startId) {
+	    handleCommand(intent);
+		Log.i(TAG, "TrackerService,  Started, id " + startId + " minDistance: " + mState.mMinDistance);
+	}
+	
 	/**
 	 * Called when the service is started in TrackerActivity. Note that this method 
 	 * sometimes executes  BEFORE onCreate(). This is important for the use of objects
@@ -156,7 +167,15 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 * @return START_STICKY so the service persists
 	 */
 	public int onStartCommand(Intent intent, int flags, int startId) {
-  		
+		handleCommand(intent);
+		Log.i(TAG, "TrackerService,  Started, id " + startId + " minDistance: " + mState.mMinDistance);
+
+		// We want this service to continue running until it is explicitly
+		// stopped, so return sticky.
+		return START_STICKY;
+	}
+	
+	private void handleCommand(Intent intent) {
 		// Get the TrackerState object or create a new one from scratch
 		if (intent != null) {
 			Bundle b = intent.getBundleExtra(TrackerState.BUNDLE_NAME);
@@ -167,7 +186,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			Log.e(TrackerActivity.TAG, "TrackerBackgroundService null intent error");
 		}
 		 			
-		Log.i(TAG, "TrackerService,  Started, id " + startId + " minDistance: " + mState.mMinDistance);
 
 		// Request location updates
  		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE); 
@@ -186,10 +204,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		if (UI_UPDATE_LISTENER != null) {
 			UI_UPDATE_LISTENER.updateUI(mState);
 		}	
-
-		// We want this service to continue running until it is explicitly
-		// stopped, so return sticky.
-		return START_STICKY;
 	}
 	
 	/**
@@ -311,17 +325,19 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	public void onDestroy() {
 		super.onDestroy();
 		
- 		mLocationManager.removeUpdates(this);
-		
-		Utils.showToast(this, "Tracker stopped ---- " +
-				"\n#updates = " + mState.mUpdates + 
-				" #sent = " + mState.mSent +
-				" #synced = " + mState.mSynced);
-			
-		Log.i(TAG,"TrackerService, Tracker destroyed, " + //updatedDb= " + success + 
-				" #updates = " + mState.mUpdates + 
-				" #sent = " + mState.mSent +
-				" #synced = " + mState.mSynced);
+		if (mLocationManager != null) {
+			mLocationManager.removeUpdates(this);
+
+			Utils.showToast(this, "Tracker stopped ---- " +
+					"\n#updates = " + mState.mUpdates + 
+					" #sent = " + mState.mSent +
+					" #synced = " + mState.mSynced);
+
+			Log.i(TAG,"TrackerService, Tracker destroyed, " + //updatedDb= " + success + 
+					" #updates = " + mState.mUpdates + 
+					" #sent = " + mState.mSent +
+					" #synced = " + mState.mSynced);
+		}
 	}
 	
 	
