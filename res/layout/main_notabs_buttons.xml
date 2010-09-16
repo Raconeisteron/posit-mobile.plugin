@@ -66,7 +66,7 @@
 			 -->
 	</LinearLayout>
 	
-		<!--
+	<!--
 				<Button
 			android:id="@+id/rwgButton"
 			android:layout_width="fill_parent"

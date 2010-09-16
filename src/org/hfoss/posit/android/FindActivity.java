@@ -30,7 +30,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import org.hfoss.posit.android.adhoc.RWGService;
+import org.hfoss.adhoc.AdhocData;
+import org.hfoss.adhoc.AdhocFind;
+import org.hfoss.adhoc.AdhocService;
+import org.hfoss.adhoc.Queues;
+//import org.hfoss.posit.android.adhoc.RWGService;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.ImageAdapter;
 import org.hfoss.posit.android.utilities.Utils;
@@ -620,9 +624,14 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			Log.i("start",(start=System.currentTimeMillis())+"");
 			ContentValues contentValues = retrieveContentFromView();
 			Log.i("after retrive", (System.currentTimeMillis()-start)+"");
-			//if (IS_ADHOC)
-			if (RWGService.isRunning())
+			
+			// If the adhoc service is running, send the Find through the adhoc network
+			//if (RWGService.isRunning()) {
+			if (AdhocService.adhocInstance != null) {
+				Log.d(TAG, "Adhoc service is availabe, sending find peer-to-peer");
 				sendAdhocFind(contentValues,null);//imageBase64String);
+			}
+			
 			Log.i("after adhoc check", (System.currentTimeMillis()-start)+"");
 			
 			doSave(contentValues);
@@ -668,38 +677,43 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	 * @param contentValues
 	 */
 	private void sendAdhocFind(ContentValues contentValues, String image) {
-		Utils.showToast(this, "sending ad hoc find");
+		Utils.showToast(this, "Sending ad hoc find");
 		
-		String longitude = contentValues.getAsString(getString(R.string.longitudeDB));
-		String latitude = contentValues.getAsString(getString(R.string.latitudeDB));
-//		long findId = contentValues.getAsLong(getString(R.string.idDB));
-		String findId = contentValues.getAsString(getString(R.string.idDB));
-		String name = contentValues.getAsString(getString(R.string.nameDB));
-		String description = contentValues.getAsString(getString(R.string.descriptionDB));
+		AdhocFind adhocFind= new AdhocFind(contentValues);
+		AdhocData<AdhocFind>adhocData = new AdhocData<AdhocFind>(this,adhocFind);
+		//Log.i(TAG, "Broadcasting a Find, imei = " + imei);
+		Queues.outputQueue.add(adhocData);
 		
-//		Log.i("Adhoc", "Adhoc find: "+ new Long(findId).toString()+ ":"+ longitude+ ","+ latitude);
-		Log.i("Adhoc", "Adhoc find: " + findId + ":"+ longitude+ ","+ latitude);
-		
-		JSONObject obj = new JSONObject();
-		try {
-			obj.put("findLong", longitude);
-			obj.put("findLat", latitude);
-			obj.put("findId", findId);
-			obj.put("name", name);
-			obj.put("description", description);
-			obj.put("projectId", PROJECT_ID);
-			if(image!=null)
-				obj.put("image",image);
-		} catch (JSONException e) {
-			Log.e("JSONError", e.toString());
-		}
-		Log.i("Adhoc", "Sending:"+ obj.toString());
-		
-		/*if(AdhocClientActivity.adhocClient!=null)
-			AdhocClientActivity.adhocClient.send(obj.toString());
-		else if(PositMain.mAdhocClient!=null)
-			PositMain.mAdhocClient.send(obj.toString());*/
-		RWGService.send(obj.toString());
+//		String longitude = contentValues.getAsString(getString(R.string.longitudeDB));
+//		String latitude = contentValues.getAsString(getString(R.string.latitudeDB));
+////		long findId = contentValues.getAsLong(getString(R.string.idDB));
+//		String findId = contentValues.getAsString(getString(R.string.idDB));
+//		String name = contentValues.getAsString(getString(R.string.nameDB));
+//		String description = contentValues.getAsString(getString(R.string.descriptionDB));
+//		
+////		Log.i("Adhoc", "Adhoc find: "+ new Long(findId).toString()+ ":"+ longitude+ ","+ latitude);
+//		Log.i("Adhoc", "Adhoc find: " + findId + ":"+ longitude+ ","+ latitude);
+//		
+//		JSONObject obj = new JSONObject();
+//		try {
+//			obj.put("findLong", longitude);
+//			obj.put("findLat", latitude);
+//			obj.put("findId", findId);
+//			obj.put("name", name);
+//			obj.put("description", description);
+//			obj.put("projectId", PROJECT_ID);
+//			if(image!=null)
+//				obj.put("image",image);
+//		} catch (JSONException e) {
+//			Log.e("JSONError", e.toString());
+//		}
+//		Log.i("Adhoc", "Sending:"+ obj.toString());
+//		
+//		/*if(AdhocClientActivity.adhocClient!=null)
+//			AdhocClientActivity.adhocClient.send(obj.toString());
+//		else if(PositMain.mAdhocClient!=null)
+//			PositMain.mAdhocClient.send(obj.toString());*/
+//		RWGService.send(obj.toString());
 	}
 
 
@@ -806,12 +820,20 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			Log.i("start",(start=System.currentTimeMillis())+"");
 			ContentValues contentValues = retrieveContentFromView();
 			Log.i("after retrive", (System.currentTimeMillis()-start)+"");
-			//if (IS_ADHOC)
-			if (RWGService.isRunning())
+			
+			//if (RWGService.isRunning()) {
+			
+			// If the adhoc service is running, send the Find through the adhoc network
+			if (AdhocService.adhocInstance != null) {
+				Log.d(TAG, "Adhoc service is availabe, sending find peer-to-peer");
 				sendAdhocFind(contentValues,null);//imageBase64String);
+			}
+			
 			Log.i("after adhoc check", (System.currentTimeMillis()-start)+"");
 			
+			// And save it to the Db
 			doSave(contentValues);
+			
 			//Intent in = new Intent(this, ListFindsActivity.class); //redirect to list finds
 			//startActivity(in);
 			

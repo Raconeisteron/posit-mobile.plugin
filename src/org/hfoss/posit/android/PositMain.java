@@ -21,9 +21,12 @@
  */
 package org.hfoss.posit.android;
 
-import org.apache.oro.text.regex.Util;
-import org.hfoss.posit.android.adhoc.RWGConstants;
-import org.hfoss.posit.android.adhoc.RWGService;
+
+import org.hfoss.adhoc.AdhocService;
+import org.hfoss.adhoc.MacAddress;
+import org.hfoss.adhoc.QueueService;
+//import org.hfoss.posit.android.adhoc.RWGConstants;
+//import org.hfoss.posit.android.adhoc.RWGService;
 import org.hfoss.posit.android.utilities.Utils;
 
 import android.app.Activity;
@@ -35,6 +38,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -50,8 +54,7 @@ import android.widget.ImageButton;
 /**
  * Implements the main activity and the main screen for the POSIT application.
  */
-public class PositMain extends Activity implements OnClickListener,
-RWGConstants {
+public class PositMain extends Activity implements OnClickListener { //,RWGConstants {
 
 	private static final String TAG = "PositMain";
 
@@ -67,9 +70,9 @@ RWGConstants {
 	private String mAuthKey;
 	// public static AdhocClient mAdhocClient;
 	public static WifiManager wifiManager;
-	public RWGService rwgService;
+//	public RWGService rwgService;
 	public Intent rwg;
-
+	
 	NotificationManager mNotificationManager;
 
 	/**
@@ -243,18 +246,20 @@ RWGConstants {
 	}
 
 	/**
-	 * Updates the RWG Start/End menus based on whether RWG is running or not.
+	 * Updates the RWG Start/End menus based on whether RWG is running or not.   
 	 * 
 	 * @see android.app.Activity#onPrepareOptionsMenu(android.view.Menu)
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		//		if (RWGService.isRunning()) {
-		//			menu.findItem(R.id.rwg_start).setEnabled(false);
-		//			menu.findItem(R.id.rwg_end).setEnabled(true); } 
-		//		else {
-		//			menu.findItem(R.id.rwg_start).setEnabled(true);
-		//			menu.findItem(R.id.rwg_end).setEnabled(false); }
+		//if (!RWGService.isRunning()) {
+		if (AdhocService.adhocInstance == null) { // Service not running
+			menu.findItem(R.id.rwg_start).setEnabled(true);
+			menu.findItem(R.id.rwg_end).setEnabled(false); 
+		} else {
+			menu.findItem(R.id.rwg_start).setEnabled(false);
+			menu.findItem(R.id.rwg_end).setEnabled(true); 
+		}
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -282,31 +287,51 @@ RWGConstants {
 			startActivity(new Intent(this, TrackerActivity.class));
 			break;
 		case R.id.rwg_start:
-			wifiManager = (WifiManager) this
-			.getSystemService(Context.WIFI_SERVICE);
-			// mAdhocClient = new AdhocClient(this);
-			rwg = new Intent(this, RWGService.class);
-			// rwgService.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			RWGService.setActivity(this);
-
-			startService(rwg);
+			Log.i(TAG, "Starting AdhocService");
+			startAdhocService();
+			startQueueService();
 			break;
 		case R.id.rwg_end:
-			if (RWGService.isRunning() && rwg != null) // Kill RWG if already
-				// running
-				stopService(rwg);
-			try {
-				rwgService.killProcessRunning("./rwgexec");
-			} catch (Exception e) {
-				Log.e(TAG, e.getClass().toString(), e);
-			}
-			mNotificationManager.cancel(Utils.ADHOC_ON_ID);
-			Utils.showToast(this, "RWG Service Stopped");
+			Log.i(TAG, "Stopping AdhocService");
+			stopAdhocService();
 			break;
 		}
 		return true;
 	}
 	
+	private String getMACAddress(){
+		WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+		if (!wifi.isWifiEnabled()){
+			return null;
+		}
+		// Get WiFi status
+		WifiInfo info = wifi.getConnectionInfo();
+		MacAddress mc = new MacAddress(info.getMacAddress());
+		//Log.i(TAG, "getMACAddress mc= " + mc+ "  "+ mc.toByteString());
+		Log.i(TAG, "getMACAddress mc= " + mc+ "  "+ mc.toString());
+		//return "boo";
+		return mc.toString();
+	}
+	
+	private void startAdhocService() {
+		Intent serviceIntent = new Intent();
+		serviceIntent.setClass(this, AdhocService.class);
+		serviceIntent.putExtra(AdhocService.MAC_ADDRESS, getMACAddress());
+		startService(serviceIntent);
+	}
+	
+	private void stopAdhocService() {
+		Intent serviceIntent = new Intent();
+		serviceIntent.setClass(this, AdhocService.class);
+		stopService(serviceIntent);  // Stop previously started services
+	}
+	
+	private void startQueueService() {
+		Intent serviceIntent = new Intent();
+		serviceIntent.setClass(this, QueueService.class);
+		startService(serviceIntent);
+		
+	}
 
 	/**
 	 * Intercepts the back key (KEYCODE_BACK) and displays a confirmation dialog
@@ -359,18 +384,24 @@ RWGConstants {
 	 */
 	@Override
 	public void finish() {
-		if (RWGService.isRunning() && rwg != null) {// Kill RWG if already
-			// running
-			stopService(rwg);
+		if (AdhocService.adhocInstance != null) {
+			stopAdhocService();
+//			
+////		if (RWGService.isRunning() && rwg != null) {// Kill RWG if already
+//			// running
+//			stopService(rwg);
+//
+//			try {
+//				rwgService.killProcessRunning("./rwgexec");
+//				Utils.showToast(this, "RWG Service Stopped");
+//			} catch (Exception e) {
+//				Log.e(TAG, e.getClass().toString(), e);
+//			}
 
-			try {
-				rwgService.killProcessRunning("./rwgexec");
-				Utils.showToast(this, "RWG Service Stopped");
-			} catch (Exception e) {
-				Log.e(TAG, e.getClass().toString(), e);
-			}
+			mNotificationManager.cancel(AdhocService.ADHOC_NOTIFICATION);
+			mNotificationManager.cancel(AdhocService.NEWFIND_NOTIFICATION);
 
-			mNotificationManager.cancel(Utils.ADHOC_ON_ID);
+			//mNotificationManager.cancel(Utils.ADHOC_ON_ID);
 		}
 		super.finish();
 	}
