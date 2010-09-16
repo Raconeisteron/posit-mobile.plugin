@@ -24,7 +24,7 @@ package org.hfoss.posit.android;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.hfoss.posit.android.adhoc.RWGService;
+//import org.hfoss.posit.android.adhoc.RWGService;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 
@@ -104,7 +104,7 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 		fillData();
 		NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
     	nm.cancel(Utils.NOTIFICATION_ID);
-    	RWGService.newFindsNum = 0;
+ //   	RWGService.newFindsNum = 0;
 	}
 
 	/**

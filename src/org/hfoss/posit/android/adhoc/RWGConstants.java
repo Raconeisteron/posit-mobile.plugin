@@ -5,13 +5,13 @@ public interface RWGConstants {
 	//home directory of Android application
 	public final static String POSIT_HOME = "/data/data/org.hfoss.posit.android/";
 
-	//name of the tor C binary
+	//name of the RWG C binary
 	public final static String RWG_BINARY_ASSET_KEY = "rwgexec";	
 	
-	//path to install the Tor binary too
+	//path to install the RWG binary too
 	public final static String RWG_BINARY_INSTALL_PATH = POSIT_HOME + "files/" + RWG_BINARY_ASSET_KEY;
 	
-	//key of the tor binary in the Zip file
+	//key of the RWG  binary in the Zip file
 	public final static String RWG_BINARY_ZIP_KEY = "assets/" + RWG_BINARY_ASSET_KEY;
 	
 

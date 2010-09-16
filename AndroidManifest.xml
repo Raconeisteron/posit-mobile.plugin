@@ -48,11 +48,11 @@
 		<activity android:name=".TrackerSettings"/>
 		<activity android:name=".TrackerListActivity"/>
 		
-		
-		
 		<activity android:name="org.hfoss.posit.android.sms.SahanaSMSActivity"/>
 		<activity android:name="org.hfoss.posit.android.TrackerActivity"/>
 		<service android:name="org.hfoss.posit.android.adhoc.RWGService" />
+		<service android:name="org.hfoss.adhoc.QueueService" />
+		<service android:name="org.hfoss.adhoc.AdhocService" />
 		<service android:name="org.hfoss.posit.android.TrackerBackgroundService"/>
 		<provider android:name="org.hfoss.posit.android.provider.PositContentProvider" android:authorities="org.hfoss.provider.POSIT" />
 	</application>

@@ -25,7 +25,7 @@ package org.hfoss.posit.android;
 import java.util.List;
 
 import org.apache.commons.validator.EmailValidator;
-import org.hfoss.posit.android.adhoc.RWGService;
+//import org.hfoss.posit.android.adhoc.RWGService;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 import org.json.JSONException;
@@ -504,7 +504,20 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		}
 		return true;
 	}
-	
+//	
+//	/**
+//	 * Intercepts the back key (KEYCODE_BACK) and displays a confirmation dialog
+//	 * when the user tries to exit POSIT.
+//	 */
+//	@Override
+//	public boolean onKeyDown(int keyCode, KeyEvent event) {
+//		if(keyCode==KeyEvent.KEYCODE_BACK){
+//			showDialog(CONFIRM_EXIT);
+//			return true;
+//		}
+//		Log.i("code", keyCode+"");
+//		return super.onKeyDown(keyCode, event);
+//	}
 	
 	/**
 	 * This method is used to check whether or not the user has an intent
