@@ -192,6 +192,22 @@ public class Find {
 	}
 	
 	/**
+	 * Updates a find given its guid.
+	 * @param guid
+	 * @param content
+	 * @return
+	 */
+	public boolean updateToDB(String guid, ContentValues content) {//, ContentValues images) {
+		if (isSynced()) { //TODO think of a better way to do this
+			//set it as unsynced
+			content.put(PositDbHelper.FINDS_SYNCED, PositDbHelper.FIND_NOT_SYNCED);
+			//add revision only once. Don't count revisions for in-phone updates.
+			//content.put(PositDbHelper.FINDS_REVISION, getRevision()+1); // 
+		}
+		return mDbHelper.updateFind(guid, content, null);
+	}
+	
+	/**
 	 * deletes the Find object form the DB
 	 * @return whether the DB operation was successful
 	 */
@@ -268,6 +284,15 @@ public class Find {
 //		ContentValues value = mDbHelper.fetchFindColumns(mId, new String[] { PositDbHelper.FINDS_REVISION});
 		ContentValues value = mDbHelper.fetchFindDataById(mId, new String[] { PositDbHelper.FINDS_REVISION});
 		return value.getAsInteger(PositDbHelper.FINDS_REVISION);
+	}
+	
+	/**
+	 * Used for adhoc finds.  Tests whether find already exists
+	 * @param guid
+	 * @return
+	 */
+	public boolean exists(String guid) {
+		return mDbHelper.containsFind(guid);
 	}
 	
 	/**

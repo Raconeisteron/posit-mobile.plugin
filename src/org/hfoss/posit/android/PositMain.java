@@ -323,7 +323,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	private void stopAdhocService() {
 		Intent serviceIntent = new Intent();
 		serviceIntent.setClass(this, AdhocService.class);
-		stopService(serviceIntent);  // Stop previously started services
+		stopService(serviceIntent);  // Stop previously started service
 	}
 	
 	private void startQueueService() {
