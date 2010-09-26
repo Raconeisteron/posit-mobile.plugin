@@ -50,7 +50,7 @@ public class Adhoc {
 	private int maxLength = 1024;
 	private DatagramSocket listeningSocket = null;
 	private DatagramSocket bcastSocket = null;
-	private boolean stopped = false;
+	private boolean stop_requested = false;
 //	private boolean sending= false;
 	private Context mContext;
 	//private MacAddress mMacAddress;
@@ -100,16 +100,16 @@ public class Adhoc {
 		} catch (UnknownHostException e1) {
 			Log.e(TAG, "cannot get address");
 		}
-		
+		 
 		Log.i(TAG, "listen() starting the listening loop");
-		while (!stopped) {
+		while (!stop_requested) {
 			byte[] buf = new byte[maxLength];
 			DatagramPacket packet = new DatagramPacket(buf, buf.length);
-			
+		 	
 			try {
 				listeningSocket.receive(packet);
 				Log.d(TAG, "listen() received a packet");
-
+ 
 				byte[] rwg_payload = packet.getData();
 				AdhocData<AdhocFind> data = AdhocData.readFromBytes(rwg_payload);
 				if (data.getProtocol().equals(AdhocData.PROTOCOL_RWG)) {
@@ -117,6 +117,7 @@ public class Adhoc {
 					
 					// Is this my own packet?
 					MacAddress senderMac = data.getSender();
+					Log.d(TAG, "MyMac = " + mMyMacAddress + " senderMac = " + senderMac);
 					if (senderMac.toString().equalsIgnoreCase(mMyMacAddress)) {
 
 						Log.d(TAG, "Ignoring packet -- looks like mine");
@@ -135,10 +136,16 @@ public class Adhoc {
 						values.put(PositDbHelper.FINDS_IS_ADHOC, 1);
 
 						Find find = new Find(mContext);
-						find.insertToDB(values, null);
-						
+						//find.setGuid(adhocFind.getId());
+						if (find.exists(adhocFind.getId())) {
+							Log.i(TAG, "Find already exists");
+							find.updateToDB(adhocFind.getId(), values);
+							Utils.showToast(mContext, "Updating existing adhoc find");
+						} else {
+							find.insertToDB(values, null);
+							Utils.showToast(mContext, "Saving new adhoc find");
+						}
 						notifyNewFind(adhocFind.getName(), adhocFind.getDescription());
-						
 						Log.d(TAG, "Inserted find into POSIT Db");
 					}
 				} else {
@@ -151,8 +158,9 @@ public class Adhoc {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		Log.i(TAG, "Exiting the listening loop, stopped = " + stopped);
+		}  
+		Log.i(TAG, "Exiting the listening loop, stop_requested = " + stop_requested);
+		Utils.showToast(mContext, "Exiting listen loop");
 	}
 	
 	/**
@@ -160,7 +168,7 @@ public class Adhoc {
 	 */
 	public void sendData() {
 		Log.i(TAG, "Starting sendData() queue size =" + Queues.outputQueue.size());
-		while (!stopped) {
+		while (!stop_requested) {
 			try {
 				AdhocData<AdhocFind> data = Queues.outputQueue.take(); // Includes RWG protocol
 				Log.e(TAG,  "sendData() sending data = " + data);
@@ -185,10 +193,16 @@ public class Adhoc {
 				Log.e(TAG, "Thread interrupted");
 			}
 		}
+		Log.d(TAG,"Exiting the sending loop, stop_requested = " + stop_requested);
+		Utils.showToast(mContext, "Exiting send loop");
 	}
 
 	/**
-	 * Don't want this method interrupted in the middle, so synchronized.
+	 * A special definition exists for the IP broadcast address 255.255.255.255. 
+	 * It is the broadcast address of the zero network (0.0.0.0), which in 
+	 * Internet Protocol standards stands for this network, i.e. the local network. 
+	 * Transmission to this address is limited by definition, in that it 
+	 * does not cross the routers connecting the local network to the Internet.
 	 * @param bytes
 	 */
 	private void  broadcast (byte[] bytes){
@@ -196,7 +210,7 @@ public class Adhoc {
 
 		InetAddress IPAddress;
 		try {
-			IPAddress = InetAddress.getByName("255.255.255.255");
+			IPAddress = InetAddress.getByName("255.255.255.255"); 
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length,IPAddress, mPort);
 
 			bcastSocket.setBroadcast(true);
@@ -251,19 +265,8 @@ public class Adhoc {
     }
     
 	public void stopListening() {
-		Log.i(TAG, "stopping the listening thread");
-		stopped = true;
+		Log.i(TAG, "Someone called stopListening");
+		stop_requested = true;
 	}
-	
-	
-//	public void broadcast(String data) {
-//		Log.i(TAG, "broadcast() string =" + data);
-//
-//		if (bcastSocket == null)
-//			return;
-//		// byte[] bytes = new byte[data.length()];
-//		byte[] bytes = data.getBytes();
-//		broadcast(bytes);
-//	}
 
 }

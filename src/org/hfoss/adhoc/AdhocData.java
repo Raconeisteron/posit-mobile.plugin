@@ -51,11 +51,16 @@ public class AdhocData<T> implements Serializable {
 		message = (T)"Hello";
 	}
 	
+	
 	public AdhocData(Context cxt, T msg) {
 		this();
 		message = (T)msg;
-		origin = AdhocService.getMacAddress(cxt);
-		sender = AdhocService.getMacAddress(cxt);
+		// getMacAddress returns null when using phone as WiFi hotspot??
+		MacAddress mac = AdhocService.getMacAddress(cxt);
+		if (mac != null) {
+			origin = mac;
+			sender = mac;
+		}
 	}
 	
 	public AdhocData(T msg) {
@@ -291,6 +296,7 @@ public class AdhocData<T> implements Serializable {
 			Log.e(TAG,
 					"NullPointerException when creating string for AdhocData "
 							+ ne.getMessage());
+			ne.printStackTrace();
 		}
 		return result;
 	}
