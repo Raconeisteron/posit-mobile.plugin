@@ -48,12 +48,12 @@ public class AdhocService extends Service {
 		
 	}
 
-	private final IAdhocService.Stub mBinder = new IAdhocService.Stub() {
-
-		public int getPort() {
-			return mPort;
-		}
-	};
+//	private final IAdhocService.Stub mBinder = new IAdhocService.Stub() {
+//
+//		public int getPort() {
+//			return mPort;
+//		}
+//	};
 	
 	
 	@Override
@@ -139,12 +139,12 @@ public class AdhocService extends Service {
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		if (IAdhocService.class.getName().equals(intent.getAction())) {
-			return mBinder;
-		}
+//		if (IAdhocService.class.getName().equals(intent.getAction())) {
+//			return mBinder;
+//		}
 		return null;
 	}
-
+ 
 	/**
 	 * Posts a message and an icon in the status bar.
 	 */
