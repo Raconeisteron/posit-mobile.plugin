@@ -3,7 +3,7 @@
 	<string name="app_name">POSIT</string>
 	<string name="version">0.7.2 beta</string>
 	
-	<string name="defaultServer">http://turing.cs.trincoll.edu/~pgautam/positweb</string>
+	<string name="defaultServer">http://turing.cs.trincoll.edu/~ram/positweb</string>
 
 	<string name="confirmChange">Confirm</string>
 	<string name="accountNotFoundMessage">Your email or username is incorrect</string>
@@ -253,4 +253,5 @@
 <string name="local_service_stopped">Tracker Stopped</string>
 <string name="local_service_label">Coverage Tracker</string>
 <string name="tracker_settings_menu_item">Settings</string>
+<string name="registerServerLabel">Server: (Can be changed in Settings)</string>
 </resources>
