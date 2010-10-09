@@ -183,11 +183,6 @@ public class TrackerActivity extends MapActivity
 
 		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
 		//Utils.showToast(this, " TrackerActivity Created in state " + mExecutionState);
-
-		// Temporary Hack to get out of buggy state
-		//mExecutionState = TrackerSettings.IDLE; 
-		//spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
-		//spEditor.commit();
 		
 		if (mExecutionState == TrackerSettings.SYNCING_POINTS) {
 				mRowIdExpeditionBeingSynced = mPreferences.getInt(TrackerSettings.ROW_ID_EXPEDITION_BEING_SYNCED, -1);
