@@ -53,7 +53,7 @@ import com.google.android.maps.GeoPoint;
  * @ http://github.com/commonsguy/cw-android/tree/master/Service/WeatherPlus/
  * @author rmorelli
  *
- */
+ */ 
 public class TrackerBackgroundService extends Service implements LocationListener {
 
 	private static final String TAG = "PositTracker";

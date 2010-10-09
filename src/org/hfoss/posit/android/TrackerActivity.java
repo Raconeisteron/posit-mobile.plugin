@@ -184,6 +184,11 @@ public class TrackerActivity extends MapActivity
 		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
 		//Utils.showToast(this, " TrackerActivity Created in state " + mExecutionState);
 
+		// Temporary Hack to get out of buggy state
+		//mExecutionState = TrackerSettings.IDLE; 
+		//spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+		//spEditor.commit();
+		
 		if (mExecutionState == TrackerSettings.SYNCING_POINTS) {
 				mRowIdExpeditionBeingSynced = mPreferences.getInt(TrackerSettings.ROW_ID_EXPEDITION_BEING_SYNCED, -1);
 			displayExistingExpedition(mRowIdExpeditionBeingSynced, RESUMING_SYNC); 
@@ -233,8 +238,20 @@ public class TrackerActivity extends MapActivity
 			Utils.showToast(this, "The Tracker is IDLE.");
 		} else if (mExecutionState == TrackerSettings.VIEWING_MODE)
 			Utils.showToast(this, "Viewing an existing track.");
-		else  // Syncing state
-			Utils.showToast(this, "This expedition is being synced with the server.");
+		else  { // Syncing state 
+			ArrayList<ContentValues> points = mDbHelper.fetchExpeditionPointsUnsynced(mExpId);
+			Log.d(TrackerActivity.TAG, "TrackerActivity.onresume points= " + points.size() + " to sync");
+
+			if (points.size() == 0) { // There were probably a few lost points 
+				Log.d(TrackerActivity.TAG, "TrackerActivity, Stopping sync " + points.size() + " to sync");
+				mSettingsButton.setVisibility(View.GONE);
+				mListButton.setEnabled(true);
+				mListButton.setClickable(true);
+				spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+				spEditor.commit();
+			} else 
+				Utils.showToast(this, "This expedition is being synced with the server.");
+		}
 
 		Log.i(TAG,"TrackerActivity,  resumed in state " + mExecutionState);
 	}
@@ -586,7 +603,7 @@ public class TrackerActivity extends MapActivity
 				mBackgroundService = TrackerBackgroundService.getInstance();
 				startActivity(new Intent(this, TrackerSettings.class));	
 				
-			} else if (text.equals("Sync")) {  // Text = "Sync" or "Register"
+			} else if (text.equals("Sync")) {  
 				// This is only reached by clicking on the Sync button in List View	
 				mSettingsButton.setEnabled(false);
 				mSettingsButton.setClickable(false);
@@ -815,7 +832,7 @@ public class TrackerActivity extends MapActivity
 	@Override protected void onDestroy() {
 		super.onDestroy();
 		
-		// If stopped in Viewing mode, reset the state to IDLE if all points have been synced;. 
+		// If stopped in Viewing mode, reset the state to IDLE;. 
 		// otherwise leave it in VIEWING_MODE
 		
 		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
@@ -1074,11 +1091,9 @@ public class TrackerActivity extends MapActivity
 		String result;
 	
 		for (int k = 0; k < values.length; k++) {
-			ContentValues vals = values[k];
+			ContentValues vals = values[k]; 
 			
-			// TODO:  This will be a problem if we lose connectivity during syncing. 
-			// Syncing won't start if we have no connectivity. But we could lose it
-			// during syncing.
+			// Wait for connectivity 
 			try {			
 				// Wait until we have WIFI or MOBILE (MOBILE works best of course)	
 				NetworkInfo info = mConnectivityMgr.getActiveNetworkInfo();
@@ -1093,8 +1108,7 @@ public class TrackerActivity extends MapActivity
 						e.printStackTrace();
 					}
 				}
-				Log.d(TAG, "TrackerActivity.Async now sending point to server");
-
+				Log.d(TAG, "TrackerActivity.Async now sending point " + k + " to server");
 				
 				// Send the point to the Server
 				result = mCommunicator.registerExpeditionPoint(
@@ -1113,7 +1127,7 @@ public class TrackerActivity extends MapActivity
 				int expId = vals.getAsInteger(PositDbHelper.EXPEDITION);
 				
 				++mTrack.mSent;	
-				Log.i(TAG, "TrackerActivity.Async, Sent  point " + mTrack.mSent + " rowId=" + rowId + " to server, result = |" + result + "|");
+				Log.i(TAG, "TrackerActivity.Async, Sent  point " +  k + " rowId=" + rowId + " to server, result = |" + result + "|");
 
 				vals = new ContentValues();
 				int isSynced = 0;
@@ -1128,11 +1142,14 @@ public class TrackerActivity extends MapActivity
 				// Mark the point as synced and update the expedition
 				updatePointAndExpedition(rowId, vals, isSynced, mSynced);
 			} catch (Exception e) {
-				Log.i(TAG, "TrackerService.Async, Error handleMessage " + e.getMessage());
+				Log.i(TAG, "TrackerService.Async, Exception on point " + k + " message=" + e.getMessage());
 				e.printStackTrace();
 				// finish();
 			}
 		}
+		// When we finish processing all the points, reset the Tracker's state
+		spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
+		spEditor.commit();
 		return null;
 	}
 }
