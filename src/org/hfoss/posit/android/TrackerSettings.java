@@ -46,7 +46,7 @@ public class TrackerSettings extends PreferenceActivity {
 
 	  // Default settings -- some of these settable in shared preferences
 	  public static final int DEFAULT_MIN_RECORDING_DISTANCE = 3; // meters, sp
-	  public static final int DEFAULT_MIN_RECORDING_INTERVAL = 0; 
+	  public static final int DEFAULT_MIN_RECORDING_INTERVAL = 2000; 
 	  public static final int DEFAULT_MIN_REQUIRED_ACCURACY = 200; // Unused
 	  public static final int DEFAULT_SWATH_WIDTH = 50; // sp
 	  

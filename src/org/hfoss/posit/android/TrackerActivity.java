@@ -21,48 +21,34 @@
  */
 package org.hfoss.posit.android;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.NetworkInterface;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hfoss.posit.android.TrackerBackgroundService.SendExpeditionPointTask;
 import org.hfoss.posit.android.TrackerState.PointAndTime;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
@@ -113,6 +99,7 @@ public class TrackerActivity extends MapActivity
 	private Communicator mCommunicator;
 	
 	// View stuff
+	private MapView mapView;
 	private MyLocationOverlay myLocationOverlay;
 	private TrackerOverlay mTrackerOverlay;
 	private List<Overlay> mOverlays;
@@ -297,11 +284,16 @@ public class TrackerActivity extends MapActivity
 	    
 		// Set up the UI -- now the map view and its current location overlay. 
 		// The points overlay is created in updateView, after the Tracker Service is started. 
-		MapView mapView = (MapView) findViewById(R.id.mapView);
+		mapView = (MapView) findViewById(R.id.mapView);
 		mapView.setSatellite(false);
 		mMapController = mapView.getController();
 		mapView.setBuiltInZoomControls(true);
+		
+		// Add an overlay for my location
 		mOverlays = mapView.getOverlays();
+		if (mOverlays.contains(myLocationOverlay)) {
+			mOverlays.remove(myLocationOverlay);
+		}
 		myLocationOverlay = new MyLocationOverlay(this, mapView);
 		mOverlays.add(myLocationOverlay);
 		
@@ -422,7 +414,11 @@ public class TrackerActivity extends MapActivity
 				mSettingsButton.setVisibility(View.GONE);
 			}
 		}
-		// Display the expedition
+		
+		// Display the expedition as an overlay
+		if (mapView.getOverlays().contains(mTrackerOverlay)) {
+			   mapView.getOverlays().remove(mTrackerOverlay);
+			 }
 		mTrackerOverlay = new TrackerOverlay(mTrack);
 		mOverlays.add(mTrackerOverlay);
 		Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
@@ -481,6 +477,9 @@ public class TrackerActivity extends MapActivity
 		mBackgroundService = TrackerBackgroundService.getInstance();
 		if (mBackgroundService != null) {
 			mTrack = mBackgroundService.getTrackerState();
+			if (mapView.getOverlays().contains(mTrackerOverlay)) {
+				mapView.getOverlays().remove(mTrackerOverlay);
+			}
 			mTrackerOverlay = new TrackerOverlay(mTrack);
 			mOverlays.add(mTrackerOverlay);
 		}
@@ -811,7 +810,7 @@ public class TrackerActivity extends MapActivity
 	public void onPause() {
 		super.onPause();
 		myLocationOverlay.disableMyLocation();
-		myLocationOverlay.enableCompass();
+		myLocationOverlay.disableCompass();
 		spEditor.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, mExecutionState);
 		spEditor.commit();
 		Log.i(TAG,"TrackerActivity, Paused in state: " + mExecutionState);

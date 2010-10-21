@@ -40,6 +40,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
 
@@ -414,6 +416,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
         	e.printStackTrace();
         }
 
+        
 		// Call the UI's Listener. This will update the View if it is visible
 		if (UI_UPDATE_LISTENER != null && loc != null) {
 			UI_UPDATE_LISTENER.updateUI(mState);
@@ -453,12 +456,11 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 */
 	public void onLocationChanged(Location location) {
 		if (mLocation == null || mLocation.distanceTo(location) >= mState.mMinDistance) {
-			// Remember the new location
+			// Remember the new location and handle the change
 			mLocation = location;
+			++mState.mUpdates;
+			handleNewLocation(location);
 		}
-		//setCurrentGpsLocation(location);
-		++mState.mUpdates;
-		handleNewLocation(location);
 		
 //		Log.d(TAG, "TrackerService, point found");			
 	}
