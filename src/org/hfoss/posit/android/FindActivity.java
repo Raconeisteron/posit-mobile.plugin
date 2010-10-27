@@ -37,12 +37,12 @@ import org.hfoss.adhoc.AdhocData;
 import org.hfoss.adhoc.AdhocFind;
 import org.hfoss.adhoc.AdhocService;
 //import org.hfoss.adhoc.Queues;
-import org.hfoss.adhoc.UdpSender;
+//import org.hfoss.adhoc.UdpSender;
 //import org.hfoss.posit.android.adhoc.RWGService;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.ImageAdapter;
 import org.hfoss.posit.android.utilities.Utils;
-import org.hfoss.posit.rwg.RwgSender;
+//import org.hfoss.posit.rwg.RwgSender;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -709,7 +709,7 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		AdhocData<AdhocFind>adhocData = new AdhocData<AdhocFind>(this,adhocFind);
 		try {
 			Log.i("Adhoc", "FindActivity.saveAdhoc: Queuing user data for RWG");
-			RwgSender.queueUserMessageFromNode(adhocData);
+//			RwgSender.queueUserMessageFromNode(adhocData);
 			return true;
 		} catch (Exception e) {
 			Log.e(TAG, "Exception");
