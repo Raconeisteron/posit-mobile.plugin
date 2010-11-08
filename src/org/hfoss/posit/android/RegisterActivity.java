@@ -44,6 +44,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -99,6 +100,15 @@ public class RegisterActivity extends Activity implements OnClickListener {
 //			finish();
 		
 		setContentView(R.layout.main_register);
+		
+		final TextView version = (TextView) findViewById(R.id.version);
+		try {
+			version.setText(getPackageManager().getPackageInfo("org.hfoss.posit.android", 0).versionName);
+		} catch(NameNotFoundException nnfe) {
+			//shouldn't happen
+			Log.w(TAG, nnfe.toString(), nnfe);
+			version.setVisibility(View.INVISIBLE);
+		}
 
 		// Register existing user button
 		Button register = (Button) findViewById(R.id.register);
@@ -131,6 +141,15 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		super.onResume();
 //		if(!mSharedPrefs.getString("AUTHKEY", "").equals(""))
 //			finish();
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK) {
+			setResult(PositMain.LOGIN_CANCELED);
+		}
+		
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	
