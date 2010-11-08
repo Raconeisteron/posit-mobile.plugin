@@ -25,12 +25,10 @@ package org.hfoss.posit.android;
 import java.util.List;
 
 import org.apache.commons.validator.EmailValidator;
-//import org.hfoss.posit.android.adhoc.RWGService;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -44,12 +42,10 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -73,7 +69,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
 	private static final String TAG = "RegisterActivity";
 	private static final int LOGIN_BY_BARCODE_READER = 0;
-	private static final int CONFIRM_EXIT = 1;
 	private static final int PROMPT_REGISTRATION = 0;
 
 	public static final String REGISTER_USER = "RegisterUser";
@@ -82,12 +77,13 @@ public class RegisterActivity extends Activity implements OnClickListener {
 
 	private SharedPreferences mSharedPrefs;
 	private ProgressDialog mProgressDialog;
+	private String mAction; // Save current action for restartability
 
 	private Button mRegisterUsingBarcodeButton;
 	private Button mRegisterUsingDeviceButton;
 	private Button mRegisterButton;
-	
-	
+
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG,"Registration Activity");
@@ -95,11 +91,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		// If the authKey is set, the user is already register, but what if
 		// they want to create a new account??
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-//		if(!mSharedPrefs.getString("AUTHKEY", "").equals(""))
-//			finish();
 		
 		setContentView(R.layout.main_register);
-
+		
 		// Register existing user button
 		Button register = (Button) findViewById(R.id.register);
 		if (register != null) {
@@ -110,34 +104,50 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		Button login = (Button) findViewById(R.id.login);
 		if (login != null)
 			login.setOnClickListener(this);
-
-		// This activity is started with specific actions by the SettingsActivity
-
-		Intent intent = getIntent();
-		String action = intent.getAction();
 		
-		if (action != null) {  
-			if (action.equals(REGISTER_USER)) 
+		// If RegisterActivity is started from PositMain, then no action is set
+		//  until the user selects one. We need to store that selection 
+		//  (see onRetainNonConfigurationInstance()) so that the user's choice
+		//  is not lost if he rotates the phone. This if-statment gets that
+		//  value, if any.
+		String action = (String) getLastNonConfigurationInstance();
+		if (action != null) {
+			mAction = action;
+			if (action.equals(REGISTER_USER))
 				createNewUserAccount();
 			else if (action.equals(REGISTER_PHONE))
 				registerExistingAccount();
 		}
-		else 
+		// If we got here via SettingsActivity, then it has pre-set the action
+		//  (in a way that is preserved on RegisterActivity restart).
+		else if ((action = getIntent().getAction()) != null) {
+			if (action.equals(REGISTER_USER))
+				createNewUserAccount();
+			else if (action.equals(REGISTER_PHONE))
+				registerExistingAccount();
+		}
+		else
 			showDialog(PROMPT_REGISTRATION);
+	}
+	
+	
+	// Retain a record of what we were doing so that we can resume there if
+	//  RegisterActivity has to restart because user rotated phone.
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		return mAction;
 	}
 	
 	
 	public void onResume(){
 		super.onResume();
-//		if(!mSharedPrefs.getString("AUTHKEY", "").equals(""))
-//			finish();
 	}
 	
 	
 	/**
 	 * Handle all button clicks. There are two main buttons that appear on the View
 	 * when the Activity is started.  When one of those buttons is clicked, a new 
-	 * View is displayed with one or more additional buttons. 
+	 * View is displayed with one or more additional buttons.
 	 */
 	public void onClick(View v) {
 
@@ -145,27 +155,23 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			Utils.showToast(this,"There's a problem. To register you must be on a network.");
 			return;
 		}
-
+		
 		Intent intent;
-
+		
 		switch (v.getId()) {
 		
 		// Register phone for an existing account
-		case R.id.register:   
-			//registerExistingAccount();
+		case R.id.register:
+			mAction = RegisterActivity.REGISTER_USER;
 			createNewUserAccount();
-		break;
-			
+			break;
+		
 		// Create a new user account
 		case R.id.login:
-			//createNewUserAccount();
+			mAction = RegisterActivity.REGISTER_PHONE;
 			registerExistingAccount();
-//			intent = new Intent(this, RegisterPhoneActivity.class);
-//			//intent.setClass(this, RegisterPhoneActivity.class);
-//			intent.putExtra("regUser", false);
-//			startActivity(intent); 
 			break;
-
+		
 		// Register the phone from the phone by providing valid email and password
 		case R.id.registerDeviceButton:
 			String password = (((TextView) findViewById(R.id.password)).getText()).toString();
@@ -181,7 +187,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			}
 			loginUser(email, password);
 			break;
-
+		
 		// Register the phone by reading a barcode on the server's website (Settings > Register)
 		case R.id.registerUsingBarcodeButton:
 			if (!isIntentAvailable(this, "com.google.zxing.client.android.SCAN")) {
@@ -199,13 +205,12 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			
 		// User clicks the "Login" button in the Create User View	
 		case (R.id.submitInfo):
-			Intent i = getIntent();
 			password = (((TextView) findViewById(R.id.password)).getText()).toString();
 			String check = (((TextView) findViewById(R.id.passCheck)).getText()).toString();
 			email = (((TextView) findViewById(R.id.email)).getText()).toString();
 			String lastname = (((TextView) findViewById(R.id.lastName)).getText()).toString();
 			String firstname = (((TextView) findViewById(R.id.firstName)).getText()).toString();
-
+			
 			if (password.equals("") || check.equals("") || lastname.equals("")
 					|| firstname.equals("") || email.equals("")) {
 				Utils.showToast(this,"Please fill in all the fields");
@@ -221,15 +226,15 @@ public class RegisterActivity extends Activity implements OnClickListener {
 				Utils.showToast(this,"Your passwords do not match");
 				break;
 			}
-
+			
 			TelephonyManager manager = (TelephonyManager) this
 					.getSystemService(Context.TELEPHONY_SERVICE);
 			String imei = manager.getDeviceId();
-
+			
 			Communicator com = new Communicator(this);
-
+			
 			String server = mSharedPrefs.getString("SERVER_ADDRESS", getString(R.string.defaultServer));
-
+			
 			String result = com.registerUser(server, firstname, lastname,
 					email, password, check, imei);
 			Log.i(TAG, "RegisterUser result = " + result);
@@ -244,25 +249,20 @@ public class RegisterActivity extends Activity implements OnClickListener {
 					Editor editor = mSharedPrefs.edit();
 					editor.putString("EMAIL", email);
 					editor.commit();
-	
+					
 					// The user logs in to register the device.
-					loginUser(email, password);  
-
+					loginUser(email, password);
+					
 				} else {
 					Utils.showToast(this, message[1]);
 				}
-				break;
-
+			break;
+			
 			}
 			mProgressDialog.dismiss();
-
-			// case R.id.sahanaSMS:
-			// intent.setClass(this, SahanaSMSActivity.class);
-			// startActivity(intent);
-			// break;
 		}
 	}
-
+	
 	private void createNewUserAccount() {
 		Log.i(TAG,"Creating new user");
 		setContentView(R.layout.registeruser);
@@ -272,9 +272,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		((TextView) findViewById(R.id.email)).setText(email);
 		mRegisterButton = (Button) findViewById(R.id.submitInfo);
 		mRegisterButton.setOnClickListener(this);
-	} 
-
-
+	}
+	
+	
 	/**
 	 * Handles server registration by decoding the JSON Object that the barcode
 	 * reader gets from the server site containing the server address and the
@@ -282,16 +282,11 @@ public class RegisterActivity extends Activity implements OnClickListener {
 	 * preferences. The user is then prompted to choose a project from the
 	 * server to work on and sync with.
 	 */
-	@Override 
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.i(TAG, "Requestcode = " + requestCode + "Result code = " + resultCode);
 		super.onActivityResult(requestCode, resultCode, data);
-//		if (resultCode == RESULT_CANCELED)
-//			return;
-//		if(resultCode == RegisterUserActivity.BACK_BUTTON){
-//			finish();
-//			return;
-//		}
+		
 		switch (requestCode) {
 		case LOGIN_BY_BARCODE_READER:
 			String value = data.getStringExtra("SCAN_RESULT");
@@ -311,11 +306,10 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			// End of Hack
 			
 			JSONObject object;
-			JSONTokener tokener = new JSONTokener(value);
-
+			
 			try {
 				Log.i(TAG, "JSON=" + value);
-
+				
 				object = new JSONObject(value);
 				String server = object.getString("server");
 				String authKey = object.getString("authKey");
@@ -350,15 +344,15 @@ public class RegisterActivity extends Activity implements OnClickListener {
 				} finally {
 					mProgressDialog.dismiss();
 				}
-
+				
 				mProgressDialog.dismiss();
 				int projectId = mSharedPrefs.getInt("PROJECT_ID", 0);
 				if (projectId == 0) {
 					Intent intent = new Intent(this, ShowProjectsActivity.class);
 					startActivity(intent);
-				}
+					}
 				finish();
-
+				
 			} catch (JSONException e) {
 				if (Utils.debug)
 					Log.e(TAG, e.toString());
@@ -366,8 +360,8 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			break;
 		}
 	}
-	 
-
+	
+	
 	/**
 	 * For a user with an existing account on the server, this method will register
 	 * the phone, resulting in an authKey being sent to the phone by the server and
@@ -381,7 +375,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String serverName = mSharedPrefs.getString("SERVER_ADDRESS", "");
 		Log.i(TAG,"Server = " + serverName);
-//		if (mServerName != null) 
 		((TextView) findViewById(R.id.serverName)).setText(serverName);
 		
 		String email = mSharedPrefs.getString("EMAIL", "");
@@ -408,12 +401,12 @@ public class RegisterActivity extends Activity implements OnClickListener {
 	private void loginUser(String email, String password) {
 		mProgressDialog = ProgressDialog.show(this, "Registering device",
 				"Please wait.", true, true);
-		String serverName = mSharedPrefs.getString("SERVER_ADDRESS", ""); 
+		String serverName = mSharedPrefs.getString("SERVER_ADDRESS", "");
 		Communicator com = new Communicator(this);
 		TelephonyManager manager = (TelephonyManager) this
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei = manager.getDeviceId();
- 
+		
 		// First login the user.
 		String result = null;
 		try {
@@ -428,7 +421,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			Utils.showToast(this, "Failed to get authentication key from server.");
 			mProgressDialog.dismiss();
 			return;
-		} 
+		}
 		//TODO this is still little uglyish
 		String[] message = result.split(":");
 		if (message.length != 2 || message[1].equals("null")){
@@ -440,7 +433,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		if (message[0].equals(""+Constants.AUTHN_OK)){
 			authKey = message[1];
 			Log.i(TAG, "AuthKey "+ authKey +" obtained, registering device");
-			 
+			
 			// Here we register the device
 			String responseString = com.registerDevice(serverName, authKey, imei);
 			
@@ -456,7 +449,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 				Utils.showToast(this, "Successfully logged in.");
 				setResult(PositMain.LOGIN_SUCCESSFUL);
 				finish();
-			} 
+			}
 		}else {
 			Utils.showToast(this, message[1] + 
 					"\nMake sure you have connectivity" +
@@ -483,7 +476,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		item.setEnabled(false);
 		return true;
 	}
-
+	
 	/**
 	 * Manages the selection of menu items.
 	 * 
@@ -504,20 +497,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		}
 		return true;
 	}
-//	
-//	/**
-//	 * Intercepts the back key (KEYCODE_BACK) and displays a confirmation dialog
-//	 * when the user tries to exit POSIT.
-//	 */
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		if(keyCode==KeyEvent.KEYCODE_BACK){
-//			showDialog(CONFIRM_EXIT);
-//			return true;
-//		}
-//		Log.i("code", keyCode+"");
-//		return super.onKeyDown(keyCode, event);
-//	}
+	
 	
 	/**
 	 * This method is used to check whether or not the user has an intent
@@ -535,21 +515,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		return list.size() > 0;
 	}
 	
-//	/**
-//	 * Intercepts the back key (KEYCODE_BACK) and displays a confirmation dialog
-//	 * when the user tries to exit POSIT.
-//	 */
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		if(keyCode==KeyEvent.KEYCODE_BACK){
-//			showDialog(CONFIRM_EXIT);
-//			return true;
-//		}
-//		Log.i("code", keyCode+"");
-//		return super.onKeyDown(keyCode, event);
-//	}
-//
-//	
+	
 	/**
 	 * Creates a dialog to confirm that the user wants to exit POSIT.
 	 */
@@ -571,11 +537,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
 						}
 					})
 					.create();
-
-
+			
 		default:
 			return null;
 		}
 	}
-
 }
