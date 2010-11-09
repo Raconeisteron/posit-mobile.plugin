@@ -221,6 +221,15 @@
 	<string name="adhoc_groupsize_summary">Max number of devices in ad-hoc network</string>
 	<string name="adhoc_groupsize_title">Ad-hoc group size:</string>
 
+	<!--  RWG Settings -->
+	<string name="rwg_group_size">Group Size</string>
+	<string name="rwgGroupLabel">Group Size</string>
+	<string name="rwg_group_size_summary">Number of phones in group</string>
+	<string name="rwg_settings_group_size_summary">How many phones are in the group?</string>
+	<string name="rwg_ssid">SSID</string>
+	<string name="rwgSSID">SSID</string>
+	<string name="rwg_ssid_summary">Infrastructure SSID</string>
+	
 	<!-- Coverage tracking -->
 	<string name="tracker_settings">Tracker</string>
 	<string name="tracker_recording">Recording</string>
