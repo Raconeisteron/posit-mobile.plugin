@@ -362,7 +362,7 @@ public class Communicator {
 		cleanupOnSend(sendMap);
 		sendMap.put("imei", imei);
 		String guid = sendMap.get(PositDbHelper.FINDS_GUID);
-
+		long id = find.getId();
 		// Create the url
 
 		if (action.equals("create")) {
@@ -380,6 +380,7 @@ public class Communicator {
 		} catch (Exception e) {
 			Log.i(TAG, e.getMessage());
 			Utils.showToast(mContext, e.getMessage());
+			return false;
 		}
 		if (Utils.debug)
 			Log.i(TAG, "sendFind.ResponseString: " + responseString);
@@ -390,53 +391,51 @@ public class Communicator {
 			return false;
 		} else {
 			PositDbHelper dbh = new PositDbHelper(mContext);
-			long id = find.getId();
+			//long id = find.getId();
 			success = dbh.markFindSynced(id);
 			if (Utils.debug)
 				Log.i(TAG, "sendfind synced " + id + " " + success);
 		}
 
-		if (!success)
-			return false;
-
-		// Otherwise send the Find's images
-
-		long id = Long.parseLong(sendMap.get(PositDbHelper.FINDS_ID));
-		PositDbHelper dbh = new PositDbHelper(mContext);
-		ArrayList<ContentValues> photosList = dbh.getImagesListSinceUpdate(id);
-
-		Log.i(TAG, "sendFind, photosList=" + photosList.toString());
-
-		Iterator<ContentValues> it = photosList.listIterator();
-		while (it.hasNext()) {
-			ContentValues imageData = it.next();
-			Uri uri = Uri.parse(imageData
-					.getAsString(PositDbHelper.PHOTOS_IMAGE_URI));
-			String base64Data = convertUriToBase64(uri);
-			uri = Uri.parse(imageData
-					.getAsString(PositDbHelper.PHOTOS_THUMBNAIL_URI));
-			String base64Thumbnail = convertUriToBase64(uri);
-			sendMap = new HashMap<String, String>();
-			sendMap.put(COLUMN_IMEI, Utils.getIMEI(mContext));
-			sendMap.put(PositDbHelper.FINDS_GUID, guid);
-
-			sendMap.put(PositDbHelper.PHOTOS_IDENTIFIER, imageData
-					.getAsString(PositDbHelper.PHOTOS_IDENTIFIER));
-			sendMap.put(PositDbHelper.FINDS_PROJECT_ID, imageData
-					.getAsString(PositDbHelper.FINDS_PROJECT_ID));
-			sendMap.put(PositDbHelper.FINDS_TIME, imageData
-					.getAsString(PositDbHelper.FINDS_TIME));
-			sendMap.put(PositDbHelper.PHOTOS_MIME_TYPE, imageData
-					.getAsString(PositDbHelper.PHOTOS_MIME_TYPE));
-
-			sendMap.put("mime_type", "image/jpeg");
-
-			sendMap.put(PositDbHelper.PHOTOS_DATA_FULL, base64Data);
-			sendMap.put(PositDbHelper.PHOTOS_DATA_THUMBNAIL, base64Thumbnail);
-			sendMedia(sendMap);
-			// it.next();
+		if (success){
+			// Otherwise send the Find's images
+	
+			//long id = Long.parseLong(sendMap.get(PositDbHelper.FINDS_ID));
+			PositDbHelper dbh = new PositDbHelper(mContext);
+			ArrayList<ContentValues> photosList = dbh.getImagesListSinceUpdate(id, projectId);
+	
+			Log.i(TAG, "sendFind, photosList=" + photosList.toString());
+	
+			Iterator<ContentValues> it = photosList.listIterator();
+			while (it.hasNext()) {
+				ContentValues imageData = it.next();
+				Uri uri = Uri.parse(imageData
+						.getAsString(PositDbHelper.PHOTOS_IMAGE_URI));
+				String base64Data = convertUriToBase64(uri);
+				uri = Uri.parse(imageData
+						.getAsString(PositDbHelper.PHOTOS_THUMBNAIL_URI));
+				String base64Thumbnail = convertUriToBase64(uri);
+				sendMap = new HashMap<String, String>();
+				sendMap.put(COLUMN_IMEI, Utils.getIMEI(mContext));
+				sendMap.put(PositDbHelper.FINDS_GUID, guid);
+	
+				sendMap.put(PositDbHelper.PHOTOS_IDENTIFIER, imageData
+						.getAsString(PositDbHelper.PHOTOS_IDENTIFIER));
+				sendMap.put(PositDbHelper.FINDS_PROJECT_ID, imageData
+						.getAsString(PositDbHelper.FINDS_PROJECT_ID));
+				sendMap.put(PositDbHelper.FINDS_TIME, imageData
+						.getAsString(PositDbHelper.FINDS_TIME));
+				sendMap.put(PositDbHelper.PHOTOS_MIME_TYPE, imageData
+						.getAsString(PositDbHelper.PHOTOS_MIME_TYPE));
+	
+				sendMap.put("mime_type", "image/jpeg");
+	
+				sendMap.put(PositDbHelper.PHOTOS_DATA_FULL, base64Data);
+				sendMap.put(PositDbHelper.PHOTOS_DATA_THUMBNAIL, base64Thumbnail);
+				sendMedia(sendMap);
+				// it.next();
+			}	
 		}
-
 		// Update the Synced attribute.
 		return true;
 	}

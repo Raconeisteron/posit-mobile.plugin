@@ -159,7 +159,7 @@ public class SyncThread extends Thread {
 	 * server.
 	 * 
 	 * TODO: Clean up the use of "success" by coordinating return messages with
-	 * the server.
+	 * the server. 
 	 * 
 	 */
 	public void run() {
@@ -173,14 +173,13 @@ public class SyncThread extends Thread {
 		waitHere();
 		
 		// Check that project exists
-		if(!comm.projectExists(""+mProjectId, server))
+		if(!comm.projectExists(""+mProjectId, server)){
 			mHandler.sendEmptyMessage(PROJECTERROR);
+			mHandler.sendEmptyMessage(DONE);
+			return;
+		}
+
 		
-		// Get finds from the server since last sync with this device
-		// (NEEDED: should be made project specific)
-
-		String serverFindGuIds = getServerFindsNeedingSync();
-
 		// Get finds from the client
 
 		String phoneFindGuIds = mdbh.getDeltaFindsIds(mProjectId);
@@ -189,27 +188,43 @@ public class SyncThread extends Thread {
 		// Send finds to the server
 
 		success = sendFindsToServer(phoneFindGuIds);
-
-		// Get finds from the server and store in the DB
-
-		success = getFindsFromServer(serverFindGuIds);
-
-		// Record the synchronization in the client's sync_history table
-
+		
+		if(!success && phoneFindGuIds != ""){
+			Log.i(TAG, "Error sending finds to server");
+			mHandler.sendEmptyMessage(SYNCERROR);
+			mHandler.sendEmptyMessage(DONE);
+			return;
+		}
+		
 		ContentValues values = new ContentValues();
 		values.put(PositDbHelper.SYNC_COLUMN_SERVER, server);
-
+		values.put(PositDbHelper.FINDS_PROJECT_ID, mProjectId);
+		
 		success = mdbh.recordSync(values);
 		if (!success) {
 			Log.i(TAG, "Error recording sync stamp");
 			mHandler.sendEmptyMessage(SYNCERROR);
 		}
 
+		
+		// Get finds from the server and store in the DB
+		String serverFindGuIds = getServerFindsNeedingSync();
+		
+		
+		success = getFindsFromServer(serverFindGuIds);
+		// Record the synchronization in the client's sync_history table
+		
+		if(!success && serverFindGuIds != ""){
+			Log.i(TAG, "No finds or error getting finds to server");
+			mHandler.sendEmptyMessage(DONE);
+			return;
+		}
+		
 		// Record the synchronization in the server's sync_history table
 
-		String url = server + "/api/recordSync?authKey=" + authKey + "&imei="
-				+ imei;
+		String url = server + "/api/recordSync?authKey=" + authKey + "&imei=" + imei + "&projectId=" + mProjectId;
 		Log.i(TAG, "recordSyncDone URL=" + url);
+
 		String responseString = "";
 
 		try {
@@ -247,7 +262,7 @@ public class SyncThread extends Thread {
 		// mServerFindsNeedingSync = response;
 		return response;
 	}
-
+	
 	/**
 	 * Sends finds to the server. Uses a Communicator.
 	 * 
@@ -273,7 +288,7 @@ public class SyncThread extends Thread {
 				try {
 					success = comm.sendFind(find, action); // Send it to server
 				} catch (Exception e) {
-					Log.i(TAG, e.getMessage());
+					Log.i(TAG, e.getMessage() + " ");
 					e.printStackTrace();
 					mHandler.sendEmptyMessage(NETWORKERROR);
 				}
@@ -293,6 +308,21 @@ public class SyncThread extends Thread {
 	 * @return
 	 */
 	private boolean getFindsFromServer(String serverGuids) {
+		String url = "";
+		url = server + "/api/getDeltaFindsIds?authKey=" + authKey + "&imei="
+				+ imei + "&projectId=" + mProjectId;
+		Log.i(TAG, "getDeltaFindsIds URL=" + url);
+		try {
+			serverGuids = comm.doHTTPGET(url);
+		} catch (Exception e) {
+			Log.i(TAG, e.getMessage());
+			e.printStackTrace();
+			mHandler.sendEmptyMessage(SYNCERROR);	
+			return false;
+		}
+		Log.i(TAG, "serverFindsNeedingSync = " + serverGuids);
+		// mServerFindsNeedingSync = response;
+		
 		List<ContentValues> photosList = null;
 		String guid;
 		boolean success = false;
@@ -306,9 +336,8 @@ public class SyncThread extends Thread {
 				mHandler.sendEmptyMessage(SYNCERROR); // Shouldn't be null
 			} else {
 				
-				cv
-						.put(PositDbHelper.FINDS_SYNCED,
-								PositDbHelper.FIND_IS_SYNCED);
+				cv.put(PositDbHelper.FINDS_SYNCED,
+					   PositDbHelper.FIND_IS_SYNCED);
 				Log.i(TAG, cv.toString());
 				PositDbHelper dbh = new PositDbHelper(mContext);
 

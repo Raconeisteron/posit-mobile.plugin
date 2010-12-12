@@ -234,7 +234,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ SYNC_HISTORY_TABLE + "("
 		+ SYNC_ID + " integer primary key autoincrement, "
 		+ FINDS_TIME + " timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-		+ SYNC_COLUMN_SERVER + " varchar(50) NOT NULL "
+		+ SYNC_COLUMN_SERVER + " varchar(50) NOT NULL, "
+		+ FINDS_PROJECT_ID + " integer DEFAULT -1"
 		+ ")";
 
 	/*
@@ -336,6 +337,15 @@ public class PositDbHelper extends SQLiteOpenHelper {
 //		db.execSQL("DROP TABLE IF EXISTS " + EXPEDITION_GPS_POINTS_TABLE);
 		db.execSQL(CREATE_EXPEDITION_GPS_POINTS_TABLE);
 //		if (DBG) Log.i(TAG, "Created " + EXPEDITION_GPS_POINTS_TABLE);
+		
+		// IF the column sync.project_id does not exist, add it
+		try
+		{
+			db.rawQuery("SELECT " + FINDS_PROJECT_ID + " FROM " + SYNC_HISTORY_TABLE, null);
+		}catch(SQLException e){
+			Log.w(TAG, "ALTERING TABLE");
+			db.execSQL("ALTER TABLE " + SYNC_HISTORY_TABLE + " ADD " + FINDS_PROJECT_ID + " integer DEFAULT -1");
+		}
 	}
 
 	/**
@@ -358,15 +368,19 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	/**
 	 * Queries the sync_find table and returns the time of the last sync
 	 *  operation.
+	 * @param projectId the project id to check last sync
 	 * @return
 	 */
-	public String getTimeOfLastSync() {
+	public String getTimeOfLastSync(long projectId) {
 		mDb = getReadableDatabase();
 		Cursor c = mDb.rawQuery("SELECT " + FINDS_TIME + 
-				" FROM " + SYNC_HISTORY_TABLE + " ORDER BY " +  FINDS_TIME +  " DESC ", null);
+				" FROM " + SYNC_HISTORY_TABLE + 
+				" WHERE " + FINDS_PROJECT_ID + " = " + projectId +
+				" ORDER BY " +  FINDS_TIME +  " DESC ", null);
 		String maxtime = "No time";
 		if (c.moveToFirst()) 
 			maxtime = c.getString(0);  // column 0
+		//Log.i(TAG, "projectId = " + projectId);
 		if (DBG) Log.i(TAG, "Last sync time = " + maxtime);
 		c.close();
 		return maxtime;
@@ -380,11 +394,11 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * Policy: We don't send the server those finds that were created
 	 *  and then deleted since the last sync.  Finds are not removed
 	 *  from the Db, but just marked for deletion.
-	 *  
+	 * @param projectId the project id
 	 * @return a comma, delimited list of Find guIds
 	 */
 	public String getDeltaFindsIds(long projectId){
-		String maxtime = getTimeOfLastSync();
+		String maxtime = getTimeOfLastSync(projectId);
 		
 		mDb = getReadableDatabase();
 		String[] args = new String[1];
@@ -1412,11 +1426,11 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param id  is the Key of the Find whose images are sought
 	 * @return an ArrayList of data for each image associated with a Find
 	 */
-	public ArrayList<ContentValues> getImagesListSinceUpdate(long id) {
+	public ArrayList<ContentValues> getImagesListSinceUpdate(long id, long projectId) {
 		String whereClause = PHOTOS_FIND_ID + "=" + id 
 			+ " AND " + FINDS_TIME + " > ? ";
 		String[] args = new String[1];
-		args[0] = getTimeOfLastSync();
+		args[0] = getTimeOfLastSync(projectId);
 		Log.i(TAG, "getImagesList, whereClause= " + whereClause + " ?=" + args[0]);
 		return getImagesListHelper(id, whereClause, args);
 	}

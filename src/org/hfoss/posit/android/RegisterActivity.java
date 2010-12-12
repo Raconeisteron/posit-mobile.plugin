@@ -445,7 +445,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		//TODO this is still little uglyish
 		String[] message = result.split(":");
 		if (message.length != 2 || message[1].equals("null")){
-			Utils.showToast(this, "Login failed: " + message);
+			Utils.showToast(this, "Login failed: " + result);
 			mProgressDialog.dismiss();
 			return;
 		}
