@@ -256,11 +256,46 @@
 	<string name="new_expedition_menu_item">New expedition</string>
 	<string name="nativeActivity">Native Activity</string>
 	<string name="idAddProjButton">+ Add New Project</string>
-<string name="login">Login</string>
-<string name="idTutorial">Tutorial</string>
-<string name="local_service_started">Tracker Started</string>
-<string name="local_service_stopped">Tracker Stopped</string>
-<string name="local_service_label">Coverage Tracker</string>
-<string name="tracker_settings_menu_item">Settings</string>
-<string name="registerServerLabel">Server: (Can be changed in Settings)</string>
+	<string name="login">Login</string>
+	<string name="idTutorial">Tutorial</string>
+	<string name="local_service_started">Tracker Started</string>
+	<string name="local_service_stopped">Tracker Stopped</string>
+	<string name="local_service_label">Coverage Tracker</string>
+	<string name="tracker_settings_menu_item">Settings</string>
+	<string name="registerServerLabel">Server: (Can be changed in Settings)</string>
+
+	<!--  BluetoothExplicitSync -->
+    <string name="bt_send">Send Selected</string>
+    <string name="bt_select_all">Select All</string>
+    <string name="bt_select_none">Select None</string>
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
+    <string name="title_connecting">connecting...</string>
+    <string name="title_connected_to">connected: </string>
+    <string name="title_not_connected">not connected</string>
+    <string name="bt_successful_send">Finds successfully sent.</string>
+    <string name="bt_unsuccessful_send">Something happened! Some or all finds selected were not sent.</string>
+    <string name="bt_successful_recv">A find has been successfully received.</string>
+    <string name="bt_unsuccessful_recv">There was a problem receiving a find.</string>
+
+    <!--  BluetoothDeviceListActivity -->
+    <string name="scanning">scanning for devices...</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
+
+    <!-- Options Menu -->
+    <string name="connect">Connect a device</string>
+    <string name="discoverable">Make discoverable</string>
+    <string name="bluetooth_sync">Sync over Bluetooth</string>
+
+	<!--  Map Finds Activity -->
+	<string name="my_location">My Location</string>
+	<string name="search_finds">Search Finds</string>
+	<string name="toggle_tracks">Toggle Tracks</string>
+	<string name="center_finds">Center Finds</string>
+	
 </resources>
