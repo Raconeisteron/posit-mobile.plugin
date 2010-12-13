@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 //import org.hfoss.posit.android.adhoc.RWGService;
+import org.hfoss.posit.android.bluetooth.BluetoothExplicitSync;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 
@@ -241,6 +242,11 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 
 		case R.id.delete_finds_menu_item:
 			showDialog(CONFIRM_DELETE_DIALOG);
+			break;
+			
+		case R.id.bluetooth_sync_menu_item:
+			intent = new Intent(this, BluetoothExplicitSync.class);
+			startActivity(intent);
 			break;
 
 			//		case R.id.georss:
