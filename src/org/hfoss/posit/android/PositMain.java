@@ -140,6 +140,15 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				Log.w(TAG, nnfe.toString(), nnfe);
 				version.setVisibility(View.INVISIBLE);
 			}
+			
+			final TextView version = (TextView) findViewById(R.id.version);
+			try {
+				version.setText(getPackageManager().getPackageInfo("org.hfoss.posit.android", 0).versionName);
+			} catch(NameNotFoundException nnfe) {
+				//shouldn't happen
+				Log.w(TAG, nnfe.toString(), nnfe);
+				version.setVisibility(View.INVISIBLE);
+			}
 		}
 	}
 
