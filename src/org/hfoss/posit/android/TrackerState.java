@@ -40,7 +40,7 @@ import android.util.Log;
  */
 public class TrackerState {
 
-	public static final String TAG = "PositTacker";
+	public static final String TAG = "PositTracker";
 	
 	public static final String BUNDLE_NAME = "TrackerState";
 	public static final String BUNDLE_PROJECT = "ProjectId";

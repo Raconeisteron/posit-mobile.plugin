@@ -24,9 +24,7 @@ package org.hfoss.posit.android;
 // NOTE: for now the barcode scanner and the base64coder has been commented out at the following lines:
 // 37,  206, 207, 216, and 279-281
 
-import java.net.BindException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -36,15 +34,10 @@ import java.util.UUID;
 import org.hfoss.adhoc.AdhocData;
 import org.hfoss.adhoc.AdhocFind;
 import org.hfoss.adhoc.AdhocService;
-//import org.hfoss.adhoc.Queues;
-//import org.hfoss.adhoc.UdpSender;
-//import org.hfoss.posit.android.adhoc.RWGService;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.ImageAdapter;
 import org.hfoss.posit.android.utilities.Utils;
-//import org.hfoss.posit.rwg.RwgSender;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.hfoss.posit.rwg.RwgSender;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -486,10 +479,15 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 						if (mFind.delete()) // Assumes find was instantiated in onCreate
 						{
 							Utils.showToast(FindActivity.this, R.string.deleted_from_database);
-							finish();
 						}	else { 
 							Utils.showToast(FindActivity.this, R.string.delete_failed);
 						}
+						if (mFind.deleteFindPhotos()) {
+							Utils.showToast(FindActivity.this, "Find's photos deleted from DB");
+						} else {
+							Utils.showToast(FindActivity.this, "Unable to delete find's photos from DB");
+						}
+						finish();
 					}
 				}
 				)
@@ -648,10 +646,11 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		case R.id.save_find_menu_item:
 			
 			ContentValues contentValues = retrieveContentFromView();
+						
 			
 			// If the adhoc service is running, send the Find through the adhoc network
 			if (AdhocService.adhocInstance != null) {
-				Log.d(TAG, "Adhoc service is availabe, sending find peer-to-peer");
+				Log.d(TAG, "Adhoc service is available, sending find peer-to-peer");
 				boolean success = sendAdhocFind(contentValues,null); //imageBase64String);
 				if (success) {
 					Log.i(TAG, "Sent adhoc find");
@@ -705,11 +704,43 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	private boolean sendAdhocFind(ContentValues contentValues, String image) {
 		Utils.showToast(this, "Sending ad hoc find");
 		
+//        String longitude = contentValues.getAsString(getString(R.string.longitudeDB));
+//        String latitude = contentValues.getAsString(getString(R.string.latitudeDB));
+////      long findId = contentValues.getAsLong(getString(R.string.idDB));
+//        String findId = contentValues.getAsString(getString(R.string.idDB));
+//        String name = contentValues.getAsString(getString(R.string.nameDB));
+//        String description = contentValues.getAsString(getString(R.string.descriptionDB));
+//        
+////      Log.i("Adhoc", "Adhoc find: "+ new Long(findId).toString()+ ":"+ longitude+ ","+ latitude);
+//        Log.i("Adhoc", "Adhoc find: " + findId + ":"+ longitude+ ","+ latitude);
+//        
+//        JSONObject obj = new JSONObject();
+//        try {
+//                obj.put("findLong", longitude);
+//                obj.put("findLat", latitude);
+//                obj.put("findId", findId);
+//                obj.put("name", name);
+//                obj.put("description", description);
+//                obj.put("projectId", PROJECT_ID);
+//        } catch (JSONException e) {
+//                Log.e("JSONError", e.toString());
+//        }
+//        Log.i("Adhoc", "Sending:"+ obj.toString());
+//        
+//        /*if(AdhocClientActivity.adhocClient!=null)
+//                AdhocClientActivity.adhocClient.send(obj.toString());
+//        else if(PositMain.mAdhocClient!=null)
+//                PositMain.mAdhocClient.send(obj.toString());*/
+//        WifiManager wifi = (WifiManager) (WifiManager) getSystemService(Context.WIFI_SERVICE);
+//        Log.i(TAG, "wifi = "  + wifi.getConnectionInfo());
+//        RWGService.send(obj.toString());
+//        return true;
+		
 		AdhocFind adhocFind= new AdhocFind(contentValues);
 		AdhocData<AdhocFind>adhocData = new AdhocData<AdhocFind>(this,adhocFind);
 		try {
 			Log.i("Adhoc", "FindActivity.saveAdhoc: Queuing user data for RWG");
-//			RwgSender.queueUserMessageFromNode(adhocData);
+			RwgSender.queueUserMessageFromNode(adhocData);
 			return true;
 		} catch (Exception e) {
 			Log.e(TAG, "Exception");
@@ -827,7 +858,7 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			
 			// If the adhoc service is running, send the Find through the adhoc network
 			if (AdhocService.adhocInstance != null) {
-				Log.d(TAG, "Adhoc service is availabe, sending find peer-to-peer");
+				Log.d(TAG, "Adhoc service is available, sending find peer-to-peer");
 				sendAdhocFind(contentValues,null);//imageBase64String);
 			}
 			

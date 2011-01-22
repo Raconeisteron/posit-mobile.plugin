@@ -23,9 +23,8 @@ package org.hfoss.posit.android;
 
 
 import org.hfoss.adhoc.AdhocService;
-import org.hfoss.adhoc.MacAddress;
-import org.hfoss.adhoc.QueueService;
 import org.hfoss.posit.android.utilities.Utils;
+import org.hfoss.posit.rwg.RwgSettings;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,7 +36,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -68,9 +66,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	private Editor mSpEditor;
 
 	private String mAuthKey;
-	// public static AdhocClient mAdhocClient;
 	public static WifiManager wifiManager;
-//	public RWGService rwgService;
 	public Intent rwg;
 	
 	NotificationManager mNotificationManager;
@@ -134,6 +130,15 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			if (listFindButton != null) {
 				// Log.i(TAG, listFindButton.getText() + "");
 				listFindButton.setOnClickListener(this);
+			}
+			
+			final TextView version = (TextView) findViewById(R.id.version);
+			try {
+				version.setText(getPackageManager().getPackageInfo("org.hfoss.posit.android", 0).versionName);
+			} catch(NameNotFoundException nnfe) {
+				//shouldn't happen
+				Log.w(TAG, nnfe.toString(), nnfe);
+				version.setVisibility(View.INVISIBLE);
 			}
 			
 			final TextView version = (TextView) findViewById(R.id.version);
@@ -262,13 +267,14 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		//if (!RWGService.isRunning()) {
-		if (AdhocService.adhocInstance == null) { // Service not running
-			menu.findItem(R.id.rwg_start).setEnabled(true);
-			menu.findItem(R.id.rwg_end).setEnabled(false); 
-		} else {
+		if (AdhocService.isRunning()) { // Service not running
 			menu.findItem(R.id.rwg_start).setEnabled(false);
+			menu.findItem(R.id.rwg_start_adhoc).setEnabled(false);
 			menu.findItem(R.id.rwg_end).setEnabled(true); 
+		} else {
+			menu.findItem(R.id.rwg_start).setEnabled(true);
+			menu.findItem(R.id.rwg_start_adhoc).setEnabled(true);
+			menu.findItem(R.id.rwg_end).setEnabled(false); 
 		}
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -298,35 +304,31 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			break;
 		case R.id.rwg_start:
 			Log.i(TAG, "Starting AdhocService");
-			startAdhocService();
-			startQueueService();
+			startAdhocService(AdhocService.MODE_INFRASTRUCTURE);
+			break;
+		case R.id.rwg_start_adhoc:
+			Log.i(TAG, "Starting AdhocService");
+			startAdhocService(AdhocService.MODE_ADHOC);
 			break;
 		case R.id.rwg_end:
 			Log.i(TAG, "Stopping AdhocService");
 			stopAdhocService();
 			break;
+		case R.id.rwg_settings:
+			Log.i(TAG, "RWG Settings");
+			startActivity(new Intent(this, RwgSettings.class));	
+
 		}
+		
 		return true;
 	}
+
 	
-	private String getMACAddress(){
-		WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		if (!wifi.isWifiEnabled()){
-			return null;
-		}
-		// Get WiFi status
-		WifiInfo info = wifi.getConnectionInfo();
-		MacAddress mc = new MacAddress(info.getMacAddress());
-		//Log.i(TAG, "getMACAddress mc= " + mc+ "  "+ mc.toByteString());
-		Log.i(TAG, "getMACAddress mc= " + mc+ "  "+ mc.toString());
-		//return "boo";
-		return mc.toString();
-	}
-	
-	private void startAdhocService() {
+	private void startAdhocService(int mode) {
 		Intent serviceIntent = new Intent();
+		AdhocService.setActivity(this);
 		serviceIntent.setClass(this, AdhocService.class);
-		serviceIntent.putExtra(AdhocService.MAC_ADDRESS, getMACAddress());
+		serviceIntent.putExtra(AdhocService.MODE, mode);
 		startService(serviceIntent);
 	}
 	
@@ -334,13 +336,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		Intent serviceIntent = new Intent();
 		serviceIntent.setClass(this, AdhocService.class);
 		stopService(serviceIntent);  // Stop previously started service
-	}
-	
-	private void startQueueService() {
-		Intent serviceIntent = new Intent();
-		serviceIntent.setClass(this, QueueService.class);
-		startService(serviceIntent);
-		
 	}
 
 	/**
@@ -394,19 +389,9 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	 */
 	@Override
 	public void finish() {
+		Log.i(TAG, "finish()");
 		if (AdhocService.adhocInstance != null) {
 			stopAdhocService();
-//			
-////		if (RWGService.isRunning() && rwg != null) {// Kill RWG if already
-//			// running
-//			stopService(rwg);
-//
-//			try {
-//				rwgService.killProcessRunning("./rwgexec");
-//				Utils.showToast(this, "RWG Service Stopped");
-//			} catch (Exception e) {
-//				Log.e(TAG, e.getClass().toString(), e);
-//			}
 
 			mNotificationManager.cancel(AdhocService.ADHOC_NOTIFICATION);
 			mNotificationManager.cancel(AdhocService.NEWFIND_NOTIFICATION);

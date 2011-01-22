@@ -1,16 +1,29 @@
+/*
+ * File: AdhocFind.java
+ * 
+ * Copyright (C) 2010 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Search and Identification Tool.
+ *
+ * POSIT is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
 package org.hfoss.adhoc;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.provider.PositDbHelper;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.ContentValues;
-import android.util.Log;
 
 /**
  * Holds the data for an adhoc Find -- i.e. a Find that will be sent to 
@@ -19,14 +32,12 @@ import android.util.Log;
  *
  */
 public class AdhocFind implements Serializable {
-	private static final String TAG = "AdhocFind";
-	//private HashMap<String, Object> find = null;
-	
-	private String id;   //  = contentValues.getAsString(getString(R.string.idDB));
-	private String name; // = contentValues.getAsString(getString(R.string.nameDB));
-	private String description; //  = contentValues.getAsString(getString(R.string.descriptionDB));
-	private String latitude; // = contentValues.getAsString(getString(R.string.latitudeDB));
-	private String longitude; // = contentValues.getAsString(getString(R.string.longitudeDB));
+	public static final String TAG = "Adhoc";	
+	private String id;   
+	private String name; 
+	private String description; 
+	private String latitude; 
+	private String longitude; 
 	private String projectId; 
 	
 	public AdhocFind(ContentValues values) {
@@ -90,42 +101,4 @@ public class AdhocFind implements Serializable {
 	public void setProjectId(String projectId) {
 		this.projectId = projectId;
 	}
-	
-	
-	
-//	public AdhocFind(HashMap<String, Object> findsMap) {
-//		find = findsMap; // just hope for the best for now
-//	}
-//
-//	public AdhocFind(String json) {
-//		try {
-//			JSONObject jo = new JSONObject(json);
-//			find = new HashMap<String, Object>();
-//			Iterator keys = jo.keys();
-//			while(keys.hasNext()){
-//				String key = (String)keys.next();
-//				find.put(key, jo.get(key));
-//				Log.i(TAG, find.toString());
-//			}
-//			
-//		} catch (JSONException e) {
-//			Log.i(TAG, "not a JSON Object");
-//		}
-//		
-//	}
-//
-//	@Override
-//	public String toString() {
-//		if (find == null)
-//			return "<no data>";
-//		JSONObject jo = new JSONObject(find);
-//
-//		return jo.toString();
-//	}
-//
-//	public void saveToDB() {
-//		Log.e(TAG, "saveToDB "+find);
-//		
-//	}
-
 }
