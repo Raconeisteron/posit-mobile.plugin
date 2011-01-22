@@ -399,6 +399,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 */
 	public String getDeltaFindsIds(long projectId){
 		String maxtime = getTimeOfLastSync(projectId);
+		Log.i(TAG, "Last Sync = " + maxtime);
 		
 		mDb = getReadableDatabase();
 		String[] args = new String[1];

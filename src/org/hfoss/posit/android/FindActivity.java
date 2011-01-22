@@ -649,8 +649,8 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 						
 			
 			// If the adhoc service is running, send the Find through the adhoc network
-			if (true ||  AdhocService.adhocInstance != null) {
-				Log.d(TAG, "Adhoc service is availabe, sending find peer-to-peer");
+			if (AdhocService.adhocInstance != null) {
+				Log.d(TAG, "Adhoc service is available, sending find peer-to-peer");
 				boolean success = sendAdhocFind(contentValues,null); //imageBase64String);
 				if (success) {
 					Log.i(TAG, "Sent adhoc find");
@@ -857,8 +857,8 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			//if (RWGService.isRunning()) {
 			
 			// If the adhoc service is running, send the Find through the adhoc network
-			if (true || AdhocService.adhocInstance != null) {
-				Log.d(TAG, "Adhoc service is availabe, sending find peer-to-peer");
+			if (AdhocService.adhocInstance != null) {
+				Log.d(TAG, "Adhoc service is available, sending find peer-to-peer");
 				sendAdhocFind(contentValues,null);//imageBase64String);
 			}
 			

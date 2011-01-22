@@ -199,20 +199,19 @@ public class SyncThread extends Thread {
 		ContentValues values = new ContentValues();
 		values.put(PositDbHelper.SYNC_COLUMN_SERVER, server);
 		values.put(PositDbHelper.FINDS_PROJECT_ID, mProjectId);
+			
+		// Get finds from the server and store in the DB
+		String serverFindGuIds = getServerFindsNeedingSync();
 		
+		success = getFindsFromServer(serverFindGuIds);
+		
+		// Record the synchronization in the client's sync_history table
+		// NOTE: This should be the last thing done in the sync process
 		success = mdbh.recordSync(values);
 		if (!success) {
 			Log.i(TAG, "Error recording sync stamp");
 			mHandler.sendEmptyMessage(SYNCERROR);
 		}
-
-		
-		// Get finds from the server and store in the DB
-		String serverFindGuIds = getServerFindsNeedingSync();
-		
-		
-		success = getFindsFromServer(serverFindGuIds);
-		// Record the synchronization in the client's sync_history table
 		
 		if(!success && serverFindGuIds != ""){
 			Log.i(TAG, "No finds or error getting finds to server");
