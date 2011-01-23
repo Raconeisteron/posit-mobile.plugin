@@ -20,12 +20,12 @@ import java.util.StringTokenizer;
 import org.hfoss.posit.android.Find;
 import org.hfoss.posit.android.ListFindsActivity;
 import org.hfoss.posit.android.PositMain;
-import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.third.CoreTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
