@@ -397,7 +397,7 @@ public class Communicator {
 				Log.i(TAG, "sendfind synced " + id + " " + success);
 		}
 
-		if (success){
+		if (success) {
 			// Otherwise send the Find's images
 	
 			//long id = Long.parseLong(sendMap.get(PositDbHelper.FINDS_ID));
@@ -437,7 +437,7 @@ public class Communicator {
 			}	
 		}
 		// Update the Synced attribute.
-		return true;
+		return success;
 	}
 
 	/**
