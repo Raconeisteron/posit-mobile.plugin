@@ -112,15 +112,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			version.setVisibility(View.INVISIBLE);
 		}
 		
-		final TextView version = (TextView) findViewById(R.id.version);
-		try {
-			version.setText(getPackageManager().getPackageInfo("org.hfoss.posit.android", 0).versionName);
-		} catch(NameNotFoundException nnfe) {
-			//shouldn't happen
-			Log.w(TAG, nnfe.toString(), nnfe);
-			version.setVisibility(View.INVISIBLE);
-		}
-
+		
 		// Register existing user button
 		Button register = (Button) findViewById(R.id.register);
 		if (register != null) {
@@ -168,15 +160,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
 	
 	public void onResume(){
 		super.onResume();
-	}
-	
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(keyCode == KeyEvent.KEYCODE_BACK) {
-			setResult(PositMain.LOGIN_CANCELED);
-		}
-		
-		return super.onKeyDown(keyCode, event);
 	}
 	
 	
