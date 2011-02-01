@@ -10,8 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:clickable="true"
-        android:apiKey="087VSum4DAcv0zqkayt32xKv2mtO6kUD0-T6Q0g"/> <!-- Edward's -->
-        <!-- android:apiKey="0bvEMJ9m96_dErQO9edJAzhIxs3xDXhIVcrScXw"/> --> <!-- POSIT's -->
+        android:apiKey="0xe6MAU9Cse0YaIakTWERZWwaGGoY1sup8oNfaQ"/>
 	<LinearLayout
     	android:id="@+id/zoomView"
     	android:layout_width="wrap_content"
