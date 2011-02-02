@@ -168,36 +168,6 @@ public class ImageViewActivity extends Activity {
 
 	}
 
-
-
-// Commented out to not let users delete photos from the phone
-	
-//	@Override
-//	 public boolean onCreateOptionsMenu(Menu menu) {
-//		 if(mBm==null) {
-//			 MenuInflater inflater = getMenuInflater();
-//			 inflater.inflate(R.menu.image_view_menu, menu);
-//		 }
-//		 return true;
-//	 }
-//
-//	 /**
-//	  * There is only one menu item, and it deletes the image
-//	  */
-//	 @Override
-//	 public boolean onMenuItemSelected(int featureId, MenuItem item) {
-//		 switch (item.getItemId()) {
-//		 
-//		 case R.id.delete_image_view_menu_item:
-//			 showDialog(CONFIRM_DELETE_DIALOG);
-//			 break;
-//			 
-//		 default: 
-//			 return false;
-//		 }
-//		 return true;
-//	 }
-
 	 @Override
 	 protected Dialog onCreateDialog(int id) {
 		 final Intent intent = new Intent(ImageViewActivity.this, FindActivity.class);
@@ -219,7 +189,6 @@ public class ImageViewActivity extends Activity {
 						 Utils.showToast(ImageViewActivity.this, R.string.deleted_from_database);	
 						 finishActivity(ListFindsActivity.FIND_FROM_LIST);
 						 finish();
-						 //FindActivity fa = FindActivity.newInstance();
 						 startActivityForResult(intent,FindActivity.STATE_EDIT);
 					 } else {
 						 Utils.showToast(ImageViewActivity.this, R.string.delete_failed);
@@ -323,7 +292,6 @@ public class ImageViewActivity extends Activity {
 			 return;
 		 switch (requestCode) {
 		 case ListFindsActivity.FIND_FROM_LIST:
-			 //finish();
 			 startActivity(data);
 		 }
 	 }

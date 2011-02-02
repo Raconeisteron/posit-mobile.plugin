@@ -97,8 +97,6 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		}
 		if(preference.getTitle().toString().equals("Create an account")){
 			Intent intent = new Intent(this, RegisterActivity.class);
-			//Intent intent = new Intent(this, RegisterPhoneActivity.class);
-			//intent.setClass(this, RegisterPhoneActivity.class);
 			intent.setAction(RegisterActivity.REGISTER_USER);
 			startActivity(intent);
 		}
@@ -110,10 +108,6 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 			}
 			Log.i(TAG, "Server = " + server);
 		}
-//		if(preference.getTitle().toString().equals("Login")){
-//			Intent i = new Intent(this, RegisterPhoneActivity.class);
-//			startActivity(i);
-//		}
 		if(preference.getTitle().toString().equals("Change current project")){
 			Intent i = new Intent(this, ShowProjectsActivity.class);
 			startActivity(i);

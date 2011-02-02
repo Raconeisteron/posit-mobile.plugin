@@ -78,8 +78,6 @@ public class MyItemizedOverlay extends ItemizedOverlay {
 	 */
 	@Override
 	protected boolean onTap(int pIndex) {
-		// show the description
-		// Toast.makeText(mContext, mOverlays.get(pIndex).getSnippet(), Toast.LENGTH_LONG).show();
 		if (!isTappable)
 			return false;
 		Intent intent = new Intent(mContext, FindActivity.class);
@@ -88,7 +86,6 @@ public class MyItemizedOverlay extends ItemizedOverlay {
 		Log.i(TAG, "itemID= " + itemId);
 
 		intent.putExtra(PositDbHelper.FINDS_ID, itemId); // Pass the RowID to FindActivity
-//		intent.putExtra(PositDbHelper.FINDS_GUID, itemId); // Pass the RowID to FindActivity
 		mContext.startActivity(intent);
 		return true;
 	}

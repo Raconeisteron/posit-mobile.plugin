@@ -279,13 +279,11 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			if (id != -1) {
 				Log.i(TAG, "TrackerService, saved expedition " 
 						+ expId + " projid= " + mState.mProjId + " in row " + id);
-				//			Utils.showToast(this, "Saved expedition " + mState.mExpeditionNumber);
 				if (mState != null)
 					mState.setSaved(true);
 			} else {
 				Log.i(TAG, "TrackerService, Db Error: exped=" + expId + " proj=" 
 						+ mState.mProjId);
-				//			Utils.showToast(this, "Oops, something went wrong when saving " + mState.mExpeditionNumber);
 			}
 		} catch (Exception e) {
 			Log.e(TrackerActivity.TAG, "TrackerService.Async, insertExpeditionToDb " + e.getMessage());
@@ -384,7 +382,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		// The SQLite Db is happier if we store these as strings instead of doubles.
 		String latStr = String.valueOf(latitude);
 		String longStr = String.valueOf(longitude);
-		//Log.i(TAG, "TrackerService, Lat,long as strings " + latStr + "," + longStr);
 		
 		// Add the point to the ArrayList (used for mapping the points)
 		mState.mPoints++;
@@ -435,18 +432,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		}
 	}
 	
-//	/**
-//	 * This method is called whenever a new location update is received from the GPS. It
-//	 * updates the TrackerState object (mState) and sends the GeoPoint to the POSIT Server.
-//	 * @param newLocation
-//	 */
-//	private void setCurrentGpsLocation(Location newLocation) {
-//		if (mLocation == null || mLocation.distanceTo(newLocation) >= mState.mMinDistance) {
-//			// Remember the new location
-//			mLocation = newLocation;
-//		}
-//	}
-	
 	// These are the location listener methods. 
 	
 	/**
@@ -462,7 +447,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			handleNewLocation(location);
 		}
 		
-//		Log.d(TAG, "TrackerService, point found");			
 	}
 
 	public void onProviderDisabled(String provider) {
@@ -553,7 +537,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			} catch (Exception e) {
 				Log.i(TAG, "TrackerService.Async, Error handleMessage " + e.getMessage());
 				e.printStackTrace();
-				// finish();
 			}
 		}
 		return null;

@@ -90,7 +90,6 @@ public class TutorialActivity extends Activity implements OnClickListener {
 			findViewById(R.id.previousButton).setVisibility(EditText.GONE);
 			findViewById(R.id.skipButton).setVisibility(EditText.VISIBLE);
 			findViewById(R.id.previousButton).setVisibility(EditText.VISIBLE);
-			//mWebView = (WebView) (findViewById(R.id.tutorialView));
 			mWebView.loadUrl("file:///android_asset/tutorialpage1.html");
 			break;
 		case 2:

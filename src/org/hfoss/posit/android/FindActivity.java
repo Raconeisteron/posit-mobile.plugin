@@ -21,10 +21,6 @@
  */
 package org.hfoss.posit.android;
 
-// NOTE: for now the barcode scanner and the base64coder has been commented out at the following lines:
-// 37,  206, 207, 216, and 279-281
-
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -129,7 +125,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	private boolean isClean = true;
 	public static boolean SAVE_CHECK=false;
 	public static int PROJECT_ID;
-//	private static boolean IS_ADHOC = false;
 
 	public int INTENT_CHECK=0;// anybody finds more suitable ways please change it 
 
@@ -203,11 +198,8 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		super.onCreate(savedInstanceState);
 		
 		mContext = this;
-		//finishActivity(ListFindsActivity.FIND_FROM_LIST);
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		PROJECT_ID = sp.getInt("PROJECT_ID", 0);
-		
-//		IS_ADHOC = sp.getBoolean("IS_ADHOC", false);
 		
 		isClean = true;
 
@@ -235,16 +227,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		barcodeDownload.setVisibility(Button.GONE);
 		barcodeRestart.setVisibility(TextView.GONE);
 		
-
-		
-//		 removed this inquiry to ensure user has bar code 
-//		 scanner since program currently doesn't use the scanner
-//		if(!isIntentAvailable(this,"com.google.zxing.client.android.SCAN")) {
-//			scanButton.setClickable(false);
-//			barcodeError.setVisibility(TextView.VISIBLE);
-//			barcodeDownload.setVisibility(Button.VISIBLE);
-//			barcodeRestart.setVisibility(TextView.VISIBLE);
-//		}
 		if (action.equals(Intent.ACTION_EDIT)) {
 			doEditAction();
 			INTENT_CHECK=1;
@@ -266,7 +248,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		mTempBitmaps = savedInstanceState.getParcelableArrayList("bitmaps");
 		isClean = savedInstanceState.getBoolean("isclean");
 		displayGallery(mFindId);
-//		displayGallery(mFindGuId==null);  // New find
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
@@ -335,7 +316,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		List<String> providers = mLocationManager.getProviders(ENABLED_ONLY);
 		if(Utils.debug)
 			Log.i(TAG, "Enabled providers = " + providers.toString());
-//		String provider = LocationManager.GPS_PROVIDER;
 		
 		String provider = mLocationManager.getBestProvider(new Criteria(),ENABLED_ONLY);
 		if(Utils.debug)
@@ -351,7 +331,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		Log.i(TAG, "setLocationProvider...()");
 	
 		// Check for Location service
-//		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		List<String> providers = mLocationManager.getProviders(ENABLED_ONLY);
@@ -364,7 +343,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			mProvider = LocationManager.NETWORK_PROVIDER;
 		}
 		if (mProvider.equals(NO_PROVIDER)) {
-//			Utils.showToast(this, "Aborting Tracker: " +  
 			Utils.showToast(this, "Aborting Add Find: " +  
 					NO_PROVIDER +  "\nYou must have GPS enabled. ");
 			return false;
@@ -433,7 +411,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	@Override
 	protected void  onPause(){
 		super.onPause();
-		//finishActivity(ListFindsActivity.FIND_FROM_LIST);
 	}	
 
 	@Override
@@ -443,7 +420,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			mLocationManager.removeUpdates(this);
 		}
 		stopThread = true;
-//		mDbHelper.close();
 	}
 
 	/* (non-Javadoc)
@@ -458,7 +434,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-//		mDbHelper.close();
 	}
 
 	/**
@@ -583,9 +558,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		finish();
 	}
 	
-
-	
-	
 	
 	/**
 	 * This method is used to close the current find activity
@@ -608,12 +580,8 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		Log.i(TAG,"onKeyDown " + keyCode + " " + KeyEvent.KEYCODE_BACK);
-//		if (INTENT_CHECK==1) {
-//			checkSave();
-//		} 
 
 		if(keyCode == KeyEvent.KEYCODE_BACK && SAVE_CHECK == true) {
-//		if(keyCode == KeyEvent.KEYCODE_BACK) {
 			showDialog(CONFIRM_EXIT);
 			return true;
 		}
@@ -660,8 +628,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			}
 						
 			doSave(contentValues);
-			//Intent in = new Intent(this, ListFindsActivity.class); //redirect to list finds
-			//startActivity(in);
 			
 			break;
 
@@ -704,38 +670,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	private boolean sendAdhocFind(ContentValues contentValues, String image) {
 		Utils.showToast(this, "Sending ad hoc find");
 		
-//        String longitude = contentValues.getAsString(getString(R.string.longitudeDB));
-//        String latitude = contentValues.getAsString(getString(R.string.latitudeDB));
-////      long findId = contentValues.getAsLong(getString(R.string.idDB));
-//        String findId = contentValues.getAsString(getString(R.string.idDB));
-//        String name = contentValues.getAsString(getString(R.string.nameDB));
-//        String description = contentValues.getAsString(getString(R.string.descriptionDB));
-//        
-////      Log.i("Adhoc", "Adhoc find: "+ new Long(findId).toString()+ ":"+ longitude+ ","+ latitude);
-//        Log.i("Adhoc", "Adhoc find: " + findId + ":"+ longitude+ ","+ latitude);
-//        
-//        JSONObject obj = new JSONObject();
-//        try {
-//                obj.put("findLong", longitude);
-//                obj.put("findLat", latitude);
-//                obj.put("findId", findId);
-//                obj.put("name", name);
-//                obj.put("description", description);
-//                obj.put("projectId", PROJECT_ID);
-//        } catch (JSONException e) {
-//                Log.e("JSONError", e.toString());
-//        }
-//        Log.i("Adhoc", "Sending:"+ obj.toString());
-//        
-//        /*if(AdhocClientActivity.adhocClient!=null)
-//                AdhocClientActivity.adhocClient.send(obj.toString());
-//        else if(PositMain.mAdhocClient!=null)
-//                PositMain.mAdhocClient.send(obj.toString());*/
-//        WifiManager wifi = (WifiManager) (WifiManager) getSystemService(Context.WIFI_SERVICE);
-//        Log.i(TAG, "wifi = "  + wifi.getConnectionInfo());
-//        RWGService.send(obj.toString());
-//        return true;
-		
 		AdhocFind adhocFind= new AdhocFind(contentValues);
 		AdhocData<AdhocFind>adhocData = new AdhocData<AdhocFind>(this,adhocFind);
 		try {
@@ -777,7 +711,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		result.put(PositDbHelper.FINDS_LATITUDE, value);
 		tView = (TextView) findViewById(R.id.timeText);
 		value = tView.getText().toString();
-//		result.put(PositDbHelper.FINDS_TIME, value);  // Timestamp added by Db
 		
 		// Mark the find unsynced
 		result.put(PositDbHelper.FINDS_SYNCED,PositDbHelper.FIND_NOT_SYNCED);
@@ -854,8 +787,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			ContentValues contentValues = retrieveContentFromView();
 			Log.i("after retrive", (System.currentTimeMillis()-start)+"");
 			
-			//if (RWGService.isRunning()) {
-			
 			// If the adhoc service is running, send the Find through the adhoc network
 			if (AdhocService.adhocInstance != null) {
 				Log.d(TAG, "Adhoc service is available, sending find peer-to-peer");
@@ -871,9 +802,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			} else {
 				doSave(contentValues);
 			}
-			
-			//Intent in = new Intent(this, ListFindsActivity.class); //redirect to list finds
-			//startActivity(in);
 			
 			break;
 			
@@ -929,9 +857,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			rowId = data.getIntExtra("rowId", -1);
 			tempImage = (Bitmap) data.getExtras().get("data");
 			
-			//ByteArrayOutputStream baos = new ByteArrayOutputStream();  
-			//tempImage.compress(Bitmap.CompressFormat.JPEG, 80, baos);  
-			//imageBase64String = new String(baos.toByteArray()); 
 			mTempBitmaps.add(tempImage);
 			displayGallery(mFindId);
 			break;
@@ -1100,14 +1025,11 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	 * @param location is either null or the current location
 	 */
 	private void setCurrentGpsLocation(Location location) {
-//		String bestProvider = "";
 		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		List<String> providers = mLocationManager.getProviders(ENABLED_ONLY);
 		if (location == null) {
 			if(Utils.debug)
 				Log.i(TAG, "Enabled providers = " + providers.toString());
-//			bestProvider = LocationManager.GPS_PROVIDER;
-//			bestProvider = mLocationManager.getBestProvider(new Criteria(),ENABLED_ONLY);
 			setLocationProvider();
 			
 			// request for location only if there's a provider

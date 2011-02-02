@@ -19,7 +19,6 @@ public class SelectFindView extends LinearLayout {
 
 	// Field information
 	private TextView mName;
-	//private TextView mDesc;
 	private ImageView mImage;
 	private CheckBox mCheckBox;
 	private SelectFind mSelectFind;
@@ -75,23 +74,8 @@ public class SelectFindView extends LinearLayout {
 		RelativeLayout.LayoutParams nameParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		nameParams.addRule(RelativeLayout.RIGHT_OF, mCheckBox.getId());
 		addView(mName, nameParams);
-		
-//		// Add Desc
-//		mDesc = new TextView(context);
-//		mDesc.setText(selectFind.getDesc());
-//		mDesc.setText(selectFind.getName());
-//		mDesc.setSingleLine(true);
-//		mDesc.setPadding(3, 0, 50, 3);
-//		mDesc.setTextSize(13);
-//		RelativeLayout.LayoutParams descParams = new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-//		descParams.addRule(RelativeLayout.RIGHT_OF, mImage.getId());
-//		descParams.addRule(RelativeLayout.BELOW, mName.getId());
-//		addView(mDesc, descParams);
-		
-
 
 		mName.setFocusable(false);
-		//mDesc.setFocusable(false);
 		mImage.setFocusable(false);
 		mCheckBox.setFocusable(false);
 	}

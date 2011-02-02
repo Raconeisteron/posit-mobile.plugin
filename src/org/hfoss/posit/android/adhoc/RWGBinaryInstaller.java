@@ -57,21 +57,11 @@ public class RWGBinaryInstaller implements RWGConstants {
 	private void installBinary() {
 		
 		try {
-			/*Process p = Runtime.getRuntime().exec("su");
-			DataOutputStream os = new DataOutputStream(p.getOutputStream());
-	        os.writeBytes("mkdir /data/rwg"+"\n");
-	        os.close();
-	        p.destroy();*/
 	        
 			ZipFile zip = new ZipFile(APK_PATH);
 			
 			ZipEntry rwg = zip.getEntry(RWG_BINARY_ZIP_KEY);
 			streamToFile(zip.getInputStream(rwg),RWG_BINARY_INSTALL_PATH);
-			
-			//ZipEntry busybox = zip.getEntry("assets/busybox");
-			//streamToFile(zip.getInputStream(busybox),POSIT_HOME+"files/busybox");
-			
-			//createPipes();
 		}
 		catch(IOException ioe) {
 			Log.e(TAG, "unable to pull binary from zip", ioe);

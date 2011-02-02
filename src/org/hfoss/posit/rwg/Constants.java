@@ -11,7 +11,6 @@ public interface Constants {
 	public static final byte BS = 4;
 	
 	// RWG Parameters (Eventually Should be made preference settings)
-//	public static final short TTL = 600 * 1000;  // 600 seconds
 	public static final long TTL = 600 * 1000;  // 600 seconds
 
 	public static final short GROUP_SIZE = 3;  // The k in k-delivered
@@ -38,7 +37,4 @@ public interface Constants {
 	// user package max size equivalent 54kb
 	public static final int MAX_PACKAGE_SIZE = 54000;
 	
-
-	
-
 }

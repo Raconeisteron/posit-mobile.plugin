@@ -203,8 +203,6 @@ public class RWGService extends Service implements RWGConstants {
 			Log.i(TAG, "Starting RWG process");
 
 			runRWG();
-			// procRWG = doCommand(RWG_BINARY_INSTALL_PATH,"-t -g "+ groupSize+
-			// " -h 99 -l 3600 -i tiwlan0 > trace.txt");
 		} catch (Exception e) {
 
 			Log.w(TAG, "unable to start RWG Process", e);
@@ -214,8 +212,6 @@ public class RWGService extends Service implements RWGConstants {
 	}
 
 	private void killRWGProcess() {
-		// doCommand(SHELL_CMD_KILLALL, CHMOD_EXE_VALUE,
-		// TOR_BINARY_INSTALL_PATH);
 
 		if (procRWG != null) {
 			Log.i(TAG, "shutting down RWG process...");
@@ -242,9 +238,6 @@ public class RWGService extends Service implements RWGConstants {
 			doCommand(SHELL_CMD_KILLALL, procId + "");
 		}
 
-		/*
-		 * if (ACTIVITY != null) ((TorControlPanel)ACTIVITY).setUIState();
-		 */
 	}
 
 	public int killProcessRunning(String processName) throws Exception {
@@ -271,13 +264,8 @@ public class RWGService extends Service implements RWGConstants {
 	@Override
 	public void onDestroy() {
 		try {
-			// netStartUpThread.interrupt();
-			// netHandleIncomingThread.interrupt();
 			stopThread = true;
 			killProcessRunning("./rwgexec");
-			// disableWifi();
-			// this.getSystemService(Context.WIFI_SERVICE);
-			// Log.i("RWGService","Stopped WiFi Service");
 		} catch (Exception e) {
 			Log.e("endRWG()", e.toString(), e);
 		}
@@ -389,7 +377,6 @@ public class RWGService extends Service implements RWGConstants {
 		// dnsmasq
 		this.copyBinary(this.coretask.DATA_FILE_PATH + "/bin/dnsmasq",
 				R.raw.dnsmasq);
-		// filenames.add("dnsmasq");
 		try {
 			this.coretask.chmodBin(filenames);
 		} catch (Exception e) {
@@ -431,14 +418,11 @@ public class RWGService extends Service implements RWGConstants {
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
-								// Log.d(MSG_TAG, "Close pressed");
-								// this.application.finish();
 							}
 						}).setNeutralButton("Override",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
-								// Log.d(MSG_TAG, "Override pressed");
 								installBinaries();
 							}
 						}).show();
@@ -461,21 +445,15 @@ public class RWGService extends Service implements RWGConstants {
 
 	public void enableWifi() {
 
-		/*
-		 * if(!this.wifiManager.isWifiEnabled())
-		 * this.wifiManager.setWifiEnabled(true);
-		 */
-
 		Log.i(TAG, "Enabling wifi...");
 
 		boolean done = false;
 		while (!done && !Thread.currentThread().isInterrupted()) {
 			WifiManager wm;
-			// if(AdhocClientActivity.wifiManager==null)
+
 			wm = PositMain.wifiManager;
-			// else
-			// wm = AdhocClientActivity.wifiManager;
 			wm.setWifiEnabled(true);
+			
 			// Waiting for interface-shutdown
 			try {
 				Thread.sleep(2000);
@@ -496,31 +474,17 @@ public class RWGService extends Service implements RWGConstants {
 		public void run() {
 			Log.i(TAG, "Starting NetworkStart");
 			enableWifi();
-			// status = "Wifi enabled, starting AdhocClient. Plz Wait";
-			// statusHandler.post(statusUpdate);
 
 			disableAdhocClient();
 			Log.i(TAG, "Enabling AdhocClient");
 			enableAdhocClient();
 			Log.i(TAG, "Enabled AdhocClient");
 
-			// status =
-			// "Wifi & AdhocClient enabled, Start the protocol (./data/rwg/rwgexec -i tiwlan0)";
-			// statusHandler.post(statusUpdate);
-
 			Log.i(TAG, "Starting rwgexec");
 			Looper.prepare();
 			if (!RWGService.isRunning()) {
-				/*
-				 * Log.i(TAG, "NOT RUNNING"); rwgService = new Intent(mContext,
-				 * RWGService.class);
-				 * //rwgService.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				 * RWGService.setActivity((PositMain)mContext);
-				 * 
-				 * mContext.startService(rwgService);
-				 */
-				initRWG();
 
+				initRWG();
 			}
 			try {
 				Thread.sleep(2000);
@@ -529,10 +493,6 @@ public class RWGService extends Service implements RWGConstants {
 			}
 			Log.i(TAG, "AFTER SERVICE IS STARTED");
 
-			/*
-			 * if(coretask.runRootCommand("./data/rwg/rwgexec -t -l 3 -i tiwlan0"
-			 * )) System.out.println("Does this work?");
-			 */
 
 			/*
 			 * Communication is done with 2 pipes, input and output. These must
@@ -576,8 +536,6 @@ public class RWGService extends Service implements RWGConstants {
 			}
 
 			Log.i("ADHOCCLIENT", "GETS TO NETWORK CONFIG DONE");
-			// status = "Network config done";
-			// statusHandler.post(statusUpdate);
 			Log.i("ADHOCCLIENT", "AFTER NET CONFIG DONE");
 
 			try {
@@ -586,8 +544,6 @@ public class RWGService extends Service implements RWGConstants {
 				System.out.println(e.getClass().toString());
 			}
 
-			// status = "Random-Walk Gossip-Based Manycast Active";
-			// statusHandler.post(statusUpdate);
 			mProgressDialog.dismiss();
 			notifyRWGOn();
 			return;
@@ -605,9 +561,6 @@ public class RWGService extends Service implements RWGConstants {
 			Log.i("THREAD", Thread.currentThread().getName());
 
 			while (!pipeOpen && !stopThread) {
-				// Log.i("THREAD",Thread.currentThread().getName()+
-				// " interrupted = "+netHandleIncomingThread.isInterrupted());
-				// Log.i(TAG, "Pipe not open");
 				try {
 					if (br.ready()) {
 						Log.i(TAG, "Pipe is ready");
@@ -629,10 +582,6 @@ public class RWGService extends Service implements RWGConstants {
 
 				// Log.i("Listening...","GREAT");
 				try {
-					/*
-					 * if(br.ready()){ incoming = br.readLine();
-					 * messHandler.post(messUpdate); }
-					 */
 
 					if (br.ready()) {
 						incoming = "";
@@ -643,7 +592,6 @@ public class RWGService extends Service implements RWGConstants {
 							incoming = incoming + Character.toString(buff[0]);
 						}
 
-						// messHandler.post(messUpdate);
 						parseAndSave(incoming);
 					}
 
@@ -668,16 +616,8 @@ public class RWGService extends Service implements RWGConstants {
 				incoming = incoming.substring(index);
 			Log.i(TAG, "Parsing string:" + incoming);
 		}
-		/*
-		 * Log.i(TAG,incoming.charAt(incoming.length()-1)+"");
-		 * if(incoming.charAt(incoming.length()-1)!=')') { isBig = true; }
-		 * if(isBig) { bigFind+=incoming; Log.i(TAG,"receiving find"); return; }
-		 */
 
 		try {
-			/*
-			 * if(isBig) incoming = bigFind;
-			 */
 			JSONObject obj = new JSONObject(incoming);
 			ContentValues content = new ContentValues();
 			String longStr = obj.getString("findLong");
@@ -706,45 +646,13 @@ public class RWGService extends Service implements RWGConstants {
 							description);
 			content.put(mContext.getString(R.string.projectId), projectId);
 			content.put(mContext.getString(R.string.adhocDB), 1);
-			// content.put("sid", findId);
-			content.put("guid", findId);
 
-			// ArrayList<Bitmap> bitmaps = new ArrayList<Bitmap>();
-			// Log.i(TAG, content.toString());
-			// String imageEncoded = null;
-			// try {
-			// imageEncoded = obj.getString("image");
-			// }
-			// catch(Exception e) {
-			// Log.e(TAG, "error",e);
-			// }
-			//			
-			//			
-			// try {
-			// // String guid = (String) image.get(PositDbHelper.FINDS_GUID);
-			// ContentValues photoCv = new ContentValues();
-			// photoCv.put(PositDbHelper.PHOTOS_MIME_TYPE, "image/jpeg");
-			// photoCv.put(PositDbHelper.FINDS_PROJECT_ID, projectId+"");
-			// photoCv.put(PositDbHelper.PHOTOS_IDENTIFIER, findId);
-			//
-			// //Log.i("The IMAGE DATA", fullData);
-			// byte[] data = Base64Coder.decode(imageEncoded);
-			// Bitmap imageBM = BitmapFactory.decodeByteArray(data, 0,
-			// data.length);
-			// Log.i("The Bitmap To Save", imageBM.toString());
-			// bitmaps.add(imageBM);
-			// Log.i(TAG, "bitmap saved!");
-			// }
-			// catch (Exception e){
-			// Log.d(TAG, ""+e);
-			// }
+			content.put("guid", findId);
 
 			Find find = new Find(mContext);
 			find.insertToDB(content, null);
-			// Utils.saveImagesAndUris(mContext, bitmaps);
+
 			notifyNewFind(name, description);
-			// if(incoming.charAt(incoming.length()-1)==')')
-			// isBig=false;
 		} catch (JSONException e) {
 			Log.e("JSONError", e.toString());
 		} catch (NumberFormatException e) {
@@ -753,7 +661,7 @@ public class RWGService extends Service implements RWGConstants {
 	}
 
 	public void notifyRWGOn() {
-		// int icon = R.drawable.notification_icon; // icon from resources
+
 		CharSequence tickerText = "Ad-hoc Mode On"; // ticker-text
 		long when = System.currentTimeMillis(); // notification time
 		Context context = getApplicationContext(); // application Context
@@ -777,7 +685,6 @@ public class RWGService extends Service implements RWGConstants {
 	public void notifyNewFind(String name, String description) {
 		newFindsNum++;
 
-		// int icon = R.drawable.notification_icon; // icon from resources
 		CharSequence tickerText = "New RWG Find"; // ticker-text
 		long when = System.currentTimeMillis(); // notification time
 		Context context = getApplicationContext(); // application Context

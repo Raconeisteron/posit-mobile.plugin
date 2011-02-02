@@ -85,8 +85,6 @@ public class TrackerOverlay extends Overlay {
 						.getGeoPoint(), null);
 				canvas.drawLine(point.x, point.y, nextPoint.x, nextPoint.y, paint);
 			}
-//			canvas.drawCircle(point.x, point.y, (float) Math
-//					.log((nextTime - pointAndTime.getTime()) / 100), paint);
 		}
 	}
 	

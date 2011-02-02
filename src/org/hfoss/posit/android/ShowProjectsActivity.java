@@ -76,9 +76,7 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 
 		showProjects();
 		
-
 	}
-
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onResume()
@@ -86,7 +84,6 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-	//	tryToRegister();
 	}
 
 	private void showProjects() {
@@ -172,8 +169,6 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 			startActivityForResult(i,NEW_PROJECT);
 
 			break;
-
-			
 		}
 		
 	}
@@ -210,7 +205,4 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 			return null;
 		}
 	}
-
-
-
 }
