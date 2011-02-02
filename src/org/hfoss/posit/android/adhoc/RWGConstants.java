@@ -13,7 +13,6 @@ public interface RWGConstants {
 	
 	//key of the RWG  binary in the Zip file
 	public final static String RWG_BINARY_ZIP_KEY = "assets/" + RWG_BINARY_ASSET_KEY;
-	
 
 	//where to send the notices log
 	public final static String RWG_LOG_PATH = POSIT_HOME + "notices.log";
@@ -27,7 +26,6 @@ public interface RWGConstants {
 	
 	//path of the installed APK file
 	public final static String APK_PATH = "/data/app/org.hfoss.posit.android.apk";
-	
 	
 	public final static int FILE_WRITE_BUFFER_SIZE = 2048;
 }

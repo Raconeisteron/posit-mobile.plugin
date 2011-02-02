@@ -351,8 +351,6 @@ public class RegisterActivity extends Activity implements OnClickListener {
 						spEditor.putString("SERVER_ADDRESS", server);
 						spEditor.putString("AUTHKEY", authKey);
 						spEditor.putInt("PROJECT_ID", 0);
-//						spEditor.putString("EMAIL", email);      // Should be in barcode?
-//						spEditor.putString("PASSWORD", password);
 						spEditor.putString("PROJECT_NAME", "");
 						spEditor.commit();
 						

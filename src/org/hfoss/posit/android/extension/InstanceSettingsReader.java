@@ -62,8 +62,6 @@ public class InstanceSettingsReader {
 	 * @return
 	 */
 	public  boolean parseSettingsFile(){
-//		FileInputStream fIs = new FileInputStream(new File(SETTINGS_FILE));
-//		BufferedInputStream bS = new BufferedInputStream(fIs);
 		
 		AssetManager assetManager = mContext.getAssets();
 		try {

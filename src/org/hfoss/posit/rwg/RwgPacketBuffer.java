@@ -195,18 +195,11 @@ public class RwgPacketBuffer {
 		+ "wF=" + wFront + "|"
 		+ "wT=" + wTail;
 
-		// Arrays
-//		private ReqForwardInfo wake[]; // keeps track of REFQs that should be sent (because of wake)
-//		private String ack[];  // keeps track of incoming ACKs
-//		private ReqForwardInfo reqf[];
-//		private ReqForwardInfo temp_reqf[];
-//		private ReqForwardInfo waiting[];
 	}
 
 	class ActiveReqForwardInfo {
 		private RwgHeader reqf;
 		private AdhocData<AdhocFind> userData;		
-		//private String reqf;
 		private int reqf_pos;
 		
 		public ActiveReqForwardInfo() {
@@ -235,8 +228,6 @@ public class RwgPacketBuffer {
 			this.reqf_pos = reqf_pos;
 		}
 
-		
-
 	}
 	  
 		/**
@@ -247,8 +238,6 @@ public class RwgPacketBuffer {
 			private RwgHeader reqf;
 			private long arrivedAt;
 			private long wStamp;
-			//private TimeStamp arrivedAt;
-			//private TimeStamp wStamp;
 			private  int wake; // 1 if reqf is in wake buffer
 			private  int wait; // 1 if reqf is waiting on ACK
 			private  int wake_pos;
@@ -256,9 +245,7 @@ public class RwgPacketBuffer {
 			private  int reqf_pos;
 			
 			public ReqForwardInfo() {
-				reqf = new RwgHeader();
-				//arrivedAt = new TimeStamp();
-				//wStamp = new TimeStamp();				
+				reqf = new RwgHeader();		
 				arrivedAt = System.currentTimeMillis();
 				wStamp = System.currentTimeMillis();
 			}
@@ -270,19 +257,19 @@ public class RwgPacketBuffer {
 			public void setReqf(RwgHeader reqf) {
 				this.reqf = reqf;
 			}
-			//public TimeStamp getArrivedAt() {
+
 			public long getArrivedAt() {
 				return arrivedAt;
 			}
-			//public void setArrivedAt(TimeStamp arrivedAt) {
+
 			public void setArrivedAt(long arrivedAt) {
 				this.arrivedAt = arrivedAt;
 			}
-			//public TimeStamp getWStamp() {
+
 			public long getWStamp() {
 				return wStamp;
 			}
-			//public void setWStamp(TimeStamp stamp) {
+
 			public void setWStamp(long stamp) {
 				wStamp = stamp;
 			}

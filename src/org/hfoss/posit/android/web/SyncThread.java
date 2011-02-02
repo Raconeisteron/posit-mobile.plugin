@@ -86,7 +86,6 @@ public class SyncThread extends Thread {
 		mConnected = false;
 		mStopRequested = false;
 		sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-		// sp.setDefaultValues(mContext, R.xml.posit_preferences, false);
 		server = sp.getString("SERVER_ADDRESS", null);
 		authKey = sp.getString("AUTHKEY", null);
 		mProjectId = sp.getInt("PROJECT_ID", 0);
@@ -115,7 +114,6 @@ public class SyncThread extends Thread {
 	 */
 	public synchronized void stopThread() {
 		mStopRequested = true;
-		// mConnected = true;
 		notify();
 		Log.i(TAG, "Requesting a stop");
 	}
@@ -258,7 +256,6 @@ public class SyncThread extends Thread {
 			mHandler.sendEmptyMessage(SYNCERROR);
 		}
 		Log.i(TAG, "serverFindsNeedingSync = " + response);
-		// mServerFindsNeedingSync = response;
 		return response;
 	}
 	
@@ -320,7 +317,6 @@ public class SyncThread extends Thread {
 			return false;
 		}
 		Log.i(TAG, "serverFindsNeedingSync = " + serverGuids);
-		// mServerFindsNeedingSync = response;
 		
 		List<ContentValues> photosList = null;
 		String guid;
@@ -392,8 +388,6 @@ public class SyncThread extends Thread {
 				Log.i(TAG, "image=" + images.get(j).toString());
 				HashMap<String, String> image = images.get(j); // Get the image
 				try {
-					// String guid = (String)
-					// image.get(PositDbHelper.FINDS_GUID);
 					ContentValues photoCv = new ContentValues();
 					photoCv.put(PositDbHelper.PHOTOS_MIME_TYPE, (String) image
 							.get(PositDbHelper.PHOTOS_MIME_TYPE));
@@ -404,7 +398,6 @@ public class SyncThread extends Thread {
 					photoCv.put(PositDbHelper.PHOTOS_IDENTIFIER, identifier
 							.longValue());
 					String fullData = (String) image.get("data_full");
-					// Log.i("The IMAGE DATA", fullData);
 					byte[] data = Base64Coder.decode(fullData);
 					Bitmap imageBM = BitmapFactory.decodeByteArray(data, 0,
 							data.length);

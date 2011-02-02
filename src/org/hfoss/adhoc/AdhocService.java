@@ -139,7 +139,6 @@ public class AdhocService extends Service {
 
 	private String mAppDataPath;  // Where our configuration files are
 
-	//private boolean mSuccess = false;
 	private boolean mInAdhocMode = false;
 	private static int mAdhocMode;
 	private WifiManager mWifi;
@@ -242,7 +241,6 @@ public class AdhocService extends Service {
 	 * @return
 	 */
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		//super.onStart(intent, startId);
 
 		Log.i(TAG, "AdhocService,  Starting, id " + startId);
 		handleStartUp(intent);
@@ -384,7 +382,6 @@ public class AdhocService extends Service {
 			Log.e(TAG, "ERROR: Unable to initialize Wifi. Aborting");
 			Utils.showToast(this, "Wifi problem: Unable to initialize Wifi ");
 			return false;
-			//throw new Exception("ERROR:  Unable to initialize Wifi. Aborting");
 		}
 		Log.i(TAG, "WifiEnabled = " + wifi.isWifiEnabled());
 
@@ -393,7 +390,6 @@ public class AdhocService extends Service {
 		String currentSSID = info.getSSID();
 		Log.d(TAG, "Current SSID=" + currentSSID + " Requested SSID= " + ssid);
 		if (currentSSID == null || !currentSSID.equals("\"" + ssid + "\"")) { //SSID contains quotes
-			//int id = info.getNetworkId();
 
 			List<WifiConfiguration> configs = wifi.getConfiguredNetworks();
 			int myId = -1;
@@ -438,7 +434,6 @@ public class AdhocService extends Service {
 				Log.i(TAG, "Timed out trying to connect with SSID = " + ssid);
 				Utils.showToast(this, "Wifi problem: Timed out trying to connect to " + ssid);
 				return false;
-				//throw new Exception("Error: Unable to connect to network with ssid = " + ssid);
 			} else {
 				Log.i(TAG, "Enabled hfoss network, SSID = " + wifi.getConnectionInfo().getSSID());
 			}
@@ -593,6 +588,5 @@ public class AdhocService extends Service {
 	public static boolean isRunning() {
 		return adhocInstance  != null;
 	}
-
 
 }

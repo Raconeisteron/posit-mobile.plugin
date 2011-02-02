@@ -12,7 +12,6 @@ public class RwgManager implements Runnable {
 	private static final String TAG = "Adhoc";
 
 	public static final int RWG_ETHER_TYPE = 0x1111; // shows that an eth frame carries a rwg packet as payload
-//	public static final String BROADCAST_ADDR = "ff:ff:ff:ff:ff:ff";
 	public static final String BROADCAST_ADDR = "192.168.2.255";
 	public static final int MTU = 1024; // maximum transmission unit (bytes)
 
@@ -80,24 +79,9 @@ public class RwgManager implements Runnable {
 			
 			long stamp = System.currentTimeMillis();
 			
-			
-			// Make sure the REQF buffer is not full
-			// if it is sleep a short period and refresh the REQF buffer
-//			if(packetBuff->reqf_counter >= (sizeof(packetBuff->reqf)/sizeof(reqf_info))){
-//			if(TRACE){printf("REQF buffer is full, messages arriving will be discarded\n");}
-//			rwg_listen(socket,inPipe,outPipe,packetBuff);  // checks for ctrlpackets     
-//			refresh_reqf_buffer(packetBuff);
-//			usleep(5000);
-
-//			Log.i(TAG, myHash + " wtail=" + mPacketBuffer.getWTail() + " wfront=" + mPacketBuffer.getWFront());
-//			Log.i(TAG, myHash + " waiting=" + mPacketBuffer.getWaiting()[mPacketBuffer.getWTail() % mPacketBuffer.getWaiting().length].toString());
-//			Log.i(TAG, myHash + "stamp= " + mPacketBuffer.getWaiting()[mPacketBuffer.getWTail() % mPacketBuffer.getWaiting().length].getWStamp());
-//			Log.i(TAG, myHash + "stamp2= " + stamp);
-
 			// Refresh the reqf_buffer every 7 seconds, to remove reqfs with Time To Live < 0
 			// Must be done to avoid overflow"
 			if (refreshReqfTimer + Constants.REQF_REFRESH_TIMER_INTERVAL < System.currentTimeMillis()) {
-				//Log.i(TAG, myHash + " Refresh the REQF buffer by checking TTL");
 				refreshReqfBuffer(mPacketBuffer);
 				refreshReqfTimer = System.currentTimeMillis();
 			} 
@@ -110,18 +94,15 @@ public class RwgManager implements Runnable {
 					&& mPacketBuffer.getWaiting()[mPacketBuffer.getWTail() % mPacketBuffer.getWaiting().length] != null
 					&& checkTimeStamp(mPacketBuffer.getWaiting()[mPacketBuffer.getWTail() % mPacketBuffer.getWaiting().length].getWStamp(), 
 							stamp, Constants.WAIT_BUFFER_TIMER_INTERVAL)){
-				//Log.i(TAG, myHash + " Found REQFs wating, scheduling an OKTF");
-				//queueLog.i(TAG, myHash + " wTail=" + mPacketBuffer.getWTail() + " wFront=" + mPacketBuffer.getWFront());
 				SEND_OKTF = true;
 				RwgSender.queueRwgMessage();
 				silentTimer = System.currentTimeMillis();
 			}
 			
-//			// If the network has been silent for 5 seconds send a random REQF
+			// If the network has been silent for 5 seconds send a random REQF
 
 			else if (silentTimer + Constants.SILENT_TIMER_INTERVAL < System.currentTimeMillis()) {
-				//Log.i(TAG, myHash + " Network silent, remove old reqfs (if TTL < 0) and send a random REQF");
-				refreshReqfBuffer(mPacketBuffer);
+								refreshReqfBuffer(mPacketBuffer);
 				SEND_REQF_R = true;
 				RwgSender.queueRwgMessage();
 				silentTimer = System.currentTimeMillis();
@@ -132,7 +113,6 @@ public class RwgManager implements Runnable {
 		
 			else {
 				try {
-					//Log.i(TAG, myHash + " Sleeping for " + Constants.MAIN_THREAD_SLEEP_INTERVAL + "msecs");
 					Thread.sleep(Constants.MAIN_THREAD_SLEEP_INTERVAL);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -148,7 +128,6 @@ public class RwgManager implements Runnable {
 		packetBuff.setTemp_reqf_counter(0);
 		
 		for (reqfCtr = 0; reqfCtr < packetBuff.getReqf_counter(); reqfCtr++) {
-			//Log.d(TAG, myHash + " refreshReqfBuffer packetBuff = " + packetBuff.toString());
 			
 			ReqForwardInfo rwgReqfInfo = packetBuff.getReqf()[reqfCtr];
 			RwgHeader rwgHdr = rwgReqfInfo.getReqf();
@@ -208,7 +187,6 @@ public class RwgManager implements Runnable {
 		if (packetBuff.getReqf_counter() != 0) {
 			packetBuff.setReqf(packetBuff.getTemp_reqf());
 		}
-		//Log.d(TAG, myHash + " refreshReqfBuffer DONE packetBuff = " + packetBuff.toString());
 	}
 	
 	private boolean checkTimeStamp(long t1, long t2, int interval) {
@@ -307,68 +285,9 @@ public class RwgManager implements Runnable {
 		
 	}
 	
-	/*RWG sender*/
-	// unsigned char sender[6];
-	//private String sender;
-
-	/*RWG hashed sender value*/
-	//private int hashedAddr;
-
-	/*RWG target*/
-	//unsigned char target[6];
-	//private String target;
-
-	/*RWG broadcast*/
-	//unsigned char broadcast[6];
-	//private String broadcast;
-
-	/*RWG groupSize*/
-	//private short groupSize;
-
-	/*RWG hops*/
-	//private short hops;
-
-	/*sequence number for REFQ*/
-	//private short sequenceNumber;
-
-	/*Time to live*/
-	//private short TTL;
-
 	/*FUNC: Called to exit protocol*/
 	public void exit() {
 		keepRunning = false;
 	}
-
-	/*FUNC: Remove all packets in the reqf buffer*/
-	//void rwg_clean_buffer(packetBuffer *packetBuff);
-	/**
-	public void rwg_clean_buffer(PacketBuffer packetBuf) {
-		  
-		  int reqf_c; 
-		 
-		  for(reqf_c = 0;reqf_c < packetBuff->reqf_counter;reqf_c++){
-
-		      //To make sure that there are no pointers pointing to the freed addr at the heap
-		      if((packetBuff->waiting[packetBuff->reqf[reqf_c].wait_pos] == &packetBuff->reqf[reqf_c])){
-			packetBuff->waiting[packetBuff->reqf[reqf_c].wait_pos] = NULL;
-		      }
-		      //To make sure that there are no pointers pointing to the freed addr at the heap
-		      if(packetBuff->wake[packetBuff->reqf[reqf_c].wake_pos] == &packetBuff->reqf[reqf_c]){
-			packetBuff->wake[packetBuff->reqf[reqf_c].wake_pos] = NULL;
-		      }
-		      // remove the packet, since TTL < 0 and the REQF is not in the waiting buffer or the wake buffer
-		      free(packetBuff->reqf[reqf_c].reqf);
-		      packetBuff->reqf[reqf_c].reqf = NULL;
-		      packetBuff->reqf[reqf_c].arrived_at.seconds = 0;
-		      packetBuff->reqf[reqf_c].arrived_at.u_seconds = 0;
-		      packetBuff->reqf[reqf_c].wake = 0;  
-
-		      printf("reqf_c, %i\n", reqf_c);
-		  }
-
-		  packetBuff->reqf_counter = 0;
-	}
-	**/
-
 	
 }
