@@ -82,8 +82,8 @@ public class Communicator {
 	private static final String ERROR_MESSAGE = "errorMessage";
 	private static final String ERROR_CODE = "errorCode";
 	private static final String COLUMN_IMEI = "imei";
-	public static final int CONNECTION_TIMEOUT = 3000; // millisecs
-	public static final int SOCKET_TIMEOUT = 5000;
+	public static final int CONNECTION_TIMEOUT = 6000; // millisecs
+	public static final int SOCKET_TIMEOUT = 10000;
 
 	/*
 	 * You should be careful with putting names for server. DO NOT always trust
