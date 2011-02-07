@@ -35,7 +35,6 @@ public class RWG {
 	private OutputStreamWriter output;
 	private static final String inputPipe = "input"; // "/data/rwg/input";
 	private static final String outputPipe = "output"; //"/data/rwg/output";
-	private static final String TAG = "RWG";
 	
 	public RWG(Context c) {
 		this.mContext = c;

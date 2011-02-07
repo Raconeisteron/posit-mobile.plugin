@@ -80,7 +80,6 @@ public class ResponseParser {
 		List<HashMap<String, Object>> findsList = new ArrayList<HashMap<String, Object>>();
 		JSONArray j = new JSONArray(response);
 		for (int i = 0; i < j.length(); i++) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
 			JSONObject json = j.getJSONObject(i);
 			findsList.add(jsonObjectToMap(json));
 		}
@@ -89,7 +88,6 @@ public class ResponseParser {
 
 	public HashMap<String, Object> parseObject() throws JSONException {
 		Log.i(TAG, "parseObject() response = " + response);
-		HashMap<String, String> responseMessage = new HashMap<String, String>();
 		if (response.equals(null))
 			throw new NullPointerException("Pass a response first");
 		JSONObject json = new JSONObject(response);

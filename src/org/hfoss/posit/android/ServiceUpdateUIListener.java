@@ -21,8 +21,6 @@
  */
 package org.hfoss.posit.android;
 
-import android.location.Location;
-
 /**
  * Listener for the Tracker Service.
  *

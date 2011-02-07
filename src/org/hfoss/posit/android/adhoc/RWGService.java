@@ -128,15 +128,7 @@ public class RWGService extends Service implements RWGConstants {
 		Process child = null;
 		
         try {
-            if(child != null) {
-            	child.destroy();
-            	child = null;
-            }
-            
             child = r.exec(command + ' ' + arg1);
-            
-            
-            
         } catch (Exception e) {
             Log.e(TAG, "error: " + e.getMessage(), e);
         }
@@ -324,8 +316,7 @@ public class RWGService extends Service implements RWGConstants {
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
 		Log.i(TAG, "starting RWG");
-		//initRWG();
-		long start = System.currentTimeMillis();
+
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		 Log.i(TAG, "Creating AdhocClient");
 	        mContext = ACTIVITY;

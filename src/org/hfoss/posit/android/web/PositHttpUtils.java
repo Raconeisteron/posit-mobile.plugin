@@ -30,10 +30,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.hfoss.posit.android.Find;
 import org.hfoss.posit.android.utilities.Utils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.util.Log;

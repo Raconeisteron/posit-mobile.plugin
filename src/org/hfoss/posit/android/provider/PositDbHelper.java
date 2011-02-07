@@ -31,7 +31,6 @@ import java.util.Random;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.TrackerActivity;
 import org.hfoss.posit.android.TrackerState;
-import org.hfoss.posit.android.TrackerState.PointAndTime;
 import org.hfoss.posit.android.utilities.Utils;
 
 import com.google.android.maps.GeoPoint;
@@ -741,10 +740,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 
 			// Timestamp the time_modify field in the Find table (by default)
 			mDb.execSQL(TIMESTAMP_FIND_UPDATE 
-  			+ " WHERE " + FINDS_GUID + " = '" + guId + "'"); 
-			
-			// Timestamp the update action in the find_history table
-			boolean logOk = logFindHistory(guId, "update");    
+  			+ " WHERE " + FINDS_GUID + " = '" + guId + "'");     
 		}
 
 		mDb.close();
@@ -867,7 +863,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		ContentValues content = new ContentValues();
 		content.put(FINDS_DELETED, DELETE_FIND);
 
-		String[] args = {DELETE_FIND + ""};
 		boolean success = mDb.update(FINDS_TABLE, content, null, null) > 0;
 		mDb.close();
 		if (success)
@@ -1377,7 +1372,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	public Cursor getImagesCursor(long id) {
 		mDb = getReadableDatabase();
 		if (DBG) Log.i(TAG, "id = " + id+"");
-		String[] columns = {PHOTOS_IMAGE_URI, FINDS_ID};
 		String[] selectionArgs = null;
 		String groupBy = null, having = null, orderBy = null;
 		Cursor cursor = mDb.query(PHOTOS_TABLE, null, PHOTOS_FIND_ID + "=" + id, selectionArgs, groupBy, having, orderBy);
@@ -1462,7 +1456,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 //		mDb.beginTransaction();
 		try {
 			if (DBG) Log.i(TAG, "id = " + id+"");
-			String[] columns = {PHOTOS_IMAGE_URI, FINDS_ID};
 			String groupBy = null, having = null, orderBy = null;
 			c = mDb.query(PHOTOS_TABLE, null, whereClause,  args, groupBy, having, orderBy);
 

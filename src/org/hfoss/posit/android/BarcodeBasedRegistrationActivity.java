@@ -28,7 +28,6 @@ import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -69,8 +68,6 @@ public class BarcodeBasedRegistrationActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.barcode_registration);
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		String server = sp.getString("SERVER_ADDRESS", null);
 		
 		final Button registerButton = (Button)findViewById(R.id.registerUsingBarcodeButton);
 		final TextView barcodeError = (TextView)findViewById(R.id.barcodeReaderError);
@@ -170,7 +167,6 @@ public class BarcodeBasedRegistrationActivity extends Activity {
 			value = sb.toString();  // Valid JSON encoded string
 			//  End of Hack
 			JSONObject object;
-			JSONTokener tokener=new JSONTokener(value);
 
 			try {
 				Log.i(TAG,"JSON="+value);

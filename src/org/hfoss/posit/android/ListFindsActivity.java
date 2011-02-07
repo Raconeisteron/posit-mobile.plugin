@@ -21,9 +21,6 @@
  */
 package org.hfoss.posit.android;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 //import org.hfoss.posit.android.adhoc.RWGService;
 import org.hfoss.posit.android.bluetooth.BluetoothExplicitSync;
 import org.hfoss.posit.android.provider.PositDbHelper;
@@ -69,8 +66,6 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 	public static final int FIND_FROM_LIST = 0;
 	private int project_id;
     private static final boolean DBG = false;
-	private ArrayList<HashMap<String,String>> mFindsData = new ArrayList<HashMap<String,String>>();
-
 
 	/** 
 	 * Called when the Activity starts and
@@ -267,10 +262,7 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 	
 		case R.id.find_image:
 			if (DBG) Log.i(TAG,"setViewValue case find_image=" + view.getId() );
-			int rowId = cursor.getInt(cursor
-					.getColumnIndexOrThrow(PositDbHelper.FINDS_ID));
 			PositDbHelper myDbHelper = new PositDbHelper(this);
-//			ContentValues values = myDbHelper.getImages(rowId);
 			ContentValues values = myDbHelper.getImages(findIden);
 			ImageView iv = (ImageView) view;
 			if (values != null && values.containsKey(PositDbHelper.PHOTOS_IMAGE_URI)) {
@@ -311,7 +303,6 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 			return true;
 		case R.id.num_photos:
 			tv = (TextView) view;
-			Uri findPhotos = Uri.parse("content://org.hfoss.provider.POSIT/photo_findid/"+findIden);
 			int count = mDbHelper.getImagesCount(findIden);
 			tv.setText(count+" photos  ");
 			return true;

@@ -1,7 +1,5 @@
 package org.hfoss.posit.android.bluetooth;
 
-import android.net.Uri;
-
 public class SelectFind implements Comparable<SelectFind> {
 
 	// Data stored

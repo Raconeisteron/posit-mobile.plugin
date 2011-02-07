@@ -30,10 +30,8 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Log;
 
 //  This class appears to be unused and should be deleted from the project. 
@@ -65,7 +63,6 @@ public class PositContentProvider extends ContentProvider{
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		int count = 0;
 		String findId = "";
 		String projId = "";
 		Cursor c = null;
@@ -86,8 +83,6 @@ public class PositContentProvider extends ContentProvider{
 				Uri _uri = Uri.parse(uriString);
 				getContext().getContentResolver().delete(_uri, null, null);
 			}
-			count = db.delete(PositDbHelper.PHOTOS_TABLE, PositDbHelper.FINDS_PROJECT_ID
-					+ " = " + projId + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), selectionArgs);
 			break;
 //		case FIND_ID:
 //			findId = uri.getPathSegments().get(1);
@@ -105,8 +100,6 @@ public class PositContentProvider extends ContentProvider{
 				Uri _uri = Uri.parse(uriString);
 				getContext().getContentResolver().delete(_uri, null, null);
 			}
-			count = db.delete(PositDbHelper.PHOTOS_TABLE, PositDbHelper.FINDS_ID + " = " 
-					+ findId + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), selectionArgs);
 			break;
 		default:
 			throw new IllegalArgumentException("Wrong arg for provider!");

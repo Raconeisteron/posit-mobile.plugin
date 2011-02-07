@@ -43,7 +43,6 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RadioGroup;
 
 /**
  * This activity shows a list of all the projects on the server that the phone is registered with,
@@ -60,7 +59,6 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 	private int mClickedPosition = 0;
 
 	private ArrayList<HashMap<String, Object>> projectList;
-	private RadioGroup mRadio;	
 
 	/**
 	 * Called when the activity is first started.  Shows a list of 
@@ -138,7 +136,6 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 
 	public void onListItemClick(ListView lv, View v, int position, long idFull){
 		mClickedPosition = position;
-		ArrayAdapter mAdapter = (ArrayAdapter) this.getListAdapter();
 		String projectId = (String) projectList.get(mClickedPosition).get("id");
 		int id  = Integer.parseInt(projectId);
 		String projectName = (String) projectList.get(mClickedPosition).get("name");

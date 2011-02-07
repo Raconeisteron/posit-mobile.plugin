@@ -27,17 +27,9 @@ import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
-
 import org.hfoss.posit.rwg.RwgPacket;
-
-import android.content.Context;
-import android.net.wifi.WifiManager;
-import android.net.wifi.WifiManager.MulticastLock;
 import android.util.Log;
 
 
@@ -50,7 +42,6 @@ public class UdpSender {
 	private int mHash;
 
 	private DatagramSocket datagramSocket;	
-	private InetAddress group;
 	
 	public UdpSender(int hashAddr) throws SocketException, UnknownHostException, BindException{
 		mHash = hashAddr;

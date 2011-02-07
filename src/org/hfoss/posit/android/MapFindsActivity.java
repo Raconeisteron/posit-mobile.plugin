@@ -23,12 +23,10 @@ package org.hfoss.posit.android;
 
 import java.util.List;
 
-import org.hfoss.adhoc.AdhocService;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.MyItemizedOverlay;
 import org.hfoss.posit.android.utilities.Utils;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -215,9 +213,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 	private void mapFinds() {
 		mDbHelper = new PositDbHelper(this);
 
-		String[] columns = mDbHelper.list_row_data;
-		int [] views = mDbHelper.list_row_views;
-
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		mCursor = mDbHelper.fetchFindsByProjectId(sp.getInt("PROJECT_ID", 0));		
@@ -237,7 +232,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 	private  MyItemizedOverlay mapLayoutItems(Cursor c) {
 		int latitude = 0;
 		int longitude = 0;
-		int itemId = 0;
 
 		drawable = this.getResources().getDrawable(R.drawable.androidmarker);
 		MyItemizedOverlay mPoints = new MyItemizedOverlay(drawable, this, true);
@@ -271,12 +265,10 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_I) {
 			// Zoom In
-			int level = mMapView.getZoomLevel();
 			mapController.zoomIn();
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_O) {
 			// Zoom Out
-			int level = mMapView.getZoomLevel();
 			mapController.zoomOut();
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_S) {

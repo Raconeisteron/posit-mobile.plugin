@@ -30,7 +30,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -47,11 +46,9 @@ public class SyncActivity extends Activity {
 	private ProgressDialog mProgressDialog;
 	private static final String TAG = "SyncActivity";
 	private NetworkConnectivityListener ncl;
-	private ConnectivityManager mConman;
 	private ConnectivityHandler mHandler;
 	private SyncThread mSyncThread;
 	private Context mContext;
-	private boolean result = false;
 	private long mStart = 0;
 	private static final String PRESS_BACK = " Press the back key TWICE to exit.";
 
@@ -60,8 +57,6 @@ public class SyncActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		mContext = this;
 		if (getIntent().getAction().equals(Intent.ACTION_SYNC)) {
-			mConman = (ConnectivityManager) this
-					.getSystemService(this.CONNECTIVITY_SERVICE);
 			mHandler = new ConnectivityHandler();
 
 			ncl = new NetworkConnectivityListener();

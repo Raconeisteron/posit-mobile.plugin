@@ -38,12 +38,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.hfoss.posit.android.Find;
 import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.TrackerActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
-
-import android.content.BroadcastReceiver;
 
 import android.R;
 import android.app.AlertDialog;
@@ -101,7 +98,7 @@ public class Utils {
 			Log.i(TAG, "No camera images to save ...exiting ");
 			return null;
 		}
-		List<ContentValues> uris = null;
+
 		List<Uri> imageUris = new LinkedList<Uri>();
 		List<Uri> thumbUris = new LinkedList<Uri>();
 
