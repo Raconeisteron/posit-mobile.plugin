@@ -105,7 +105,7 @@ public class RwgSender implements Runnable {
 				packetBuff.getActive_reqf().setReqf(reqf);
 				packetBuff.getActive_reqf().setReqf_pos(packetBuff.getReqf_counter());
 				packetBuff.getActive_reqf().setUserData(userData);
-				rwgManager.SEND_REQF_N = true;
+				RwgManager.SEND_REQF_N = true;
 				Log.i(TAG, mHash + " RwgSender.sendUserDataPacket(): SEND_REQF_N is set");
 
 				//handleUserData(userData);
@@ -115,18 +115,18 @@ public class RwgSender implements Runnable {
 				rwgPacket = null;
 			} 
 			// Check whether RWG tasks have been scheduled
-			if(rwgManager.SEND_ACK){
+			if(RwgManager.SEND_ACK){
 				Log.i(TAG, mHash + " RwgSender: SEND_ACK");
-				rwgManager.SEND_ACK = false;
+				RwgManager.SEND_ACK = false;
 				rwgHeader = RwgHeader.createACK(macAddr, packetBuff);
 				userData = null;
 				ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),rwgHeader.getTarget());
 				rwgPacket = new RwgPacket(ethrHdr, rwgHeader, userData);
 				Log.i(TAG, mHash + " RwgSender.ACK.rwgPacket= " + rwgPacket.toString());
 				
-			}else if(rwgManager.SEND_REQF_N){
+			}else if(RwgManager.SEND_REQF_N){
 				Log.i(TAG, mHash + " RwgSender: SEND_REQF_N");
-				rwgManager.SEND_REQF_N = false;
+				RwgManager.SEND_REQF_N = false;
 
 				// Creates the RwgHeader including UserData from the RwgPacketBuffer
 				rwgHeader = RwgHeader.createREQF(macAddr,packetBuff);
@@ -134,13 +134,13 @@ public class RwgSender implements Runnable {
 				// Retrieve the userData from the packet buffer
 				userData = packetBuff.getActive_reqf().getUserData();
 				//String sender = "192.168.2." + mHash;
-				ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),rwgManager.BROADCAST_ADDR);
+				ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),RwgManager.BROADCAST_ADDR);
 				rwgPacket = new RwgPacket(ethrHdr, rwgHeader, userData);
 				Log.i(TAG, mHash + " RwgSender.REQF-N.rwgPacket= " + rwgPacket.toString());
 				
-			}else if(rwgManager.SEND_REQF_F){
+			}else if(RwgManager.SEND_REQF_F){
 				Log.i(TAG, mHash + " RwgSender: SEND_REQF_F");
-				rwgManager.SEND_REQF_F = false;
+				RwgManager.SEND_REQF_F = false;
 				rwgPacket = null;
 
 				// Creates the RwgHeader including UserData from the RwgPacketBuffer
@@ -148,30 +148,30 @@ public class RwgSender implements Runnable {
 				if (rwgHeader != null) {
 					// Retrieve the userData from the packet buffer
 					userData = packetBuff.getActive_reqf().getUserData();
-					ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),rwgManager.BROADCAST_ADDR);
+					ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),RwgManager.BROADCAST_ADDR);
 					rwgPacket = new RwgPacket(ethrHdr, rwgHeader, userData);
 				} 		
-			}else if(rwgManager.SEND_REQF_R){
+			}else if(RwgManager.SEND_REQF_R){
 				//Log.i(TAG, mHash + " RwgSender: SEND_REQF_R");
-				rwgManager.SEND_REQF_R = false;
+				RwgManager.SEND_REQF_R = false;
 				rwgPacket = null;
 				rwgHeader = RwgHeader.createReqfR(macAddr, packetBuff);
 				if (rwgHeader != null) {
 					userData = packetBuff.getActive_reqf().getUserData();
-					ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),rwgManager.BROADCAST_ADDR);
+					ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),RwgManager.BROADCAST_ADDR);
 
 					rwgPacket = new RwgPacket(ethrHdr, rwgHeader, userData);
 					Log.i(TAG, mHash + " RwgSender.REQF-R.rwgPacket= " + rwgPacket.toString());
 				}
 
-			}else if(rwgManager.SEND_OKTF){
+			}else if(RwgManager.SEND_OKTF){
 				Log.i(TAG, mHash + " RwgSender: OKTF");
-				rwgManager.SEND_OKTF = false;
+				RwgManager.SEND_OKTF = false;
 				rwgPacket = null;
 				rwgHeader = RwgHeader.createOKTF(macAddr, packetBuff);
 				if (rwgHeader != null)  {
 					userData = null;
-					ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),rwgManager.BROADCAST_ADDR);
+					ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),RwgManager.BROADCAST_ADDR);
 					rwgPacket = new RwgPacket(ethrHdr, rwgHeader, userData);
 					Log.i(TAG, mHash + " RwgSender.OKTF.rwgPacket= " + rwgPacket.toString());
 				} else {
@@ -179,14 +179,14 @@ public class RwgSender implements Runnable {
 
 				}
 				
-			}else if(rwgManager.SEND_BS){
+			}else if(RwgManager.SEND_BS){
 				Log.i(TAG, mHash + " RwgSender: BS");
-				rwgManager.SEND_BS = false;
+				RwgManager.SEND_BS = false;
 				rwgPacket = null;
 				rwgHeader = RwgHeader.createBS(macAddr, packetBuff);
 				if (rwgHeader != null) {
 					userData = null;
-					ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),rwgManager.BROADCAST_ADDR);
+					ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),RwgManager.BROADCAST_ADDR);
 					rwgPacket = new RwgPacket(ethrHdr, rwgHeader, userData);
 					Log.i(TAG, mHash + " rwgPacket= " + rwgPacket.toString());
 				}

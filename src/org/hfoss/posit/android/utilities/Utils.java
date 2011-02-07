@@ -207,7 +207,7 @@ public class Utils {
  */
 	public static boolean isNetworkAvailable(Context context)
 	{
-		conManage = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+		conManage = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (conManage == null) {
            Log.w(TAG, "couldn't get connectivity manager");
         } else {

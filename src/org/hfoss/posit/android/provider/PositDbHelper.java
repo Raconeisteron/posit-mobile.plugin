@@ -1001,7 +1001,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionData() for row " + rowId);
 		mDb = getReadableDatabase();  // Either open or create the DB    	
 		Cursor c = mDb.query(EXPEDITION_TABLE, null, 
-				this.EXPEDITION_ROW_ID + "=" + rowId, 
+				PositDbHelper.EXPEDITION_ROW_ID + "=" + rowId, 
 				null, null, null, null);
 		ContentValues values = null;
 		Log.d(TrackerActivity.TAG, 

@@ -45,7 +45,7 @@ public class RWG {
 			e.printStackTrace();
 		}
 		try {
-			this.output = new OutputStreamWriter(mContext.openFileOutput(outputPipe, mContext.MODE_APPEND));
+			this.output = new OutputStreamWriter(mContext.openFileOutput(outputPipe, Context.MODE_APPEND));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
