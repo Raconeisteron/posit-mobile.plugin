@@ -27,7 +27,6 @@ package org.hfoss.posit.android;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,23 +91,15 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 
 	private Find mFind;
 	private long mFindId;
-	private String mFindGuId = null;
 	private int mState;
 	private Gallery mGallery;
-	private static boolean NEWFIND=true;
 	
-	
-	private String imageBase64String = null;
 	private boolean stopThread;
 	
 	//Temporary files representing pictures taken for a find
 	//but not yet added to the database
 	private ArrayList<Bitmap> mTempBitmaps = new ArrayList<Bitmap>();
 	private ArrayList<ContentValues> mImagesData = new ArrayList<ContentValues>();
-
-	//Uris of new images and thumbnails being attached to the find
-	private List<Uri> mNewImageUris = new LinkedList<Uri>();
-	private List<Uri> mNewImageThumbnailUris = new LinkedList<Uri>();
 
 	private double mLongitude = 0;
 	private double mLatitude = 0;
@@ -121,10 +112,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 
 	private Thread mThread;
 	private LocationManager mLocationManager;
-
-	private String valueName;
-	private String valueDescription;
-	private String valueId;
 
 	private boolean isClean = true;
 	public static boolean SAVE_CHECK=false;
@@ -147,9 +134,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	private static final int CONFIRM_EXIT=3;
 	private static final int CONFIRM_SAVE_EMPTY_FIND=4;
 	private static final boolean ENABLED_ONLY = true;
-	private static final int THUMBNAIL_TARGET_SIZE = 320;
-	
-	private Context mContext;
 	
 	/* Listener for checking if the text has changed in any fields */
 	private TextWatcher textChangedWatcher= new TextWatcher(){
@@ -202,12 +186,8 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		mContext = this;
-		//finishActivity(ListFindsActivity.FIND_FROM_LIST);
 		sp = PreferenceManager.getDefaultSharedPreferences(this);
 		PROJECT_ID = sp.getInt("PROJECT_ID", 0);
-		
-//		IS_ADHOC = sp.getBoolean("IS_ADHOC", false);
 		
 		isClean = true;
 
@@ -219,7 +199,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		mLongitudeTextView = (TextView)findViewById(R.id.longitudeText);
 
 		mGallery = (Gallery)findViewById(R.id.picturesTaken);
-
 		
 		//
 		Button scanButton = (Button)findViewById(R.id.idBarcodeButton);
@@ -794,14 +773,14 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	private void displayContentInView(ContentValues contentValues) {
 		EditText eText = (EditText) findViewById(R.id.nameText);
 		eText.setText(contentValues.getAsString(PositDbHelper.FINDS_NAME));
-		valueName=eText.getText().toString();
+
 		eText = (EditText) findViewById(R.id.descriptionText);
 		eText.setText(contentValues.getAsString(PositDbHelper.FINDS_DESCRIPTION));
-		valueDescription=eText.getText().toString();
+
 		eText = (EditText) findViewById(R.id.idText);
 		eText.setText(contentValues.getAsString(PositDbHelper.FINDS_GUID));
 		eText.setFocusable(false);
-		valueId=eText.getText().toString();
+
 		TextView tView = (TextView) findViewById(R.id.timeText);
 
 		if (mState == STATE_EDIT) {
@@ -892,7 +871,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		int rowId;
 
 		if (resultCode == RESULT_CANCELED) {
 			return;
@@ -908,7 +886,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			break;
 			
 		case CAMERA_ACTIVITY: //for existing find: saves image to db when user clicks "attach"
-			rowId = data.getIntExtra("rowId", -1);
 			Bitmap tempImage = (Bitmap) data.getExtras().get("data");
 			
 			mTempBitmaps.add(tempImage);
@@ -926,7 +903,6 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			break;
 
 		case NEW_FIND_CAMERA_ACTIVITY: //for new finds: stores temporary images in a list
-			rowId = data.getIntExtra("rowId", -1);
 			tempImage = (Bitmap) data.getExtras().get("data");
 			
 			//ByteArrayOutputStream baos = new ByteArrayOutputStream();  

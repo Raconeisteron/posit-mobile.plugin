@@ -32,7 +32,7 @@ import android.view.MenuItem;
  *  developer (HFOSS), and the names of development team members.
  */
 public class AboutActivity extends Activity{
-	private static final String TAG = "AboutActivity";
+	//private static final String TAG = "AboutActivity";
 	 
 	/**
 	 * To add a name to the development team, edit strings.xml and

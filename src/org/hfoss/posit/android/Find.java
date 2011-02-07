@@ -24,19 +24,14 @@ package org.hfoss.posit.android;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Random;
 
-import org.hfoss.posit.android.provider.PositContentProvider;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -51,7 +46,6 @@ public class Find {
 	private long mId = -1;  	         // The Find's rowID (should be changed to DB ID)
 	private String mGuid = "";       // BARCODE -- globally unique ID
 	public Cursor images = null;
-	private Context mContext;
 
 	/**
 	 * This constructor is used for a new Find
@@ -59,7 +53,6 @@ public class Find {
 	 */
 	public Find (Context context) {
 		mDbHelper = new PositDbHelper(context);
-		mContext = context;
 		mId = -1;
 	}
 	
@@ -73,7 +66,6 @@ public class Find {
 		mId = id;
 		mGuid = "";
 		images = getImages();
-		mContext = context;
 	}
 	
 	/**
@@ -86,8 +78,6 @@ public class Find {
 		this(context);
 		mId = -1;
 		mGuid = guid;
-//		images = getImages();
-		mContext = context;
 	}
 
 	public void setGuid(String guid) {
@@ -145,8 +135,6 @@ public class Find {
 	 * @return whether the DB operation succeeds
 	 */
 	public boolean insertToDB(ContentValues content, List<ContentValues> images) {
-		String guid = content.getAsString(PositDbHelper.FINDS_GUID);
-		
 		if (content != null) {
 			//		content.put(MyDBHelper.PROJECT_ID, projId);
 			//content.put(PositDbHelper.FINDS_REVISION, 1); // Handled automatically

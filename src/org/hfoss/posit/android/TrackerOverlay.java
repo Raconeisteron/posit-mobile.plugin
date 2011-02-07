@@ -71,16 +71,12 @@ public class TrackerOverlay extends Overlay {
 		Point nextPoint;
 		PointAndTime pointAndTime;
 		PointAndTime nextPointAndTime;
-		long nextTime;
 
 		for (int i = 0; i < pointsAndTimes.size(); i++) {
 			pointAndTime = pointsAndTimes.get(i);
 			point = projection.toPixels(pointAndTime.getGeoPoint(), null);
-			if (i == pointsAndTimes.size() - 1) {
-				nextTime = System.currentTimeMillis();
-			} else {
+			if (i != pointsAndTimes.size() - 1) {
 				nextPointAndTime = pointsAndTimes.get(i + 1);
-				nextTime = nextPointAndTime.getTime();
 				nextPoint = projection.toPixels(nextPointAndTime
 						.getGeoPoint(), null);
 				canvas.drawLine(point.x, point.y, nextPoint.x, nextPoint.y, paint);

@@ -88,7 +88,6 @@ public class TrackerActivity extends MapActivity
     private SharedPreferences mPreferences ;
     private SharedPreferences.Editor spEditor;
     
-	private String mProvider = NO_PROVIDER;
 	private ConnectivityManager mConnectivityMgr;
 	private int mNetworkType;
 	private NotificationManager mNotificationMgr;
@@ -435,9 +434,7 @@ public class TrackerActivity extends MapActivity
 		LocationManager locationManager = 
 			(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		List<String> providers = locationManager.getProviders(ENABLED_ONLY);
-		if (providers.contains(LocationManager.GPS_PROVIDER)) {
-			mProvider = LocationManager.GPS_PROVIDER;
-		} else {
+		if (!providers.contains(LocationManager.GPS_PROVIDER)) {
 			Utils.showToast(this, "Aborting Tracker: " + NO_PROVIDER
 					+ "\nYou must have GPS enabled. ");
 			return false;

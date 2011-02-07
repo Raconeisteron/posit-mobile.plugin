@@ -29,7 +29,6 @@ public class RwgSender implements Runnable {
 
 	private final static Object queueLock = new Integer(0);
 	private UdpSender udpSender;
-	private boolean isRREQsent = false;
 	private volatile boolean keepRunning = true;
 	private Thread senderThread;
 	private RwgManager rwgManager;

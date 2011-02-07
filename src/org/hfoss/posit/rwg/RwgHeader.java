@@ -8,8 +8,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.BitSet;
 
-import org.hfoss.adhoc.AdhocData;
-
 import android.util.Log;
 
 /**

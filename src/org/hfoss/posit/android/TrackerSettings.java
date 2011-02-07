@@ -22,8 +22,6 @@
 package org.hfoss.posit.android;
 
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 

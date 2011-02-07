@@ -215,7 +215,7 @@ public class SahanaSMSActivity extends Activity implements OnClickListener, Loca
 	        
 	        List<String> providers = mLocationManager.getProviders(true);
 			Log.i(TAG, "Enabled providers = " + providers.toString());
-			String bestProvider = mLocationManager.getBestProvider(new Criteria(),true);
+			//String bestProvider = mLocationManager.getBestProvider(new Criteria(),true);
 			/*if (bestProvider != null && bestProvider.length() != 0) {
 				//mLocationManager.requestLocationUpdates(bestProvider, 5000, 0, this);	 // Every 30000 millisecs	
 				mLocation = mLocationManager.getLastKnownLocation("gps");				

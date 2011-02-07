@@ -1,18 +1,12 @@
 package org.hfoss.posit.android.bluetooth;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
-import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.provider.PositDbHelper;
-import org.hfoss.posit.android.utilities.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.net.Uri;
 
 public class BluetoothFindTO implements Serializable {
 

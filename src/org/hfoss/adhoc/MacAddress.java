@@ -1,14 +1,6 @@
 package org.hfoss.adhoc;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
-import java.io.StringWriter;
-import java.math.BigInteger;
-
-import android.util.Log;
 
 /**
  * Convenience class for storing MacAddresses and getting byte arrays and String
@@ -18,7 +10,6 @@ import android.util.Log;
  * 
  */
 public class MacAddress implements Serializable {
-	private static final String TAG = "MacAddress";
 	// ONLY use ZERO_MAC for debugging/ can cause confusion
 	public static final String ZERO_MAC = "00:00:00:00:00:00";
 	private String macAddress = null;
@@ -90,9 +81,7 @@ public class MacAddress implements Serializable {
 			throw new UnsupportedOperationException(
 					"MacAddresses are 6 bytes long. Double check your input!");
 		}
-		BigInteger bi = new BigInteger(bytes);
-		String s = bi.toString(16); // 120ff0 
-		
+
 //		Log.i(TAG, " BigInteger string = " + s);
 		macAddress = "";
 		for (int i = 0; i < 6; i++){
@@ -103,9 +92,6 @@ public class MacAddress implements Serializable {
 			}
 //			Log.i(TAG, String.format("%02x", bytes[i]));
 		}
-		
-		//macAddress = bytesToString(bytes, ':');
-
 	}
 
 	public MacAddress() {
