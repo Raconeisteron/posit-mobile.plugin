@@ -44,9 +44,6 @@ public class SahanaSMSActivity extends Activity implements OnClickListener, Loca
 
 	private Thread mThread;
 	
-	
-	
-	
 	Handler updateHandler = new Handler() {
 
 		/** Gets called on every message that is received */
@@ -68,7 +65,6 @@ public class SahanaSMSActivity extends Activity implements OnClickListener, Loca
         initializeLocationAndStartGpsThread();
     }
 
-    
 
 	private boolean checkNumber(String number) {
 		for(int i = 0; i < number.length(); i++) {
@@ -121,7 +117,6 @@ public class SahanaSMSActivity extends Activity implements OnClickListener, Loca
 			Log.i(TAG, "Enabled providers = " + providers.toString());
 			bestProvider = "gps";//mLocationManager.getBestProvider(new Criteria(),true);
 			if (bestProvider != null && bestProvider.length() != 0) {
-				//mLocationManager.requestLocationUpdates(bestProvider, 15000, 0, this);	 // Every 30000 millisecs	
 				location = mLocationManager.getLastKnownLocation(bestProvider);				
 			}	
 		}
@@ -195,8 +190,6 @@ public class SahanaSMSActivity extends Activity implements OnClickListener, Loca
 		setCurrentGpsLocation(null); 
 	}
 
-
-
 	public void onClick(View v) {
 		if(v.getId()==R.id.send) { 
 
@@ -215,11 +208,13 @@ public class SahanaSMSActivity extends Activity implements OnClickListener, Loca
 	        
 	        List<String> providers = mLocationManager.getProviders(true);
 			Log.i(TAG, "Enabled providers = " + providers.toString());
+
 			//String bestProvider = mLocationManager.getBestProvider(new Criteria(),true);
 			/*if (bestProvider != null && bestProvider.length() != 0) {
 				//mLocationManager.requestLocationUpdates(bestProvider, 5000, 0, this);	 // Every 30000 millisecs	
 				mLocation = mLocationManager.getLastKnownLocation("gps");				
 			}*/
+
 			try{
 				mLatitude = mLocation.getLatitude();
 				mLongitude = mLocation.getLongitude();

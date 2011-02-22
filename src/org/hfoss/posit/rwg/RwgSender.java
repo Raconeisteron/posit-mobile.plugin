@@ -21,10 +21,6 @@ import android.util.Log;
 public class RwgSender implements Runnable {
 	private static final String TAG = "Adhoc";
 
-//	private Queue<Packet> pduMessages;
-//	private Queue<RwgPacket> userMessagesToForward;
-
-	//private Queue<UserDataPacket> userMessagesFromPhone;
 	private static Queue<AdhocData<AdhocFind>> userMessagesFromPhone;
 
 	private final static Object queueLock = new Integer(0);
@@ -88,17 +84,10 @@ public class RwgSender implements Runnable {
 				e.printStackTrace();
 			}
 			
-//			Log.i(TAG, mHash + " sendThread: " + 
-//					"SEND_ACK=" + RwgManager.SEND_ACK + " " + 
-//					"SEND_BS= " + RwgManager.SEND_BS + " " + 
-//					"SEND_OKTF= " + RwgManager.SEND_OKTF + " " + 
-//					"SEND_REQF_F= " + RwgManager.SEND_REQF_F + " " + 
-//					"SEND_REQF_N= " + RwgManager.SEND_REQF_N + " " + 
-//					"SEND_REQF_R= " + RwgManager.SEND_REQF_R);
 
 			// Check whether any user data was received from this phone
 			userData = userMessagesFromPhone.peek();
-			//while(userData != null){
+
 			if (userData != null){
 				Log.i(TAG, mHash + " RwgSender: New data on message queue");
 				reqf = new RwgHeader();
@@ -111,7 +100,6 @@ public class RwgSender implements Runnable {
 				//handleUserData(userData);
 				//it is expected that the queue still has the same userDataHeader object as head
 				userMessagesFromPhone.poll();
-				//userData = userMessagesFromPhone.peek();
 				rwgPacket = null;
 			} 
 			// Check whether RWG tasks have been scheduled
@@ -135,6 +123,7 @@ public class RwgSender implements Runnable {
 				userData = packetBuff.getActive_reqf().getUserData();
 				//String sender = "192.168.2." + mHash;
 				ethrHdr = new EthernetHeader(Constants.RWG_PROTOCOL,rwgHeader.getSender(),RwgManager.BROADCAST_ADDR);
+
 				rwgPacket = new RwgPacket(ethrHdr, rwgHeader, userData);
 				Log.i(TAG, mHash + " RwgSender.REQF-N.rwgPacket= " + rwgPacket.toString());
 				
@@ -154,6 +143,7 @@ public class RwgSender implements Runnable {
 			}else if(RwgManager.SEND_REQF_R){
 				//Log.i(TAG, mHash + " RwgSender: SEND_REQF_R");
 				RwgManager.SEND_REQF_R = false;
+
 				rwgPacket = null;
 				rwgHeader = RwgHeader.createReqfR(macAddr, packetBuff);
 				if (rwgHeader != null) {
@@ -229,7 +219,7 @@ public class RwgSender implements Runnable {
 	 * This method just notifies the sender thread.
 	 */
 	public static void queueRwgMessage() {
-		//userMessagesFromPhone.add(userPacket);
+
 		synchronized (queueLock) {
 			queueLock.notify();
 		}

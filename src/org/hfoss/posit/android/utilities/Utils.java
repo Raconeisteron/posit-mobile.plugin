@@ -227,9 +227,6 @@ public class Utils {
         return false; 
 	}
 	
-	
-	
-	
     /**
      * Removes '[Error] ' or '[Success'] from the beginning of the response strings
      * that are returned from http Post and Get.

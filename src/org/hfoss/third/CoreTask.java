@@ -44,119 +44,7 @@ public class CoreTask {
 	public void setPath(String path){
 		this.DATA_FILE_PATH = path;
 	}
-/*
-    public boolean whitelistExists() {
-    	File file = new File(this.DATA_FILE_PATH+"/conf/whitelist_mac.conf");
-    	if (file.exists() && file.canRead()) {
-    		return true;
-    	}
-    	return false;
-    }
-    
-    public boolean removeWhitelist() {
-    	File file = new File(this.DATA_FILE_PATH+"/conf/whitelist_mac.conf");
-    	if (file.exists()) {
-	    	return file.delete();
-    	}
-    	return false;
-    }
-	
-    public void touchWhitelist() throws IOException {
-    	File file = new File(this.DATA_FILE_PATH+"/conf/whitelist_mac.conf");
-    	file.createNewFile();
-    }
-    
-    public void saveWhitelist(ArrayList<String> whitelist) throws Exception {
-    	FileOutputStream fos = null;
-    	File file = new File(this.DATA_FILE_PATH+"/conf/whitelist_mac.conf");
-    	try {
-			fos = new FileOutputStream(file);
-			for (String mac : whitelist) {
-				fos.write((mac+"\n").getBytes());
-			}
-		} 
-		finally {
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (IOException e) {
-					// nothing
-				}
-			}
-		}
-    }
-    
-    public ArrayList<String> getWhitelist() throws Exception {
-    	ArrayList<String> returnList = new ArrayList<String>();
-    	File file = new File(this.DATA_FILE_PATH+"/conf/whitelist_mac.conf");
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
-        DataInputStream dis = null;
-        try {
-		    if (file.exists() && file.canRead() && file.length() > 0) {
-		    	fis = new FileInputStream(file);
-				bis = new BufferedInputStream(fis);
-				dis = new DataInputStream(bis);
-				while (dis.available() != 0) {
-					returnList.add(dis.readLine().trim());
-				}
-		    }
-        }
-        finally {
-        	try {
-				fis.close();
-				bis.close();
-				dis.close();
-        	} catch (Exception ex) {
-        		// nothinh
-        	}
-        }
-        return returnList;
-    }
- 
-    public Hashtable<String,ClientData> getLeases() throws Exception {
-        Hashtable<String,ClientData> returnHash = new Hashtable<String,ClientData>();
-    	File file = new File(this.DATA_FILE_PATH+"/var/dnsmasq.leases");
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
-        DataInputStream dis = null;
-        try {
-	        if (file.exists() && file.canRead() && file.length() > 0) {
-				fis = new FileInputStream(file);
-				bis = new BufferedInputStream(fis);
-				dis = new DataInputStream(bis);
-				ClientData clientData = null;
-				while (dis.available() != 0) {
-					clientData = new ClientData();
-					String[] data = dis.readLine().split(" ");
-					Date connectTime = new Date(Long.parseLong(data[0] + "000"));
-					String macAddress = data[1];
-					String ipAddress = data[2];
-					String clientName = data[3];
-					clientData.setConnectTime(connectTime);
-					clientData.setClientName(clientName);
-					clientData.setIpAddress(ipAddress);
-					clientData.setMacAddress(macAddress);
-					clientData.setConnected(true);
-					returnHash.put(macAddress, clientData);
-				}
-			}
-	    }
-	    finally {
-	    	try {
-	    		if (fis != null)
-	    			fis.close();
-	    		if (bis != null)
-	    			bis.close();
-	    		if (dis != null)
-	    			dis.close();
-	    	} catch (Exception ex) {
-	    		// nothinh
-	    	}
-	    }        
-    	return returnHash;
-    }
- */ 
+
     public void chmodBin(List<String> filenames) throws Exception {
         Process process = null;
 		process = Runtime.getRuntime().exec("su");
@@ -169,39 +57,7 @@ public class CoreTask {
         os.close();
         process.waitFor();
     }    
-/*
-    public boolean isNatEnabled() {
-    	boolean natEnabled = false; 
-        Process process = null;
-        BufferedReader in = null;
-		try {
-			process = Runtime.getRuntime().exec("cat /proc/sys/net/ipv4/ip_forward");
-	        in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-	        String line = null;
-	        while ((line = in.readLine()) != null) {
-	            if (line.trim().equals("1")) {
-	            	natEnabled = true;
-	            	break;
-	            }
-	        }
-	        in.close();
-	        process.waitFor();
-		} catch (Exception e) {
-			Log.d(MSG_TAG, "Unexpected error - Here is what I know: "+e.getMessage());
-		}
-		finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-				process.destroy();
-			} catch (Exception e) {
-				// nothing
-			}
-		}
-		return natEnabled;
-    }
-*/    
+
     public int killProcessRunning(String processName) throws Exception {
         int pid = -1;
     	Process process = null;
@@ -315,14 +171,8 @@ public class CoreTask {
     	String newDnsmasq = new String();
     	// Getting dns-servers
     	String dns[] = new String[2];
-    	//dns[0] = getProp("net.dns1");
-    	//dns[1] = getProp("net.dns2");
-    	//if (dns[0] == null || dns[0].length() <= 0) {
     	dns[0] = defaultDNS1;
-    	//}
-    	//if (dns[1] == null || dns[1].length() <= 0) {
     	dns[1] = defaultDNS2;
-    	//}
     	String s = null;
     	BufferedReader br = null;
     	boolean writeconfig = false;

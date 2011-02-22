@@ -186,19 +186,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.i(TAG,"onActivityResult Result from registration = " + resultCode);
 		switch (requestCode) {
-		//		case LOGIN_ACTIVITY:
-		//			if (resultCode == LOGIN_CANCELED)
-		//				finish();
-		//			else if (resultCode == LOGIN_SUCCESSFUL) {
-		//				Intent intent = new Intent(this, ShowProjectsActivity.class);
-		//				startActivity(intent);
-		//			}
-		//			break;
-		//		case REGISTRATION_CANCELLED:
-		//			finish();
-		//			break;
 		case REGISTRATION_ACTIVITY:
-			//			if (resultCode == RegisterActivity.CANCELLED)
 			if (resultCode == LOGIN_CANCELED) {
 				Log.i(TAG,"Login canceled");
 				finish();
@@ -387,7 +375,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			mNotificationManager.cancel(AdhocService.ADHOC_NOTIFICATION);
 			mNotificationManager.cancel(AdhocService.NEWFIND_NOTIFICATION);
 
-			//mNotificationManager.cancel(Utils.ADHOC_ON_ID);
 		}
 		super.finish();
 	}

@@ -6,7 +6,5 @@ public interface Packet {
 	
 	public String toString();
 	
-	//public void parseBytes(byte[] rawPdu) throws BadPduFormatException;
-
 	public String getDestinationAddress(); // MAC Address
 }

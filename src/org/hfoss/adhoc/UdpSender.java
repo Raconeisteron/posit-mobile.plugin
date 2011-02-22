@@ -54,7 +54,6 @@ public class UdpSender {
 	 * @param data is the packet which is to be sent. 
 	 * @throws IOException  
 	 */
-	//public boolean sendPacket(AdhocData<AdhocFind> data) throws IOException {
 	public boolean sendPacket(RwgPacket packet) throws IOException {
 		Log.e(TAG,  mHash + " UdpSender: sendPacket() sending data = " + packet);
 

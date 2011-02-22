@@ -104,7 +104,6 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 			new SimpleCursorAdapter(this, R.layout.tracker_row, mCursor, columns, views);
 		adapter.setViewBinder(this);
 		setListAdapter(adapter); 
-		//stopManagingCursor(mCursor);
 	}
 	
 	/**
@@ -116,7 +115,6 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 
-		//Intent result = new Intent(null, data);
 		Intent result = new Intent();
 		result.putExtra(PositDbHelper.EXPEDITION_ROW_ID, id);
 		setResult(Activity.RESULT_OK, result);

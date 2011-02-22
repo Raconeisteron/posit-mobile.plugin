@@ -68,12 +68,6 @@ public class PositContentProvider extends ContentProvider{
 		Cursor c = null;
 		
 		switch(uriMatcher.match(uri)) {
-//		case FINDS_BY_PROJECT:
-//			projId = uri.getPathSegments().get(1);
-//			Log.i(TAG, "delete finds from project #"+projId);
-//			count = db.delete(FIND_TABLE_NAME, COLUMN_PROJECT_ID + " = " + projId + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), selectionArgs);
-//			delete(Uri.parse("content://org.hfoss.provider.POSIT/photos_project/"+projId),null,null);
-//			break;
 		case PHOTOS_BY_PROJECT:
 			projId = uri.getPathSegments().get(1);
 			c = query(Uri.parse("content://org.hfoss.provider.POSIT/photos_project/"+projId),null,null,null,null);
@@ -84,12 +78,6 @@ public class PositContentProvider extends ContentProvider{
 				getContext().getContentResolver().delete(_uri, null, null);
 			}
 			break;
-//		case FIND_ID:
-//			findId = uri.getPathSegments().get(1);
-//			Log.i("PROVIDER", "delete find #"+findId);
-//			count = db.delete(FIND_TABLE_NAME, COLUMN_IDENTIFIER + " = " + findId + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), selectionArgs);
-//			delete(Uri.parse("content://org.hfoss.provider.POSIT/photo_findid/"+findId),null,null);
-//			break;
 		case PHOTO_FINDID:
 			findId = uri.getPathSegments().get(1);
 			Log.i("PROVIDER", "delete photos with find #"+findId);
@@ -153,7 +141,6 @@ public class PositContentProvider extends ContentProvider{
 	public boolean onCreate() {
 		Context context = getContext();
 		PositDbHelper dbHelper = new PositDbHelper(context);
-		//DatabaseHelper dbHelper = new DatabaseHelper(context);
 		db = dbHelper.getWritableDatabase();
 		return (db == null)? false:true;
 	}
@@ -164,7 +151,6 @@ public class PositContentProvider extends ContentProvider{
 		switch(uriMatcher.match(uri)) {
 		case FINDS_BY_PROJECT:
 			sqlBuilder.setTables(PositDbHelper.FINDS_TABLE);
-			//Log.i("POSITProvider", "project id = "+uri.getPathSegments().get(1));
 			sqlBuilder.appendWhere(PositDbHelper.FINDS_PROJECT_ID + " = " + uri.getPathSegments().get(1));
 			break;
 		case FIND_ID:
@@ -173,7 +159,6 @@ public class PositContentProvider extends ContentProvider{
 			break;
 		case PHOTO_FINDID:
 			sqlBuilder.setTables(PositDbHelper.PHOTOS_TABLE);
-			//Log.i("POSITProvider", "query photos with find id = "+uri.getPathSegments().get(1));
 			sqlBuilder.appendWhere(PositDbHelper.FINDS_ID + " = " + uri.getPathSegments().get(1));
 			break;
 		case PHOTOS_BY_PROJECT:

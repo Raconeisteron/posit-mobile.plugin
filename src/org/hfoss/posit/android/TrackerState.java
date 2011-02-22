@@ -75,8 +75,6 @@ public class TrackerState {
 	 */
 	public TrackerState() {}
 
-	
-	
 	public TrackerState(Context c) {
 		pointsAndTimes = new ArrayList<PointAndTime>();
 		mSaved = false;

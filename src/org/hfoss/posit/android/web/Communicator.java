@@ -196,7 +196,7 @@ public class Communicator {
 	 * @return whether the registration was successful
 	 */
 	public String registerDevice(String server, String authKey, String imei) {
-		// server = "http://192.168.1.105/posit";
+
 		String url = server + "/api/registerDevice?authKey=" + authKey
 				+ "&imei=" + imei;
 		Log.i(TAG, "registerDevice URL=" + url);
@@ -247,7 +247,6 @@ public class Communicator {
 		} catch (Exception e) {
 			Log.i(TAG, "longinUser catch clause response = " + responseString);
 			Utils.showToast(mContext, e.getMessage()+"");
-//			return Constants.AUTHN_FAILED+":"+e.getMessage();
 			return Constants.AUTHN_FAILED+":"+responseString;
 		}
 		try {
@@ -391,7 +390,6 @@ public class Communicator {
 			return false;
 		} else {
 			PositDbHelper dbh = new PositDbHelper(mContext);
-			//long id = find.getId();
 			success = dbh.markFindSynced(id);
 			if (Utils.debug)
 				Log.i(TAG, "sendfind synced " + id + " " + success);
@@ -433,7 +431,6 @@ public class Communicator {
 				sendMap.put(PositDbHelper.PHOTOS_DATA_FULL, base64Data);
 				sendMap.put(PositDbHelper.PHOTOS_DATA_THUMBNAIL, base64Thumbnail);
 				sendMedia(sendMap);
-				// it.next();
 			}	
 		}
 		// Update the Synced attribute.
@@ -507,7 +504,6 @@ public class Communicator {
 	 * @param sendMap
 	 */
 	private void addRemoteIdentificationInfo(HashMap<String, String> sendMap) {
-		// sendMap.put(COLUMN_APP_KEY, appKey);
 		sendMap.put(COLUMN_IMEI, Utils.getIMEI(mContext));
 	}
 
@@ -557,7 +553,6 @@ public class Communicator {
 		} catch (URISyntaxException e) {
 			Log.e(TAG, "URISyntaxException " + e.getMessage());
 			e.printStackTrace();
-		//	return e.getMessage();
 			return "[Error] " + e.getMessage();
 
 		}
@@ -577,22 +572,18 @@ public class Communicator {
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, "ClientProtocolException" + e.getMessage());
 			e.printStackTrace();
-			//return e.getMessage();
 			return "[Error] " + e.getMessage();
 		} catch (IOException e) {
 			Log.e(TAG, "IOException " + e.getMessage());
 			e.printStackTrace();
-			//return e.getMessage();
 			return "[Error] " + e.getMessage();
 		} catch (IllegalStateException e) {
 			Log.e(TAG, "IllegalStateException: " + e.getMessage());
 			e.printStackTrace();
-			//return e.getMessage();
 			return "[Error] " + e.getMessage();
 		} catch (Exception e) {
 			Log.e(TAG, "Exception on HttpPost " + e.getMessage());
 			e.printStackTrace();
-			//return e.getMessage();
 			return "[Error] " + e.getMessage();
 		}
 		long time = System.currentTimeMillis() - startTime;
@@ -731,14 +722,12 @@ public class Communicator {
 			if (!imageResponseString.equals(RESULT_FAIL)) {
 				JSONArray jsonArr = new JSONArray(imageResponseString);
 				imagesMap = new ArrayList<HashMap<String, String>>();
-				// imagesMap = new ArrayList<HashMap<String, String>>();
 
 				for (int i = 0; i < jsonArr.length(); i++) {
 					JSONObject jsonObj = jsonArr.getJSONObject(i);
 					if (Utils.debug)
 						Log.i(TAG, "JSON Image Response String: "
 								+ jsonObj.toString());
-					// imagesMap.add((HashMap<String, String>) jsonArr.get(i));
 					Iterator<String> iterKeys = jsonObj.keys();
 					HashMap<String, String> map = new HashMap<String, String>();
 					while (iterKeys.hasNext()) {
@@ -782,13 +771,6 @@ public class Communicator {
 			return true;
 	}
 
-//	public String registerExpeditionPoint(double lat, double lng, int expedition) {
-//		String result = doHTTPGET(server + "/api/addExpeditionPoint?authKey="
-//				+ authKey + "&lat=" + lat + "&lng=" + lng + "&expedition="
-//				+ expedition);
-//		return result;
-//	}
-
 	
 	/**
 	 * Sends a GPS point and associated data to the Posit server. Called from 
@@ -796,9 +778,7 @@ public class Communicator {
 	 */
 	public String registerExpeditionPoint(double lat, double lng, double alt,
 			int swath, int expedition, long time) {
-			//long swath, int expedition) {
-//		if (Utils.debug)
-//			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint " + lat + " " + lng + " " + time);
+
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(sendMap);
 		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="
@@ -810,9 +790,7 @@ public class Communicator {
 		sendMap.put(PositDbHelper.EXPEDITION, expedition + "");
 		sendMap.put(PositDbHelper.GPS_TIME, time + "");
 		String response = doHTTPPost(addExpeditionUrl, sendMap);
-//		if (Utils.debug) {
-//			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint, response: " + addExpeditionResponseString);
-//		}
+
 		return response;
 	}
 
@@ -830,10 +808,7 @@ public class Communicator {
 		sendMap.put("projectId", "" + projectId);
 		String response = doHTTPPost(addExpeditionUrl, sendMap);
 		Log.d(TAG,"registerExpeditionId response = " + response);
-//		if (Utils.debug) {
-//			Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionId, response: "
-//					+ addExpeditionResponseString);
-//		}
+
 		// The server should return an expedition number if everything goes ok.  If 
 		//  an error occurs, it will return an error message that cannot parse to an int
 		//  which will cause an exception here.

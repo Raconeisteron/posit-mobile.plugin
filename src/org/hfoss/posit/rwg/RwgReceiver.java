@@ -33,11 +33,9 @@ import android.util.Log;
  */
 public class RwgReceiver implements Runnable {
 	public static final String TAG = "Adhoc";
-	//private RwgSender rwgSender;
 	private Queue<Message> receivedMessages;
 	private RwgManager rwgManager;
 	private UdpReceiver udpReceiver;
-	//private int nodeAddress;
 	private String mMyMacAddress;
 	private int mHash;
 
@@ -127,7 +125,6 @@ public class RwgReceiver implements Runnable {
 			rwgHeader = rwgPacket.getRwgHeader();
 			if (rwgHeader == null) {
 				Log.e(TAG, mHash + " Packet does not contain an RWG Header");
-				//return false;
 				return true;
 
 			}
@@ -212,8 +209,6 @@ public class RwgReceiver implements Runnable {
 		
 		String origin = rwgHeader.getOrigin();
 		short seqNo = rwgHeader.getSequenceNumber();
-//		BitSet visited = rwgHeader.getVisited();
-//		BitSet rVisited = rwgHeader.getRecentVisited();
 
 		// If this packet already exists in REQF buffer, update the visited vectors
 		int match = RwgManager.rwgMatchPacketId(origin, seqNo, packetBuff);
@@ -233,8 +228,6 @@ public class RwgReceiver implements Runnable {
 
 		String origin = rwgHeader.getOrigin();
 		short seqNo = rwgHeader.getSequenceNumber();
-//		BitSet visited = rwgHeader.getVisited();
-//		BitSet rVisited = rwgHeader.getRecentVisited();
 		
 		// Update the visted and recent visited vector if the REQF exists in the REQF buffer
 	
@@ -438,7 +431,6 @@ public class RwgReceiver implements Runnable {
 	 * @param senderNodeAddress Is the address of the node that sent a message
 	 * @param msg is an array of bytes which contains the sent data
 	 */
-	//public void addMessage(int senderNodeAddress, byte[] msg) {
 	public void addMessage(byte[] msg) {
 		receivedMessages.add(new Message(msg));
 		synchronized (receivedMessages) {
@@ -477,7 +469,6 @@ public class RwgReceiver implements Runnable {
 			values.put(PositDbHelper.FINDS_IS_ADHOC, 1);
 
 			Find find = new Find(mContext);
-			//find.setGuid(adhocFind.getId());
 			if (find.exists(adhocFind.getId())) {
 				Log.i(TAG, mHash + " Find already exists");
 				find.updateToDB(adhocFind.getId(), values);
@@ -499,7 +490,6 @@ public class RwgReceiver implements Runnable {
     public void notifyNewFind(String name, String description) {
     	newFindsNum++;
     	
-    	//int icon = R.drawable.notification_icon;        // icon from resources
     	CharSequence tickerText = "New RWG Find";              // ticker-text
     	long when = System.currentTimeMillis();         // notification time
     	CharSequence contentTitle = "New RWG Find";  // expanded message title
@@ -535,7 +525,6 @@ public class RwgReceiver implements Runnable {
 	 * @see http://code.google.com/p/adhoc-on-android/
 	 */
 	private class Message {
-//		private String senderNodeAddress;
 
 		private byte[] data;
 		
