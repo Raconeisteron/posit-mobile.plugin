@@ -87,11 +87,6 @@ public class SelectFindListAdapter extends BaseAdapter {
 		 * weird behaviour from the checkboxes, like selecting one would select
 		 * all of them.
 		 */
-		 /*SelectFindView sfv; if (convertView == null) { sfv = new
-		 SelectFindView(mContext, mItems.get(position)); } else { // Assuming
-		 this is castable SelectFind src = mItems.get(position); sfv =
-		 (SelectFindView) convertView; sfv.setSelectFindState(src.getState());
-		 sfv.setText(src.getText()); } return sfv;*/
 		 
 		// Right now, just generate a new view on a (re)draw
 		return new SelectFindView(mContext, mItems.get(position));

@@ -175,8 +175,6 @@ public class SyncActivity extends Activity {
 				Log.i(TAG, "Connectivity: UNCONNECTED");
 				mProgressDialog.setMessage("No network connection. "
 						+ PRESS_BACK);
-				// Utils.showToast(mContext,
-				// "Sync Exiting: No network connection");
 				mSyncThread.setConnected(false);
 				syncSuccess = false;
 				finish();
@@ -198,14 +196,12 @@ public class SyncActivity extends Activity {
 				Utils.showToast(mContext, "Sync Exiting: No network available");
 				mSyncThread.setConnected(false);
 				syncSuccess = false;
-				// finish();
 				break;
 			case SyncThread.SYNCERROR:
 				mProgressDialog
 						.setMessage("Sync failed. An unknown error has occurred. "
 								+ PRESS_BACK);
 				mSyncThread.stopThread();
-				// mSyncThread.setConnected(false);
 				syncSuccess = false;
 				finish();
 				break;

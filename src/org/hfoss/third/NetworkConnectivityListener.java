@@ -80,12 +80,6 @@ public class NetworkConnectivityListener {
             boolean noConnectivity =
                 intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
 
-//            if (noConnectivity) {
-//                mState = State.NOT_CONNECTED;
-//            } else {
-//                mState = State.CONNECTED;
-//            }
-
             mNetworkInfo = (NetworkInfo)
                 intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
             mOtherNetworkInfo = (NetworkInfo)
@@ -118,9 +112,7 @@ public class NetworkConnectivityListener {
             while (it.hasNext()) {
                 Handler target = it.next();
                 Message message = Message.obtain(target, mConnected);
- //               Message message = Message.obtain(target, mHandlers.get(target));
                 target.sendMessage(message);
-               //target.sendEmptyMessage(mState.ordinal());
             }
         }
     };

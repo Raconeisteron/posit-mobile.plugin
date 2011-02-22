@@ -168,7 +168,6 @@ public class TrackerActivity extends MapActivity
 		setUpTheUI();
 
 		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
-		//Utils.showToast(this, " TrackerActivity Created in state " + mExecutionState);
 		
 		if (mExecutionState == TrackerSettings.SYNCING_POINTS) {
 				mRowIdExpeditionBeingSynced = mPreferences.getInt(TrackerSettings.ROW_ID_EXPEDITION_BEING_SYNCED, -1);
@@ -190,7 +189,6 @@ public class TrackerActivity extends MapActivity
 		super.onResume();
 		
 		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
-		//Utils.showToast(this, " TrackerActivity Resumed in state " + mExecutionState);
 
 		// Create a network manager
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -379,8 +377,6 @@ public class TrackerActivity extends MapActivity
 			if (mPoints != 0) {
 				List<PointAndTime> pointsList = mTrack.getPoints();
 				PointAndTime aPoint = pointsList.get(pointsList.size()/2);
-				//			Double geoLat = values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE) * 1E6;
-				//			Double geoLng = values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) * 1E6;
 				GeoPoint point = aPoint.getGeoPoint();
 				mMapController.animateTo(point);
 			}
@@ -401,14 +397,11 @@ public class TrackerActivity extends MapActivity
 					mSettingsButton.setEnabled(false);	
 					mListButton.setClickable(false);
 					mListButton.setEnabled(false);
-					//Utils.showToast(this, "This expedition is still being synced.");
 
 				} else {
 					mSettingsButton.setClickable(true);
 					mSettingsButton.setEnabled(true);	
 				}
-				//			((Button)findViewById(R.id.idTrackerSettingsButton)).setVisibility(View.GONE);
-				//			((Button)findViewById(R.id.idTrackerButton)).setVisibility(View.GONE);
 			} else {
 				mSettingsButton.setVisibility(View.GONE);
 			}
@@ -498,7 +491,6 @@ public class TrackerActivity extends MapActivity
 	private void updateViewTrackingMode() {	
 		if (mExecutionState == TrackerSettings.VIEWING_MODE || 
 				mExecutionState == TrackerSettings.SYNCING_POINTS) {
-//  			updateViewViewingMode();
 			return;
 		}
 		
@@ -515,7 +507,6 @@ public class TrackerActivity extends MapActivity
 			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
 					getResources().getDrawable(R.drawable.play_icon),null,null,null);  
 		}
-		
 
 		// Display the current state of the GPS and Network services.
 		String netStr = "none"; // Assume no network
@@ -529,7 +520,6 @@ public class TrackerActivity extends MapActivity
 		
 		mStatusTextView.setText(s + " (GPS = " + LocationManager.GPS_PROVIDER 
 				+ ", Ntwk = " + netStr + ")");
-
 
 		// Display the expedition's (i.e., mTrack's) current state.
 		if (mTrack != null) {
@@ -551,12 +541,7 @@ public class TrackerActivity extends MapActivity
 			} else
 				Log.w(TAG, "TrackerActivity, updateView unable to get Location from TrackerState");
 		}
-//		Log.d(TAG, "TrackerActivity,  updated view");
 	}
-
-//	private void updateViewViewingMode() {
-//		//displayExistingExpedition();
-//	}
 
 	/**
 	 * Part of the View.OnClickListener interface. Called when any button in 
@@ -576,7 +561,6 @@ public class TrackerActivity extends MapActivity
 
 		} else  { /* RUNNING */            // Stop the tracker
 			stopTrackerService();
-			//mSaveButton.setText("Save");
 			mListButton.setClickable(true);
 		    mListButton.setEnabled(true);
 		}
@@ -698,7 +682,6 @@ public class TrackerActivity extends MapActivity
 
 		mExecutionState = updateExecutionState(TrackerSettings.SYNCING_POINTS,true);
 		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
-		//Utils.showToast(this, "Syncing in state " + mExecutionState);
 
 		new SendExpeditionPointTask().execute(valuesArray);	
 	}
@@ -756,8 +739,6 @@ public class TrackerActivity extends MapActivity
 		notification.setLatestEventInfo(this,
 				getText(R.string.local_service_label), text, contentIntent);
 
-		// Post the notification
-//		mNotificationMgr.notify(R.string.local_service_label, notification);
 	}
 	
 	/*
@@ -813,7 +794,6 @@ public class TrackerActivity extends MapActivity
 		Log.i(TAG,"TrackerActivity, Paused in state: " + mExecutionState);
 		
 		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
-		//Utils.showToast(this, " TrackerActivity Paused in state " + mExecutionState);
 
 	}
 		
@@ -832,9 +812,6 @@ public class TrackerActivity extends MapActivity
 		else if (mExecutionState == TrackerSettings.SYNCING_POINTS) {
 			if (mSynced == mPoints) {
 				mExecutionState = updateExecutionState(TrackerSettings.IDLE, true);
-				//				Editor spEd = mPreferences.edit();
-				//				spEd.putInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
-				//				spEd.commit();
 			} else {
 				spEditor.putInt(TrackerSettings.ROW_ID_EXPEDITION_BEING_SYNCED, mRowIdExpeditionBeingSynced);
 				spEditor.commit();
@@ -842,7 +819,6 @@ public class TrackerActivity extends MapActivity
 		} 
 		
 		Log.i(TAG,"TrackerActivity, Destroyed in state " + mExecutionState);
-		//Utils.showToast(this, " TrackerActivity Destroyed in state " + mExecutionState);
 	}
 
 	@Override
@@ -851,51 +827,8 @@ public class TrackerActivity extends MapActivity
 		Log.i(TAG,"TrackerActivity, Stopped");
 		mExecutionState = mPreferences.getInt(TrackerSettings.TRACKER_STATE_PREFERENCE, TrackerSettings.IDLE);
 
-		//Utils.showToast(this, " TrackerActivity Stopped in state " + mExecutionState);
-
 	}
 
-//  NOTE: Not used but could be brought back depending on UI modifications.	
-//	/*
-//	 * (non-Javadoc)
-//	 * @see android.app.Activity#onCreateDialog(int)
-//	 * Prompts the user and accepts values for Tracker parameter, minimum recording distance.
-//	 */
-//	protected Dialog onCreateDialog(int id) {
-//		switch (id) {
-//		case SET_MINIMUM_DISTANCE:
-//			final EditText input = new EditText(this); 
-//			return new AlertDialog.Builder(this)
-//			.setIcon(R.drawable.icon)
-//			.setTitle("Set Minimum Plotting Distance")
-//			.setMessage("1-2 meters is good for walking, 25 meters for biking, 100 meters for driving")
-//			.setView(input)
-//			.setPositiveButton("Ok", 
-//					new DialogInterface.OnClickListener() {
-//				public void onClick(DialogInterface dialog, int whichButton) {
-//					Editable value = input.getText(); 
-//					String s = value.toString();
-//					if (!s.equals("")) {
-//						mMinDistance = Integer.parseInt(s);
-//						if (mMinDistance < 0)
-//							mMinDistance = 1;  // 1 meter
-//					} 
-//					Log.i(TAG,"TrackerActivity, min distance = " + mMinDistance);
-//					mMinDistTextView.setText(" " + mMinDistance);
-//				}
-//			})
-//			.setNegativeButton("Cancel", 
-//					new DialogInterface.OnClickListener() {
-//				public void onClick(DialogInterface dialog, int whichButton) {
-//					// Do nothing.
-//				}
-//			})
-//			.create();
-//		default:
-//			return null;
-//		}
-//	}
-//	
 	/**
 	 * Listener for changes to the Tracker Preferences.  Since the Tracker
 	 * service cannot listen for changes, this method will pass changes to
@@ -1135,7 +1068,6 @@ public class TrackerActivity extends MapActivity
 			} catch (Exception e) {
 				Log.i(TAG, "TrackerService.Async, Exception on point " + k + " message=" + e.getMessage());
 				e.printStackTrace();
-				// finish();
 			}
 		}
 		// When we finish processing all the points, reset the Tracker's state

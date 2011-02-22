@@ -100,7 +100,6 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 		fillData();
 		NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
     	nm.cancel(Utils.NOTIFICATION_ID);
- //   	RWGService.newFindsNum = 0;
 	}
 
 	/**
@@ -132,7 +131,6 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 		mCursor.close();
 	}
 
-
 	/**
 	 * Puts the items from the DB table into the rows of the view. Note that
 	 *  once you start managing a Cursor, you cannot close the DB without 
@@ -143,8 +141,6 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 		int [] views = PositDbHelper.list_row_views;
 	
 		mCursor = mDbHelper.fetchFindsByProjectId(project_id);	
-		//		Uri allFinds = Uri.parse("content://org.hfoss.provider.POSIT/finds_project/"+PROJECT_ID);
-		//	    mCursor = managedQuery(allFinds, null, null, null, null);
 		if (mCursor.getCount() == 0) { // No finds
 			setContentView(R.layout.list_finds);
 			mCursor.close();
@@ -163,7 +159,6 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 			new SimpleCursorAdapter(this, R.layout.list_row, mCursor, columns, views);
 		adapter.setViewBinder(this);
 		setListAdapter(adapter); 
-		//stopManagingCursor(mCursor);
 	}
 
 
@@ -244,10 +239,6 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 			startActivity(intent);
 			break;
 
-			//		case R.id.georss:
-			//			generateGeoRSS();
-			//			break;
-			//			
 		}
 		return true;
 	}
@@ -285,19 +276,16 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 			return true;
 		case R.id.latitude_id:
 			tv = (TextView) view;
-//			String lat = map.get(PositDbHelper.FINDS_LATITUDE);
 			String lat = cursor.getString(cursor.getColumnIndexOrThrow(PositDbHelper.FINDS_LATITUDE));
 			tv.setText("Loc: "+lat.substring(0,Math.min(13, lat.length())) + "...");
 			return true;
 		case R.id.longitude_id:
 			tv = (TextView) view;
-//			String lon = map.get(PositDbHelper.FINDS_LONGITUDE);
 			String lon = cursor.getString(cursor.getColumnIndexOrThrow(PositDbHelper.FINDS_LONGITUDE));
 			tv.setText(", "+lon.substring(0,Math.min(13, lon.length())) + "...");
 			return true;
 		case R.id.status:
 			tv = (TextView) view;
-//			int status = Integer.parseInt(map.get(PositDbHelper.FINDS_SYNCED));
 			int status = cursor.getInt(cursor.getColumnIndexOrThrow(PositDbHelper.FINDS_SYNCED));
 			tv.setText(status==1?"Synced  ":"Not synced  ");
 			return true;
@@ -315,17 +303,6 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 			return false;
 		}
 	}
-	/*@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-		if(keyCode==KeyEvent.KEYCODE_BACK){
-			showDialog(confirm_exit);
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
-	}*/
-
-
 
 	/**
 	 * This method is invoked by showDialog() when a dialog window is created. It displays
@@ -384,9 +361,5 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 			return null;
 		}
 	}
-
-
-
-
 
 }

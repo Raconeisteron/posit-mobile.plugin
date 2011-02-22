@@ -279,8 +279,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		+ EXPEDITION_GPS_POINTS_TABLE + "("
 		+ EXPEDITION + " integer DEFAULT 0, "
 		+ EXPEDITION_GPS_POINT_ROW_ID + " integer primary key autoincrement, "
-//	    + GPS_POINT_LATITUDE + " double DEFAULT 0, "
-//	    + GPS_POINT_LONGITUDE + " double DEFAULT 0, "
 	    + GPS_POINT_LATITUDE + " varchar(30) DEFAULT 0, "
 	    + GPS_POINT_LONGITUDE + " varchar(30) DEFAULT 0, "	    
 	    + GPS_POINT_ALTITUDE + " double DEFAULT 0, "
@@ -294,11 +292,9 @@ public class PositDbHelper extends SQLiteOpenHelper {
   
 	public PositDbHelper(Context context) {
 		super(context, DBName, null, DBVersion);
-//		if (DBG) Log.i(TAG, "Constructor");
 		mDb = getWritableDatabase();
 		onCreate(mDb);
 		mDb = getWritableDatabase();
-//		onUpgrade(mDb, 2, 3);
 		this.mContext= context;
 		mDb.close();
 	}
@@ -321,21 +317,12 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db) throws SQLException {
-//		if (DBG) Log.i(TAG, "OnCreate");
 		db.execSQL(CREATE_FINDS_TABLE);
-//		if (DBG) Log.i(TAG, "Created " + FINDS_TABLE);
 		db.execSQL(CREATE_IMAGES_TABLE);
-//		if (DBG) Log.i(TAG, "Created " + PHOTOS_TABLE);
 		db.execSQL(CREATE_FINDS_HISTORY_TABLE);
-//		if (DBG) Log.i(TAG, "Created " + FINDS_HISTORY_TABLE);
 		db.execSQL(CREATE_SYNC_HISTORY_TABLE);
-//		if (DBG) Log.i(TAG, "Created " + SYNC_HISTORY_TABLE);
-//  		db.execSQL("DROP TABLE IF EXISTS " + EXPEDITION_TABLE);
 		db.execSQL(CREATE_EXPEDITION_TABLE);
-//		if (DBG) Log.i(TAG, "Created " +EXPEDITION_TABLE);
-//		db.execSQL("DROP TABLE IF EXISTS " + EXPEDITION_GPS_POINTS_TABLE);
 		db.execSQL(CREATE_EXPEDITION_GPS_POINTS_TABLE);
-//		if (DBG) Log.i(TAG, "Created " + EXPEDITION_GPS_POINTS_TABLE);
 		
 		// IF the column sync.project_id does not exist, add it
 		try
@@ -379,7 +366,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		String maxtime = "No time";
 		if (c.moveToFirst()) 
 			maxtime = c.getString(0);  // column 0
-		//Log.i(TAG, "projectId = " + projectId);
 		if (DBG) Log.i(TAG, "Last sync time = " + maxtime);
 		c.close();
 		return maxtime;
@@ -406,7 +392,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		
 		// Note this query will select finds that were created and then deleted since last sync
 		// It is necessary to remove the created/updated if there's a deletion.
-
 
 		Cursor c = mDb.rawQuery("SELECT DISTINCT " + FINDS_HISTORY_TABLE+"."+FINDS_GUID + "," + FINDS_HISTORY_TABLE+"."+FINDS_ACTION 
 				+ " FROM " + FINDS_HISTORY_TABLE+","+FINDS_TABLE
@@ -504,7 +489,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		boolean result = false;
 		// If successful, timestamp this action in FindsHistory table
 		
-		
 		if (rowId != -1) {
 			String guId = getGuIdFromRowId(rowId);
 
@@ -566,7 +550,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param values the ContentValues storing the point's data.
 	 */
 	public long addNewGPSPoint(ContentValues values) {
-		//Log.d(TrackerActivity.TAG, "PositDbHelper, addNewGPSPoint()");
 		mDb = getWritableDatabase();  // Either create the DB or open it.
 		long result = mDb.insert(EXPEDITION_GPS_POINTS_TABLE, null, values);
 		Log.i(TrackerActivity.TAG, "PositDbHelper, addNewGPSPoint, result= " + result + 
@@ -589,7 +572,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
    
 		if (DBG) Log.i(TAG, "expedition  = " + exped + "");
 		Cursor cursor = mDb.rawQuery("SELECT * FROM " + EXPEDITION_GPS_POINTS_TABLE 
-		//		+ " WHERE " + EXPEDITION  + " = " + exped, null);
 		+ " WHERE " + EXPEDITION  + " = " + exped + " ORDER BY " + EXPEDITION_GPS_POINT_ROW_ID, null);
 		cursor.moveToFirst();
 		
@@ -618,7 +600,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @return True or false depending on the success of the query
 	 */
 	public boolean updateGPSPoint(long rowId, ContentValues values) {
-//		Log.d(TrackerActivity.TAG, "PositDbHelper, updateGPSPoint()");
+
 		boolean success = false;
 		if (values == null)
 			return false;
@@ -677,7 +659,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		if (args == null)
 			return false;
 		mDb = getWritableDatabase();  // Either create or open the DB.
-//		mDb.beginTransaction();
+
 		try {
 			if (DBG) Log.i(TAG, "updateFind id = " + id);
 			
@@ -732,8 +714,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 			c.close();
 
 			args.put(FINDS_REVISION, revision);
-			
-			
+						
 			// Update the Finds table with new data
 			success = mDb.update(FINDS_TABLE, args, FINDS_GUID + "=\"" + guId + "\"", null) > 0;
 			if (DBG) Log.i(TAG,"updateFind success = "  + success);
@@ -755,19 +736,16 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	public boolean markFindSynced(long id) {
 		boolean success = false;
 		mDb = getWritableDatabase();  // Either create or open the DB.
-//		mDb.beginTransaction();
+
 		try {
 			ContentValues args = new ContentValues();
 			args.put(FINDS_SYNCED, FIND_IS_SYNCED);
 			long res = mDb.update(FINDS_TABLE, args, FINDS_ID + "=" + id, null);
 			success = res > 0;
-//			if (success)
-//				mDb.setTransactionSuccessful();
 			if (DBG) Log.i(TAG, "markFindSynced, find= " + id + " res = " + res);
 		} catch (Exception e) {
 			Log.i("Error in transaction", e.toString());
 		} finally {
-//			mDb.endTransaction();
 			mDb.close();
 			Log.i(TAG, "fetchfindmap= " + fetchFindMapById(id).toString());
 		}
@@ -795,12 +773,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 			success = logFindHistory(guId, "delete");
 		}
 		
-//		if (success) 
-//			success = deletePhotosById(id);
-//		if (success) {
-//			Log.i(TAG, "deleteFind " + id + " deleted photos");
-//		}
-		
 		return success;
 	}
 	
@@ -827,7 +799,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		c.moveToFirst();
 		while (!c.isAfterLast()) {
 			Uri imgUri = Uri.parse(c.getString(c.getColumnIndexOrThrow(PHOTOS_IMAGE_URI)));		
-//			Uri thumbUri = Uri.parse(c.getString(c.getColumnIndexOrThrow(PHOTOS_THUMBNAIL_URI)));
 			
 //			 We would like to delete the thumbnails too, but it's a problem with android
 //			 @see http://code.google.com/p/android/issues/detail?id=2724
@@ -836,7 +807,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 				rows = mContext.getContentResolver().delete(imgUri, null, null);
 				if (rows == 0) 
 					return false;
-//				rows = mContext.getContentResolver().delete(thumbUri, null, null);
 			} catch (Exception e) {
 				Log.i(TAG, "deletePhotosById exception " +  e);
 				e.printStackTrace();
@@ -904,7 +874,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		Cursor c = mDb.query(FINDS_TABLE,null, 
 				WHERE_NOT_DELETED + " AND " + FINDS_PROJECT_ID +"="+project_id, null, null, null, null);
 		Log.i(TAG,"fetchFindsByProjectId " + FINDS_PROJECT_ID + "=" + project_id + " count=" + c.getCount());
-//		c.close();  // You cannot close the cursor before returning it.
 		mDb.close();
 		return c;
 	}
@@ -1012,11 +981,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 				" enum " + c.getInt(11) 
 				+ " points " + c.getInt(3)
 				+ " synced " + c.getInt(4));
-		
-//		values.put(EXPEDITION_NUM, c.getString(c.getColumnIndex(EXPEDITION_NUM)));
-//		values.put(EXPEDITION_POINTS, c.getString(c.getColumnIndex(EXPEDITION_POINTS)));
-//		values.put(EXPEDITION_SYNCED, c.getString(c.getColumnIndex(EXPEDITION_SYNCED)));			
-			//values = Utils.getContentValuesFromCursor(c);
 
 		mDb.close();
 		c.close();
@@ -1139,7 +1103,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 */
 	public ContentValues fetchFindDataById(long id, String[] columns) {
 		mDb = getReadableDatabase();  // Either open or create the DB    	
-		//String[] columns = mContext.getResources().getStringArray(R.array.TABLE_FINDS_core_fields);
 
 		String[] selectionArgs = null;
 		String groupBy = null, having = null, orderBy = null;
@@ -1185,7 +1148,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 */
 	public HashMap<String,String> fetchFindMapByGuid(String guid) {
 		mDb = getReadableDatabase();  // Either open or create the DB    	
-		//String[] columns = mContext.getResources().getStringArray(R.array.TABLE_FINDS_core_fields);
 		String[] columns = null; // Should get everything
 		String[] selectionArgs = null;   
 		String groupBy = null, having = null, orderBy = null;
@@ -1259,7 +1221,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 					c.getString(c.getColumnIndexOrThrow(column)));
 			values.put(column, c.getString(c.getColumnIndexOrThrow(column)));
 		}
-//		c.close();  // Closed by calling method should be ok for a private method
 		return values;
 	}
 
@@ -1375,8 +1336,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		String[] selectionArgs = null;
 		String groupBy = null, having = null, orderBy = null;
 		Cursor cursor = mDb.query(PHOTOS_TABLE, null, PHOTOS_FIND_ID + "=" + id, selectionArgs, groupBy, having, orderBy);
-		// mDb.close();  // You cannot close the Db w/o invalidating the cursor?
-		//	    mDb.close();
 		return cursor;
 	}
 
@@ -1385,7 +1344,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		Cursor cursor = getImagesCursor(id);
 		cursor.moveToFirst();
 		ContentValues values = new ContentValues();
-		//if(Utils.debug)
 		if (DBG) 	Log.i(TAG, "Images count = " + cursor.getCount() + " for _id = " + id);
 		if (cursor.getCount() != 0)
 			values = getContentValuesFromRow(cursor);
@@ -1453,13 +1411,11 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		ArrayList<ContentValues> list = new ArrayList<ContentValues>();
 		mDb = getReadableDatabase();
 		Cursor c = null;
-//		mDb.beginTransaction();
 		try {
 			if (DBG) Log.i(TAG, "id = " + id+"");
 			String groupBy = null, having = null, orderBy = null;
 			c = mDb.query(PHOTOS_TABLE, null, whereClause,  args, groupBy, having, orderBy);
 
-			// 	    Log.i(TAG, "getImagesList, cursor count= " + c.getCount());
 			c.moveToFirst();
 			while (c.isAfterLast() == false) {
 				ContentValues values = new ContentValues();
@@ -1476,7 +1432,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		} catch (Exception e) {
 			Log.e("Error in transaction", e.toString());
 		} finally {
-//			mDb.endTransaction();
 			c.close();
 			mDb.close();
 		}
@@ -1498,7 +1453,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		content.put(FINDS_DELETED, DELETE_FIND);
 		long id = getRowIdFromGuId(guid); 
 		boolean success = updateFind (id, content);  // Just use updateFind()
-		
 
 		// If successful, timestamp this action in FindsHistory table
 		if (success) {   

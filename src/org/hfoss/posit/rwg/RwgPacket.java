@@ -22,7 +22,6 @@ public class RwgPacket implements Serializable {
 	private RwgHeader rwgHeader;
 	private AdhocData<AdhocFind> adhocData;
 	
-	//private byte[] data;
 	private String destAddress;  // Mac Addresses
 	private byte pduType;
 	private String sourceAddress;
@@ -137,29 +136,6 @@ public class RwgPacket implements Serializable {
 			result += adhocData.toString();
 		return result;
 	}
-//
-//	public void parseBytes(byte[] rawPdu) throws BadPduFormatException {
-//		String[] s = new String(rawPdu).split(";",4);
-//		if(s.length != 4){
-//			throw new BadPduFormatException(	"UserDataPacket: could not split " +
-//					"the expected # of arguments from rawPdu. " +
-//					"Expecteded 4 args but were given "+s.length	);
-//		}
-//		try {
-//			pduType = Byte.parseByte(s[0]);
-//			if(pduType != Constants.USER_DATA_PACKET_PDU){
-//				throw new BadPduFormatException(	"UserDataPacket: pdu type did not match. " +
-//						"Was expecting: "+Constants.USER_DATA_PACKET_PDU+
-//						" but parsed: "+pduType	);
-//			}
-//			sourceAddress = Integer.parseInt(s[1]);
-//			destAddress = Integer.parseInt(s[2]);
-//			data = s[3].getBytes();
-//		} catch (NumberFormatException e) {
-//			throw new BadPduFormatException(	"UserDataPacket: falied in parsing " +
-//			"arguments to the desired types"	);
-//		}
-//	}
 
 	public int getPacketID() {
 		return packetID;

@@ -67,7 +67,6 @@ public class RwgHeader implements Serializable {
 	private short packetLength=0;
 	private byte messageType=0;
 	private byte hops=0;
-	//private short TTL=0;
 	private long TTL=0;
 
 	private short groupSize=0;
@@ -86,7 +85,6 @@ public class RwgHeader implements Serializable {
 		messageType = Constants.REQF;
 		hops = 0;
 		TTL = Constants.TTL;
-		//groupSize = Constants.GROUP_SIZE;
 		groupSize = (short) RwgManager.getGroupSize();
 
 		sequenceNumber = 0;
@@ -133,7 +131,6 @@ public class RwgHeader implements Serializable {
 		header.messageType = Constants.ACK;
 		header.hops = 0;
 		header.TTL = 0;
-		//header.groupSize = Constants.GROUP_SIZE;
 		header.groupSize = (short) RwgManager.getGroupSize();
 
 		header.sequenceNumber = packetBuff.getActive_reqf().getReqf().getSequenceNumber();
@@ -143,9 +140,6 @@ public class RwgHeader implements Serializable {
 		header.recentVisited.or(packetBuff.getActive_reqf().getReqf().getRecentVisited());		
 		header.visited.or(packetBuff.getActive_reqf().getReqf().getVisited());		
 
-		// Copy the sender of the reqf to target, will be used when creating the ethheader to reduce network load
-		//memcpy(target,rwghdr->target,sizeof(unsigned char)*6);
-		
 		return header;
 	}
 	
@@ -193,7 +187,6 @@ public class RwgHeader implements Serializable {
 			if (tackC == 0) {
 				Log.i(TAG, RwgManager.rwgHash(origin) + "createOKTF: exiting, No matching ACKS in the buffer");
 				packetBuff.getWaiting()[packetBuff.getWTail() % packetBuff.getWaiting().length] = null;
-				//lastWaiting = null;
 				packetBuff.setWTail(packetBuff.getWTail() + 1);
 				return null;
 			}
@@ -233,7 +226,6 @@ public class RwgHeader implements Serializable {
 		// Set old pointers to NULL and increase the w_tail
 		
 		packetBuff.getWaiting()[packetBuff.getWTail() % packetBuff.getWaiting().length] = null;
-		//lastWaiting = null;
 		packetBuff.setWTail(packetBuff.getWTail() + 1);
 		
 		return header;
@@ -391,7 +383,6 @@ public class RwgHeader implements Serializable {
 	public static RwgHeader createREQF(String origin, RwgPacketBuffer packetBuff) {
 		// A skeletal RwgHeader was created in RwgSender.
 		RwgHeader header = packetBuff.getActive_reqf().getReqf();
-		//RwgHeader header = new RwgHeader();
 		header.messageType = Constants.REQF;
 		header.sequenceNumber = RwgManager.getNextSequenceNumber();
 		header.TTL = Constants.TTL;
@@ -402,8 +393,6 @@ public class RwgHeader implements Serializable {
 		header.target = "255.255.255.255"; // Broadcast
 				
 		// Set the bit for this node
-		//header.visited = new BitSet(Constants.BIT_VECTOR_SIZE);
-		//header.recentVisited = new BitSet(Constants.BIT_VECTOR_SIZE);
 		header.visited.set(RwgManager.rwgHash(origin));
 		header.recentVisited.set(RwgManager.rwgHash(origin));
 		
@@ -416,14 +405,8 @@ public class RwgHeader implements Serializable {
 		
 		// Set the waiting timestamp in the reqf_info
 		// NOTE: Our timestamp differs from C code
-		//packetBuff->reqf[packetBuff->reqf_counter].w_stamp = stamp;
-		
-//		long time = System.currentTimeMillis();
-		//packetBuff.getReqf()[packetBuff.getReqf_counter()].getWStamp().setSeconds(time);
-		//packetBuff.getReqf()[packetBuff.getReqf_counter()].getWStamp().setU_seconds(time);
 		packetBuff.getReqf()[packetBuff.getReqf_counter()].setWStamp(System.currentTimeMillis());
 		
-		//packetBuff->w_front++;
 		packetBuff.setWFront(packetBuff.getWFront() + 1);
 		
 		// Make sure front doesn't reach the tail (when the buffers get full)
@@ -436,8 +419,6 @@ public class RwgHeader implements Serializable {
 		
 		// Stores the pointer to the reqf in the reqf buffer, and saves the time stamp
 		packetBuff.getReqf()[packetBuff.getReqf_counter()].setReqf(header);
-		//packetBuff.getReqf()[packetBuff.getReqf_counter()].getArrivedAt().setSeconds(time);
-		//packetBuff.getReqf()[packetBuff.getReqf_counter()].getArrivedAt().setU_seconds(time);
 		packetBuff.getReqf()[packetBuff.getReqf_counter()].setArrivedAt(System.currentTimeMillis());
 		packetBuff.setReqf_counter(packetBuff.getReqf_counter() + 1);
 		

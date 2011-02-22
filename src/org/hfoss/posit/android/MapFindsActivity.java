@@ -136,13 +136,7 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 			Location loc = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			
 			Log.d("MapFindsActivity:onResume", "Got Location " + loc);
-			
-			/*if (mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 				
-			} else {
-				
-			}*/
-			
 			if (loc != null) {
 				latitude = (int) (loc.getLatitude()*1E6);
 				longitude = (int) (loc.getLongitude()*1E6);
@@ -243,7 +237,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 			longitude = (int) (c.getDouble(c
 					.getColumnIndex(PositDbHelper.FINDS_LONGITUDE))*1E6);
 
-//			String itemIdStr = "" + c.getString(c.getColumnIndex(PositDbHelper.FINDS_GUID));
 			String itemIdStr = "" + c.getString(c.getColumnIndex(PositDbHelper.FINDS_ID));
 			String description = itemIdStr + "\n" 
 			+ c.getString(c.getColumnIndex(PositDbHelper.FINDS_NAME));
@@ -282,7 +275,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 		} else if (keyCode == KeyEvent.KEYCODE_BACK) {
 			finish();
 		} else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-// 			showDialog();
 		}
 		
 		return false;
@@ -312,9 +304,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 		case R.id.search_finds_mapfind_menu_item:
 			searchFinds();
 			break;
-		//case R.id.toggle_tracks_mapfind_menu_item:
-		//	toggleTracks();
-		//	break;
 		case R.id.center_finds_mapfind_menu_item:
 			centerFinds();
 			break;
@@ -388,7 +377,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
         		latitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LATITUDE))*1E6);
 				longitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LONGITUDE))*1E6);
 				mapController.setCenter(new GeoPoint(latitude, longitude));
-				//mapController.setZoom(14);
         	}
         }
     };
@@ -408,7 +396,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
         		latitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LATITUDE))*1E6);
 				longitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LONGITUDE))*1E6);
 				mapController.setCenter(new GeoPoint(latitude, longitude));
-				//mapController.setZoom(14);
         	}
         }
     };
@@ -447,7 +434,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
         		latitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LATITUDE))*1E6);
 				longitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LONGITUDE))*1E6);
 				mapController.setCenter(new GeoPoint(latitude, longitude));
-				//mapController.setZoom(14);
         	}
         }
     };	

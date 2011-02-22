@@ -43,7 +43,6 @@ public class UdpReceiver implements Runnable {
 	private static final String TAG = "Adhoc";
 
 	private DatagramSocket mDatagramSocket;
-	//private MulticastSocket mDatagramSocket;
 
 	private volatile boolean keepRunning = true;
 	private Thread udpReceiverthread;
@@ -54,23 +53,7 @@ public class UdpReceiver implements Runnable {
 		this.parent = parent;
 		mHash = hashAddr;
 		mDatagramSocket = new DatagramSocket(AdhocService.DEFAULT_PORT_BCAST);
-		/***
-		try {
-			mDatagramSocket = new MulticastSocket(AdhocService.DEFAULT_PORT_BCAST);	
-            NetworkInterface iface = NetworkInterface.getByName("tiwlan0");//    .getByInetAddress(addr);
-            mDatagramSocket.setNetworkInterface(iface);
-			InetAddress group = InetAddress.getByName("228.5.6.7");
-			mDatagramSocket.joinGroup(group);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		**/
-		//mDatagramSocket = new DatagramSocket();
-		//mDatagramSocket.setBroadcast(true);
-		//mDatagramSocket.setReuseAddress(true);
 		mDatagramSocket.setSoTimeout(0);            // Infinite timeout
-		//mDatagramSocket.connect(InetAddress.getByName("192.168.2.255"), 8888);
 	}
 
 	public void startThread(){
@@ -89,7 +72,6 @@ public class UdpReceiver implements Runnable {
 		while(keepRunning) {
 			try {
 				// 52kb buffer
-				//byte[] buffer = new byte[AdhocService.MAX_PACKET_SIZE];
 				byte[] buffer = new byte[52000];
 				DatagramPacket packet = new DatagramPacket(buffer,buffer.length);
 	
@@ -104,13 +86,7 @@ public class UdpReceiver implements Runnable {
 
 			    System.arraycopy(packet.getData(), 0, payload, 0, packet.getLength());
 
-			    //String ipStr = packet.getAddress().toString();
 			    parent.addMessage(payload);
-			    
-//			    String[] ip = packet.getAddress().toString().split("\\.");
-//			    int address = -1;
-//			    address = Integer.parseInt(ip[ip.length-1]);
-//			    parent.addMessage(address,payload);
 			    
 			} catch (IOException e) {
 				e.printStackTrace();
