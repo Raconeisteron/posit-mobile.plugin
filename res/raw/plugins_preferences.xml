@@ -1,0 +1,5 @@
+<PluginsPreferences>
+	<FindPlugins>
+		<Plugin active="true" name="PhotoFind" find_factory="org.hfoss.posit.android.photofind.PhotoFindFactory"/>
+	</FindPlugins>
+</PluginsPreferences>

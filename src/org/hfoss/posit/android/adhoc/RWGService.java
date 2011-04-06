@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.hfoss.posit.android.Find;
+import org.hfoss.posit.android.FindProvider;
 import org.hfoss.posit.android.ListFindsActivity;
 import org.hfoss.posit.android.PositMain;
 import org.hfoss.posit.android.R;
@@ -723,7 +724,8 @@ public class RWGService extends Service implements RWGConstants {
 //				Log.d(TAG, ""+e);
 //			}
 		
-			Find find = new Find(mContext);
+			//Find find = new Find(mContext);
+			Find find = FindProvider.createNewFind(mContext);
 			find.insertToDB(content, null);
 //			Utils.saveImagesAndUris(mContext, bitmaps);
 			notifyNewFind(name,description);

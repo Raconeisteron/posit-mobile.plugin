@@ -92,6 +92,9 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		}
 
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
+		// initialize plugins
+		FindPluginManager.initInstance(this);
 
 		// Give the user the tutorial if they haven't yet had it. 
 		if (!mSharedPrefs.getBoolean("tutorialComplete", false)) {

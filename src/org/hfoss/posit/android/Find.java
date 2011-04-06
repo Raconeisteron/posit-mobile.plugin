@@ -45,7 +45,7 @@ public class Find {
 	private PositDbHelper mDbHelper;  // Handles all the DB actions
 	private long mId = -1;  	         // The Find's rowID (should be changed to DB ID)
 	private String mGuid = "";       // BARCODE -- globally unique ID
-	public Cursor images = null;
+	//public Cursor images = null;
 
 	/**
 	 * This constructor is used for a new Find
@@ -65,7 +65,7 @@ public class Find {
 		this(context);
 		mId = id;
 		mGuid = "";
-		images = getImages();
+		//images = getImages();
 	}
 	
 	/**

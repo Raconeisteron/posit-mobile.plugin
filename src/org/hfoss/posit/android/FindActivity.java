@@ -33,6 +33,7 @@ import java.util.UUID;
 import org.hfoss.adhoc.AdhocData;
 import org.hfoss.adhoc.AdhocFind;
 import org.hfoss.adhoc.AdhocService;
+import org.hfoss.posit.android.photofind.ImageViewActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.ImageAdapter;
 import org.hfoss.posit.android.utilities.Utils;
@@ -381,7 +382,8 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		Log.i(TAG,"Find id = " + mFindId);
 
 		// Instantiate a find object and retrieve its data from the DB
-		mFind = new Find(this, mFindId);   
+		//mFind = new Find(this, mFindId);
+		mFind = FindProvider.createNewFind(this, mFindId);
 
 		ContentValues values = mFind.getContent();
 		if (values == null) {
@@ -540,7 +542,8 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			return;
 		}
 		if (mState == STATE_INSERT) {            // if this is a new find
-			mFind = new Find(FindActivity.this, guid);
+			//mFind = new Find(FindActivity.this, guid);
+			mFind = FindProvider.createNewFind(FindActivity.this, guid);
 			List<ContentValues> imageValues = Utils.saveImagesAndUris(this, mTempBitmaps);
 			
 			if (mFind.insertToDB(contentValues, imageValues)) {//insert find into database
