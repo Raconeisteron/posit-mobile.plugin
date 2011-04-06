@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.hfoss.posit.android.Find;
+import org.hfoss.posit.android.FindProvider;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.third.Base64Coder;
@@ -282,7 +283,8 @@ public class SyncThread extends Thread {
 			if (action.equals("delete")) {
 				Log.i(TAG, "Ignoring deletions");
 			} else {
-				Find find = new Find(mContext, guid); // Create a Find object
+				//Find find = new Find(mContext, guid); // Create a Find object
+				Find find = FindProvider.createNewFind(mContext, guid);
 
 				try {
 					success = comm.sendFind(find, action); // Send it to server
@@ -359,7 +361,8 @@ public class SyncThread extends Thread {
 																	// Find?
 					Log.i(TAG, "Updating existing find");
 				} else {
-					Find newFind = new Find(mContext, guid);
+					//Find newFind = new Find(mContext, guid);
+					Find newFind = FindProvider.createNewFind(mContext, guid);
 					success = newFind.insertToDB(cv, photosList);
 					Log.i(TAG, "Adding a new find");
 				}

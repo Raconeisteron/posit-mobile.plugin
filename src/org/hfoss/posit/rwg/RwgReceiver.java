@@ -13,6 +13,7 @@ import org.hfoss.adhoc.AdhocFind;
 import org.hfoss.adhoc.AdhocService;
 import org.hfoss.adhoc.UdpReceiver;
 import org.hfoss.posit.android.Find;
+import org.hfoss.posit.android.FindProvider;
 import org.hfoss.posit.android.ListFindsActivity;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.provider.PositDbHelper;
@@ -476,7 +477,8 @@ public class RwgReceiver implements Runnable {
 			values.put(PositDbHelper.FINDS_SYNCED, PositDbHelper.FIND_NOT_SYNCED);
 			values.put(PositDbHelper.FINDS_IS_ADHOC, 1);
 
-			Find find = new Find(mContext);
+			//Find find = new Find(mContext);
+			Find find = FindProvider.createNewFind(mContext);
 			//find.setGuid(adhocFind.getId());
 			if (find.exists(adhocFind.getId())) {
 				Log.i(TAG, mHash + " Find already exists");

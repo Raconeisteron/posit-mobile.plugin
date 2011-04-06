@@ -19,8 +19,17 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android;
+package org.hfoss.posit.android.photofind;
 
+import org.hfoss.posit.android.Find;
+import org.hfoss.posit.android.FindActivity;
+import org.hfoss.posit.android.FindProvider;
+import org.hfoss.posit.android.ListFindsActivity;
+import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.R.drawable;
+import org.hfoss.posit.android.R.id;
+import org.hfoss.posit.android.R.layout;
+import org.hfoss.posit.android.R.string;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 
@@ -102,7 +111,8 @@ public class ImageViewActivity extends Activity {
 
 			 //The position, and find are passed as extras
 			 mPosition = intent.getIntExtra("position",-1);
-			 mFind = new Find(this, intent.getLongExtra("findId",-1));
+			 //mFind = new Find(this, intent.getLongExtra("findId",-1));
+			 mFind = FindProvider.createNewFind(this, intent.getLongExtra("findId", -1));
 			 mCursor = mFind.getImages();
 			 mCursor.moveToPosition(mPosition);
 
