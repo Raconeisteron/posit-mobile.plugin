@@ -156,7 +156,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		R.id.longitude_id,
 		R.id.status, //,
 		R.id.num_photos,
-		R.id.find_image     // Thumbnail in ListFindsActivity
+		R.id.find_image     // Thumbnail in ListPhotoFindsActivity
 	};
 	
 	/*

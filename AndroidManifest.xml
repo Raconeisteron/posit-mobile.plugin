@@ -31,8 +31,8 @@
 		<activity android:name=".NewProjectActivity"/>	
 		<activity android:name=".AboutActivity" />
 		<activity android:name="org.hfoss.posit.android.photofind.PhotoFindActivity" />
+		<activity android:name="org.hfoss.posit.android.photofind.ListPhotoFindsActivity" />
 		<activity android:name=".ImageViewActivity" />
-		<activity android:name=".ListFindsActivity" />
 		<activity android:name=".MapFindsActivity" />
 		<activity android:name=".BarcodeBasedRegistrationActivity" />
 		<activity android:name=".SettingsActivity" />	

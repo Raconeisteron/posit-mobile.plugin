@@ -25,7 +25,6 @@ package org.hfoss.posit.android;
 import org.hfoss.adhoc.AdhocService;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
-import org.hfoss.posit.android.photofind.PhotoFindActivity;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.rwg.RwgSettings;
 
@@ -231,13 +230,12 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 
 			switch (view.getId()) {
 			case R.id.addFindButton:
-				//intent.setClass(this, PhotoFindActivity.class);
 				intent.setClass(this, FindActivityProvider.getFindActivityClass());
 				intent.setAction(Intent.ACTION_INSERT);
 				startActivity(intent);
 				break;
 			case R.id.listFindButton:
-				intent.setClass(this, ListFindsActivity.class);
+				intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
 				startActivity(intent);
 				break;
 

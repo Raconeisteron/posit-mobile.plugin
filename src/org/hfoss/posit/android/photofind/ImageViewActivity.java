@@ -21,7 +21,6 @@
  */
 package org.hfoss.posit.android.photofind;
 
-import org.hfoss.posit.android.ListFindsActivity;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.R.drawable;
 import org.hfoss.posit.android.R.id;
@@ -226,7 +225,7 @@ public class ImageViewActivity extends Activity {
 					 // User clicked OK so do some stuff 
 					 if (mFind.deleteImageByPosition(mPosition)) { // Assumes find was instantiated in onCreate        		
 						 Utils.showToast(ImageViewActivity.this, R.string.deleted_from_database);	
-						 finishActivity(ListFindsActivity.FIND_FROM_LIST);
+						 finishActivity(ListPhotoFindsActivity.FIND_FROM_LIST);
 						 finish();
 						 //PhotoFindActivity fa = PhotoFindActivity.newInstance();
 						 startActivityForResult(intent,PhotoFindActivity.STATE_EDIT);
@@ -302,7 +301,7 @@ public class ImageViewActivity extends Activity {
 							 intent.setAction(Intent.ACTION_VIEW);
 							 intent.putExtra("position",mPosition-1);
 							 intent.putExtra("findId", mFind.getId());
-							 finishActivity(ListFindsActivity.FIND_FROM_LIST);
+							 finishActivity(ListPhotoFindsActivity.FIND_FROM_LIST);
 							 finish();
 							 startActivity(intent);
 						 }
@@ -331,7 +330,7 @@ public class ImageViewActivity extends Activity {
 		 if (resultCode == RESULT_CANCELED)
 			 return;
 		 switch (requestCode) {
-		 case ListFindsActivity.FIND_FROM_LIST:
+		 case ListPhotoFindsActivity.FIND_FROM_LIST:
 			 //finish();
 			 startActivity(data);
 		 }

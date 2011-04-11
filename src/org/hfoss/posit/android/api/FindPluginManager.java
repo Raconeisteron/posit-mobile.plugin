@@ -20,6 +20,7 @@ public class FindPluginManager {
 	
 	private FindFactory mFindFactory = null;
 	private Class<FindActivity> mFindActivityClass = null;
+	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	
 	private FindPluginManager(){
 	}
@@ -49,12 +50,14 @@ public class FindPluginManager {
 				if(plugin_nodes.item(ii).getAttributes().getNamedItem("active").getTextContent().compareTo("true") == 0){
 					String find_factory_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_factory").getTextContent();
 					String findactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("findactivity_class").getTextContent();
+					String listfindsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("listfindsactivity_class").getTextContent();
 					
 					@SuppressWarnings({ "rawtypes" })
 					Class new_class = Class.forName(find_factory_name);
 					mFindFactory = (FindFactory)new_class.getMethod("getInstance", null).invoke(null, null);
 
 					mFindActivityClass = (Class<FindActivity>)Class.forName(findactivity_name);
+					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(listfindsactivity_name);
 					
 					break;
 				}
@@ -71,5 +74,9 @@ public class FindPluginManager {
 	
 	public Class<FindActivity> getFindActivityClass(){
 		return mFindActivityClass;
+	}
+	
+	public Class<ListFindsActivity> getListFindsActivityClass(){
+		return mListFindsActivityClass;
 	}
 }
