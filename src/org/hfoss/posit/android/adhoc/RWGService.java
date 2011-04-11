@@ -17,11 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.hfoss.posit.android.Find;
-import org.hfoss.posit.android.FindProvider;
 import org.hfoss.posit.android.ListFindsActivity;
 import org.hfoss.posit.android.PositMain;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindProvider;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.third.CoreTask;
 import org.json.JSONException;

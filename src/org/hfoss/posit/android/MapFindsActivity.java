@@ -58,7 +58,7 @@ import com.google.android.maps.OverlayItem;
 /**
  *  This class retrieves Finds from the POSIT DB and
  *  displays them as an overlay on a Google map. When clicked, 
- *  the finds start a FindActivity. Allowing them to be edited.
+ *  the finds start a PhotoFindActivity. Allowing them to be edited.
  *
  */
 public class MapFindsActivity extends MapActivity implements LocationListener {

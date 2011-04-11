@@ -1,5 +1,5 @@
 /*
- * File: FindActivity.java
+ * File: PhotoFindActivity.java
  * 
  * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
@@ -19,7 +19,7 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android;
+package org.hfoss.posit.android.photofind;
 
 // NOTE: for now the barcode scanner and the base64coder has been commented out at the following lines:
 // 37,  206, 207, 216, and 279-281
@@ -33,7 +33,15 @@ import java.util.UUID;
 import org.hfoss.adhoc.AdhocData;
 import org.hfoss.adhoc.AdhocFind;
 import org.hfoss.adhoc.AdhocService;
-import org.hfoss.posit.android.photofind.ImageViewActivity;
+import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.R.drawable;
+import org.hfoss.posit.android.R.id;
+import org.hfoss.posit.android.R.layout;
+import org.hfoss.posit.android.R.menu;
+import org.hfoss.posit.android.R.string;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindActivity;
+import org.hfoss.posit.android.api.FindProvider;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.ImageAdapter;
 import org.hfoss.posit.android.utilities.Utils;
@@ -86,8 +94,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * to attach photos to the find, as well as delete everything.
  * 
  */
-public class FindActivity extends Activity 
-implements OnClickListener, OnItemClickListener, LocationListener {
+public class PhotoFindActivity extends FindActivity{
 	private static final String NO_PROVIDER = "No location service";
 
 	private Find mFind;
@@ -129,7 +136,7 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	public static final int SYNC_ACTIVITY= 12;
 	public static final int IMAGE_VIEW = 13;
 
-	private static final String TAG = "FindActivity";
+	private static final String TAG = "PhotoFindActivity";
 	private static final int CONFIRM_DELETE_DIALOG = 0;
 	private static final int UPDATE_LOCATION = 2;
 	private static final int CONFIRM_EXIT=3;
@@ -178,7 +185,7 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 	private boolean gettingLocationUpdates= false;
 
 	/**
-	 * Sets up the various actions for the FindActivity, which are 
+	 * Sets up the various actions for the PhotoFindActivity, which are 
 	 * inserting new finds in the DB, editing or deleting existing finds, 
 	 * and attaching images to the finds
 	 * @param savedInstanceState (not currently used) is to restore state.
@@ -361,7 +368,7 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			while (!stopThread) {
 				Message m = Message.obtain();
 				m.what = 0;
-				FindActivity.this.updateHandler.sendMessage(m);
+				PhotoFindActivity.this.updateHandler.sendMessage(m);
 				try {
 					Thread.sleep(5);
 				} catch (InterruptedException e) {
@@ -459,14 +466,14 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 						// User clicked OK so do some stuff 
 						if (mFind.delete()) // Assumes find was instantiated in onCreate
 						{
-							Utils.showToast(FindActivity.this, R.string.deleted_from_database);
+							Utils.showToast(PhotoFindActivity.this, R.string.deleted_from_database);
 						}	else { 
-							Utils.showToast(FindActivity.this, R.string.delete_failed);
+							Utils.showToast(PhotoFindActivity.this, R.string.delete_failed);
 						}
 						if (mFind.deleteFindPhotos()) {
-							Utils.showToast(FindActivity.this, "Find's photos deleted from DB");
+							Utils.showToast(PhotoFindActivity.this, "Find's photos deleted from DB");
 						} else {
-							Utils.showToast(FindActivity.this, "Unable to delete find's photos from DB");
+							Utils.showToast(PhotoFindActivity.this, "Unable to delete find's photos from DB");
 						}
 						finish();
 					}
@@ -542,24 +549,24 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			return;
 		}
 		if (mState == STATE_INSERT) {            // if this is a new find
-			//mFind = new Find(FindActivity.this, guid);
-			mFind = FindProvider.createNewFind(FindActivity.this, guid);
+			//mFind = new Find(PhotoFindActivity.this, guid);
+			mFind = FindProvider.createNewFind(PhotoFindActivity.this, guid);
 			List<ContentValues> imageValues = Utils.saveImagesAndUris(this, mTempBitmaps);
 			
 			if (mFind.insertToDB(contentValues, imageValues)) {//insert find into database
-				Utils.showToast(FindActivity.this, R.string.saved_to_database);
+				Utils.showToast(PhotoFindActivity.this, R.string.saved_to_database);
 				// Is this correct, shouldn't we be setting the _id based on the result
 				// of the insertion?
 				mFind.setGuid(contentValues.getAsString(PositDbHelper.FINDS_GUID));
 				Log.i(TAG, "doSave, id= " + mFind.getguId());
 			} else {
-				Utils.showToast(FindActivity.this, R.string.save_failed);
+				Utils.showToast(PhotoFindActivity.this, R.string.save_failed);
 			}
 		} else { 
 			if (mFind.updateToDB(contentValues)) {
-				Utils.showToast(FindActivity.this, R.string.saved_to_database);
+				Utils.showToast(PhotoFindActivity.this, R.string.saved_to_database);
 			} else {
-				Utils.showToast(FindActivity.this, R.string.save_failed);
+				Utils.showToast(PhotoFindActivity.this, R.string.save_failed);
 			}
 		}
 		finish();
@@ -721,7 +728,7 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 		AdhocFind adhocFind= new AdhocFind(contentValues);
 		AdhocData<AdhocFind>adhocData = new AdhocData<AdhocFind>(this,adhocFind);
 		try {
-			Log.i("Adhoc", "FindActivity.saveAdhoc: Queuing user data for RWG");
+			Log.i("Adhoc", "PhotoFindActivity.saveAdhoc: Queuing user data for RWG");
 			RwgSender.queueUserMessageFromNode(adhocData);
 			return true;
 		} catch (Exception e) {
@@ -865,7 +872,7 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 
 	/**
 	 * Invoked when one of the Activities started
-	 *  from FindActivity menu, such as the BARCODE_READER or the CAMERA, finishes.
+	 *  from PhotoFindActivity menu, such as the BARCODE_READER or the CAMERA, finishes.
 	 *  It handles the results of the Activities. RESULT_OK == -1, RESULT_CANCELED = 0
 	 *  @param requestCode is the code that launched the sub-activity
 	 *  @param resultCode specifies whether the sub-activity was successful or not
@@ -932,7 +939,7 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			// Select just those images associated with this find.
 			mImagesData = mFind.getImagesContentValuesList();
 			if (mImagesData.size() > 0) {
-				finishActivity(FindActivity.IMAGE_VIEW);
+				finishActivity(PhotoFindActivity.IMAGE_VIEW);
 				ImageAdapter adapter = new ImageAdapter(mImagesData, this);
 				mGallery.setAdapter(adapter);
 				mGallery.setOnItemClickListener(this);
@@ -942,7 +949,7 @@ implements OnClickListener, OnItemClickListener, LocationListener {
 			
 		} else { //for new finds
 			if (mTempBitmaps.size() > 0) {
-				finishActivity(FindActivity.IMAGE_VIEW);
+				finishActivity(PhotoFindActivity.IMAGE_VIEW);
 				ImageAdapter adapter = new ImageAdapter(this, mTempBitmaps);
 				mGallery.setAdapter(adapter);
 				mGallery.setOnItemClickListener(this);

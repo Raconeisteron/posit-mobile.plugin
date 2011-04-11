@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.hfoss.posit.android.Find;
+import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.utilities.Utils;
 
 import android.database.Cursor;

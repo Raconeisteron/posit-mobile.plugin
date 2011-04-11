@@ -1,4 +1,4 @@
-package org.hfoss.posit.android;
+package org.hfoss.posit.android.api;
 
 import java.io.InputStream;
 
@@ -8,15 +8,18 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.R.raw;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import android.content.Context;
 
 public class FindPluginManager {
-	private static FindPluginManager sInstance = null;
+	private static FindPluginManager sInstance = null; 
 	
 	private FindFactory mFindFactory = null;
+	private Class<FindActivity> mFindActivityClass = null;
 	
 	private FindPluginManager(){
 	}
@@ -33,6 +36,7 @@ public class FindPluginManager {
 		return sInstance;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void initFromResource(Context context, int plugins_xml){
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try{
@@ -44,11 +48,13 @@ public class FindPluginManager {
 			for(int ii = 0; ii < plugin_nodes.getLength(); ++ii){
 				if(plugin_nodes.item(ii).getAttributes().getNamedItem("active").getTextContent().compareTo("true") == 0){
 					String find_factory_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_factory").getTextContent();
+					String findactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("findactivity_class").getTextContent();
 					
 					@SuppressWarnings({ "rawtypes" })
 					Class new_class = Class.forName(find_factory_name);
-
 					mFindFactory = (FindFactory)new_class.getMethod("getInstance", null).invoke(null, null);
+
+					mFindActivityClass = (Class<FindActivity>)Class.forName(findactivity_name);
 					
 					break;
 				}
@@ -61,5 +67,9 @@ public class FindPluginManager {
 	
 	public FindFactory getFindFactory(){
 		return mFindFactory;
+	}
+	
+	public Class<FindActivity> getFindActivityClass(){
+		return mFindActivityClass;
 	}
 }

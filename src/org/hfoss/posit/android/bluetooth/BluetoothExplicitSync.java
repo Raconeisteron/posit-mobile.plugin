@@ -7,10 +7,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.hfoss.posit.android.Find;
-import org.hfoss.posit.android.FindProvider;
 import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindProvider;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
 import android.app.Activity;

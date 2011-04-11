@@ -30,7 +30,7 @@
 		<activity android:name=".RegisterActivity"/>
 		<activity android:name=".NewProjectActivity"/>	
 		<activity android:name=".AboutActivity" />
-		<activity android:name=".FindActivity" />
+		<activity android:name="org.hfoss.posit.android.photofind.PhotoFindActivity" />
 		<activity android:name=".ImageViewActivity" />
 		<activity android:name=".ListFindsActivity" />
 		<activity android:name=".MapFindsActivity" />

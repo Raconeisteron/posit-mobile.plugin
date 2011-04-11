@@ -1,7 +1,7 @@
 package org.hfoss.posit.android.photofind;
 
-import org.hfoss.posit.android.Find;
-import org.hfoss.posit.android.FindFactory;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindFactory;
 
 import android.content.Context;
 

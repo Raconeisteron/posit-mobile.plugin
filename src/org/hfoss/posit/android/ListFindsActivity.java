@@ -22,7 +22,10 @@
 package org.hfoss.posit.android;
 
 //import org.hfoss.posit.android.adhoc.RWGService;
+import org.hfoss.posit.android.api.FindActivity;
+import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.bluetooth.BluetoothExplicitSync;
+import org.hfoss.posit.android.photofind.PhotoFindActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 
@@ -177,7 +180,7 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 
 	/**
 	 * Invoked when the user clicks on one of the Finds in the
-	 *   list. It starts the FindActivity in EDIT mode, which will read
+	 *   list. It starts the PhotoFindActivity in EDIT mode, which will read
 	 *   the Find's data from the DB.
 	 *   @param l is the ListView that was clicked on 
 	 *   @param v is the View within the ListView
@@ -187,13 +190,13 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		Intent intent = new Intent(this, FindActivity.class);
+		Intent intent = new Intent(this, PhotoFindActivity.class);
 		intent.setAction(Intent.ACTION_EDIT);
 		if (DBG) Log.i(TAG,"id = " + id);
 		intent.putExtra(PositDbHelper.FINDS_ID, id);
 
 		startActivityForResult(intent, FIND_FROM_LIST);
-		FindActivity.SAVE_CHECK=false;
+		PhotoFindActivity.SAVE_CHECK=false;
 	}
 
 	/**
