@@ -8,4 +8,7 @@ public class FindActivityProvider {
 		return FindPluginManager.getInstance().getFindActivityClass();
 	}
 
+	public static Class<ListFindsActivity> getListFindsActivityClass(){
+		return FindPluginManager.getInstance().getListFindsActivityClass();
+	}
 }

@@ -83,7 +83,6 @@ public class MyItemizedOverlay extends ItemizedOverlay {
 		// Toast.makeText(mContext, mOverlays.get(pIndex).getSnippet(), Toast.LENGTH_LONG).show();
 		if (!isTappable)
 			return false;
-		//Intent intent = new Intent(mContext, PhotoFindActivity.class);
 		Intent intent = new Intent(mContext, FindActivityProvider.getFindActivityClass());
 		intent.setAction(Intent.ACTION_EDIT);
 		long itemId = Long.parseLong(mOverlays.get(pIndex).getTitle());

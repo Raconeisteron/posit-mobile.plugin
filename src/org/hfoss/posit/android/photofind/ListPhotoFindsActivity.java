@@ -1,5 +1,5 @@
 /*
- * File: ListFindsActivity.java
+ * File: ListPhotoFindsActivity.java
  * 
  * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
@@ -19,13 +19,18 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android;
+package org.hfoss.posit.android.photofind;
 
-//import org.hfoss.posit.android.adhoc.RWGService;
-import org.hfoss.posit.android.api.FindActivity;
-import org.hfoss.posit.android.api.FindActivityProvider;
+import org.hfoss.posit.android.MapFindsActivity;
+import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.SyncActivity;
+import org.hfoss.posit.android.R.drawable;
+import org.hfoss.posit.android.R.id;
+import org.hfoss.posit.android.R.layout;
+import org.hfoss.posit.android.R.menu;
+import org.hfoss.posit.android.R.string;
+import org.hfoss.posit.android.api.ListFindsActivity;
 import org.hfoss.posit.android.bluetooth.BluetoothExplicitSync;
-import org.hfoss.posit.android.photofind.PhotoFindActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 
@@ -57,7 +62,7 @@ import android.widget.SimpleCursorAdapter.ViewBinder;
  * Displays a summary of Finds on this phone in a clickable list.
  *
  */
-public class ListFindsActivity extends ListActivity implements ViewBinder{
+public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBinder{
 
 	private static final String TAG = "ListActivity";
 	private PositDbHelper mDbHelper;
@@ -72,7 +77,7 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 
 	/** 
 	 * Called when the Activity starts and
-	 *  when the user navigates back to ListFindsActivity
+	 *  when the user navigates back to ListPhotoFindsActivity
 	 *  from some other app. It creates a
 	 *  DBHelper and calls fillData() to fetch data from the DB.
 	 *  @param savedInstanceState contains the Activity's previously
@@ -347,14 +352,14 @@ public class ListFindsActivity extends ListActivity implements ViewBinder{
 					new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
 					// User clicked OK so do some stuff 
-					PositDbHelper mDbHelper = new PositDbHelper(ListFindsActivity.this);
+					PositDbHelper mDbHelper = new PositDbHelper(ListPhotoFindsActivity.this);
 					if (mDbHelper.deleteAllFinds()) {
 						mDbHelper.close();
-						Utils.showToast(ListFindsActivity.this, R.string.deleted_from_database);
+						Utils.showToast(ListPhotoFindsActivity.this, R.string.deleted_from_database);
 						finish();
 					} else {
 						mDbHelper.close();
-						Utils.showToast(ListFindsActivity.this, R.string.delete_failed);
+						Utils.showToast(ListPhotoFindsActivity.this, R.string.delete_failed);
 						dialog.cancel();
 					}
 				}

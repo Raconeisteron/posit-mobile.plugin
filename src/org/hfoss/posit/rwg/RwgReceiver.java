@@ -12,9 +12,9 @@ import org.hfoss.adhoc.AdhocData;
 import org.hfoss.adhoc.AdhocFind;
 import org.hfoss.adhoc.AdhocService;
 import org.hfoss.adhoc.UdpReceiver;
-import org.hfoss.posit.android.ListFindsActivity;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindProvider;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
@@ -512,7 +512,7 @@ public class RwgReceiver implements Runnable {
     	else {
     		contentText = newFindsNum+" unviewed RWG Finds";
     	}
-    	Intent notificationIntent = new Intent(mContext, ListFindsActivity.class);
+    	Intent notificationIntent = new Intent(mContext, FindActivityProvider.getListFindsActivityClass());
     	PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0, notificationIntent, 0);
 
     	// the next two lines initialize the Notification, using the configurations above

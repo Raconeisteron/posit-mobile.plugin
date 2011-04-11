@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.hfoss.posit.android.ListFindsActivity;
 import org.hfoss.posit.android.PositMain;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindProvider;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.third.CoreTask;
@@ -745,7 +745,7 @@ public class RWGService extends Service implements RWGConstants {
     	Context context = getApplicationContext();      // application Context
     	CharSequence contentTitle = "Ad-hoc mode";  // expanded message title
 
-    	Intent notificationIntent = new Intent(this, ListFindsActivity.class);
+    	Intent notificationIntent = new Intent(this, FindActivityProvider.getListFindsActivityClass());
     	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
     	// the next two lines initialize the Notification, using the configurations above
@@ -771,7 +771,8 @@ public class RWGService extends Service implements RWGConstants {
     	else {
     		contentText = newFindsNum+" unviewed RWG Finds";
     	}
-    	Intent notificationIntent = new Intent(this, ListFindsActivity.class);
+    	
+    	Intent notificationIntent = new Intent(this, FindActivityProvider.getListFindsActivityClass());
     	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
     	// the next two lines initialize the Notification, using the configurations above

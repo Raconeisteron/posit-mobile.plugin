@@ -421,7 +421,7 @@ public class PhotoFindActivity extends FindActivity{
 	@Override
 	protected void  onPause(){
 		super.onPause();
-		//finishActivity(ListFindsActivity.FIND_FROM_LIST);
+		//finishActivity(ListPhotoFindsActivity.FIND_FROM_LIST);
 	}	
 
 	@Override
@@ -549,7 +549,6 @@ public class PhotoFindActivity extends FindActivity{
 			return;
 		}
 		if (mState == STATE_INSERT) {            // if this is a new find
-			//mFind = new Find(PhotoFindActivity.this, guid);
 			mFind = FindProvider.createNewFind(PhotoFindActivity.this, guid);
 			List<ContentValues> imageValues = Utils.saveImagesAndUris(this, mTempBitmaps);
 			
@@ -649,7 +648,7 @@ public class PhotoFindActivity extends FindActivity{
 			}
 						
 			doSave(contentValues);
-			//Intent in = new Intent(this, ListFindsActivity.class); //redirect to list finds
+			//Intent in = new Intent(this, ListPhotoFindsActivity.class); //redirect to list finds
 			//startActivity(in);
 			
 			break;
@@ -861,7 +860,7 @@ public class PhotoFindActivity extends FindActivity{
 				doSave(contentValues);
 			}
 			
-			//Intent in = new Intent(this, ListFindsActivity.class); //redirect to list finds
+			//Intent in = new Intent(this, ListPhotoFindsActivity.class); //redirect to list finds
 			//startActivity(in);
 			
 			break;
