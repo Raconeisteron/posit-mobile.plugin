@@ -23,7 +23,8 @@ package org.hfoss.posit.android.utilities;
 
 import java.util.ArrayList;
 
-import org.hfoss.posit.android.FindActivity;
+import org.hfoss.posit.android.api.FindActivityProvider;
+import org.hfoss.posit.android.photofind.PhotoFindActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
 import android.content.Context;
@@ -82,13 +83,14 @@ public class MyItemizedOverlay extends ItemizedOverlay {
 		// Toast.makeText(mContext, mOverlays.get(pIndex).getSnippet(), Toast.LENGTH_LONG).show();
 		if (!isTappable)
 			return false;
-		Intent intent = new Intent(mContext, FindActivity.class);
+		//Intent intent = new Intent(mContext, PhotoFindActivity.class);
+		Intent intent = new Intent(mContext, FindActivityProvider.getFindActivityClass());
 		intent.setAction(Intent.ACTION_EDIT);
 		long itemId = Long.parseLong(mOverlays.get(pIndex).getTitle());
 		Log.i(TAG, "itemID= " + itemId);
 
-		intent.putExtra(PositDbHelper.FINDS_ID, itemId); // Pass the RowID to FindActivity
-//		intent.putExtra(PositDbHelper.FINDS_GUID, itemId); // Pass the RowID to FindActivity
+		intent.putExtra(PositDbHelper.FINDS_ID, itemId); // Pass the RowID to PhotoFindActivity
+//		intent.putExtra(PositDbHelper.FINDS_GUID, itemId); // Pass the RowID to PhotoFindActivity
 		mContext.startActivity(intent);
 		return true;
 	}

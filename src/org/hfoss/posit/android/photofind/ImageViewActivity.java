@@ -21,15 +21,14 @@
  */
 package org.hfoss.posit.android.photofind;
 
-import org.hfoss.posit.android.Find;
-import org.hfoss.posit.android.FindActivity;
-import org.hfoss.posit.android.FindProvider;
 import org.hfoss.posit.android.ListFindsActivity;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.R.drawable;
 import org.hfoss.posit.android.R.id;
 import org.hfoss.posit.android.R.layout;
 import org.hfoss.posit.android.R.string;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindProvider;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 
@@ -210,7 +209,7 @@ public class ImageViewActivity extends Activity {
 
 	 @Override
 	 protected Dialog onCreateDialog(int id) {
-		 final Intent intent = new Intent(ImageViewActivity.this, FindActivity.class);
+		 final Intent intent = new Intent(ImageViewActivity.this, PhotoFindActivity.class);
 		 intent.putExtra(PositDbHelper.FINDS_GUID, mFind.getId());
 		 intent.setAction(Intent.ACTION_EDIT);
 		 setResult(RESULT_OK,intent);
@@ -229,8 +228,8 @@ public class ImageViewActivity extends Activity {
 						 Utils.showToast(ImageViewActivity.this, R.string.deleted_from_database);	
 						 finishActivity(ListFindsActivity.FIND_FROM_LIST);
 						 finish();
-						 //FindActivity fa = FindActivity.newInstance();
-						 startActivityForResult(intent,FindActivity.STATE_EDIT);
+						 //PhotoFindActivity fa = PhotoFindActivity.newInstance();
+						 startActivityForResult(intent,PhotoFindActivity.STATE_EDIT);
 					 } else {
 						 Utils.showToast(ImageViewActivity.this, R.string.delete_failed);
 					 }
@@ -248,18 +247,18 @@ public class ImageViewActivity extends Activity {
 
 	 /**
 	  * This is another method to reduce the number of activities
-	  * on the stack, just like in FindActivity.
+	  * on the stack, just like in PhotoFindActivity.
 	  */
 	 @Override
 	 public boolean onKeyDown(int keyCode, KeyEvent event) {
 		 if(keyCode==KeyEvent.KEYCODE_BACK && mBm==null) {
-			 final Intent intent = new Intent(ImageViewActivity.this, FindActivity.class);
+			 final Intent intent = new Intent(ImageViewActivity.this, PhotoFindActivity.class);
 			 intent.putExtra(PositDbHelper.FINDS_ID, mFind.getId());
 			 intent.setAction(Intent.ACTION_EDIT);
 			 setResult(RESULT_OK,intent);
 			 setResult(RESULT_OK);
 
-			 startActivityForResult(intent,FindActivity.STATE_EDIT);
+			 startActivityForResult(intent,PhotoFindActivity.STATE_EDIT);
 			 finish();
 			 return true;
 		 }

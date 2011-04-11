@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.hfoss.posit.android.Find;
-import org.hfoss.posit.android.FindProvider;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindProvider;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.third.Base64Coder;

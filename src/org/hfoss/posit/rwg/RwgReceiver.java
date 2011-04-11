@@ -12,10 +12,10 @@ import org.hfoss.adhoc.AdhocData;
 import org.hfoss.adhoc.AdhocFind;
 import org.hfoss.adhoc.AdhocService;
 import org.hfoss.adhoc.UdpReceiver;
-import org.hfoss.posit.android.Find;
-import org.hfoss.posit.android.FindProvider;
 import org.hfoss.posit.android.ListFindsActivity;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindProvider;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 

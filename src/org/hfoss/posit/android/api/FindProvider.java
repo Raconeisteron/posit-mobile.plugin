@@ -1,4 +1,4 @@
-package org.hfoss.posit.android;
+package org.hfoss.posit.android.api;
 
 import android.content.Context;
 

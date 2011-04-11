@@ -1,4 +1,4 @@
-package org.hfoss.posit.android;
+package org.hfoss.posit.android.api;
 
 import java.util.ArrayList;
 import java.util.HashMap;
