@@ -6,6 +6,6 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView.OnItemClickListener;
 
 public abstract class FindActivity extends Activity
-implements OnClickListener, OnItemClickListener, LocationListener {
+implements OnClickListener, OnItemClickListener, LocationListener, FindActivityInterface {
 
 }
