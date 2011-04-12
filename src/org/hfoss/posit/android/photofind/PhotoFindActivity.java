@@ -550,7 +550,7 @@ public class PhotoFindActivity extends FindActivity{
 		}
 		if (mState == STATE_INSERT) {            // if this is a new find
 			mFind = FindProvider.createNewFind(PhotoFindActivity.this, guid);
-			List<ContentValues> imageValues = Utils.saveImagesAndUris(this, mTempBitmaps);
+			List<ContentValues> imageValues = PhotoUtils.saveImagesAndUris(this, mTempBitmaps);
 			
 			if (mFind.insertToDB(contentValues, imageValues)) {//insert find into database
 				Utils.showToast(PhotoFindActivity.this, R.string.saved_to_database);
@@ -899,7 +899,7 @@ public class PhotoFindActivity extends FindActivity{
 			
 			mTempBitmaps.add(tempImage);
 			
-			List<ContentValues> imageValues = Utils.saveImagesAndUris(this, mTempBitmaps);
+			List<ContentValues> imageValues = PhotoUtils.saveImagesAndUris(this, mTempBitmaps);
 		
 			if (mFind.insertImagesToDB(imageValues)) {
 				Utils.showToast(this, R.string.saved_image_to_db);
