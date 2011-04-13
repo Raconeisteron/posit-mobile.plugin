@@ -94,13 +94,9 @@ public class PhotoFind extends Find{
 		return values;
 	}
 	
-	private void getMediaUrisFromDb(ContentValues values) {
-		//mDbHelper.getImages(mId, values);
-	}
-	
 	public Uri getImageUriByPosition(long findId, int position) {
 		//return null;
-		return mDbHelper.getPhotoUriByPosition(findId, position);
+		return mDbHelper.getFindDataUriByPosition(findId, position);
 	}
 	
 	
@@ -156,7 +152,7 @@ public class PhotoFind extends Find{
 		if (images == null || images.size() == 0)
 			return true; // Nothing to do
 		if (mId != -1 && !mGuid.equals(""))
-			return mDbHelper.addPhotos(mId, mGuid, images);
+			return mDbHelper.addFindData(mId, mGuid, images);
 		else 
 			return false;
 	}
@@ -210,7 +206,7 @@ public class PhotoFind extends Find{
 	 */
 	public boolean deleteFindPhotos() {
 		Log.i(TAG,"deleteing find #"+mId);
-		return mDbHelper.deletePhotosById(mId);
+		return mDbHelper.deleteFindDataEntriesById(mId);
 	}
 
 	/**
@@ -240,12 +236,12 @@ public class PhotoFind extends Find{
 	 */
 	public Cursor getImages() {
 		Log.i(TAG,"GetImages find id = "+mId);
-		return mDbHelper.getImagesCursor(mId);
+		return mDbHelper.getFindDataEntriesCursor(mId);
 		//return 	mContext.getContentResolver().query(Uri.parse("content://org.hfoss.provider.POSIT/photo_findid/"+mId), null, null,null,null);
 	}
 	
 	public ArrayList<ContentValues> getImagesContentValuesList() {
-		return mDbHelper.getImagesList(mId);
+		return mDbHelper.getFindDataEntriesList(mId);
 	}
 
 	

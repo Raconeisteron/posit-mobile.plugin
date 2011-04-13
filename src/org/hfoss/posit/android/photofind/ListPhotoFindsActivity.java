@@ -271,7 +271,7 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 		case R.id.find_image:
 			if (DBG) Log.i(TAG,"setViewValue case find_image=" + view.getId() );
 			PositDbHelper myDbHelper = new PositDbHelper(this);
-			ContentValues values = myDbHelper.getImages(findIden);
+			ContentValues values = myDbHelper.getFindDataEntries(findIden);
 			ImageView iv = (ImageView) view;
 			if (values != null && values.containsKey(PositDbHelper.PHOTOS_IMAGE_URI)) {
 				String strUri = values.getAsString(PositDbHelper.PHOTOS_IMAGE_URI);
@@ -311,7 +311,7 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 			return true;
 		case R.id.num_photos:
 			tv = (TextView) view;
-			int count = mDbHelper.getImagesCount(findIden);
+			int count = mDbHelper.getFindDataEntriesCount(findIden);
 			tv.setText(count+" photos  ");
 			return true;
 		case R.id.idNumberText:

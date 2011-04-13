@@ -477,7 +477,6 @@ public class RwgReceiver implements Runnable {
 			values.put(PositDbHelper.FINDS_SYNCED, PositDbHelper.FIND_NOT_SYNCED);
 			values.put(PositDbHelper.FINDS_IS_ADHOC, 1);
 
-			//Find find = new Find(mContext);
 			Find find = FindProvider.createNewFind(mContext);
 			//find.setGuid(adhocFind.getId());
 			if (find.exists(adhocFind.getId())) {
