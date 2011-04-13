@@ -362,7 +362,6 @@ public class SyncThread extends Thread {
 																	// Find?
 					Log.i(TAG, "Updating existing find");
 				} else {
-					//Find newFind = new Find(mContext, guid);
 					Find newFind = FindProvider.createNewFind(mContext, guid);
 					success = newFind.insertToDB(cv, photosList);
 					Log.i(TAG, "Adding a new find");

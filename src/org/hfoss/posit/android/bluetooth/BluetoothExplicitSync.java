@@ -327,7 +327,6 @@ public class BluetoothExplicitSync extends ListActivity {
 			success = dbh.updateFind(guid, cv, photosList);
 			Log.i(TAG, "Updating existing find");
 		} else {
-			//Find newFind = new Find(this, guid);
 			Find newFind = FindProvider.createNewFind(this, guid);
 			success = newFind.insertToDB(cv, photosList);
 			Log.i(TAG, "Adding a new find");
