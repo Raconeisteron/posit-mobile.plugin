@@ -724,7 +724,6 @@ public class RWGService extends Service implements RWGConstants {
 //				Log.d(TAG, ""+e);
 //			}
 		
-			//Find find = new Find(mContext);
 			Find find = FindProvider.createNewFind(mContext);
 			find.insertToDB(content, null);
 //			Utils.saveImagesAndUris(mContext, bitmaps);

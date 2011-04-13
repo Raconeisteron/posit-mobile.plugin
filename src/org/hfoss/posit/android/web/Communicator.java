@@ -402,7 +402,7 @@ public class Communicator {
 	
 			//long id = Long.parseLong(sendMap.get(PositDbHelper.FINDS_ID));
 			PositDbHelper dbh = new PositDbHelper(mContext);
-			ArrayList<ContentValues> photosList = dbh.getImagesListSinceUpdate(id, projectId);
+			ArrayList<ContentValues> photosList = dbh.getFindDataEntriesListSinceUpdate(id, projectId);
 	
 			Log.i(TAG, "sendFind, photosList=" + photosList.toString());
 	

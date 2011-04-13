@@ -35,7 +35,7 @@ public class SelectFindView extends LinearLayout {
 		
 		// Add image
 		PositDbHelper myDbHelper = new PositDbHelper(context);
-		ContentValues values = myDbHelper.getImages(selectFind.getId());
+		ContentValues values = myDbHelper.getFindDataEntries(selectFind.getId());
 		mImage = new ImageView(context);
 		mImage.setAdjustViewBounds(true);
 		mImage.setMaxHeight(50);

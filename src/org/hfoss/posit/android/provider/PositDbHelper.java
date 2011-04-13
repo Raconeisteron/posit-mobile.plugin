@@ -809,7 +809,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param id the Find's _id 
 	 * @return
 	 */
-	public boolean deletePhotosById(long id) {
+	// TODO: references to photo columns must be renamed to reflect fact that they now store generic binary data
+	public boolean deleteFindDataEntriesById(long id) {
 		Log.i(TAG, "Delete photos for id = " + id);
 		boolean success = false;
 		int rows = 0;
@@ -867,14 +868,15 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		mDb.close();
 		if (success)
 			Log.i(TAG, "deleteAllFinds marked finds deleted ... deleting photos");
-			return deleteAllPhotos();
+			return deleteAllFindData();
 	}
 	
 	/** 
 	 * Deletes all photos -- called from delete all finds.
 	 * @return
 	 */
-	private boolean deleteAllPhotos() {
+	// TODO: references to photo columns must be renamed to reflect fact that they now store generic binary data
+	private boolean deleteAllFindData() {
 		mDb = getWritableDatabase();
 		Cursor c = mDb.query(PHOTOS_TABLE, null, null, null,null,null,null);
 		while(c.moveToNext()) {
@@ -1269,7 +1271,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param id  the Find's id
 	 * @param images a List of images represented as key/value pairs
 	 */
-	public boolean addPhotos(long id, String guid, List<ContentValues> images) {
+	// TODO: references to photo columns must be renamed to reflect fact that they now store generic binary data
+	public boolean addFindData(long id, String guid, List<ContentValues> images) {
 		if (images == null)
 			return false;
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -1287,7 +1290,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 				imageValues.put(PositDbHelper.PHOTOS_IDENTIFIER, new Random().nextInt(999999999));
 			if (!imageValues.containsKey(PositDbHelper.FINDS_PROJECT_ID))
 				imageValues.put(PositDbHelper.FINDS_PROJECT_ID, projId);
-			result = addNewPhoto(id, imageValues);
+			result = addNewFindDataEntry(id, imageValues);
 			if (result == -1)
 				return false;
 		}
@@ -1300,11 +1303,12 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param values  contains the <column_name,value> pairs for each DB field.
 	 * @return
 	 */  
-	public long addNewPhoto(String guid, ContentValues values) {
+	// TODO: references to photo columns must be renamed to reflect fact that they now store generic binary data
+	public long addNewFindDataEntry(String guid, ContentValues values) {
 		mDb = getWritableDatabase(); // Either create or open DB
 		if (!values.containsKey(PHOTOS_IDENTIFIER))
 			values.put(PHOTOS_IDENTIFIER, new Random().nextInt(999999999));
-		Log.i(TAG, "addNewPhoto, values=" + values.toString());
+		Log.i(TAG, "addNewFindDataEntry, values=" + values.toString());
 		long result = mDb.insert(PHOTOS_TABLE, null, values);
 		mDb.close();
 		return result;
@@ -1316,11 +1320,12 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param values  contains the <column_name,value> pairs for each DB field.
 	 * @return
 	 */  
-	public long addNewPhoto(long id, ContentValues values) {
+	// TODO: references to photo columns must be renamed to reflect fact that they now store generic binary data
+	public long addNewFindDataEntry(long id, ContentValues values) {
 		mDb = getWritableDatabase(); // Either create or open DB
 		if (!values.containsKey(PHOTOS_IDENTIFIER))
 			values.put(PHOTOS_IDENTIFIER, new Random().nextInt(999999999));
-		Log.i(TAG, "addNewPhoto, values=" + values.toString());
+		Log.i(TAG, "addNewFindDataEntry, values=" + values.toString());
 		long result = mDb.insert(PHOTOS_TABLE, null, values);	
 		mDb.close();
 		return result;
@@ -1332,9 +1337,9 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param position the specific position [row id, list position, etc] the photo is located at
 	 * @return Uri to the photo
 	 */
-	public Uri getPhotoUriByPosition(long findId, int position) {
+	public Uri getFindDataUriByPosition(long findId, int position) {
 		mDb = getWritableDatabase();
-		Cursor cursor = getImagesCursor(findId);
+		Cursor cursor = getFindDataEntriesCursor(findId);
 
 		if (cursor.moveToPosition(position)) {
 			String s = cursor.getString(cursor.getColumnIndex(PHOTOS_IMAGE_URI));
@@ -1355,8 +1360,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param id the Find's id.
 	 * @return
 	 */
-	public int getImagesCount(long id) {
-		Cursor c = getImagesCursor(id);
+	public int getFindDataEntriesCount(long id) {
+		Cursor c = getFindDataEntriesCursor(id);
 		int count = c.getCount();
 		c.close();
 		mDb.close();
@@ -1369,7 +1374,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param id the Find's id
 	 * @return a Cursor with a row for each image associated with the given Find.
 	 */
-	public Cursor getImagesCursor(long id) {
+	public Cursor getFindDataEntriesCursor(long id) {
 		mDb = getReadableDatabase();
 		if (DBG) Log.i(TAG, "id = " + id+"");
 		String[] selectionArgs = null;
@@ -1380,9 +1385,9 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		return cursor;
 	}
 
-	public ContentValues getImages(long id) {
+	public ContentValues getFindDataEntries(long id) {
 		mDb = getReadableDatabase();
-		Cursor cursor = getImagesCursor(id);
+		Cursor cursor = getFindDataEntriesCursor(id);
 		cursor.moveToFirst();
 		ContentValues values = new ContentValues();
 		//if(Utils.debug)
@@ -1399,8 +1404,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param id  is the Key of the Find whose images are sought
 	 * @param values is an existing ContentValues with Find's <key, value> pairs
 	 */
-	public void getImages(long id, ContentValues values) {
-		Cursor cursor = getImagesCursor(id);
+	public void getFindDataEntries(long id, ContentValues values) {
+		Cursor cursor = getFindDataEntriesCursor(id);
 		cursor.moveToFirst();
 		if (cursor.getCount() != 0) {
 			for (String column : cursor.getColumnNames()) {
@@ -1421,13 +1426,13 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param id  is the Key of the Find whose images are sought
 	 * @return an ArrayList of data for each image associated with a Find
 	 */
-	public ArrayList<ContentValues> getImagesListSinceUpdate(long id, long projectId) {
+	public ArrayList<ContentValues> getFindDataEntriesListSinceUpdate(long id, long projectId) {
 		String whereClause = PHOTOS_FIND_ID + "=" + id 
 			+ " AND " + FINDS_TIME + " > ? ";
 		String[] args = new String[1];
 		args[0] = getTimeOfLastSync(projectId);
 		Log.i(TAG, "getImagesList, whereClause= " + whereClause + " ?=" + args[0]);
-		return getImagesListHelper(id, whereClause, args);
+		return getFindDataEntriesListHelper(id, whereClause, args);
 	}
 
 	
@@ -1437,9 +1442,9 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param id  is the Key of the Find whose images are sought
 	 * @return an ArrayList of data for each image associated with a Find
 	 */
-	public ArrayList<ContentValues> getImagesList(long id) {
+	public ArrayList<ContentValues> getFindDataEntriesList(long id) {
 		String whereClause = PHOTOS_FIND_ID + "=" + id;
-		return getImagesListHelper(id, whereClause, null);
+		return getFindDataEntriesListHelper(id, whereClause, null);
 		
 	}
 
@@ -1449,7 +1454,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param whereClause
 	 * @return
 	 */
-	private ArrayList<ContentValues> getImagesListHelper(long id, String whereClause, String[] args) {
+	private ArrayList<ContentValues> getFindDataEntriesListHelper(long id, String whereClause, String[] args) {
 		ArrayList<ContentValues> list = new ArrayList<ContentValues>();
 		mDb = getReadableDatabase();
 		Cursor c = null;
@@ -1506,7 +1511,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 			success = logFindHistory(guid, "delete");
 		}
 		if (success) 
-			success = deletePhotosById(id);
+			success = deleteFindDataEntriesById(id);
 		if (success) {
 			Log.i(TAG, "deleteFind " + id + " deleted photos");
 		}
