@@ -42,8 +42,6 @@ import android.util.Log;
  */
 public class PhotoFind extends Find{
 	private static final String TAG = "Find";
-
-	private PositDbHelper mDbHelper;  // Handles all the DB actions
 	private long mId = -1;  	         // The Find's rowID (should be changed to DB ID)
 	private String mGuid = "";       // BARCODE -- globally unique ID
 
@@ -52,7 +50,6 @@ public class PhotoFind extends Find{
 	 * @param context is the Activity
 	 */
 	public PhotoFind (Context context) {
-		mDbHelper = new PositDbHelper(context);
 		mId = -1;
 	}
 	
@@ -89,14 +86,13 @@ public class PhotoFind extends Find{
 	 *  @return A ContentValues with <key, value> pairs
 	 */
 	public ContentValues getContent() {
-		ContentValues values = mDbHelper.fetchFindDataById(mId,null);
+		ContentValues values = PositDbHelper.getInstance().fetchFindDataById(mId, null);
 //		getMediaUrisFromDb(values);
 		return values;
 	}
 	
 	public Uri getImageUriByPosition(long findId, int position) {
-		//return null;
-		return mDbHelper.getFindDataUriByPosition(findId, position);
+		return PositDbHelper.getInstance().getFindDataUriByPosition(findId, position);
 	}
 	
 	
@@ -109,7 +105,7 @@ public class PhotoFind extends Find{
 	 */
 	public HashMap<String,String> getContentMap(){
 		Log.i(TAG, "getContentMap " + mId);
-		return mDbHelper.fetchFindMapById(mId);
+		return PositDbHelper.getInstance().fetchFindMapById(mId);
 	}
 	
 	/**
@@ -119,7 +115,7 @@ public class PhotoFind extends Find{
 	 */
 	public HashMap<String,String> getContentMapGuid(){
 		Log.i(TAG, "getContentMapGuid " + mGuid);
-		return mDbHelper.fetchFindMapByGuid(mGuid);
+		return PositDbHelper.getInstance().fetchFindMapByGuid(mGuid);
 	}
 
 	/** 
@@ -129,18 +125,6 @@ public class PhotoFind extends Find{
 	 * @param images list of contentvalues containing the image references to add
 	 * @return whether the DB operation succeeds
 	 */
-	public boolean insertToDB(ContentValues content, List<ContentValues> images) {
-		if (content != null) {
-			//		content.put(MyDBHelper.PROJECT_ID, projId);
-			//content.put(PositDbHelper.FINDS_REVISION, 1); // Handled automatically
-			mId = mDbHelper.addNewFind(content);
-		}
-		
-		if (mId != -1)
-			return insertImagesToDB(images);
-		else 
-			return false;
-	}
 	
 	/**
 	 * Inserts images for this find
@@ -152,42 +136,9 @@ public class PhotoFind extends Find{
 		if (images == null || images.size() == 0)
 			return true; // Nothing to do
 		if (mId != -1 && !mGuid.equals(""))
-			return mDbHelper.addFindData(mId, mGuid, images);
+			return PositDbHelper.getInstance().addFindData(mId, mGuid, images);
 		else 
 			return false;
-	}
-
-	/** 
-	 * updateDB() assumes that the context and rowID has be passed through 
-	 * a constructor.
-	 * @param content contains the Find's attributes and values.  
-	 * @return whether the DB operation succeeds
-	 */
-	// TODO: Confirm that this works with GUIDs
-	public boolean updateToDB(ContentValues content) {//, ContentValues images) {
-		if (isSynced()) { //TODO think of a better way to do this
-			//set it as unsynced
-			content.put(PositDbHelper.FINDS_SYNCED, PositDbHelper.FIND_NOT_SYNCED);
-			//add revision only once. Don't count revisions for in-phone updates.
-			//content.put(PositDbHelper.FINDS_REVISION, getRevision()+1); // 
-		}
-		return mDbHelper.updateFind(mId, content);
-	}
-	
-	/**
-	 * Updates a find given its guid.
-	 * @param guid
-	 * @param content
-	 * @return
-	 */
-	public boolean updateToDB(String guid, ContentValues content) {//, ContentValues images) {
-		if (isSynced()) { //TODO think of a better way to do this
-			//set it as unsynced
-			content.put(PositDbHelper.FINDS_SYNCED, PositDbHelper.FIND_NOT_SYNCED);
-			//add revision only once. Don't count revisions for in-phone updates.
-			//content.put(PositDbHelper.FINDS_REVISION, getRevision()+1); // 
-		}
-		return mDbHelper.updateFind(guid, content, null);
 	}
 	
 	/**
@@ -197,7 +148,7 @@ public class PhotoFind extends Find{
 	 */
 	public boolean delete() {
 		Log.i(TAG,"deleteing find #"+mId);
-		return mDbHelper.deleteFind(mId);
+		return PositDbHelper.getInstance().deleteFind(mId);
 	}
 	
 	/**
@@ -206,7 +157,7 @@ public class PhotoFind extends Find{
 	 */
 	public boolean deleteFindPhotos() {
 		Log.i(TAG,"deleteing find #"+mId);
-		return mDbHelper.deleteFindDataEntriesById(mId);
+		return PositDbHelper.getInstance().deleteFindDataEntriesById(mId);
 	}
 
 	/**
@@ -216,7 +167,7 @@ public class PhotoFind extends Find{
 		if (mId != -1) 
 			return mId;
 		else {
-			mId = mDbHelper.getRowIdFromGuId(mGuid);
+			mId = PositDbHelper.getInstance().getRowIdFromGuId(mGuid);
 			return mId;
 		}
 	}
@@ -236,12 +187,11 @@ public class PhotoFind extends Find{
 	 */
 	public Cursor getImages() {
 		Log.i(TAG,"GetImages find id = "+mId);
-		return mDbHelper.getFindDataEntriesCursor(mId);
-		//return 	mContext.getContentResolver().query(Uri.parse("content://org.hfoss.provider.POSIT/photo_findid/"+mId), null, null,null,null);
+		return PositDbHelper.getInstance().getFindDataEntriesCursor(mId);
 	}
 	
 	public ArrayList<ContentValues> getImagesContentValuesList() {
-		return mDbHelper.getFindDataEntriesList(mId);
+		return PositDbHelper.getInstance().getFindDataEntriesList(mId);
 	}
 
 	
@@ -266,16 +216,17 @@ public class PhotoFind extends Find{
 		ContentValues content = new ContentValues();
 		content.put(PositDbHelper.FINDS_SYNCED, status);
 		if (mId != -1)
-			mDbHelper.updateFind(mId, content);
+			//mDbHelper.updateFind(mId, content);
+			PositDbHelper.getInstance().updateFind(mId, content);
 		else 
-			mDbHelper.updateFind(mGuid, content,null); //photos=null
+			//mDbHelper.updateFind(mGuid, content,null); //photos=null
+			PositDbHelper.getInstance().updateFind(mGuid, content, null);
 //		updateToDB(content);
 	}
 	
 	// TODO: Test that this method works with GUIDs
 	public int getRevision() {
-//		ContentValues value = mDbHelper.fetchFindColumns(mId, new String[] { PositDbHelper.FINDS_REVISION});
-		ContentValues value = mDbHelper.fetchFindDataById(mId, new String[] { PositDbHelper.FINDS_REVISION});
+		ContentValues value = PositDbHelper.getInstance().fetchFindDataById(mId, new String[] {PositDbHelper.FINDS_REVISION});
 		return value.getAsInteger(PositDbHelper.FINDS_REVISION);
 	}
 	
@@ -285,7 +236,7 @@ public class PhotoFind extends Find{
 	 * @return
 	 */
 	public boolean exists(String guid) {
-		return mDbHelper.containsFind(guid);
+		return PositDbHelper.getInstance().containsFind(guid);
 	}
 	
 	/**
@@ -298,12 +249,10 @@ public class PhotoFind extends Find{
 		ContentValues value=null;
 		Log.i(TAG, "isSynced mId = " + mId + " guId = " + mGuid);
 		if (mId != -1) {
-//			value = mDbHelper.fetchFindColumns(mId, new String[] { PositDbHelper.FINDS_SYNCED});
-			value = mDbHelper.fetchFindDataById(mId, new String[] { PositDbHelper.FINDS_SYNCED});
+			value = PositDbHelper.getInstance().fetchFindDataById(mId, new String[] { PositDbHelper.FINDS_SYNCED});
 			return value.getAsInteger(PositDbHelper.FINDS_SYNCED)==PositDbHelper.FIND_IS_SYNCED;
 		} else if (!mGuid.equals("")){
-//			value = mDbHelper.fetchFindColumnsByGuId(mGuid, new String[] { PositDbHelper.FINDS_SYNCED});
-			value = mDbHelper.fetchFindDataByGuId(mGuid, new String[] { PositDbHelper.FINDS_SYNCED});
+			value = PositDbHelper.getInstance().fetchFindDataByGuId(mGuid, new String[] { PositDbHelper.FINDS_SYNCED});
 			return value.getAsInteger(PositDbHelper.FINDS_SYNCED)==PositDbHelper.FIND_IS_SYNCED;
 		} else 
 			return false;

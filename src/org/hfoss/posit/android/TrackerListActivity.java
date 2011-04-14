@@ -56,7 +56,6 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 		
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mProjectId = mSharedPrefs.getInt(TrackerSettings.POSIT_PROJECT_PREFERENCE, -1);
-		mDbHelper = new PositDbHelper(this);
 		Log.d(TAG, "TrackerListActivity, Created TrackerList for project_id = " + mProjectId);
 	}
 

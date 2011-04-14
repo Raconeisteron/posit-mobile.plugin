@@ -390,19 +390,14 @@ public class Communicator {
 			Log.i(TAG, "sendFind result doesn't contain 'True'");
 			return false;
 		} else {
-			PositDbHelper dbh = new PositDbHelper(mContext);
-			//long id = find.getId();
-			success = dbh.markFindSynced(id);
+			success = PositDbHelper.getInstance().markFindSynced(id);
 			if (Utils.debug)
 				Log.i(TAG, "sendfind synced " + id + " " + success);
 		}
 
 		if (success) {
 			// Otherwise send the Find's images
-	
-			//long id = Long.parseLong(sendMap.get(PositDbHelper.FINDS_ID));
-			PositDbHelper dbh = new PositDbHelper(mContext);
-			ArrayList<ContentValues> photosList = dbh.getFindDataEntriesListSinceUpdate(id, projectId);
+			ArrayList<ContentValues> photosList = PositDbHelper.getInstance().getFindDataEntriesListSinceUpdate(id, projectId);
 	
 			Log.i(TAG, "sendFind, photosList=" + photosList.toString());
 	

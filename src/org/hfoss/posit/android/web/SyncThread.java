@@ -61,8 +61,6 @@ public class SyncThread extends Thread {
 	private boolean mConnected;
 	private boolean mStopRequested;
 
-	private PositDbHelper mdbh;
-
 	private SharedPreferences sp;
 	private String server;
 	private String authKey;
@@ -166,7 +164,6 @@ public class SyncThread extends Thread {
 	 */
 	public void run() {
 		boolean success = false;
-		mdbh = new PositDbHelper(mContext);
 
 		Log.i(TAG, "server=" + server + " key=" + authKey + " pid="
 				+ mProjectId + " imei=" + imei);
@@ -183,8 +180,8 @@ public class SyncThread extends Thread {
 
 		
 		// Get finds from the client
-
-		String phoneFindGuIds = mdbh.getDeltaFindsIds(mProjectId);
+		
+		String phoneFindGuIds = PositDbHelper.getInstance().getDeltaFindsIds(mProjectId);
 		Log.i(TAG, "phoneFindsNeedingSync = " + phoneFindGuIds);
 
 		// Send finds to the server
@@ -209,7 +206,7 @@ public class SyncThread extends Thread {
 		
 		// Record the synchronization in the client's sync_history table
 		// NOTE: This should be the last thing done in the sync process
-		success = mdbh.recordSync(values);
+		success = PositDbHelper.getInstance().recordSync(values);
 		if (!success) {
 			Log.i(TAG, "Error recording sync stamp");
 			mHandler.sendEmptyMessage(SYNCERROR);
@@ -341,7 +338,6 @@ public class SyncThread extends Thread {
 				cv.put(PositDbHelper.FINDS_SYNCED,
 					   PositDbHelper.FIND_IS_SYNCED);
 				Log.i(TAG, cv.toString());
-				PositDbHelper dbh = new PositDbHelper(mContext);
 
 				// Get the images for this find
 				ArrayList<HashMap<String, String>> images = comm
@@ -351,19 +347,18 @@ public class SyncThread extends Thread {
 				success = false;
 
 				// Update the DB
-				if (dbh.containsFind(guid)) {
+				if(PositDbHelper.getInstance().containsFind(guid)){
 					if (cv.containsKey(PositDbHelper.FINDS_DELETED)){
 						if ((Integer)cv.get(PositDbHelper.FINDS_DELETED)==1){
-							dbh.deleteFind(guid);
+							PositDbHelper.getInstance().deleteFind(guid);
 						}
 					}
-					success = dbh.updateFind(guid, cv, photosList); // Should
+					success = PositDbHelper.getInstance().updateFind(guid, cv, photosList); // Should
 																	// use a
 																	// Find?
 					Log.i(TAG, "Updating existing find");
 				} else {
-					Find newFind = FindProvider.createNewFind(mContext, guid);
-					success = newFind.insertToDB(cv, photosList);
+					success = PositDbHelper.getInstance().addNewFind(cv, photosList);
 					Log.i(TAG, "Adding a new find");
 				}
 				if (!success) {
@@ -372,7 +367,6 @@ public class SyncThread extends Thread {
 				} else {
 					Log.i(TAG, "Recorded timestamp stamp");
 				}
-				dbh.close();
 			}
 		}
 		return success;

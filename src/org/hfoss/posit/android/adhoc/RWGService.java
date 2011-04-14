@@ -22,6 +22,7 @@ import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindProvider;
+import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.third.CoreTask;
 import org.json.JSONException;
@@ -724,8 +725,8 @@ public class RWGService extends Service implements RWGConstants {
 //				Log.d(TAG, ""+e);
 //			}
 		
-			Find find = FindProvider.createNewFind(mContext);
-			find.insertToDB(content, null);
+			PositDbHelper.getInstance().addNewFind(content);
+			
 //			Utils.saveImagesAndUris(mContext, bitmaps);
 			notifyNewFind(name,description);
 //			if(incoming.charAt(incoming.length()-1)==')')

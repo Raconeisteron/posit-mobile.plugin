@@ -150,8 +150,7 @@ public class BluetoothExplicitSync extends ListActivity {
 				.getDefaultSharedPreferences(this);
 		int project_id = sp.getInt("PROJECT_ID", 0);
 
-		PositDbHelper dbHelper = new PositDbHelper(this);
-		Cursor c = dbHelper.fetchFindsByProjectId(project_id);
+		Cursor c = PositDbHelper.getInstance().fetchFindsByProjectId(project_id);
 
 		c.moveToFirst();
 
@@ -168,7 +167,6 @@ public class BluetoothExplicitSync extends ListActivity {
 		}
 
 		c.close();
-		dbHelper.close();
 
 		setListAdapter(mSFLAdapter);
 
@@ -314,7 +312,6 @@ public class BluetoothExplicitSync extends ListActivity {
 	}
 	
 	private boolean receiveFind(BluetoothFindTO findTO) {
-		PositDbHelper dbh = new PositDbHelper(this);
 		boolean success = false;
 		// TODO: send images over bluetooth
 		List<ContentValues> photosList = null;
@@ -323,12 +320,11 @@ public class BluetoothExplicitSync extends ListActivity {
 		ContentValues cv = unpackFindInfo(findTO);
 
 		// Update the DB
-		if (dbh.containsFind(guid)) {
-			success = dbh.updateFind(guid, cv, photosList);
+		if (PositDbHelper.getInstance().containsFind(guid)){
+			success = PositDbHelper.getInstance().updateFind(guid, cv, photosList);
 			Log.i(TAG, "Updating existing find");
 		} else {
-			Find newFind = FindProvider.createNewFind(this, guid);
-			success = newFind.insertToDB(cv, photosList);
+			success = PositDbHelper.getInstance().addNewFind(cv, photosList);
 			Log.i(TAG, "Adding a new find");
 		}
 		if (!success) {
@@ -336,7 +332,6 @@ public class BluetoothExplicitSync extends ListActivity {
 		} else {
 			Log.i(TAG, "Recorded timestamp stamp");
 		}
-		dbh.close();
 		
 		return success;
 	}

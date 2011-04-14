@@ -34,9 +34,7 @@ public class BluetoothFindTO implements Serializable {
 	public BluetoothFindTO(Context context, String guid) {
 		mGuid = guid;
 
-		PositDbHelper dbHelper = new PositDbHelper(context);
-
-		ContentValues values = dbHelper.fetchFindDataByGuId(guid, null);
+		ContentValues values = PositDbHelper.getInstance().fetchFindDataByGuId(guid, null);
 
 		mId = values.getAsLong(PositDbHelper.FINDS_ID);
 		mName = values.getAsString(PositDbHelper.FINDS_NAME);
@@ -44,8 +42,6 @@ public class BluetoothFindTO implements Serializable {
 		mLongitude = values.getAsString(PositDbHelper.FINDS_LONGITUDE);
 		mLatitude = values.getAsString(PositDbHelper.FINDS_LATITUDE);
 		mSynced = values.getAsInteger(PositDbHelper.FINDS_SYNCED);
-
-		dbHelper.close();
 	}
 
 	public BluetoothFindTO(long id, String guid, String name, String desc,

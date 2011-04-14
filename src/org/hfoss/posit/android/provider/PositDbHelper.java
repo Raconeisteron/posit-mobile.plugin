@@ -58,6 +58,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	private static final String DBName ="posit";
 	public static final int DBVersion = 2;
 	private static final String TAG = "PositDbHelper";
+	
+	private static PositDbHelper sInstance = null;
 
 	/**
 	 *  The primary table
@@ -291,6 +293,16 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	
 	private Context mContext;   // The Activity
 	private SQLiteDatabase mDb;  // Pointer to the DB	
+	
+	public static void initInstance(Context context){
+		assert(sInstance == null);
+		sInstance = new PositDbHelper(context);
+	}
+	
+	public static PositDbHelper getInstance(){
+		assert(sInstance != null);
+		return sInstance;
+	}
   
 	public PositDbHelper(Context context) {
 		super(context, DBName, null, DBVersion);
@@ -498,7 +510,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @param images -- a list of images, may be null
 	 * @return true if both the insertion and the timestamping are successful
 	 */
-	public boolean addNewFind(ContentValues values, List<ContentValues> images) {
+	public boolean addNewFind(ContentValues values, List<ContentValues> find_data_entries) {
 		mDb = getWritableDatabase();  // Either create the DB or open it.
 		long rowId = mDb.insert(FINDS_TABLE, null, values);
 		boolean result = false;
@@ -509,8 +521,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 			String guId = getGuIdFromRowId(rowId);
 
 			result = logFindHistory(guId, "create");    // Timestamp the insertion
-			if (images != null){
-				return result;
+			if (find_data_entries != null){
+				return addFindData(rowId, guId, find_data_entries);
 			} else 
 				return result;
 		}
