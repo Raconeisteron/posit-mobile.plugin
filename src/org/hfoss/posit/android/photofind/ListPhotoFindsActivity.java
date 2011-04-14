@@ -65,7 +65,6 @@ import android.widget.SimpleCursorAdapter.ViewBinder;
 public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBinder{
 
 	private static final String TAG = "ListActivity";
-	private PositDbHelper mDbHelper;
 	private Cursor mCursor;  // Used for DB accesses
 
 	private static final int confirm_exit=1;
@@ -90,7 +89,6 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		project_id = sp.getInt("PROJECT_ID", 0);
-		mDbHelper = new PositDbHelper(this);
 	}
 
 	/** 
@@ -121,14 +119,12 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 	protected void onPause(){
 		super.onPause();
 		stopManagingCursor(mCursor);
-		mDbHelper.close(); // NOTE WELL: Can't close while managing cursor
 		mCursor.close();
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		mDbHelper.close();
 		mCursor.close();
 	}
 
@@ -136,7 +132,6 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mDbHelper.close();
 		mCursor.close();
 	}
 
@@ -150,7 +145,7 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 		String[] columns = PositDbHelper.list_row_data;
 		int [] views = PositDbHelper.list_row_views;
 	
-		mCursor = mDbHelper.fetchFindsByProjectId(project_id);	
+		mCursor = PositDbHelper.getInstance().fetchFindsByProjectId(project_id);	
 		//		Uri allFinds = Uri.parse("content://org.hfoss.provider.POSIT/finds_project/"+PROJECT_ID);
 		//	    mCursor = managedQuery(allFinds, null, null, null, null);
 		if (mCursor.getCount() == 0) { // No finds
@@ -238,7 +233,6 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 			break;
 
 		case R.id.map_finds_menu_item:
-			mDbHelper.close();
 			intent = new Intent(this, MapFindsActivity.class);
 			startActivity(intent);
 			break;
@@ -270,8 +264,7 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 	
 		case R.id.find_image:
 			if (DBG) Log.i(TAG,"setViewValue case find_image=" + view.getId() );
-			PositDbHelper myDbHelper = new PositDbHelper(this);
-			ContentValues values = myDbHelper.getFindDataEntries(findIden);
+			ContentValues values = PositDbHelper.getInstance().getFindDataEntries(findIden);
 			ImageView iv = (ImageView) view;
 			if (values != null && values.containsKey(PositDbHelper.PHOTOS_IMAGE_URI)) {
 				String strUri = values.getAsString(PositDbHelper.PHOTOS_IMAGE_URI);
@@ -311,7 +304,7 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 			return true;
 		case R.id.num_photos:
 			tv = (TextView) view;
-			int count = mDbHelper.getFindDataEntriesCount(findIden);
+			int count = PositDbHelper.getInstance().getFindDataEntriesCount(findIden);
 			tv.setText(count+" photos  ");
 			return true;
 		case R.id.idNumberText:
@@ -352,13 +345,10 @@ public class ListPhotoFindsActivity extends ListFindsActivity implements ViewBin
 					new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
 					// User clicked OK so do some stuff 
-					PositDbHelper mDbHelper = new PositDbHelper(ListPhotoFindsActivity.this);
-					if (mDbHelper.deleteAllFinds()) {
-						mDbHelper.close();
+					if(PositDbHelper.getInstance().deleteAllFinds()){
 						Utils.showToast(ListPhotoFindsActivity.this, R.string.deleted_from_database);
 						finish();
 					} else {
-						mDbHelper.close();
 						Utils.showToast(ListPhotoFindsActivity.this, R.string.delete_failed);
 						dialog.cancel();
 					}

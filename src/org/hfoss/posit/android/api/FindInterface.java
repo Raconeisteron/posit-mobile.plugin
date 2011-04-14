@@ -39,14 +39,6 @@ public interface FindInterface {
 	 */
 	public HashMap<String,String> getContentMapGuid();
 
-	/** 
-	 * Creates an entry for a Find in the DB. 
-	 * Assumes that the context has been passed through a constructor.
-	 * @param content contains the Find's attributes and values.  
-	 * @param images list of contentvalues containing the image references to add
-	 * @return whether the DB operation succeeds
-	 */
-	public boolean insertToDB(ContentValues content, List<ContentValues> images);
 	
 	/**
 	 * Inserts images for this find
@@ -54,23 +46,6 @@ public interface FindInterface {
 	 * @return
 	 */
 	public boolean insertImagesToDB(List<ContentValues> images);
-
-	/** 
-	 * updateDB() assumes that the context and rowID has be passed through 
-	 * a constructor.
-	 * @param content contains the Find's attributes and values.  
-	 * @return whether the DB operation succeeds
-	 */
-	// TODO: Confirm that this works with GUIDs
-	public boolean updateToDB(ContentValues content);
-	
-	/**
-	 * Updates a find given its guid.
-	 * @param guid
-	 * @param content
-	 * @return
-	 */
-	public boolean updateToDB(String guid, ContentValues content);
 	
 	/**
 	 * deletes the Find object form the DB, not including its photos

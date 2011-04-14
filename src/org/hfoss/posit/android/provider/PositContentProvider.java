@@ -152,10 +152,11 @@ public class PositContentProvider extends ContentProvider{
 	@Override
 	public boolean onCreate() {
 		Context context = getContext();
-		PositDbHelper dbHelper = new PositDbHelper(context);
-		//DatabaseHelper dbHelper = new DatabaseHelper(context);
-		db = dbHelper.getWritableDatabase();
-		return (db == null)? false:true;
+		
+		// Here is where posit db helper is initialized
+		PositDbHelper.initInstance(context);
+		
+		return (PositDbHelper.getInstance() == null) ? false : true;
 	}
 
 	@Override

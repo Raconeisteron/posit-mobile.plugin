@@ -25,6 +25,7 @@ package org.hfoss.posit.android;
 import org.hfoss.adhoc.AdhocService;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
+import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.rwg.RwgSettings;
 

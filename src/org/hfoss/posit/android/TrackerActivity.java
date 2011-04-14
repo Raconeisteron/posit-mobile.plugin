@@ -321,15 +321,15 @@ public class TrackerActivity extends MapActivity
 			
 		if (rowId != -1) { // Unless we are already in VIEWING_MODE
 			// Retrieve data from this expedition
-			mDbHelper = new PositDbHelper(this);
-
-			mExpId = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_NUM));
-			mPoints = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_POINTS));
-			mSynced = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_SYNCED));
-			mRegistered = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_REGISTERED));
+			mExpId = Integer.parseInt(PositDbHelper.getInstance().fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_NUM));
+			mPoints = Integer.parseInt(PositDbHelper.getInstance().fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_POINTS));
+			mSynced = Integer.parseInt(PositDbHelper.getInstance().fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_SYNCED));
+			mRegistered = Integer.parseInt(PositDbHelper.getInstance().fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_REGISTERED));
+			
 			Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
 					" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
-			mDbHelper.fetchExpeditionPointsByExpeditionId(mExpId, mTrack);
+
+			PositDbHelper.getInstance().fetchExpeditionPointsByExpeditionId(mExpId, mTrack);
 		}
 	
 		// Initialize the View
@@ -707,12 +707,11 @@ public class TrackerActivity extends MapActivity
 	 * Helper method to delete the current track. Returns to TrackerListActivity
 	 */
 	private void deleteExpedition() {
-		PositDbHelper dbHelper = new PositDbHelper(this);
 		int mExpedNum = Integer.parseInt((String) mExpeditionTextView.getText().toString().trim());
-		boolean success = dbHelper.deleteExpedition(mExpedNum);
+		boolean success = PositDbHelper.getInstance().deleteExpedition(mExpedNum);
 		if (success) {
 			if (mPoints > 0) {
-				success = dbHelper.deleteExpeditionPoints(mExpedNum);
+				success = PositDbHelper.getInstance().deleteExpeditionPoints(mExpedNum);
 				if (success) {
 					Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
 					Utils.showToast(this, "Deleted expedition " + mExpedNum);

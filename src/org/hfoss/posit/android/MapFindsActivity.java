@@ -211,11 +211,9 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 	}
 
 	private void mapFinds() {
-		mDbHelper = new PositDbHelper(this);
-
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		mCursor = mDbHelper.fetchFindsByProjectId(sp.getInt("PROJECT_ID", 0));		
+
+		mCursor = PositDbHelper.getInstance().fetchFindsByProjectId(sp.getInt("PROJECT_ID", 0));
 		if (mCursor.getCount() == 0) { // No finds
 			Utils.showToast(this, "No Finds to display");
 			finish();

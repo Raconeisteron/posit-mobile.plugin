@@ -125,9 +125,6 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		// Create a network manager
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 		
-		// Create a database helper
-		mDbHelper = new PositDbHelper(this);
-		
 		// Let the UI know about this Tracker service.
 		if (TRACKER_ACTIVITY != null)
 			TrackerActivity.setTrackerService(this);

@@ -549,20 +549,15 @@ public class PhotoFindActivity extends FindActivity{
 			return;
 		}
 		if (mState == STATE_INSERT) {            // if this is a new find
-			mFind = FindProvider.createNewFind(PhotoFindActivity.this, guid);
 			List<ContentValues> imageValues = PhotoUtils.saveImagesAndUris(this, mTempBitmaps);
 			
-			if (mFind.insertToDB(contentValues, imageValues)) {//insert find into database
+			if (PositDbHelper.getInstance().addNewFind(contentValues, imageValues)){
 				Utils.showToast(PhotoFindActivity.this, R.string.saved_to_database);
-				// Is this correct, shouldn't we be setting the _id based on the result
-				// of the insertion?
-				mFind.setGuid(contentValues.getAsString(PositDbHelper.FINDS_GUID));
-				Log.i(TAG, "doSave, id= " + mFind.getguId());
 			} else {
 				Utils.showToast(PhotoFindActivity.this, R.string.save_failed);
 			}
 		} else { 
-			if (mFind.updateToDB(contentValues)) {
+			if (PositDbHelper.getInstance().updateFind(PositDbHelper.getInstance().getRowIdFromGuId(guid), contentValues)){
 				Utils.showToast(PhotoFindActivity.this, R.string.saved_to_database);
 			} else {
 				Utils.showToast(PhotoFindActivity.this, R.string.save_failed);
