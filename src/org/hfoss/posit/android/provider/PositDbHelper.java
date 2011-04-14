@@ -914,11 +914,15 @@ public class PositDbHelper extends SQLiteOpenHelper {
 	 * @return
 	 */
 	public Cursor fetchFindsByProjectId(int project_id) {
+		return fetchFindsByProjectId(project_id, null);
+	}
+	
+	public Cursor fetchFindsByProjectId(int project_id, String order_by) {
 		mDb = getReadableDatabase(); // Either open or create the DB.
 		Cursor c = mDb.query(FINDS_TABLE,null, 
-				WHERE_NOT_DELETED + " AND " + FINDS_PROJECT_ID +"="+project_id, null, null, null, null);
+				WHERE_NOT_DELETED + " AND " + FINDS_PROJECT_ID +"="+project_id, null, null, null, order_by);
 		Log.i(TAG,"fetchFindsByProjectId " + FINDS_PROJECT_ID + "=" + project_id + " count=" + c.getCount());
-//		c.close();  // You cannot close the cursor before returning it.
+
 		mDb.close();
 		return c;
 	}
