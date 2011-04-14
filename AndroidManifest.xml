@@ -30,8 +30,17 @@
 		<activity android:name=".RegisterActivity"/>
 		<activity android:name=".NewProjectActivity"/>	
 		<activity android:name=".AboutActivity" />
+		
+		<!-- Activities pertaining to PhotoFind plugin -->
+		<!--
 		<activity android:name="org.hfoss.posit.android.photofind.PhotoFindActivity" />
 		<activity android:name="org.hfoss.posit.android.photofind.ListPhotoFindsActivity" />
+		-->
+		
+		<!-- Activities pertaining to PhotoFindSorted plugin -->
+		<activity android:name="org.hfoss.posit.android.photofindsorted.PhotoFindActivity" />
+		<activity android:name="org.hfoss.posit.android.photofindsorted.ListPhotoFindsActivity" />
+		
 		<activity android:name=".ImageViewActivity" />
 		<activity android:name=".MapFindsActivity" />
 		<activity android:name=".BarcodeBasedRegistrationActivity" />
