@@ -20,7 +20,7 @@ public interface FindInterface {
 	 */
 	public ContentValues getContent();
 		
-	public Uri getImageUriByPosition(long findId, int position);
+	public Uri getFindDataUriByPosition(long findId, int position);
 	
 	
 	/**
@@ -41,24 +41,24 @@ public interface FindInterface {
 
 	
 	/**
-	 * Inserts images for this find
-	 * @param images
+	 * Inserts find data entries for this find
+	 * @param find_data_entries
 	 * @return
 	 */
-	public boolean insertImagesToDB(List<ContentValues> images);
+	public boolean insertFindDataEntriesToDB(List<ContentValues> find_data_entries);
 	
 	/**
-	 * deletes the Find object form the DB, not including its photos
-	 * Call deleteFindPhotos() to delete its photos.
+	 * deletes the Find object form the DB, not including its data
+	 * Call deleteFindDataEntry() to delete its data.
 	 * @return whether the DB operation was successful
 	 */
 	public boolean delete();
 	
 	/**
-	 * deletes the photos associated with this find.
+	 * deletes the data associated with this find.
 	 * @return
 	 */
-	public boolean deleteFindPhotos();
+	public boolean deleteFindDataEntry();
 
 	/**
 	 * @return the mId
@@ -73,20 +73,20 @@ public interface FindInterface {
 	
 	/**
 	 * NOTE: This may cause a leak because the Cursor is not closed
-	 * Get all images attached to this find
-	 * @return the cursor that points to the images
+	 * Get all find data entries attached to this find
+	 * @return the cursor that points to the find data
 	 */
-	public Cursor getImages();
+	public Cursor getFindDataEntriesCursor();
 	
-	public ArrayList<ContentValues> getImagesContentValuesList();
+	public ArrayList<ContentValues> getFindDataEntriesList();
 
 	
 	/**
-	 * @return whether or not there are images attached to this find
+	 * @return whether or not there is find data attached to this find
 	 */
-	public boolean hasImages();
+	public boolean hasDataEntries();
 
-	public boolean deleteImageByPosition(int position);
+	public boolean deleteFindDataEntriesByPosition(int position);
 	
 
 	/**

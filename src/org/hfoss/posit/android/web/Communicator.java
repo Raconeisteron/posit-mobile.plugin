@@ -397,38 +397,38 @@ public class Communicator {
 
 		if (success) {
 			// Otherwise send the Find's images
-			ArrayList<ContentValues> photosList = PositDbHelper.getInstance().getFindDataEntriesListSinceUpdate(id, projectId);
+			ArrayList<ContentValues> findDataEntriesList = PositDbHelper.getInstance().getFindDataEntriesListSinceUpdate(id, projectId);
 	
-			Log.i(TAG, "sendFind, photosList=" + photosList.toString());
+			Log.i(TAG, "sendFind, findDataEntriesList=" + findDataEntriesList.toString());
 	
-			Iterator<ContentValues> it = photosList.listIterator();
+			Iterator<ContentValues> it = findDataEntriesList.listIterator();
 			while (it.hasNext()) {
-				ContentValues imageData = it.next();
-				Uri uri = Uri.parse(imageData
+				ContentValues find_data_entry = it.next();
+				Uri uri = Uri.parse(find_data_entry
 						.getAsString(PositDbHelper.PHOTOS_IMAGE_URI));
 				String base64Data = convertUriToBase64(uri);
-				uri = Uri.parse(imageData
+				uri = Uri.parse(find_data_entry
 						.getAsString(PositDbHelper.PHOTOS_THUMBNAIL_URI));
 				String base64Thumbnail = convertUriToBase64(uri);
 				sendMap = new HashMap<String, String>();
 				sendMap.put(COLUMN_IMEI, Utils.getIMEI(mContext));
 				sendMap.put(PositDbHelper.FINDS_GUID, guid);
 	
-				sendMap.put(PositDbHelper.PHOTOS_IDENTIFIER, imageData
+				sendMap.put(PositDbHelper.PHOTOS_IDENTIFIER, find_data_entry
 						.getAsString(PositDbHelper.PHOTOS_IDENTIFIER));
-				sendMap.put(PositDbHelper.FINDS_PROJECT_ID, imageData
+				sendMap.put(PositDbHelper.FINDS_PROJECT_ID, find_data_entry
 						.getAsString(PositDbHelper.FINDS_PROJECT_ID));
-				sendMap.put(PositDbHelper.FINDS_TIME, imageData
+				sendMap.put(PositDbHelper.FINDS_TIME, find_data_entry
 						.getAsString(PositDbHelper.FINDS_TIME));
-				sendMap.put(PositDbHelper.PHOTOS_MIME_TYPE, imageData
+				sendMap.put(PositDbHelper.PHOTOS_MIME_TYPE, find_data_entry
 						.getAsString(PositDbHelper.PHOTOS_MIME_TYPE));
 	
-				sendMap.put("mime_type", "image/jpeg");
+				// SK: arbitrary data shall have its type omitted
+				//sendMap.put("mime_type", "image/jpeg");
 	
 				sendMap.put(PositDbHelper.PHOTOS_DATA_FULL, base64Data);
 				sendMap.put(PositDbHelper.PHOTOS_DATA_THUMBNAIL, base64Thumbnail);
 				sendMedia(sendMap);
-				// it.next();
 			}	
 		}
 		// Update the Synced attribute.
@@ -451,7 +451,7 @@ public class Communicator {
 
 		responseString = doHTTPPost(url, sendMap);
 		if (Utils.debug)
-			Log.i(TAG, "sendImage.ResponseString: " + responseString);
+			Log.i(TAG, "sendMedia.ResponseString: " + responseString);
 	}
 
 	/**

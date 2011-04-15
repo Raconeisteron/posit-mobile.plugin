@@ -83,7 +83,7 @@ public class BluetoothFindTO implements Serializable {
 		return mSynced;
 	}
 
-	public List<ContentValues> getPhotos() {
+	public List<ContentValues> getFindData() {
 		return null;
 	}
 

@@ -42,8 +42,8 @@ import org.hfoss.posit.android.R.string;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindActivity;
 import org.hfoss.posit.android.api.FindProvider;
+import org.hfoss.posit.android.photofind.ImageAdapter;
 import org.hfoss.posit.android.provider.PositDbHelper;
-import org.hfoss.posit.android.utilities.ImageAdapter;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.rwg.RwgSender;
 
@@ -470,7 +470,7 @@ public class PhotoFindActivity extends FindActivity{
 						}	else { 
 							Utils.showToast(PhotoFindActivity.this, R.string.delete_failed);
 						}
-						if (mFind.deleteFindPhotos()) {
+						if (mFind.deleteFindDataEntry()) {
 							Utils.showToast(PhotoFindActivity.this, "Find's photos deleted from DB");
 						} else {
 							Utils.showToast(PhotoFindActivity.this, "Unable to delete find's photos from DB");
@@ -896,7 +896,7 @@ public class PhotoFindActivity extends FindActivity{
 			
 			List<ContentValues> imageValues = PhotoUtils.saveImagesAndUris(this, mTempBitmaps);
 		
-			if (mFind.insertImagesToDB(imageValues)) {
+			if (mFind.insertFindDataEntriesToDB(imageValues)) {
 				Utils.showToast(this, R.string.saved_image_to_db);
 			} else { 
 				Utils.showToast(this, R.string.save_failed);
@@ -931,7 +931,7 @@ public class PhotoFindActivity extends FindActivity{
 		Log.i(TAG, "displayGallery mFindId=" + id);
 		if (id != 0) { //for existing finds
 			// Select just those images associated with this find.
-			mImagesData = mFind.getImagesContentValuesList();
+			mImagesData = mFind.getFindDataEntriesList();
 			if (mImagesData.size() > 0) {
 				finishActivity(PhotoFindActivity.IMAGE_VIEW);
 				ImageAdapter adapter = new ImageAdapter(mImagesData, this);

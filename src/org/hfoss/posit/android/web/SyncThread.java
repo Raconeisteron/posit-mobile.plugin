@@ -322,7 +322,7 @@ public class SyncThread extends Thread {
 		Log.i(TAG, "serverFindsNeedingSync = " + serverGuids);
 		// mServerFindsNeedingSync = response;
 		
-		List<ContentValues> photosList = null;
+		List<ContentValues> findDataEntriesList = null;
 		String guid;
 		boolean success = false;
 		StringTokenizer st = new StringTokenizer(serverGuids, ",");
@@ -343,7 +343,7 @@ public class SyncThread extends Thread {
 				ArrayList<HashMap<String, String>> images = comm
 						.getRemoteFindImages(guid);
 
-				photosList = saveImages(images);
+				findDataEntriesList = saveImages(images);
 				success = false;
 
 				// Update the DB
@@ -353,12 +353,12 @@ public class SyncThread extends Thread {
 							PositDbHelper.getInstance().deleteFind(guid);
 						}
 					}
-					success = PositDbHelper.getInstance().updateFind(guid, cv, photosList); // Should
+					success = PositDbHelper.getInstance().updateFind(guid, cv, findDataEntriesList); // Should
 																	// use a
 																	// Find?
 					Log.i(TAG, "Updating existing find");
 				} else {
-					success = PositDbHelper.getInstance().addNewFind(cv, photosList);
+					success = PositDbHelper.getInstance().addNewFind(cv, findDataEntriesList);
 					Log.i(TAG, "Adding a new find");
 				}
 				if (!success) {
@@ -380,7 +380,7 @@ public class SyncThread extends Thread {
 	 */
 	private List<ContentValues> saveImages(
 			ArrayList<HashMap<String, String>> images) {
-		List<ContentValues> photosList = null;
+		List<ContentValues> findDataEntiresList = null;
 		ArrayList<Bitmap> bitmaps = new ArrayList<Bitmap>();
 
 		if (images != null) {
@@ -391,14 +391,14 @@ public class SyncThread extends Thread {
 				try {
 					// String guid = (String)
 					// image.get(PositDbHelper.FINDS_GUID);
-					ContentValues photoCv = new ContentValues();
-					photoCv.put(PositDbHelper.PHOTOS_MIME_TYPE, (String) image
+					ContentValues findDataEntry = new ContentValues();
+					findDataEntry.put(PositDbHelper.PHOTOS_MIME_TYPE, (String) image
 							.get(PositDbHelper.PHOTOS_MIME_TYPE));
-					photoCv.put(PositDbHelper.FINDS_PROJECT_ID, (String) image
+					findDataEntry.put(PositDbHelper.FINDS_PROJECT_ID, (String) image
 							.get(PositDbHelper.FINDS_PROJECT_ID));
 					Long identifier = Long.parseLong(image
 							.get(PositDbHelper.PHOTOS_IDENTIFIER));
-					photoCv.put(PositDbHelper.PHOTOS_IDENTIFIER, identifier
+					findDataEntry.put(PositDbHelper.PHOTOS_IDENTIFIER, identifier
 							.longValue());
 					String fullData = (String) image.get("data_full");
 					// Log.i("The IMAGE DATA", fullData);
@@ -412,9 +412,9 @@ public class SyncThread extends Thread {
 					Log.d(TAG, "" + e);
 				}
 			}
-			photosList = PhotoUtils.saveImagesAndUris(mContext, bitmaps); // Utility
+			findDataEntiresList = PhotoUtils.saveImagesAndUris(mContext, bitmaps); // Utility
 																		// method
 		}
-		return photosList;
+		return findDataEntiresList;
 	}
 }
