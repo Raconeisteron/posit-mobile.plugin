@@ -36,7 +36,6 @@ import org.hfoss.posit.android.utilities.Utils;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;

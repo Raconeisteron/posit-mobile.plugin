@@ -30,16 +30,11 @@ import java.util.StringTokenizer;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.FindProvider;
-import org.hfoss.posit.android.photofind.PhotoUtils;
 import org.hfoss.posit.android.provider.PositDbHelper;
-import org.hfoss.posit.android.utilities.Utils;
-import org.hfoss.third.Base64Coder;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
