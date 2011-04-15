@@ -1,17 +1,17 @@
 <PluginsPreferences>
 	<FindPlugins>
-		<Plugin active="true" name="PhotoFind" 
+		<Plugin active="false" name="PhotoFind" 
 		find_factory="org.hfoss.posit.android.photofind.PhotoFindFactory" 
 		findactivity_class="org.hfoss.posit.android.photofind.PhotoFindActivity"
 		listfindsactivity_class="org.hfoss.posit.android.photofind.ListPhotoFindsActivity"
 		find_data_manager="org.hfoss.posit.android.photofind.PhotoFindDataManager"
 		/>
 		
-		<Plugin active="false" name="PhotoFindSorted" 
+		<Plugin active="true" name="PhotoFindSorted" 
 		find_factory="org.hfoss.posit.android.photofindsorted.PhotoFindFactory" 
 		findactivity_class="org.hfoss.posit.android.photofindsorted.PhotoFindActivity"
 		listfindsactivity_class="org.hfoss.posit.android.photofindsorted.ListPhotoFindsActivity"
-		finddatamanager="org.hfoss.posit.android.photofindsorted.PhotoFindDataManager"
+		find_data_manager="org.hfoss.posit.android.photofindsorted.PhotoFindDataManager"
 		/>
 	</FindPlugins>
 </PluginsPreferences>

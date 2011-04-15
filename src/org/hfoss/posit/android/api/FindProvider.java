@@ -6,6 +6,7 @@ import android.content.Context;
 * Convenience class to quickly get right find object without having to type  
 */
 public class FindProvider{
+	private FindProvider(){}
 	
 	public static Find createNewFind(Context context){
 		return FindPluginManager.getInstance().getFindFactory().createNewFind(context);

@@ -13,22 +13,29 @@ import org.hfoss.posit.android.R.raw;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 public class FindPluginManager {
 	private static FindPluginManager sInstance = null; 
+	
+	private static final String TAG = "FindPluginManager";
+	
+	private Activity mMainActivity = null;
 	
 	private FindFactory mFindFactory = null;
 	private FindDataManager mFindDataManager = null;
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	
-	private FindPluginManager(){
+	private FindPluginManager(Activity activity){
+		mMainActivity = activity;
 	}
 	
-	public static FindPluginManager initInstance(Context context){
-		sInstance = new FindPluginManager();
-		sInstance.initFromResource(context, R.raw.plugins_preferences);
+	public static FindPluginManager initInstance(Activity activity){
+		sInstance = new FindPluginManager(activity);
+		sInstance.initFromResource(activity, R.raw.plugins_preferences);
 		return sInstance;
 	}
 	
@@ -69,7 +76,10 @@ public class FindPluginManager {
 			}
 		}catch(Exception ex)
 		{
-			return;
+			Log.i(TAG, "Failed to load plugin");
+			Log.i(TAG, "reason: " + ex.getMessage());
+			
+			mMainActivity.finish();
 		}
 	}
 	
