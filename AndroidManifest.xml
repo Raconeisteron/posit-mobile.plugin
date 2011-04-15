@@ -45,7 +45,7 @@
 		<activity android:name=".SettingsActivity" />	
 		<activity android:name=".SearchFindsActivity" />
 		<activity android:name=".ShowProjectsActivity" />
-		<activity android:name=".SyncActivity" />
+		<activity android:name=".SyncActivity" android:configChanges="orientation|keyboardHidden" />
 		<activity android:name=".TutorialActivity"/>
 		<activity android:name=".TrackerActivity"/>
 		<activity android:name=".TrackerSettings"/>
