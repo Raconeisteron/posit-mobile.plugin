@@ -55,6 +55,7 @@ import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.TrackerActivity;
 import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.third.Base64Coder;
@@ -354,6 +355,7 @@ public class Communicator {
 	 * 
 	 * @param action -- either 'create' or 'update'
 	 */
+	// TODO: This method is using photo table name and columns, this must be changed to reflect arbitrary type for find data
 	public boolean sendFind(Find find, String action) {
 		boolean success = false;
 		String url;
@@ -406,10 +408,10 @@ public class Communicator {
 				ContentValues find_data_entry = it.next();
 				Uri uri = Uri.parse(find_data_entry
 						.getAsString(PositDbHelper.PHOTOS_IMAGE_URI));
-				String base64Data = convertUriToBase64(uri);
+				String base64Data = FindPluginManager.getInstance().getFindDataManager().getBase64StringFromUri(uri, mContext);
 				uri = Uri.parse(find_data_entry
 						.getAsString(PositDbHelper.PHOTOS_THUMBNAIL_URI));
-				String base64Thumbnail = convertUriToBase64(uri);
+				String base64Thumbnail = FindPluginManager.getInstance().getFindDataManager().getBase64StringFromUri(uri, mContext);
 				sendMap = new HashMap<String, String>();
 				sendMap.put(COLUMN_IMEI, Utils.getIMEI(mContext));
 				sendMap.put(PositDbHelper.FINDS_GUID, guid);
@@ -455,38 +457,6 @@ public class Communicator {
 	}
 
 	/**
-	 * Converts a uri to a base64 encoded String for transmission to server.
-	 * 
-	 * @param uri
-	 * @return
-	 */
-	private String convertUriToBase64(Uri uri) {
-		ByteArrayOutputStream imageByteStream = new ByteArrayOutputStream();
-		byte[] imageByteArray = null;
-		Bitmap bitmap = null;
-
-		try {
-			bitmap = android.provider.MediaStore.Images.Media.getBitmap(
-					mContext.getContentResolver(), uri);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		if (bitmap == null) {
-			Log.d(TAG, "No bitmap");
-		}
-		// Compress bmp to jpg, write to the byte output stream
-		bitmap.compress(Bitmap.CompressFormat.JPEG, 80, imageByteStream);
-		// Turn the byte stream into a byte array
-		imageByteArray = imageByteStream.toByteArray();
-		char[] base64 = Base64Coder.encode(imageByteArray);
-		String base64String = new String(base64);
-		return base64String;
-	}
-
-	/**
 	 * cleanup the item key,value pairs so that we can send the data.
 	 * 
 	 * @param sendMap
@@ -512,6 +482,7 @@ public class Communicator {
 	 * 
 	 * @param rMap
 	 */
+	// TODO: this function uses photo table name and column names, this must be changed to reflect arbitrary type of find data
 	public static void cleanupOnReceive(HashMap<String, Object> rMap) {
 		rMap.put(PositDbHelper.FINDS_SYNCED, PositDbHelper.FIND_IS_SYNCED);
 		rMap.put(PositDbHelper.FINDS_GUID, rMap.get("guid"));
@@ -710,7 +681,8 @@ public class Communicator {
 	 * @param guid
 	 *            the Find's globally unique Id
 	 */
-	public ArrayList<HashMap<String, String>> getRemoteFindImages(String guid) {
+	// TODO: this function references image-specific URL on the server side, this must be changed to reflect arbitrary type of find data
+	public ArrayList<HashMap<String, String>> getRemoteFindDataEntries(String guid) {
 		ArrayList<HashMap<String, String>> imagesMap = null;
 		// ArrayList<HashMap<String, String>> imagesMap = null;
 		String imageUrl = server + "/api/getPicturesByFind?findId=" + guid
@@ -726,7 +698,6 @@ public class Communicator {
 			if (!imageResponseString.equals(RESULT_FAIL)) {
 				JSONArray jsonArr = new JSONArray(imageResponseString);
 				imagesMap = new ArrayList<HashMap<String, String>>();
-				// imagesMap = new ArrayList<HashMap<String, String>>();
 
 				for (int i = 0; i < jsonArr.length(); i++) {
 					JSONObject jsonObj = jsonArr.getJSONObject(i);
@@ -765,6 +736,7 @@ public class Communicator {
 	 *            the id of the image to query
 	 * @return whether the image already exists on the server
 	 */
+	// TODO: this function references image-specific URL on the server side, this must be changed to reflect arbitrary type of find data
 	public boolean imageExistsOnServer(int imageId) {
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(sendMap);

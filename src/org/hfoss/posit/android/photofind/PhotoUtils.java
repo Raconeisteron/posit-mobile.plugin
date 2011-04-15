@@ -30,8 +30,7 @@ public class PhotoUtils {
 	 * @param aFind  the current Find we are creating or editing
 	 * @param bm the bitmap from the camera
 	 */
-	public static List<ContentValues> 
-		saveImagesAndUris(Context context, List<Bitmap> bitmaps) {
+	public static List<ContentValues> saveImagesAndUris(Context context, List<Bitmap> bitmaps) {
 		if (bitmaps.size() == 0) {
 			Log.i(TAG, "No camera images to save ...exiting ");
 			return null;
