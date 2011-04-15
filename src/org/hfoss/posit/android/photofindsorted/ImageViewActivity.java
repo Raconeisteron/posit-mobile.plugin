@@ -111,7 +111,7 @@ public class ImageViewActivity extends Activity {
 			 mPosition = intent.getIntExtra("position",-1);
 			 //mFind = new Find(this, intent.getLongExtra("findId",-1));
 			 mFind = FindProvider.createNewFind(this, intent.getLongExtra("findId", -1));
-			 mCursor = mFind.getImages();
+			 mCursor = mFind.getFindDataEntriesCursor();
 			 mCursor.moveToPosition(mPosition);
 
 			 /*
@@ -123,7 +123,7 @@ public class ImageViewActivity extends Activity {
 			  * also the order that the photos show up in our scrolly gallery 
 			  * thing on the Find view.
 			  */
-			 Uri data = mFind.getImageUriByPosition(mFind.getId(), mPosition);
+			 Uri data = mFind.getFindDataUriByPosition(mFind.getId(), mPosition);
 
 			 setContentView(R.layout.image_view);
 			 mIV = (ImageView)findViewById(R.id.photo_big);
@@ -223,7 +223,7 @@ public class ImageViewActivity extends Activity {
 			 .setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
 				 public void onClick(DialogInterface dialog, int whichButton) {
 					 // User clicked OK so do some stuff 
-					 if (mFind.deleteImageByPosition(mPosition)) { // Assumes find was instantiated in onCreate        		
+					 if (mFind.deleteFindDataEntriesByPosition(mPosition)) { // Assumes find was instantiated in onCreate        		
 						 Utils.showToast(ImageViewActivity.this, R.string.deleted_from_database);	
 						 finishActivity(ListPhotoFindsActivity.FIND_FROM_LIST);
 						 finish();

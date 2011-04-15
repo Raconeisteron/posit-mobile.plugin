@@ -24,7 +24,6 @@ package org.hfoss.posit.android.utilities;
 import java.util.ArrayList;
 
 import org.hfoss.posit.android.api.FindActivityProvider;
-import org.hfoss.posit.android.photofind.PhotoFindActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
 import android.content.Context;

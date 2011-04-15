@@ -19,7 +19,7 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android.utilities;
+package org.hfoss.posit.android.photofindsorted;
 
 import java.util.ArrayList;
 import java.util.List;

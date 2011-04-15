@@ -314,17 +314,17 @@ public class BluetoothExplicitSync extends ListActivity {
 	private boolean receiveFind(BluetoothFindTO findTO) {
 		boolean success = false;
 		// TODO: send images over bluetooth
-		List<ContentValues> photosList = null;
+		List<ContentValues> dataEntryList = null;
 		String guid = findTO.getGuid();
 
 		ContentValues cv = unpackFindInfo(findTO);
 
 		// Update the DB
 		if (PositDbHelper.getInstance().containsFind(guid)){
-			success = PositDbHelper.getInstance().updateFind(guid, cv, photosList);
+			success = PositDbHelper.getInstance().updateFind(guid, cv, dataEntryList);
 			Log.i(TAG, "Updating existing find");
 		} else {
-			success = PositDbHelper.getInstance().addNewFind(cv, photosList);
+			success = PositDbHelper.getInstance().addNewFind(cv, dataEntryList);
 			Log.i(TAG, "Adding a new find");
 		}
 		if (!success) {

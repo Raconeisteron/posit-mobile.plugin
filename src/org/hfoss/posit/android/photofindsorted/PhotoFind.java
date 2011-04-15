@@ -91,7 +91,7 @@ public class PhotoFind extends Find{
 		return values;
 	}
 	
-	public Uri getImageUriByPosition(long findId, int position) {
+	public Uri getFindDataUriByPosition(long findId, int position) {
 		return PositDbHelper.getInstance().getFindDataUriByPosition(findId, position);
 	}
 	
@@ -131,7 +131,7 @@ public class PhotoFind extends Find{
 	 * @param images
 	 * @return
 	 */
-	public boolean insertImagesToDB(List<ContentValues> images) {
+	public boolean insertFindDataEntriesToDB(List<ContentValues> images) {
 		if (Utils.debug) Log.i(TAG, "insertImagesToDB, mId=" + mId + " guId=" + mGuid);
 		if (images == null || images.size() == 0)
 			return true; // Nothing to do
@@ -155,7 +155,7 @@ public class PhotoFind extends Find{
 	 * deletes the photos associated with this find.
 	 * @return
 	 */
-	public boolean deleteFindPhotos() {
+	public boolean deleteFindDataEntry() {
 		Log.i(TAG,"deleteing find #"+mId);
 		return PositDbHelper.getInstance().deleteFindDataEntriesById(mId);
 	}
@@ -185,12 +185,12 @@ public class PhotoFind extends Find{
 	 * Get all images attached to this find
 	 * @return the cursor that points to the images
 	 */
-	public Cursor getImages() {
+	public Cursor getFindDataEntriesCursor() {
 		Log.i(TAG,"GetImages find id = "+mId);
 		return PositDbHelper.getInstance().getFindDataEntriesCursor(mId);
 	}
 	
-	public ArrayList<ContentValues> getImagesContentValuesList() {
+	public ArrayList<ContentValues> getFindDataEntriesList() {
 		return PositDbHelper.getInstance().getFindDataEntriesList(mId);
 	}
 
@@ -198,11 +198,11 @@ public class PhotoFind extends Find{
 	/**
 	 * @return whether or not there are images attached to this find
 	 */
-	public boolean hasImages(){
-		return getImages().getCount() > 0;
+	public boolean hasDataEntries(){
+		return getFindDataEntriesCursor().getCount() > 0;
 	}
 
-	public boolean deleteImageByPosition(int position) {
+	public boolean deleteFindDataEntriesByPosition(int position) {
 		return false;
 		//return mDbHelper.deletePhotoByPosition(mId, position);
 	}
