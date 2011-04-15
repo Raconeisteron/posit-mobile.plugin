@@ -23,10 +23,12 @@ package org.hfoss.posit.android.web;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.FindProvider;
 import org.hfoss.posit.android.photofind.PhotoUtils;
 import org.hfoss.posit.android.provider.PositDbHelper;
@@ -340,8 +342,7 @@ public class SyncThread extends Thread {
 				Log.i(TAG, cv.toString());
 
 				// Get the images for this find
-				ArrayList<HashMap<String, String>> images = comm
-						.getRemoteFindImages(guid);
+				ArrayList<HashMap<String, String>> images = comm.getRemoteFindDataEntries(guid);
 
 				findDataEntriesList = saveImages(images);
 				success = false;
@@ -378,42 +379,22 @@ public class SyncThread extends Thread {
 	 * 
 	 * @param images
 	 */
-	private List<ContentValues> saveImages(
-			ArrayList<HashMap<String, String>> images) {
-		List<ContentValues> findDataEntiresList = null;
-		ArrayList<Bitmap> bitmaps = new ArrayList<Bitmap>();
+	private List<ContentValues> saveImages(ArrayList<HashMap<String, String>> images) {
+		List<ContentValues> findDataEntiresList = new LinkedList<ContentValues>();
 
 		if (images != null) {
 			Log.i(TAG, "remote find images = " + images.toString());
 			for (int j = 0; j < images.size(); j++) {
 				Log.i(TAG, "image=" + images.get(j).toString());
-				HashMap<String, String> image = images.get(j); // Get the image
+				HashMap<String, String> data_entry = images.get(j); // Get the image
 				try {
-					// String guid = (String)
-					// image.get(PositDbHelper.FINDS_GUID);
-					ContentValues findDataEntry = new ContentValues();
-					findDataEntry.put(PositDbHelper.PHOTOS_MIME_TYPE, (String) image
-							.get(PositDbHelper.PHOTOS_MIME_TYPE));
-					findDataEntry.put(PositDbHelper.FINDS_PROJECT_ID, (String) image
-							.get(PositDbHelper.FINDS_PROJECT_ID));
-					Long identifier = Long.parseLong(image
-							.get(PositDbHelper.PHOTOS_IDENTIFIER));
-					findDataEntry.put(PositDbHelper.PHOTOS_IDENTIFIER, identifier
-							.longValue());
-					String fullData = (String) image.get("data_full");
-					// Log.i("The IMAGE DATA", fullData);
-					byte[] data = Base64Coder.decode(fullData);
-					Bitmap imageBM = BitmapFactory.decodeByteArray(data, 0,
-							data.length);
-					Log.i("The Bitmap To Save", imageBM.toString());
-					bitmaps.add(imageBM);
-					Log.i(TAG, "bitmap saved!");
+					String fullData = (String) data_entry.get("data_full");
+					
+					findDataEntiresList.add(FindPluginManager.getInstance().getFindDataManager().saveBase64StringAsUri(fullData, mContext));
 				} catch (Exception e) {
 					Log.d(TAG, "" + e);
 				}
 			}
-			findDataEntiresList = PhotoUtils.saveImagesAndUris(mContext, bitmaps); // Utility
-																		// method
 		}
 		return findDataEntiresList;
 	}
