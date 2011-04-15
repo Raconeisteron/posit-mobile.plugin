@@ -64,14 +64,19 @@ public class PhotoFindDataManager extends FindDataManager{
 		String base64String = new String(base64);
 		return base64String;
 	}
-
+	
 	@Override
 	public ContentValues saveBase64StringAsUri(String base64string, Context context) {
-		ContentValues result = new ContentValues();
-		
+
 		// convert data to bitmap
 		byte[] data = Base64Coder.decode(base64string);
 		Bitmap image_bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+		
+		return saveBitmapAsUri(image_bitmap, context);
+	}
+
+	public ContentValues saveBitmapAsUri(Bitmap image_bitmap, Context context) {
+		ContentValues result = new ContentValues();
 		
 		// store bitmap in a ContentProvider along with additional metadata
 		ContentValues values = new ContentValues();
@@ -136,6 +141,6 @@ public class PhotoFindDataManager extends FindDataManager{
 		result.put(PositDbHelper.PHOTOS_THUMBNAIL_URI, thumbnailUri.toString());
 		
 		return result;
-	}
 
+	}
 }

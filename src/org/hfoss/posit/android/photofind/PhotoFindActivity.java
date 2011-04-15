@@ -27,6 +27,8 @@ package org.hfoss.posit.android.photofind;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +48,6 @@ import org.hfoss.posit.android.provider.PositDbHelper;
 import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.rwg.RwgSender;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -548,7 +549,12 @@ public class PhotoFindActivity extends FindActivity{
 			return;
 		}
 		if (mState == STATE_INSERT) {            // if this is a new find
-			List<ContentValues> imageValues = PhotoUtils.saveImagesAndUris(this, mTempBitmaps);
+			
+			List<ContentValues> imageValues = new LinkedList<ContentValues>();
+			Iterator<Bitmap> it = mTempBitmaps.iterator();
+			while(it.hasNext()){
+				imageValues.add(PhotoFindDataManager.getInstance().saveBitmapAsUri(it.next(), this));
+			}
 			
 			if (PositDbHelper.getInstance().addNewFind(contentValues, imageValues)){
 				Utils.showToast(PhotoFindActivity.this, R.string.saved_to_database);
@@ -893,7 +899,11 @@ public class PhotoFindActivity extends FindActivity{
 			
 			mTempBitmaps.add(tempImage);
 			
-			List<ContentValues> imageValues = PhotoUtils.saveImagesAndUris(this, mTempBitmaps);
+			List<ContentValues> imageValues = new LinkedList<ContentValues>();
+			Iterator<Bitmap> it = mTempBitmaps.iterator();
+			while(it.hasNext()){
+				imageValues.add(PhotoFindDataManager.getInstance().saveBitmapAsUri(it.next(), this));
+			}
 		
 			if (mFind.insertFindDataEntriesToDB(imageValues)) {
 				Utils.showToast(this, R.string.saved_image_to_db);
