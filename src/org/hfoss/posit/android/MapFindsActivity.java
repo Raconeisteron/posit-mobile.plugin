@@ -78,7 +78,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 	private Button search_last_Btn;
 
 	private Cursor mCursor;  // Used for DB accesses
-	private PositDbHelper mDbHelper;
 	private LocationManager mLocationManager;
 
 	/* (non-Javadoc)
@@ -189,7 +188,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 	protected void onPause(){
 		super.onPause();
 		stopManagingCursor(mCursor);
-		mDbHelper.close(); // NOTE WELL: Can't close while managing cursor
 		mCursor.close();
 		if (mLocationManager != null) {
 			mLocationManager.removeUpdates(this);
@@ -199,14 +197,12 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		mDbHelper.close();
 		mCursor.close();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mDbHelper.close();
 		mCursor.close();
 	}
 
@@ -223,8 +219,6 @@ public class MapFindsActivity extends MapActivity implements LocationListener {
 		mapOverlays = mMapView.getOverlays();
 		mapOverlays.add(mapLayoutItems(mCursor));	
 		mapController = mMapView.getController();
-
-		mDbHelper.close();
 	}
 
 	private  MyItemizedOverlay mapLayoutItems(Cursor c) {
