@@ -155,6 +155,7 @@ public class PositContentProvider extends ContentProvider{
 		
 		// Here is where posit db helper is initialized
 		PositDbHelper.initInstance(context);
+		Log.i(TAG, "PositContentProvider.onCreate()");
 		
 		return (PositDbHelper.getInstance() == null) ? false : true;
 	}
