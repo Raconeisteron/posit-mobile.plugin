@@ -39,6 +39,11 @@
 		<activity android:name="org.hfoss.posit.android.photofindsorted.PhotoFindActivity" />
 		<activity android:name="org.hfoss.posit.android.photofindsorted.ListPhotoFindsActivity" />
 		
+		<!-- Activities pertaining to AcdiVocaFind plugin -->
+		<activity android:name="org.hfoss.posit.android.acdivocafind.AcdiVocaFindActivity" />
+		<activity android:name="org.hfoss.posit.android.acdivocafind.ListAcdiVocaFindsActivity" />
+				
+		
 		<activity android:name=".ImageViewActivity" />
 		<activity android:name=".MapFindsActivity" />
 		<activity android:name=".BarcodeBasedRegistrationActivity" />

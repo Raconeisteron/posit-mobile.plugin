@@ -38,7 +38,6 @@ public class PhotoFindDataManager extends FindDataManager{
 		return sInstance;
 	}
 	
-	@Override
 	public String getBase64StringFromUri(Uri uri, Context context) {
 		ByteArrayOutputStream imageByteStream = new ByteArrayOutputStream();
 		byte[] imageByteArray = null;
@@ -65,7 +64,6 @@ public class PhotoFindDataManager extends FindDataManager{
 		return base64String;
 	}
 	
-	@Override
 	public ContentValues saveBase64StringAsUri(String base64string, Context context) {
 
 		// convert data to bitmap
