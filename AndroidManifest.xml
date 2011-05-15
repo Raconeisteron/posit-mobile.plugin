@@ -41,7 +41,7 @@
 		
 		<!-- Activities pertaining to AcdiVocaFind plugin -->
 		<activity android:name="org.hfoss.posit.android.acdivocafind.AcdiVocaFindActivity" />
-		<activity android:name="org.hfoss.posit.android.acdivocafind.ListAcdiVocaFindsActivity" />
+		<activity android:name="org.hfoss.posit.android.acdivocafind.AcdiVocaListFindsActivity" />
 				
 		
 		<activity android:name=".ImageViewActivity" />

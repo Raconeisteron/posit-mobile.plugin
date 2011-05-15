@@ -17,7 +17,7 @@
 		<Plugin active="true" name="AcdiVocaFind" package="org.hfoss.posit.android.acdivocafind"
 		find_factory="AcdiVocaFindFactory" 
 		findactivity_class="AcdiVocaFindActivity"
-		listfindsactivity_class="ListAcdiVocaFindsActivity"
+		listfindsactivity_class="AcdiVocaListFindsActivity"
 		find_data_manager="AcdiVocaFindDataManager"
 		/>
 
