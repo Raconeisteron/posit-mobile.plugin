@@ -39,6 +39,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.drawable.Drawable;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -50,6 +51,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -127,7 +129,13 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			
 		} else {    // Otherwise display the PositMain View
 			setContentView(R.layout.main);
-
+			
+			if (FindPluginManager.mMainIcon != null) {
+				final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
+				int resID = getResources().getIdentifier(FindPluginManager.mMainIcon, "drawable", "org.hfoss.posit.android");
+				mainLogo.setImageResource(resID);
+			}
+			
 			final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 			if (addFindButton != null)
 				addFindButton.setOnClickListener(this);

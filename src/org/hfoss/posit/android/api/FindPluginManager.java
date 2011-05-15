@@ -29,6 +29,8 @@ public class FindPluginManager {
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	
+	public static String mMainIcon = null;
+	
 	private FindPluginManager(Activity activity){
 		mMainActivity = activity;
 	}
@@ -61,7 +63,8 @@ public class FindPluginManager {
 					String find_data_manager_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_data_manager").getTextContent();
 					String findactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("findactivity_class").getTextContent();
 					String listfindsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("listfindsactivity_class").getTextContent();
-					
+					mMainIcon = plugin_nodes.item(ii).getAttributes().getNamedItem("main_icon").getTextContent();
+
 					@SuppressWarnings({ "rawtypes" })
 					Class new_class = Class.forName(package_name + "." + find_factory_name);
 					mFindFactory = (FindFactory)new_class.getMethod("getInstance", null).invoke(null, null);
