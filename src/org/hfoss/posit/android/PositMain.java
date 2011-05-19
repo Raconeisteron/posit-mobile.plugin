@@ -22,12 +22,10 @@
 package org.hfoss.posit.android;
 
 
-import org.hfoss.adhoc.AdhocService;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.provider.PositDbHelper;
-import org.hfoss.posit.android.utilities.Utils;
-import org.hfoss.posit.rwg.RwgSettings;
+
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -53,6 +51,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Implements the main activity and the main screen for the POSIT application.
@@ -109,7 +108,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			startPOSIT();
 		}
 
-		Utils.showToast(this, "Server: "  + mSharedPrefs.getString("SERVER_ADDRESS", ""));
+		Toast.makeText(this, "Server: "  + mSharedPrefs.getString("SERVER_ADDRESS", ""), Toast.LENGTH_SHORT).show();
 	}
 
 
@@ -231,7 +230,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		SharedPreferences sp = PreferenceManager
 		.getDefaultSharedPreferences(this);
 		if (sp.getString("PROJECT_NAME", "").equals("")) {
-			Utils.showToast(this, "To get started, you must choose a project.");
+			Toast.makeText(this, "To get started, you must choose a project.", Toast.LENGTH_SHORT).show();
 			Intent i = new Intent(this, ShowProjectsActivity.class);
 			startActivity(i);
 		} else {
@@ -272,15 +271,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (AdhocService.isRunning()) { // Service not running
-			menu.findItem(R.id.rwg_start).setEnabled(false);
-			menu.findItem(R.id.rwg_start_adhoc).setEnabled(false);
-			menu.findItem(R.id.rwg_end).setEnabled(true); 
-		} else {
-			menu.findItem(R.id.rwg_start).setEnabled(true);
-			menu.findItem(R.id.rwg_start_adhoc).setEnabled(true);
-			menu.findItem(R.id.rwg_end).setEnabled(false); 
-		}
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -298,51 +288,18 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		case R.id.about_menu_item:
 			startActivity(new Intent(this, AboutActivity.class));
 			break;
-		case R.id.tutorial_menu_item:
-			startActivity(new Intent(this, TutorialActivity.class));
-			break;
-		case R.id.projects_menu_item:
-			startActivity(new Intent(this, ShowProjectsActivity.class));
-			break;
-		case R.id.track_menu_item:
-			startActivity(new Intent(this, TrackerActivity.class));
-			break;
-		case R.id.rwg_start:
-			Log.i(TAG, "Starting AdhocService");
-			startAdhocService(AdhocService.MODE_INFRASTRUCTURE);
-			break;
-		case R.id.rwg_start_adhoc:
-			Log.i(TAG, "Starting AdhocService");
-			startAdhocService(AdhocService.MODE_ADHOC);
-			break;
-		case R.id.rwg_end:
-			Log.i(TAG, "Stopping AdhocService");
-			stopAdhocService();
-			break;
-		case R.id.rwg_settings:
-			Log.i(TAG, "RWG Settings");
-			startActivity(new Intent(this, RwgSettings.class));	
-
+//		case R.id.tutorial_menu_item:
+//			startActivity(new Intent(this, TutorialActivity.class));
+//			break;
+//		case R.id.projects_menu_item:
+//			startActivity(new Intent(this, ShowProjectsActivity.class));
+//			break;
 		}
 		
 		return true;
 	}
 
 	
-	private void startAdhocService(int mode) {
-		Intent serviceIntent = new Intent();
-		AdhocService.setActivity(this);
-		serviceIntent.setClass(this, AdhocService.class);
-		serviceIntent.putExtra(AdhocService.MODE, mode);
-		startService(serviceIntent);
-	}
-	
-	private void stopAdhocService() {
-		Intent serviceIntent = new Intent();
-		serviceIntent.setClass(this, AdhocService.class);
-		stopService(serviceIntent);  // Stop previously started service
-	}
-
 	/**
 	 * Intercepts the back key (KEYCODE_BACK) and displays a confirmation dialog
 	 * when the user tries to exit POSIT.
@@ -395,14 +352,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	@Override
 	public void finish() {
 		Log.i(TAG, "finish()");
-		if (AdhocService.adhocInstance != null) {
-			stopAdhocService();
-
-			mNotificationManager.cancel(AdhocService.ADHOC_NOTIFICATION);
-			mNotificationManager.cancel(AdhocService.NEWFIND_NOTIFICATION);
-
-			//mNotificationManager.cancel(Utils.ADHOC_ON_ID);
-		}
 		super.finish();
 	}
 }

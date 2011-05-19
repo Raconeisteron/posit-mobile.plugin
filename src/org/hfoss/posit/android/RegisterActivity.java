@@ -25,7 +25,6 @@ package org.hfoss.posit.android;
 import java.util.List;
 
 import org.apache.commons.validator.EmailValidator;
-import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +33,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,6 +41,8 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
@@ -55,6 +55,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Handles both user registration and phone registration. In order to use POSIT 
@@ -160,8 +161,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 	public void onResume(){
 		super.onResume();
 	}
-	
-	
+		
 	/**
 	 * Handle all button clicks. There are two main buttons that appear on the View
 	 * when the Activity is started.  When one of those buttons is clicked, a new 
@@ -169,13 +169,11 @@ public class RegisterActivity extends Activity implements OnClickListener {
 	 */
 	public void onClick(View v) {
 
-		if (!Utils.isNetworkAvailable(this)) {
-			Utils.showToast(this,"There's a problem. To register you must be on a network.");
+		if (Utils.isNetworkAvailable(this)) {
+			Toast.makeText(this, "There's a problem. To register you must be on a network.", Toast.LENGTH_SHORT).show();
 			return;
 		}
-		
-		Intent intent;
-		
+				
 		switch (v.getId()) {
 		
 		// Register phone for an existing account
@@ -195,31 +193,17 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			String password = (((TextView) findViewById(R.id.password)).getText()).toString();
 			String email = (((TextView) findViewById(R.id.email)).getText()).toString();
 			if (password.equals("") || email.equals("")) {
-				Utils.showToast(this, "Please fill in all the fields");
+				Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_SHORT).show();
 				break;
 			}
 			EmailValidator emailValidator = EmailValidator.getInstance();
 			if (emailValidator.isValid(email) != true) {
-				Utils.showToast(this, "Please enter a valid address");
+				Toast.makeText(this, "Please enter a valid address", Toast.LENGTH_SHORT).show();
 				break;
 			}
 			loginUser(email, password);
 			break;
 		
-		// Register the phone by reading a barcode on the server's website (Settings > Register)
-		case R.id.registerUsingBarcodeButton:
-			if (!isIntentAvailable(this, "com.google.zxing.client.android.SCAN")) {
-				Utils.showToast(this,  "Please install the Zxing Barcode Scanner from the Market");
-				break;
-			}
-			intent = new Intent("com.google.zxing.client.android.SCAN");
-			try {
-				startActivityForResult(intent, LOGIN_BY_BARCODE_READER);
-			} catch (ActivityNotFoundException e) {
-				if (Utils.debug)
-					Log.i(TAG, e.toString());
-			}
-			break;
 			
 		// User clicks the "Login" button in the Create User View	
 		case (R.id.submitInfo):
@@ -231,17 +215,17 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			
 			if (password.equals("") || check.equals("") || lastname.equals("")
 					|| firstname.equals("") || email.equals("")) {
-				Utils.showToast(this,"Please fill in all the fields");
+				Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_SHORT).show();
 				break;
 			}
 			
 			EmailValidator emV = EmailValidator.getInstance();
 			if (emV.isValid(email) != true) {
-				Utils.showToast(this, "Please enter a valid email address");
+				Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
 				break;
 			}
 			if (!check.equals(password)) {
-				Utils.showToast(this,"Your passwords do not match");
+				Toast.makeText(this, "Your passwords do not match", Toast.LENGTH_SHORT).show();
 				break;
 			}
 			
@@ -259,7 +243,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			if (result != null) {
 				String[] message = result.split(":");
 				if (message.length != 2) {
-					Utils.showToast(this, "Error: " + result);
+					Toast.makeText(this, "Error: " + result, Toast.LENGTH_SHORT).show();
 					break;
 				}
 				// A new account has successfully been created.
@@ -272,7 +256,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 					loginUser(email, password);
 					
 				} else {
-					Utils.showToast(this, message[1]);
+					Toast.makeText(this, message[1], Toast.LENGTH_SHORT).show();
 				}
 			break;
 			
@@ -332,8 +316,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 				object = new JSONObject(value);
 				String server = object.getString("server");
 				String authKey = object.getString("authKey");
-				if (Utils.debug)
-					Log.i(TAG, "server= " + server + ", authKey= " + authKey);
+				Log.i(TAG, "server= " + server + ", authKey= " + authKey);
 				TelephonyManager manager = (TelephonyManager) this
 						.getSystemService(Context.TELEPHONY_SERVICE);
 				String imei = manager.getDeviceId();
@@ -359,7 +342,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 						startActivity(intent);
 					}
 				} catch (NullPointerException e) {
-					Utils.showToast(this, "Registration Error");
+					Toast.makeText(this, "Registration Error", Toast.LENGTH_SHORT).show();
 				} finally {
 					mProgressDialog.dismiss();
 				}
@@ -373,8 +356,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 				finish();
 				
 			} catch (JSONException e) {
-				if (Utils.debug)
-					Log.e(TAG, e.toString());
+				Log.e(TAG, e.toString());
 			}
 			break;
 		}
@@ -438,14 +420,14 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		Log.i(TAG, "loginUser result: " + result);
 		String authKey;
 		if (null==result){
-			Utils.showToast(this, "Failed to get authentication key from server.");
+			Toast.makeText(this, "Failed to get authentication key from server.", Toast.LENGTH_SHORT).show();
 			mProgressDialog.dismiss();
 			return;
 		}
 		//TODO this is still little uglyish
 		String[] message = result.split(":");
 		if (message.length != 2 || message[1].equals("null")){
-			Utils.showToast(this, "Login failed: " + result);
+			Toast.makeText(this, "Login failed: " + result, Toast.LENGTH_SHORT).show();
 			mProgressDialog.dismiss();
 			return;
 		}
@@ -466,14 +448,14 @@ public class RegisterActivity extends Activity implements OnClickListener {
 				Intent intent = new Intent(this, ShowProjectsActivity.class);
 				startActivity(intent);
 				
-				Utils.showToast(this, "Successfully logged in.");
+				Toast.makeText(this, "Successfully logged in.", Toast.LENGTH_SHORT).show();
 				setResult(PositMain.LOGIN_SUCCESSFUL);
 				finish();
 			}
 		}else {
-			Utils.showToast(this, message[1] + 
+			Toast.makeText(this, message[1] + 
 					"\nMake sure you have connectivity" +
-					" and a working server.");
+					" and a working server.", Toast.LENGTH_SHORT).show();
 			mProgressDialog.dismiss();
 			return;
 		}
@@ -490,10 +472,10 @@ public class RegisterActivity extends Activity implements OnClickListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.positmain_menu, menu);
-		MenuItem item = menu.findItem(R.id.projects_menu_item);
-		item.setEnabled(false);
-		item = menu.findItem(R.id.track_menu_item);
-		item.setEnabled(false);
+//		MenuItem item = menu.findItem(R.id.projects_menu_item);
+//		item.setEnabled(false);
+//		item = menu.findItem(R.id.track_menu_item);
+//		item.setEnabled(false);
 		return true;
 	}
 	
@@ -511,9 +493,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
 		case R.id.about_menu_item:
 			startActivity(new Intent(this, AboutActivity.class));
 			break;
-		case R.id.tutorial_menu_item:
-			startActivity(new Intent(this, TutorialActivity.class));
-			break;
+//		case R.id.tutorial_menu_item:
+//			startActivity(new Intent(this, TutorialActivity.class));
+//			break;
 		}
 		return true;
 	}

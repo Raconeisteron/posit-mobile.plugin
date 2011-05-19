@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 
 import android.app.AlertDialog;
@@ -43,6 +42,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 /**
  * This activity shows a list of all the projects on the server that the phone is registered with,
@@ -124,7 +124,7 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 	 */
 	private void reportNetworkError(String str) {
 		Log.i(TAG, "Registration Failed: " + str);
-		Utils.showToast(this, "Registration Failed: " + str);
+		Toast.makeText(this, "Registration Failed: " + str, Toast.LENGTH_SHORT).show();
 		finish();
 	}
 	
@@ -144,7 +144,7 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 		int currentProjectId = sp.getInt("PROJECT_ID",0);
 		
 		if (id == currentProjectId){
-			Utils.showToast(this, "'" + projectName + "' is already the current project.");
+			Toast.makeText(this, "'" + projectName + "' is already the current project.", Toast.LENGTH_SHORT).show();
 			finish();
 			return;
 		}

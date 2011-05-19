@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.hfoss.third;
+package org.hfoss.posit.android;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.NetworkInfo.State;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;

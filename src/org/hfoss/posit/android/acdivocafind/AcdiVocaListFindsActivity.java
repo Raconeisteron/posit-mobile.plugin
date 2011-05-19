@@ -22,9 +22,9 @@
 package org.hfoss.posit.android.acdivocafind;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.Utils;
 import org.hfoss.posit.android.api.ListFindsActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
-import org.hfoss.posit.android.utilities.Utils;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -42,6 +42,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
 /**
@@ -250,10 +251,10 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 				public void onClick(DialogInterface dialog, int whichButton) {
 					// User clicked OK so do some stuff 
 					if(PositDbHelper.getInstance().deleteAllFinds()){
-						Utils.showToast(AcdiVocaListFindsActivity.this, R.string.deleted_from_database);
+						Toast.makeText(AcdiVocaListFindsActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
 						finish();
 					} else {
-						Utils.showToast(AcdiVocaListFindsActivity.this, R.string.delete_failed);
+						Toast.makeText(AcdiVocaListFindsActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
 						dialog.cancel();
 					}
 				}

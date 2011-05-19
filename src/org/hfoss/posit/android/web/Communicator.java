@@ -53,11 +53,10 @@ import org.apache.http.protocol.HTTP;
 import org.hfoss.posit.android.Constants;
 import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.TrackerActivity;
+import org.hfoss.posit.android.Utils;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.provider.PositDbHelper;
-import org.hfoss.posit.android.utilities.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,6 +67,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
+import android.widget.Toast;
 
 /**
  * The communication module for POSIT. Handles most calls to the server to get
@@ -161,9 +161,8 @@ public class Communicator {
 		Log.i(TAG, "authkey=" + authKey);
 		if (authKey.equals("")) {
 			Log.e(TAG, "getProjects() authKey == ");
-			Utils.showToast(mContext,
-					"Aborting Communicator:\nPhone does not have a valid authKey."
-							+ "\nUse settings menu to register phone.");
+			Toast.makeText(mContext, "Aborting Communicator:\nPhone does not have a valid authKey."
+					+ "\nUse settings menu to register phone.", Toast.LENGTH_SHORT).show();
 			return null;
 		}
 		String url = server + "/api/listMyProjects?authKey=" + authKey;
@@ -203,7 +202,7 @@ public class Communicator {
 		try {
 			responseString = doHTTPGET(url);
 		} catch (Exception e) {
-			Utils.showToast(mContext, e.getMessage());
+			Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 		Log.i(TAG, responseString);
 		if (responseString.equals(RESULT_FAIL))
@@ -237,7 +236,7 @@ public class Communicator {
 			responseString = doHTTPPost(url,sendMap);
 			Log.i(TAG, "longinUser response = " + responseString);
 			if (responseString.contains("[Error] ")){
-				Utils.showToast(mContext, responseString);
+				Toast.makeText(mContext, responseString, Toast.LENGTH_SHORT).show();
 				return Constants.AUTHN_FAILED+":"+ responseString;
 			} else {
 				ResponseParser parser = new ResponseParser(responseString);
@@ -245,7 +244,7 @@ public class Communicator {
 			}
 		} catch (Exception e) {
 			Log.i(TAG, "longinUser catch clause response = " + responseString);
-			Utils.showToast(mContext, e.getMessage()+"");
+			Toast.makeText(mContext, e.getMessage()+"", Toast.LENGTH_SHORT).show();
 //			return Constants.AUTHN_FAILED+":"+e.getMessage();
 			return Constants.AUTHN_FAILED+":"+responseString;
 		}
@@ -285,13 +284,13 @@ public class Communicator {
 			responseString = doHTTPPost(url, sendMap);
 			Log.i(TAG, responseString);
 			if (responseString.contains("[ERROR]")){
-				Utils.showToast(mContext, responseString);
+				Toast.makeText(mContext, responseString, Toast.LENGTH_SHORT).show();
 				return Constants.AUTHN_FAILED+":"+ "Error";
 			}
 			ResponseParser parser = new ResponseParser(responseString);
 			responseMap = parser.parseObject();
 		} catch (Exception e) {
-			Utils.showToast(mContext, e.getMessage()+"");
+			Toast.makeText(mContext, e.getMessage()+"", Toast.LENGTH_SHORT).show();
 		}
 		try {
 			if (responseMap.containsKey(ERROR_CODE))
@@ -323,7 +322,7 @@ public class Communicator {
 			responseString = doHTTPPost(url,sendMap);
 			Log.i(TAG, "registerUser Httpost responseString = " + responseString);
 			if (responseString.contains("[ERROR]")){
-				Utils.showToast(mContext, Constants.AUTHN_FAILED+":"+responseString);
+				Toast.makeText(mContext, Constants.AUTHN_FAILED+":"+responseString, Toast.LENGTH_SHORT).show();
 				return Constants.AUTHN_FAILED+":"+ responseString;
 			}
 			ResponseParser parser = new ResponseParser(responseString);
@@ -379,7 +378,7 @@ public class Communicator {
 			responseString = doHTTPPost(url, sendMap);
 		} catch (Exception e) {
 			Log.i(TAG, e.getMessage());
-			Utils.showToast(mContext, e.getMessage());
+			Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		if (Utils.debug)
@@ -806,7 +805,7 @@ public class Communicator {
 			Integer i = Integer.parseInt(response);
 			return i;
 		} catch (NumberFormatException e) {
-			Log.e(TrackerActivity.TAG, "Communicator, registerExpeditionId, Invalid response received");
+			Log.e(TAG, "Communicator, registerExpeditionId, Invalid response received");
 			return -1;
 		}
 	}

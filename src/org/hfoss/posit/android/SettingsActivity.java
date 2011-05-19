@@ -21,7 +21,6 @@
  */
 package org.hfoss.posit.android;
 
-import org.hfoss.posit.android.utilities.Utils;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -33,6 +32,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * Allows the user to change the server or project or login as a different user or
@@ -143,7 +143,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 				 finish();
 			 }
 			 else {
-				 Utils.showToast(this, "'" + server + "' is already the current server.");
+				Toast.makeText(this, "'" + server + "' is already the current server.", Toast.LENGTH_SHORT).show();
 			 }
 
 		 }

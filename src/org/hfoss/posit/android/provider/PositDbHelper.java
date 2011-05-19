@@ -29,11 +29,8 @@ import java.util.ListIterator;
 import java.util.Random;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.TrackerActivity;
-import org.hfoss.posit.android.TrackerState;
-import org.hfoss.posit.android.utilities.Utils;
+import org.hfoss.posit.android.Utils;
 
-import com.google.android.maps.GeoPoint;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -169,13 +166,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		EXPEDITION_PROJECT_ID 
 	};
 	
-	/**
-	 * Array of view ids used by TrackerListActivity to display a list of Expeditions.
-	 */
-	public static final int[] track_views = {
-		R.id.expedition_id,
-		R.id.project_id
-	};
 
 	/*
 	 * Finds table creation sql statement. 
@@ -551,131 +541,8 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		return rowId;
 	}
 	
-	/**
-	 * Insert an expedition into the database.
-	 * @param values the ContentValues providing the expedition's data
-	 * @return
-	 */
-	@SuppressWarnings("finally")
-	public long addNewExpedition(ContentValues values) {
-		Log.d(TrackerActivity.TAG, "PositDbHelper, addNewExpedition()");
-		mDb = getWritableDatabase();  // Either create the DB or open it.
-		long rowId = 0;
-		try {
-			rowId = mDb.insert(EXPEDITION_TABLE, null, values);
-		} catch (Exception e) {
-			Log.e(TAG, "Error on addNewExpedition " + e.getMessage());
-			e.printStackTrace();
-			rowId = -1;
-		} finally {
-			mDb.close();
-			return rowId;
-		}
-	}
 
-	/**
-	 * Inserts a GPS point into the database.
-	 * @param values the ContentValues storing the point's data.
-	 */
-	public long addNewGPSPoint(ContentValues values) {
-		//Log.d(TrackerActivity.TAG, "PositDbHelper, addNewGPSPoint()");
-		mDb = getWritableDatabase();  // Either create the DB or open it.
-		long result = mDb.insert(EXPEDITION_GPS_POINTS_TABLE, null, values);
-		Log.i(TrackerActivity.TAG, "PositDbHelper, addNewGPSPoint, result= " + result + 
-				" <" + values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE)
-				+ "," + values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) + ">");
-		mDb.close();
-		return result;
-	}
-	
-	/**
-	 * For a given expedition number, retrieves all the geopoints for that expedition.
-	 * @param exped
-	 * @return
-	 */
-	public ArrayList<ContentValues> getGeoPoints(int exped) {
-		Log.d(TrackerActivity.TAG, "PositDbHelper, getGeoPoints()");
-		
-		mDb = getReadableDatabase();
-		ArrayList<ContentValues> list = new ArrayList<ContentValues>();
-   
-		if (DBG) Log.i(TAG, "expedition  = " + exped + "");
-		Cursor cursor = mDb.rawQuery("SELECT * FROM " + EXPEDITION_GPS_POINTS_TABLE 
-		//		+ " WHERE " + EXPEDITION  + " = " + exped, null);
-		+ " WHERE " + EXPEDITION  + " = " + exped + " ORDER BY " + EXPEDITION_GPS_POINT_ROW_ID, null);
-		cursor.moveToFirst();
-		
-		while (!cursor.isAfterLast()) {
-			ContentValues values = new ContentValues();
 
-			for (String column : cursor.getColumnNames()) {
-				
-				if(Utils.debug)
-					if (DBG) Log.i(TAG, "Column " + column + " = " + 
-						cursor.getString(cursor.getColumnIndexOrThrow(column)));
-				values.put(column, cursor.getString(cursor.getColumnIndexOrThrow(column)));
-			}
-			list.add(values);
-			cursor.moveToNext(); 
-		}
-		cursor.close();
-		mDb.close();  
-		return list;
-	}
-	
-	/**
-	 * Updates an existing GPS point
-	 * @param rowId The point's unique identifier
-	 * @param values The values to be updated
-	 * @return True or false depending on the success of the query
-	 */
-	public boolean updateGPSPoint(long rowId, ContentValues values) {
-//		Log.d(TrackerActivity.TAG, "PositDbHelper, updateGPSPoint()");
-		boolean success = false;
-		if (values == null)
-			return false;
-		mDb = getWritableDatabase();
-		success = mDb.update(EXPEDITION_GPS_POINTS_TABLE, 
-				values, EXPEDITION_ROW_ID + "=" + rowId, null) > 0;
-		mDb.close();
-		return success;
-	}
-	
-	/**
-	 * Changes the expedition number of all GPS points with a given expedition number
-	 * @param expId  The expedition number to be changed
-	 * @param values Content Values containing the new number.
-	 * @return Whether the update was successful
-	 */
-	public boolean updateGPSPointsNewExpedition(int expId, ContentValues values) {
-		boolean success = false;
-		if (values == null)
-			return false;
-		mDb = getWritableDatabase();
-		success = mDb.update(EXPEDITION_GPS_POINTS_TABLE, 
-				values, EXPEDITION + "=" + expId, null) > 0;
-		mDb.close();
-		return success;
-	}
-	 
-	/**
-	 * Updates an existing expedition. Called at the end of a tracking run to 
-	 * record number of points, points synced, etc. 
-	 * @param expId The expedition id
-	 * @param values The columns to be updated
-	 * @return True iff successful
-	 */
-	public boolean updateExpedition(int expId, ContentValues values) {
-		Log.d(TrackerActivity.TAG, "PositDbHelper, updateExpedition() #" + expId);
-		boolean success = false;
-		if (values == null)
-			return false;
-		mDb = getWritableDatabase();
-		success = mDb.update(EXPEDITION_TABLE, values, EXPEDITION_NUM + "=" + expId, null) > 0;
-		
-		mDb.close();
-		return success;
-	}
 	
 	/**
 	 * Updates a Find using it primary key, id. This should increment its
@@ -897,8 +764,7 @@ public class PositDbHelper extends SQLiteOpenHelper {
 				mContext.getContentResolver().delete(find_data_uri,null,null);
 			}
 			catch(Exception e) {
-				if(Utils.debug)
-					Log.i(TAG,"Could not delete all find data entries");
+				Log.i(TAG,"Could not delete all find data entries");
 			}
 		}
 		c.close();
@@ -948,206 +814,6 @@ public class PositDbHelper extends SQLiteOpenHelper {
 		return values;
 	}
 	
-	
-	/**
-	 * Returns a cursor to expeditions data. The calling object must
-	 * remember to close the cursor. 
-	 * 
-	 * @param pid
-	 * @return
-	 */
-	public Cursor fetchExpeditionsByProjectId(int pid) {
-		
-		mDb = getReadableDatabase();  // Either open or create the DB    	
-		Cursor c = mDb.query(EXPEDITION_TABLE, null, 
-				EXPEDITION_PROJECT_ID + "=" + pid, 
-				null, null, null, null);
-		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionPointsByProjectId(), size = " + c.getCount());
-		mDb.close();
-		return c;
-	}
-	
-    /**
-     * Returns the expedition's id number given its row id. This method
-     * is used to 
-     * 
-     * @param rowId
-     * @return
-     */
-	public String fetchExpeditionId(long rowId) {
-		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionId()");
-		mDb = getReadableDatabase();  // Either open or create the DB    	
-		Cursor c = mDb.query(EXPEDITION_TABLE, null, 
-				EXPEDITION_ROW_ID + "=" + rowId, 
-				null, null, null, null);
-		Log.d(TAG,"fetchExpeditionId cursor size = " + c.getCount());
-		c.moveToFirst();
-		String expId = c.getString(c.getColumnIndex(EXPEDITION_NUM));
-		mDb.close();
-		c.close();
-		return expId;
-	}
-	
-	/**
-	 * Retrieves a column of data from the expedition table
-	 * @param rowId The row key.
-	 * @param column The column to be retrieved.
-	 * @return The data is returned as a String.
-	 */
-	public String fetchExpeditionData(long rowId, String column) {
-		mDb = getReadableDatabase();  // Either open or create the DB    	
-		Cursor c = mDb.query(EXPEDITION_TABLE, null, 
-				EXPEDITION_ROW_ID + "=" + rowId, 
-				null, null, null, null);
-		Log.d(TAG,"fetchExpeditionId cursor size = " + c.getCount());
-		c.moveToFirst();
-		String data = c.getString(c.getColumnIndex(column));
-		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionData() " + column + "=" + data);
-
-		mDb.close();
-		c.close();
-		return data;
-	}
-	
-    /**
-     * Returns the expedition's data.
-     * 
-     * @param rowId
-     * @return A content values or null if something goes wrong.
-     */
-	public ContentValues fetchExpeditionData(long rowId) {
-		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionData() for row " + rowId);
-		mDb = getReadableDatabase();  // Either open or create the DB    	
-		Cursor c = mDb.query(EXPEDITION_TABLE, null, 
-				PositDbHelper.EXPEDITION_ROW_ID + "=" + rowId, 
-				null, null, null, null);
-		ContentValues values = null;
-		Log.d(TrackerActivity.TAG, 
-				" enum " + c.getColumnIndex(EXPEDITION_NUM)
-				+ " points " + c.getColumnIndex(EXPEDITION_POINTS)
-				+ " synced " + c.getColumnIndex(EXPEDITION_SYNCED));
-		Log.d(TrackerActivity.TAG,
-				" enum " + c.getInt(11) 
-				+ " points " + c.getInt(3)
-				+ " synced " + c.getInt(4));
-		
-//		values.put(EXPEDITION_NUM, c.getString(c.getColumnIndex(EXPEDITION_NUM)));
-//		values.put(EXPEDITION_POINTS, c.getString(c.getColumnIndex(EXPEDITION_POINTS)));
-//		values.put(EXPEDITION_SYNCED, c.getString(c.getColumnIndex(EXPEDITION_SYNCED)));			
-			//values = Utils.getContentValuesFromCursor(c);
-
-		mDb.close();
-		c.close();
-		return values;
-	}
-
-	/**
-	 * Fetches all the points associated with a given expedition, identified by its
-	 * expedition number.  The points are assigned to the TrackerState object 
-	 * passed in as a parameter.  They are stored in the TrackeState's array list
-	 * of PointAndTime objects. 
-	 * 
-	 * @param expId the expedition's identification number
-	 * @param track an object storing the state of an expedition, including all its
-	 *  geopoints. 
-	 */
-	public void fetchExpeditionPointsByExpeditionId (int expId, TrackerState track) {		
-		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionPointsByExpeditionId()");
-
-		mDb = getReadableDatabase();
-		Cursor c = mDb.query((EXPEDITION_GPS_POINTS_TABLE), 
-				null, 
-				EXPEDITION + "=" + expId, 
-				null, null, null, null);
-		Log.d(TrackerActivity.TAG, "PositDbHelper, " +
-				"fetchExpeditionPointsByExpeditionId points = " +c.getCount());
-		c. moveToFirst();
-		while (c.isAfterLast() == false) {
-			int lat_k = c.getColumnIndex(GPS_POINT_LATITUDE);
-			Double latitude = new Double(c.getString(lat_k));
-			int lon_k = c.getColumnIndex(GPS_POINT_LONGITUDE);
-			Double longitude = new Double (c.getString(lon_k));
-			long time = c.getLong(c.getColumnIndex(GPS_TIME));
-			GeoPoint point = new GeoPoint(
-					(int)(latitude*1E6), 
-					(int)(longitude*1E6));
-			track.addGeoPointAndTime(point, time);
-			c.moveToNext();
-		}
-	
-		mDb.close();
-		c.close();
-	}
-	
-	/**
-	 * Returns an array list of content values where each content values is a row
-	 * containing an unsyced point. 
-	 * @param expId The point's expedition ID
-	 * @return An list of points represented as ContentValues
-	 */
-	public ArrayList<ContentValues>  fetchExpeditionPointsUnsynced (int expId) {
-		Log.d(TrackerActivity.TAG, "PositDbHelper, fetchExpeditionPointsUnsynced for exped = " + expId);
-		mDb = getReadableDatabase();
-		Cursor c = mDb.query((EXPEDITION_GPS_POINTS_TABLE), 
-				null, 
-				EXPEDITION + "=" + expId + " AND " + GPS_SYNCED + "=" + FIND_NOT_SYNCED, 
-				null, null, null, null);
-
-		ArrayList<ContentValues> list = new ArrayList<ContentValues>();
-		c. moveToFirst();
-		while (c.isAfterLast() == false) {
-			ContentValues vals = new ContentValues();
-			int lat_k = c.getColumnIndex(GPS_POINT_LATITUDE);
-			Double latitude = new Double(c.getString(lat_k));
-			vals.put(GPS_POINT_LATITUDE, latitude);
-			int lon_k = c.getColumnIndex(GPS_POINT_LONGITUDE);
-			Double longitude = new Double (c.getString(lon_k));
-			vals.put(GPS_POINT_LONGITUDE, longitude);
-			long time = c.getLong(c.getColumnIndex(GPS_TIME));
-			vals.put(GPS_TIME, time);
-			vals.put(GPS_POINT_SWATH, c.getInt(c.getColumnIndex(GPS_POINT_SWATH)));
-			vals.put(EXPEDITION, c.getInt(c.getColumnIndex(EXPEDITION)));
-			vals.put(GPS_POINT_ALTITUDE, c.getInt(c.getColumnIndex(GPS_POINT_ALTITUDE)));
-			vals.put(EXPEDITION_GPS_POINT_ROW_ID,c.getInt(c.getColumnIndex(EXPEDITION_GPS_POINT_ROW_ID)));
-			
-			list.add(vals);
-			c.moveToNext();
-		}
-		mDb.close();
-		c.close();
-		return list;
-	}
-	
-	/**
-	 * Deletes an expedition from the expedition table
-	 * @param expId the expedition id number
-	 * @return
-	 */
-	public boolean deleteExpedition(int expId) {
-		Log.d(TrackerActivity.TAG, "PositDbHelper, deleteExpedition()");
-		
-		mDb = getWritableDatabase();
-		int deleted =  mDb.delete(EXPEDITION_TABLE, 
-				EXPEDITION_NUM + "=" + expId, null);
-		mDb.close();
-		return deleted > 0;
-	}
-	
-	/**
-	 * Deletes the points associated with expID.
-	 * @param expId the expedition id number
-	 * @return
-	 */
-	public boolean deleteExpeditionPoints(int expId) {
-		Log.d(TrackerActivity.TAG, "PositDbHelper, deleteExpedition()");
-		
-		mDb = getWritableDatabase();
-		int deleted = mDb.delete(EXPEDITION_GPS_POINTS_TABLE, 
-					EXPEDITION + "=" + expId, null);
-		mDb.close();
-		return deleted > 0;
-	}
-
 	
 	/**
 	 * Returns selected columns for a find by id.
