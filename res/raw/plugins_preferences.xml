@@ -1,21 +1,5 @@
 <PluginsPreferences>
 	<FindPlugins>
-		<Plugin active="false" name="PhotoFind" package="org.hfoss.posit.android.photofind"
-		find_factory="PhotoFindFactory" 
-		findactivity_class="PhotoFindActivity"
-		listfindsactivity_class="ListPhotoFindsActivity"
-		find_data_manager="PhotoFindDataManager"
-		main_icon="posit"		
-		/>
-		
-		<Plugin active="false" name="PhotoFindSorted" package="org.hfoss.posit.android.photofindsorted"
-		find_factory="PhotoFindFactory" 
-		findactivity_class="PhotoFindActivity"
-		listfindsactivity_class="ListPhotoFindsActivity"
-		find_data_manager="PhotoFindDataManager"
-		main_icon="posit"		
-		/>
-
 		<Plugin active="true" name="AcdiVocaFind" package="org.hfoss.posit.android.acdivocafind"
 		find_factory="AcdiVocaFindFactory" 
 		findactivity_class="AcdiVocaFindActivity"

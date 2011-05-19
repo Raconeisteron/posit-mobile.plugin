@@ -21,11 +21,8 @@
  */
 package org.hfoss.posit.android;
 
-import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 import org.hfoss.posit.android.web.SyncThread;
-import org.hfoss.third.NetworkConnectivityListener;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -35,6 +32,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 /**
  * Manages synchronization between the phone and a server. The phone must be
@@ -72,7 +70,6 @@ public class SyncActivity extends Activity {
 	 */
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		syncFinds();
 	}
@@ -185,17 +182,17 @@ public class SyncActivity extends Activity {
 				if (syncSuccess == true) {
 					mProgressDialog.setMessage("Sync completed successfully. "
 							+ PRESS_BACK);
-					Utils.showToast(mContext, "Sync completed successfully.");
+					Toast.makeText(mContext, "Sync completed successfully.", Toast.LENGTH_SHORT).show();
 				} else {
 					mProgressDialog.setMessage("Sync failed." + PRESS_BACK);
-					Utils.showToast(mContext, "Sync failed.");
+					Toast.makeText(mContext, "Sync failed.", Toast.LENGTH_SHORT).show();
 				}
 				finish();
 				break;
 			case SyncThread.NETWORKERROR:
 				mProgressDialog
 						.setMessage("No network avaiable. " + PRESS_BACK);
-				Utils.showToast(mContext, "Sync Exiting: No network available");
+				Toast.makeText(mContext, "Sync Exiting: No network available", Toast.LENGTH_SHORT).show();
 				mSyncThread.setConnected(false);
 				syncSuccess = false;
 				// finish();
@@ -215,7 +212,7 @@ public class SyncActivity extends Activity {
 						+ PRESS_BACK);
 				mSyncThread.stopThread();
 				syncSuccess = false;
-				Utils.showToast(mContext, "Project does not exist. Please choose another project.");
+				Toast.makeText(mContext, "Project does not exist. Please choose another project.", Toast.LENGTH_SHORT).show();
 				Intent i = new Intent(mContext, ShowProjectsActivity.class);
 				SyncActivity.this.startActivity(i);
 				Log.i(TAG, "Project does not exist");

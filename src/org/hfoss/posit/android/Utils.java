@@ -19,7 +19,7 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android.utilities;
+package org.hfoss.posit.android;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -39,8 +39,9 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.hfoss.posit.android.Log;
-import org.hfoss.posit.android.TrackerActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
+
+import android.content.BroadcastReceiver;
 
 import android.R;
 import android.app.AlertDialog;
@@ -51,9 +52,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
+import android.provider.MediaStore.MediaColumns;
+import android.provider.MediaStore.Images.ImageColumns;
+import android.provider.MediaStore.Images.Media;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -75,7 +83,122 @@ public class Utils {
 	public static final int ADHOC_ON_ID = 123;
 	public static final int NOTIFICATION_ID = 1234;
 	
-	public static boolean debug = true;	
+	public static boolean debug = true;
+	
+
+	
+	/**
+	 * Saves the camera images and associated bitmaps to Media storage and
+	 *  save's their respective Uri's in aFind, which will save them to Db.
+	 * @param aFind  the current Find we are creating or editing
+	 * @param bm the bitmap from the camera
+	 */
+	public static List<ContentValues> 
+		saveImagesAndUris(Context context, List<Bitmap> bitmaps) {
+		if (bitmaps.size() == 0) {
+			Log.i(TAG, "No camera images to save ...exiting ");
+			return null;
+		}
+		List<ContentValues> uris = null;
+		List<Uri> imageUris = new LinkedList<Uri>();
+		List<Uri> thumbUris = new LinkedList<Uri>();
+
+		ListIterator<Bitmap> it = bitmaps.listIterator();
+		while (it.hasNext()) { 
+			Bitmap bm = it.next();
+
+			ContentValues values = new ContentValues();
+			values.put(MediaColumns.TITLE, "posit image");
+			values.put(ImageColumns.BUCKET_DISPLAY_NAME,"posit");
+			
+			values.put(ImageColumns.IS_PRIVATE, 0);
+			values.put(MediaColumns.MIME_TYPE, "image/jpeg");
+			Uri imageUri = context.getContentResolver()
+			.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+			OutputStream outstream;
+			try {
+				outstream = context.getContentResolver().openOutputStream(imageUri);
+				bm.compress(Bitmap.CompressFormat.JPEG, 70, outstream);
+				outstream.close();
+			} catch (Exception e) {
+					Log.i(TAG, "Exception writing image file " + e.getMessage());
+					e.printStackTrace();
+			}
+			if(Utils.debug) {
+				Log.i(TAG, "Saved image file, uri = " + imageUri.toString());
+			}
+
+			// Now create a thumbnail and save it
+			int width = bm.getWidth();
+			int height = bm.getHeight();
+			int newWidth = THUMBNAIL_TARGET_SIZE;
+			int newHeight = THUMBNAIL_TARGET_SIZE;
+
+			float scaleWidth = ((float)newWidth)/width;
+			float scaleHeight = ((float)newHeight)/height;
+
+			Matrix matrix = new Matrix();
+			matrix.setScale(scaleWidth, scaleHeight);
+			Bitmap thumbnailImage = Bitmap.createBitmap(bm, 0, 0,width,height,matrix,true);
+
+			int imageId = Integer.parseInt(imageUri.toString()
+					.substring(Media.EXTERNAL_CONTENT_URI.toString().length()+1));	
+
+			values = new ContentValues(4);
+			values.put(Images.Thumbnails.KIND, Images.Thumbnails.MINI_KIND);
+			values.put(Images.Thumbnails.IMAGE_ID, imageId);
+			values.put(Images.Thumbnails.HEIGHT, height);
+			values.put(Images.Thumbnails.WIDTH, width);
+			Uri thumbnailUri = context.getContentResolver()
+			.insert(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, values);
+			try {
+				outstream = context.getContentResolver().openOutputStream(thumbnailUri);
+				thumbnailImage.compress(Bitmap.CompressFormat.JPEG, 70, outstream);
+				outstream.close();
+			} catch (Exception e) {
+					Log.i(TAG, "Exception writing thumbnail file " + e.getMessage());
+					e.printStackTrace();
+			}
+			if(Utils.debug) {
+				Log.i(TAG, "Saved image file, uri = " + imageUri.toString());
+			}
+
+			imageUris.add(imageUri);
+			thumbUris.add(thumbnailUri);
+		}
+		return retrieveImagesFromUris(imageUris, thumbUris);
+	}
+
+	/**
+	 * Retrieves images and thumbnails from their uris stores them as <key,value> pairs in a ContentValues,
+	 * one for each image.  Each ContentValues is then stored in a list to carry all the images
+	 * @return the list of images stored as ContentValues
+	 */
+	public static List<ContentValues> retrieveImagesFromUris(List<Uri> images, List<Uri> thumbs) {
+		List<ContentValues> values = new LinkedList<ContentValues>();
+		ListIterator<Uri> imageIt = images.listIterator();
+		ListIterator<Uri> thumbnailIt = thumbs.listIterator();
+
+		while (imageIt.hasNext() && thumbnailIt.hasNext()) {
+			Uri imageUri = imageIt.next();
+			Uri thumbnailUri = thumbnailIt.next();
+
+			ContentValues result = new ContentValues();
+			String value = "";
+			if (imageUri != null) {
+				value = imageUri.toString();
+				result.put(PositDbHelper.PHOTOS_IMAGE_URI, value);
+				value = thumbnailUri.toString();
+				result.put(PositDbHelper.PHOTOS_THUMBNAIL_URI, value);
+			}
+			values.add(result);
+		}
+		return values;
+	}
+
+	
+	
+	
 	
 /**
  * Creates a Connectivity Manager for the given context and returns true if a network is available
@@ -85,7 +208,7 @@ public class Utils {
  */
 	public static boolean isNetworkAvailable(Context context)
 	{
-		conManage = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		conManage = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
         if (conManage == null) {
            Log.w(TAG, "couldn't get connectivity manager");
         } else {
@@ -121,20 +244,7 @@ public class Utils {
     public static boolean isSuccessfulHttpResultCode(String str) {
     	return str.indexOf("[Success]") != -1;
     }
-	
-	/**
-	 * This is for showing the Toast on screen for notifications
-	 * 
-	 * @param mContext
-	 * @param text
-	 */
-	public static void showToast(Context mContext, String text) {
-		Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
-	}
 
-	public static void showToast(Context mContext, int resId) {
-		Toast.makeText(mContext, resId, Toast.LENGTH_SHORT).show();
-	}
 	/**
 	 *  Helper method for creating notification 
 	 *  You'll still need to get the NotificationManager using
@@ -265,20 +375,20 @@ public class Utils {
 		return tm.getDeviceId();
 	}
 
-	// Not clear whether this method works.
-	public static ContentValues getContentValuesFromCursor(Cursor c) {
-		ContentValues args = new ContentValues();
-		for (int i = 0; i < c.getColumnCount(); i++) {
-			Log.d(TrackerActivity.TAG, "getContentValuesFromCursor i = " + i + " size= " + c.getCount());
-			Log.d(TrackerActivity.TAG, " name = " + c.getString(i));
-			
-			args.put(
-					c.getColumnName(i),
-					c.getString(i));
-			
-		}
-		return args;
-	}
+//	// Not clear whether this method works.
+//	public static ContentValues getContentValuesFromCursor(Cursor c) {
+//		ContentValues args = new ContentValues();
+//		for (int i = 0; i < c.getColumnCount(); i++) {
+//			Log.d(TrackerActivity.TAG, "getContentValuesFromCursor i = " + i + " size= " + c.getCount());
+//			Log.d(TrackerActivity.TAG, " name = " + c.getString(i));
+//			
+//			args.put(
+//					c.getColumnName(i),
+//					c.getString(i));
+//			
+//		}
+//		return args;
+//	}
 	
 	/**
 	 * Only works if you want a content map with String objects.

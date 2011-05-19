@@ -9,7 +9,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.R.raw;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 

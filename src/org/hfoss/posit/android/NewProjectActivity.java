@@ -22,7 +22,6 @@
 
 package org.hfoss.posit.android;
 
-import org.hfoss.posit.android.utilities.Utils;
 import org.hfoss.posit.android.web.Communicator;
 
 import android.app.Activity;
@@ -34,6 +33,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Creates a new project and registers it on the server. 
@@ -58,7 +58,7 @@ public class NewProjectActivity extends Activity implements OnClickListener{
 			String projectName = (((TextView) findViewById(R.id.projectName)).getText()).toString();
 			String projectDescription = (((TextView) findViewById(R.id.projectDescription)).getText()).toString(); 
 			if(projectName.equals("")){
-				Utils.showToast(this, "Please enter a name for your project");
+				Toast.makeText(this, "Please enter a name for your project", Toast.LENGTH_SHORT).show();
 				break;
 			}
 			SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(this);
@@ -69,12 +69,12 @@ public class NewProjectActivity extends Activity implements OnClickListener{
 			Log.i(TAG,response);
 			if(response.contains("success")){
 				
-				Utils.showToast(this, response);
+				Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
 				setResult(ShowProjectsActivity.NEW_PROJECT);
 				finish();
 			}
 			else
-				Utils.showToast(this, response);
+				Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
 			break;
 		}
 	}

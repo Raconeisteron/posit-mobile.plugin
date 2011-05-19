@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.provider.PositDbHelper;
-import org.hfoss.posit.android.utilities.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -132,7 +131,7 @@ public class AcdiVocaFind extends Find{
 	 * @return
 	 */
 	public boolean insertFindDataEntriesToDB(List<ContentValues> images) {
-		if (Utils.debug) Log.i(TAG, "insertImagesToDB, mId=" + mId + " guId=" + mGuid);
+		Log.i(TAG, "insertImagesToDB, mId=" + mId + " guId=" + mGuid);
 		if (images == null || images.size() == 0)
 			return true; // Nothing to do
 		if (mId != -1 && !mGuid.equals(""))

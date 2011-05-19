@@ -1,29 +1,12 @@
 package org.hfoss.posit.android.acdivocafind;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.api.FindDataManager;
-import org.hfoss.posit.android.provider.PositDbHelper;
-import org.hfoss.posit.android.utilities.Utils;
-import org.hfoss.third.Base64Coder;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.provider.MediaStore.Images;
-import android.provider.MediaStore.MediaColumns;
-import android.provider.MediaStore.Images.ImageColumns;
-import android.provider.MediaStore.Images.Media;
+
 
 public class AcdiVocaFindDataManager extends FindDataManager{
 
