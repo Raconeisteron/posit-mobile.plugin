@@ -1,6 +1,9 @@
 package org.hfoss.posit.android.api;
 
 import java.io.InputStream;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,6 +17,10 @@ import org.w3c.dom.NodeList;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class FindPluginManager {
@@ -28,7 +35,16 @@ public class FindPluginManager {
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	
+	private Class<SettingsActivity> mSettingsActivityClass = null;
+
+	public static String mPreferences = null;
 	public static String mMainIcon = null;
+	
+	/**
+	 * Associates preferences with activities.
+	 */
+	public static Hashtable preferencesTable = new Hashtable();
+
 	
 	private FindPluginManager(Activity activity){
 		mMainActivity = activity;
@@ -62,7 +78,11 @@ public class FindPluginManager {
 					String find_data_manager_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_data_manager").getTextContent();
 					String findactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("findactivity_class").getTextContent();
 					String listfindsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("listfindsactivity_class").getTextContent();
+					String settingsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("settings_activity").getTextContent();
+					
 					mMainIcon = plugin_nodes.item(ii).getAttributes().getNamedItem("main_icon").getTextContent();
+
+					mPreferences = plugin_nodes.item(ii).getAttributes().getNamedItem("preferences_xml").getTextContent();
 
 					@SuppressWarnings({ "rawtypes" })
 					Class new_class = Class.forName(package_name + "." + find_factory_name);
@@ -74,9 +94,12 @@ public class FindPluginManager {
 					mFindActivityClass = (Class<FindActivity>)Class.forName(package_name + "." + findactivity_name);
 					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(package_name + "." + listfindsactivity_name);
 					
+					mSettingsActivityClass = (Class<SettingsActivity>)Class.forName(package_name + "." + settingsactivity_name);
+					
 					break;
 				}
 			}
+			setupSettings(mPreferences);
 		}catch(Exception ex)
 		{
 			Log.i(TAG, "Failed to load plugin");
@@ -84,6 +107,16 @@ public class FindPluginManager {
 			
 			mMainActivity.finish();
 		}
+	}
+	
+	private static void setupSettings(String preferencesXML) {
+		preferencesTable.put("testpref", "org.hfoss.posit.android.AboutActivity");
+		preferencesTable.put("testpref2", "org.hfoss.posit.android.AboutActivity");
+		Log.i(TAG,preferencesTable.toString());
+	}
+	
+	public static Iterator getPreferenceNamesIterator () {
+		return preferencesTable.keySet().iterator();
 	}
 	
 	public FindFactory getFindFactory(){
@@ -100,5 +133,9 @@ public class FindPluginManager {
 	
 	public Class<ListFindsActivity> getListFindsActivityClass(){
 		return mListFindsActivityClass;
+	}
+
+	public Class<SettingsActivity> getSettingsActivityClass() {
+		return mSettingsActivityClass;
 	}
 }

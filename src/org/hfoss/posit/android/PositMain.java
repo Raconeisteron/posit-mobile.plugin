@@ -22,8 +22,11 @@
 package org.hfoss.posit.android;
 
 
+import java.util.Locale;
+
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
+import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
 
@@ -37,6 +40,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -100,15 +104,15 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		// initialize plugins
 		FindPluginManager.initInstance(this);
 
-		// Give the user the tutorial if they haven't yet had it. 
-		if (!mSharedPrefs.getBoolean("tutorialComplete", false)) {
-			Intent i = new Intent(this, TutorialActivity.class);
-			startActivity(i);
-		} else { 
+//		// Give the user the tutorial if they haven't yet had it. 
+//		if (!mSharedPrefs.getBoolean("tutorialComplete", false)) {
+//			Intent i = new Intent(this, TutorialActivity.class);
+//			startActivity(i);
+//		} else { 
 			startPOSIT();
-		}
+//		}
 
-		Toast.makeText(this, "Server: "  + mSharedPrefs.getString("SERVER_ADDRESS", ""), Toast.LENGTH_SHORT).show();
+//		Toast.makeText(this, "Server: "  + mSharedPrefs.getString("SERVER_ADDRESS", ""), Toast.LENGTH_SHORT).show();
 	}
 
 
@@ -121,12 +125,12 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	private void startPOSIT() {
 		// If the phone has no valid AUTH_KEY, it has to be registered with a server 
 
-		mAuthKey = mSharedPrefs.getString("AUTHKEY", "");
-		if (mAuthKey.equals("") || mAuthKey.equals(null)) {
-			Intent i = new Intent(this, RegisterActivity.class);
-			startActivityForResult(i, REGISTRATION_ACTIVITY);
-			
-		} else {    // Otherwise display the PositMain View
+//		mAuthKey = mSharedPrefs.getString("AUTHKEY", "");
+//		if (mAuthKey.equals("") || mAuthKey.equals(null)) {
+//			Intent i = new Intent(this, RegisterActivity.class);
+//			startActivityForResult(i, REGISTRATION_ACTIVITY);
+//			
+//		} else {    // Otherwise display the PositMain View
 			setContentView(R.layout.main);
 			
 			if (FindPluginManager.mMainIcon != null) {
@@ -153,7 +157,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				Log.w(TAG, nnfe.toString(), nnfe);
 				version.setVisibility(View.INVISIBLE);
 			}
-		}
+//		}
 	}
 
 	// Lifecycle methods just generate Log entries to help debug and understand flow
@@ -168,6 +172,14 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG,"Resuming");
+	       //  For testing purposes we switch to Haitian creole
+//		String localePref = mSharedPrefs.getString("locale", "");
+//
+//        Locale locale = new Locale(localePref); 
+//        Locale.setDefault(locale);
+//        Configuration config = new Configuration();
+//        config.locale = locale;
+  //      getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
 	}
 
 	@Override
@@ -180,7 +192,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	protected void onRestart() {
 		super.onRestart();
 		Log.i(TAG,"Restarting");
-		startPOSIT();
+//		startPOSIT();
 	}
 
 	@Override
@@ -226,14 +238,14 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	 * Handles clicks on PositMain's buttons.
 	 */
 	public void onClick(View view) {
-		// Make sure the user has chosen a project before trying to add finds
-		SharedPreferences sp = PreferenceManager
-		.getDefaultSharedPreferences(this);
-		if (sp.getString("PROJECT_NAME", "").equals("")) {
-			Toast.makeText(this, "To get started, you must choose a project.", Toast.LENGTH_SHORT).show();
-			Intent i = new Intent(this, ShowProjectsActivity.class);
-			startActivity(i);
-		} else {
+//		// Make sure the user has chosen a project before trying to add finds
+//		SharedPreferences sp = PreferenceManager
+//		.getDefaultSharedPreferences(this);
+//		if (sp.getString("PROJECT_NAME", "").equals("")) {
+//			Toast.makeText(this, "To get started, you must choose a project.", Toast.LENGTH_SHORT).show();
+//			Intent i = new Intent(this, ShowProjectsActivity.class);
+//			startActivity(i);
+//		} else {
 			Intent intent = new Intent();
 
 			switch (view.getId()) {
@@ -248,7 +260,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				break;
 
 			}
-		}
+//		}
 	}
 
 	/**

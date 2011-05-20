@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<ScrollView android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:orientation="vertical" android:scrollbars="vertical|horizontal">
+			
+			<TextView android:text="@string/general_info" android:textColor="#ffffff"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" 
+				android:textSize="24dp" />
+
+<!--  
+			<TextView android:text="@string/firstname" android:textColor="#ffffff"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />
+-->				
+			<EditText android:id="@+id/firstname"
+				android:hint="@string/firstname"
+				android:inputType="textCapSentences"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" 
+				android:layout_marginLeft="30px" android:layout_marginRight="30px" />
+<!--				
+			<TextView android:text="@string/beneficiary" android:textColor="#ffffff"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />
+-->
+			<EditText android:id="@+id/beneficiary"
+				android:hint="@string/beneficiary"
+				android:layout_width="fill_parent" android:layout_marginLeft="30px"
+				android:inputType="textCapSentences"
+				android:layout_marginRight="30px" android:layout_height="wrap_content" />
+ 				
+			<TextView android:text="@string/commune" android:textColor="#ffffff"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />
+			<Spinner android:id="@+id/commune" 
+				android:layout_marginLeft="30px" android:layout_marginRight="30px"
+				android:entries="@+array/commune_names"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
+
+			<TextView android:text="@string/commune_section" android:textColor="#ffffff"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />
+			<Spinner android:id="@+id/commune_section" 
+				android:layout_marginLeft="30px" android:layout_marginRight="30px"
+				android:entries="@+array/commune_section_names"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
+
+<!--  
+			<TextView android:text="@string/address" android:textColor="#ffffff"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />
+-->
+			<EditText android:id="@+id/address"
+				android:hint="@string/address"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" 
+				android:layout_marginLeft="30px" android:layout_marginRight="30px" />	
+
+			<!--  <TextView android:text="Date of Birth / Age" -->
+			<TextView android:text="@string/dob"
+				android:textColor="#ffffff" 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" />
+			
+			<DatePicker android:id="@+id/datepicker" 
+				android:layout_width="wrap_content" 
+				android:endYear="2020"
+				android:startYear="1950"
+				android:layout_marginLeft="30px" android:layout_marginRight="30px"
+				android:layout_height="wrap_content">
+			</DatePicker>
+			
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+<!--  			
+			<TextView android:text="@string/dob_age"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" />
+-->
+			<EditText android:id="@+id/age" 
+				android:hint="@string/dob_age"
+				android:paddingLeft="30px"
+				android:layout_width="wrap_content" android:minWidth="75px"
+				android:numeric="integer" android:layout_height="wrap_content" />				
+<!--  				
+			<TextView android:text="@string/sex"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
+				android:paddingLeft="20px"
+				android:layout_height="wrap_content" />
+-->
+			<RadioGroup android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal"
+				android:id="@+id/sex">
+				<RadioButton android:checked="true" android:id="@+id/female"
+					android:text="@string/Female" />
+				<RadioButton android:checked="false" android:id="@+id/male"
+					android:text="@string/Male" />
+			</RadioGroup>
+			</LinearLayout>
+	
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			
+			<TextView android:text="@string/Number_of_people_in_home"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" />		
+			<EditText android:id="@+id/inhome" android:layout_width="wrap_content"
+				android:numeric="integer"
+				android:layout_height="wrap_content" android:paddingLeft="20px" 
+				android:minWidth ="48dp"/>
+			</LinearLayout>
+				
+			<TextView android:text="@string/Infant_Category"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" />
+				
+			<RadioGroup android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal"
+				android:id="@+id/infantcategory">
+				
+				<RadioButton android:checked="false" android:id="@+id/malnourished"
+					android:text="@string/Malnourished" />
+				<RadioButton android:checked="false" android:id="@+id/inprevention"
+					android:text="@string/In_Prevention" />
+			</RadioGroup>
+			<TextView android:text="@string/Mother_Category"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" />
+			<RadioGroup android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal"
+				android:id="@+id/mothercategory">			
+				<RadioButton android:checked="false" android:id="@+id/expecting"
+					android:text="@string/Expecting" />
+				<RadioButton android:checked="false" android:id="@+id/nursing"
+					android:text="@string/Nursing" />	
+			</RadioGroup>
+
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="center" 
+				android:paddingTop="24dp" >
+
+				<Button android:text="@string/add_save" android:id="@+id/saveToDB"
+					android:layout_marginLeft="20px" android:layout_marginRight="20px"
+					android:layout_width="fill_parent" android:layout_height="wrap_content" />
+
+				<Button android:text="@string/add_send" android:id="@+id/sendSMS"
+					android:layout_marginLeft="20px" android:layout_marginRight="20px"
+					android:layout_width="fill_parent" android:layout_height="wrap_content" />
+			</LinearLayout>
+
+</LinearLayout>
+	</ScrollView>
+</LinearLayout>

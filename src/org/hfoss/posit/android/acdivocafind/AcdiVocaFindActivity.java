@@ -21,12 +21,15 @@
  */
 package org.hfoss.posit.android.acdivocafind;
 
+import java.util.Locale;
+
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindActivity;
 
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -64,15 +67,16 @@ public class AcdiVocaFindActivity extends FindActivity{
 		// Create DB helper
 		mDbHelper = new AcdiVocaDbHelper(this);
 
-		setContentView(R.layout.acdivoca_add);
-		((Button)findViewById(R.id.saveToDB)).setOnClickListener(this);
-		((Button)findViewById(R.id.sendSMS)).setOnClickListener(this);
+//		setContentView(R.layout.acdivoca_add);
+//		setContentView(R.layout.acdivoca_add_full);
+//		((Button)findViewById(R.id.saveToDB)).setOnClickListener(this);
+//		((Button)findViewById(R.id.sendSMS)).setOnClickListener(this);
 
-		final Intent intent = getIntent();
-		mAction = intent.getAction();
-		if (mAction.equals(Intent.ACTION_EDIT)) {
-			doEditAction();
-		}
+//		final Intent intent = getIntent();
+//		mAction = intent.getAction();
+//		if (mAction.equals(Intent.ACTION_EDIT)) {
+//			doEditAction();
+//		}
 	}
 
 	/**
@@ -109,9 +113,30 @@ public class AcdiVocaFindActivity extends FindActivity{
 		super.onPause();
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
+		String localePref = PreferenceManager.getDefaultSharedPreferences(this).getString("locale", "");
+		Log.i(TAG, "Locale = " + localePref);
+		Locale locale = new Locale(localePref); 
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+		getBaseContext().getResources().updateConfiguration(config, null);
+//		setContentView(R.layout.acdivoca_add);  // Should be done after configuration
+
+		setContentView(R.layout.acdivoca_add_full);  // Should be done after configuration
+		((Button)findViewById(R.id.saveToDB)).setOnClickListener(this);
+		((Button)findViewById(R.id.sendSMS)).setOnClickListener(this);
+		
+		final Intent intent = getIntent();
+		mAction = intent.getAction();
+		if (mAction.equals(Intent.ACTION_EDIT)) {
+			doEditAction();
+		}
 	}
 
 	/**
@@ -140,8 +165,8 @@ public class AcdiVocaFindActivity extends FindActivity{
 	
 	public void sendMessage(String type, String message) {
 		// setCurrentGpsLocation(null);
-		//String phoneNumber = PreferenceManager.getDefaultSharedPreferences(this).getString("smsPhone", "");
-		String phoneNumber = "8608748128";
+		String phoneNumber = PreferenceManager.getDefaultSharedPreferences(this).getString("smsPhone", "");
+		//String phoneNumber = "8608748128";
 		Toast.makeText(this, "SMS Phone Target = " + phoneNumber, Toast.LENGTH_SHORT).show();		
 		message = "Haiti ACDI/VOCA"  + "|" + type + "|" + message;
 

@@ -186,7 +186,7 @@
 
 
 	<!-- Related to Configuration -->
-	<string name="general">General</string>
+  	<string name="general">General</string>  
 	<string name="synchronization_on_off">Sync On</string>
 	<string name="synchronization_on_off_detail">Toggle to turn synchronization with the server
 		on/off.</string>
@@ -328,4 +328,15 @@
         <!-- Add Menu -->
     <string name="refresh">Clear</string>
     <string name="delete_find">Delete</string>
+    
+    <!-- ACDI/VOCA Settings and Preferences -->
+    <string name="acdivocaprefs">ACDI/VOCA Preferences</string>
+    <string name="SMS_phone">SMS Phone Target</string>
+    <string name="smsPhoneKey">smsPhone</string>
+    <string name="localeKey">locale</string>
+    <string name="locale">Locale</string>
+    <string name="localePref">locale</string>
+ 
+    
+    
 </resources>
