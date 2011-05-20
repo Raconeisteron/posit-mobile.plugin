@@ -58,10 +58,10 @@ public class AboutActivity extends Activity{
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Intent intent;
 		switch(item.getItemId()) {
-		case R.id.settings_menu_item:
-			intent = new Intent(this, SettingsActivity.class);
-			startActivity(intent);
-			break;
+//		case R.id.settings_menu_item:
+//			intent = new Intent(this, SettingsActivity.class);
+//			startActivity(intent);
+//			break;
 		case R.id.goback_menu_item:
 			intent = new Intent(this,PositMain.class);
 			startActivity(intent);

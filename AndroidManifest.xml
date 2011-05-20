@@ -40,9 +40,13 @@
 		<activity android:name="org.hfoss.posit.android.photofindsorted.ListPhotoFindsActivity" />
 		
 		<!-- Activities pertaining to AcdiVocaFind plugin -->
-		<activity android:name="org.hfoss.posit.android.acdivocafind.AcdiVocaFindActivity" />
+		<activity android:name="org.hfoss.posit.android.acdivocafind.AcdiVocaFindActivity" 
+			android:configChanges="orientation|keyboardHidden"
+			/>
 		<activity android:name="org.hfoss.posit.android.acdivocafind.AcdiVocaListFindsActivity" />
-				
+		<activity android:name="org.hfoss.posit.android.acdivocafind.AcdiVocaSettingsActivity" />
+		<activity android:name="org.hfoss.posit.android.api.SettingsActivity" />
+		
 		
 		<activity android:name=".ImageViewActivity" />
 		<activity android:name=".MapFindsActivity" />

@@ -5,7 +5,9 @@
 		findactivity_class="AcdiVocaFindActivity"
 		listfindsactivity_class="AcdiVocaListFindsActivity"
 		find_data_manager="AcdiVocaFindDataManager"
-		main_icon="acdivoca_logo"		
+		settings_activity="AcdiVocaSettingsActivity"
+		preferences_xml="acdivoca_preferences"
+		main_icon="acdivoca_logo"				
 		/>
 
 	</FindPlugins>

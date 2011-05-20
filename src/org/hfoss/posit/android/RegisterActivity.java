@@ -487,9 +487,9 @@ public class RegisterActivity extends Activity implements OnClickListener {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.settings_menu_item:
-			startActivity(new Intent(this, SettingsActivity.class));
-			break;
+//		case R.id.settings_menu_item:
+//			startActivity(new Intent(this, SettingsActivity.class));
+//			break;
 		case R.id.about_menu_item:
 			startActivity(new Intent(this, AboutActivity.class));
 			break;
