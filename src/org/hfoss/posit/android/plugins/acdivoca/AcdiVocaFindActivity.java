@@ -19,7 +19,7 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android.acdivocafind;
+package org.hfoss.posit.android.plugins.acdivoca;
 
 import java.util.Locale;
 

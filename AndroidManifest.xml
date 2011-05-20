@@ -62,12 +62,12 @@
 		<activity android:name="org.hfoss.posit.rwg.RwgSettings"/>
 		<activity android:name="org.hfoss.posit.android.sms.SahanaSMSActivity"/>
 		<activity android:name=".bluetooth.BluetoothExplicitSync"/>
-		<activity android:name=".bluetooth.BluetoothDeviceListActivity"/>
+		<activity android:name="bluetooth.BluetoothDeviceListActivity"/>
 		
 		<!--   <service android:name="org.hfoss.posit.android.adhoc.RWGService" />  -->
 		<service android:name="org.hfoss.adhoc.AdhocService" />
-		<service android:name="org.hfoss.posit.android.TrackerBackgroundService"/>
-		<provider android:name="org.hfoss.posit.android.provider.PositContentProvider" android:authorities="org.hfoss.provider.POSIT" />
+		<service android:name="TrackerBackgroundService"/>
+		<provider android:name="provider.PositContentProvider" android:authorities="org.hfoss.provider.POSIT" />
 	</application>
 </manifest>
 	

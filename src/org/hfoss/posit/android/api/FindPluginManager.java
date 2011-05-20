@@ -1,6 +1,7 @@
 package org.hfoss.posit.android.api;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,6 +28,9 @@ public class FindPluginManager {
 	private static FindPluginManager sInstance = null; 
 	
 	private static final String TAG = "FindPluginManager";
+	
+	
+	private ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 	
 	private Activity mMainActivity = null;
 	
@@ -138,4 +142,9 @@ public class FindPluginManager {
 	public Class<SettingsActivity> getSettingsActivityClass() {
 		return mSettingsActivityClass;
 	}
+	
+	public ArrayList<Plugin> getPlugins(){
+		return plugins;
+	}
+	
 }
