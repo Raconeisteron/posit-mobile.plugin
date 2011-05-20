@@ -7,7 +7,6 @@
 	<item>Haitian Creole</item>
 	</string-array>
 	
-	<!--  These have to be parsable as ints -->
 	<string-array name="locale_values"> 
 	<item>en</item>
 	<item>ht</item>

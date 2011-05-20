@@ -20,7 +20,7 @@
  * 
  */
 
-package org.hfoss.posit.android.acdivocafind;
+package org.hfoss.posit.android.plugins.acdivoca;
 
 import java.util.ArrayList;
 import java.util.HashMap;
