@@ -30,8 +30,10 @@ import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.hfoss.posit.android.AboutActivity;
@@ -40,6 +42,7 @@ import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.RegisterActivity;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -50,6 +53,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
@@ -62,8 +66,25 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /**
- * Allows the user to change the server or project or login as a different user or
- * create a new user account.
+ * Manages preferences for core POSIT preferences and all plugins.  Plugin preferences are
+ * merged with POSIT preferences. 
+ * 
+ * Here's how to specify a preference XML for a plugin.  
+ * 
+ * Preferences (EditPreference, ListPreference, etc) that simply set a 
+ * preference value are handled automatically by PreferenceActivity. These can
+ * be coded as usual:
+ *			<ListPreference android:key="@string/s4"
+ *				android:defaultValue="s5" android:summary="@string/s6"
+ *				android:entries="@array/a1" android:entryValues="@array/a2" />
+ *				
+ * Preferences that start an Activity must include an "activity_class" attribute:
+ * 
+ *			<Preference android:key="testpref" 
+ *				android:title="About Me"
+ *				activity_class="org.hfoss.posit.android.AboutActivity"
+ *				android:summary="Click me and see!" />
+ *
  */
 public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 	private static final String TAG = "API Settings";
@@ -78,11 +99,15 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	 * Associates preferences with activities.
 	 */
 	private static ArrayList<PluginSettings> pluginXmlList = new ArrayList<PluginSettings>();
-
 	
-	//private static Hashtable<String,PluginSettings> pluginXmlTable = new Hashtable<String, PluginSettings>(); // Maps plugin to its pref xml
-	private Iterator pluginIterator;
-	
+	/**
+	 * Inner class for a plugin setting, which consists of a preference name and
+	 * and associated activity.  A PluginSetting is created only for those preferences
+	 * that require an associated Activity, not for preferences that are handled automatically
+	 * by PreferenceActivity.
+	 * @author rmorelli
+	 *
+	 */
 	static class PluginSetting {
 		public String prefName;
 		public String activityName;
@@ -95,9 +120,15 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		public String toString() {
 			return prefName + "," + activityName;
 		}
-
 	}
 	
+	/**
+	 * Innter class for PluginSettings. Stores a record for each plugin
+	 * consisting of the plugin's preferences XML file (in res/xml) and
+	 * key/activity pairs for each preference that requires an Activity launch.
+	 * @author rmorelli
+	 *
+	 */
 	static class PluginSettings {
 		private String preferencesXmlFile;
 		private ArrayList<PluginSetting> preferencesList;
@@ -125,34 +156,51 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		
 	}
  
+	/**
+	 * Parses the XML preferences file and loads the key/activity pairs for all
+	 * preferences that require an Activity. Uses XmlPullParser. Called from PluginManager.
+	 * @see http://android-er.blogspot.com/2010/04/read-xml-resources-in-android-using.html
+	 * @param context
+	 * @param prefsXmlFileName
+	 */
 	public static void loadPluginPreferences(Context context, String prefsXmlFileName) {
 		Log.i(TAG,"Loading plugin preferences for Settings Activity");
-		
+
 		PluginSettings settingsObject = new PluginSettings(prefsXmlFileName);
-		
-		int resId = context.getResources().getIdentifier(prefsXmlFileName, "raw", "org.hfoss.posit.android");
+		int resId = context.getResources().getIdentifier(prefsXmlFileName, "xml", "org.hfoss.posit.android");
 
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		try{
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			InputStream istream = context.getResources().openRawResource(resId);
-			Document document = builder.parse(istream);
-			XPath xpath = XPathFactory.newInstance().newXPath();
-			NodeList preference_nodes = 
-				(NodeList)xpath.evaluate("//Preference", document, XPathConstants.NODESET);
+		XmlResourceParser xpp = context.getResources().getXml(resId);
+		try {
+			xpp.next();
+			int eventType = xpp.getEventType();
 
-			//Log.i(TAG, "#resid = " + Integer.toHexString(resId) + " #nodes = " + preference_nodes.getLength());
-			for(int ii = 0; ii < preference_nodes.getLength(); ++ii){
-				String preference_name = preference_nodes.item(ii).getAttributes().getNamedItem("android:key").getTextContent();
-				String activity_name = preference_nodes.item(ii).getAttributes().getNamedItem("activity_class").getTextContent();
-				settingsObject.put(preference_name, activity_name);
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				if (eventType == XmlPullParser.START_TAG) {
+					if (xpp.getName().equals("Preference")) {
+						String preference_name = "";
+						String activity_name = "";
+						for (int k = 0; k < xpp.getAttributeCount(); k++) {
+							String attribute = xpp.getAttributeName(k);
+							//Log.i(TAG,"Attribute = " + attribute);
+							if (attribute.equals("key")) {
+								preference_name = xpp.getAttributeValue(k);
+							} else if (attribute.equals("activity_class")) {
+								activity_name = xpp.getAttributeValue(k);
+							}	
+						}
+						//Log.i(TAG,"Settings = " + preference_name + " " + activity_name);
+						settingsObject.put(preference_name, activity_name);
+
+					}
+				}
+				eventType = xpp.next();
 			}
 			pluginXmlList.add(settingsObject);
-			//Log.i(TAG, pluginXmlTable.toString());
-		}catch(Exception ex)
-		{
-			Log.i(TAG, "Failed to load preference XML");
-			Log.i(TAG, "reason: " + ex.getMessage());
+
+		} catch (XmlPullParserException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -168,11 +216,9 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		for (int k = 0; k < pluginXmlList.size(); k++) {
 			Log.i(TAG,pluginXmlList.get(k).toString());
 			
-			// Add the plugin's preferences
-			// HACK:  adding from Resources requires that the resource be in res/xml not res/raw.  Raw
-			//  resources are not compiled during build, xml's are compiled into binary.
-			//int resID = getResources().getIdentifier(pluginXmlList.get(k).getPreferencesXmlFile(), "raw", "org.hfoss.posit.android");
-			int resID = getResources().getIdentifier(pluginXmlList.get(k).getPreferencesXmlFile(), "xml", "org.hfoss.posit.android");
+			// Merge its preference with POSIT core preferences.
+			String pluginFile = pluginXmlList.get(k).getPreferencesXmlFile();
+			int resID = getResources().getIdentifier(pluginFile, "xml", "org.hfoss.posit.android");
 			this.addPreferencesFromResource(resID);
 			
 			// For each preference that starts an Activity set its Listener
@@ -181,59 +227,10 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 				this.findPreference((CharSequence) settings.get(j).prefName).setOnPreferenceClickListener((OnPreferenceClickListener) this);
 			}
 		}
-		
-// NOTE: Maybe this code can be used to load preferences from a raw resource 		
-//			try {
-//				InputStream istr;
-//				istr = this.getAssets().open(pluginXmlList.get(k).getPreferencesXmlFile());
-//				XmlPullParserFactory factory;
-//				factory = XmlPullParserFactory.newInstance();
-//				factory.setNamespaceAware(true); 
-//				XmlPullParser xrp = factory.newPullParser(); 	
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (XmlPullParserException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}  
-
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		sp.registerOnSharedPreferenceChangeListener(this);
 		
 		this.findPreference("testpositpref").setOnPreferenceClickListener((OnPreferenceClickListener) this);
-
-		
-//		
-//		server = sp.getString("SERVER_ADDRESS", "");
-//		String email = sp.getString("EMAIL","");
-//		
-//		projectName = sp.getString("PROJECT_NAME","");
-//		
-//		Preference regUser = this.findPreference("regUser");
-//		Preference regDevice = this.findPreference("regDevice");
-//		user = this.findPreference("EMAIL");
-//		project = this.findPreference("PROJECT_NAME");	
-//		serverAddress = this.findPreference("SERVER_ADDRESS");
-//		
-//		if (server != null && serverAddress != null) {
-//			serverAddress.setSummary(server); 
-//			serverAddress.setOnPreferenceClickListener(this);
-//		}
-//		if (email != null && user != null){
-//			user.setSummary(email);
-//			user.setOnPreferenceClickListener(this);
-//		}
-//		if (projectName != null && project != null) {
-//			project.setSummary(projectName);
-//			project.setOnPreferenceClickListener(this);
-//		}
-//			
-//		regUser.setOnPreferenceClickListener(this);
-//		regDevice.setOnPreferenceClickListener(this);
-//		
-//		Log.i(TAG, "Email = " + email );
-//
 	}
 	
 
@@ -255,7 +252,6 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 						Intent intent = new Intent(this, activity);
 						startActivity(intent);
 					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

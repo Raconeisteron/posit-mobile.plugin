@@ -15,11 +15,13 @@ import javax.xml.xpath.XPathFactory;
 import org.hfoss.posit.android.R;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xmlpull.v1.XmlPullParser;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.XmlResourceParser;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -58,7 +60,7 @@ public class FindPluginManager {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void initFromResource(Context context, int plugins_xml){
+	public void initFromResource(Context context, int plugins_xml){		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try{
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -88,13 +90,13 @@ public class FindPluginManager {
 					mFindActivityClass = (Class<FindActivity>)Class.forName(package_name + "." + findactivity_name);
 					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(package_name + "." + listfindsactivity_name);
 				
+					Log.i(TAG,"Loading preferences for Settings Activity");
 					SettingsActivity.loadPluginPreferences(mMainActivity, mPreferences);
 
 					// Remove break to load more than one plugin
-					//break;
+					break;
 				}
 			}
-			Log.i(TAG,"Loading preferences for Settings Activity");
 		}catch(Exception ex)
 		{
 			Log.i(TAG, "Failed to load plugin");
@@ -103,7 +105,7 @@ public class FindPluginManager {
 			mMainActivity.finish();
 		}
 	}
-	
+		
 	public FindFactory getFindFactory(){
 		return mFindFactory;
 	}
