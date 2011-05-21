@@ -1,4 +1,4 @@
-package org.hfoss.posit.android.plugins.acdivoca;
+package org.hfoss.posit.android.plugin.acdivoca;
 
 import org.hfoss.posit.android.api.FindDataManager;
 import android.content.ContentValues;

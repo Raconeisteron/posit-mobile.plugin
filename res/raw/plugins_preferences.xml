@@ -1,11 +1,10 @@
 <PluginsPreferences>
 	<FindPlugins>
-		<Plugin active="true" name="AcdiVocaFind" package="org.hfoss.posit.android.acdivocafind"
+		<Plugin active="true" name="AcdiVocaFind" package="org.hfoss.posit.android.plugin.acdivoca"
 		find_factory="AcdiVocaFindFactory" 
 		findactivity_class="AcdiVocaFindActivity"
 		listfindsactivity_class="AcdiVocaListFindsActivity"
 		find_data_manager="AcdiVocaFindDataManager"
-		settings_activity="AcdiVocaSettingsActivity"
 		preferences_xml="acdivoca_preferences"
 		main_icon="acdivoca_logo"				
 		/>

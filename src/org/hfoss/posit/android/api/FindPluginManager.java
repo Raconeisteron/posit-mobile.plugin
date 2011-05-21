@@ -29,7 +29,6 @@ public class FindPluginManager {
 	
 	private static final String TAG = "FindPluginManager";
 	
-	
 	private ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 	
 	private Activity mMainActivity = null;
@@ -39,8 +38,6 @@ public class FindPluginManager {
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	
-	private Class<SettingsActivity> mSettingsActivityClass = null;
-
 	public static String mPreferences = null;
 	public static String mMainIcon = null;
 	
@@ -82,7 +79,6 @@ public class FindPluginManager {
 					String find_data_manager_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_data_manager").getTextContent();
 					String findactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("findactivity_class").getTextContent();
 					String listfindsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("listfindsactivity_class").getTextContent();
-					String settingsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("settings_activity").getTextContent();
 					
 					mMainIcon = plugin_nodes.item(ii).getAttributes().getNamedItem("main_icon").getTextContent();
 
@@ -97,9 +93,7 @@ public class FindPluginManager {
 
 					mFindActivityClass = (Class<FindActivity>)Class.forName(package_name + "." + findactivity_name);
 					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(package_name + "." + listfindsactivity_name);
-					
-					mSettingsActivityClass = (Class<SettingsActivity>)Class.forName(package_name + "." + settingsactivity_name);
-					
+										
 					break;
 				}
 			}
@@ -137,10 +131,6 @@ public class FindPluginManager {
 	
 	public Class<ListFindsActivity> getListFindsActivityClass(){
 		return mListFindsActivityClass;
-	}
-
-	public Class<SettingsActivity> getSettingsActivityClass() {
-		return mSettingsActivityClass;
 	}
 	
 	public ArrayList<Plugin> getPlugins(){
