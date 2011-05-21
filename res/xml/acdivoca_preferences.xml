@@ -14,11 +14,13 @@
 				android:title="About ACDI/VOCA"
 				android:defaultValue="true"
 				android:persistent="true"
+				activity_class="org.hfoss.posit.android.AboutActivity"
 				android:summary="Click me and see!" />
 
 			<Preference android:key="testpref2" 
 				android:title="More About ACDI/VOCA"
 				android:persistent="true"
+				activity_class="org.hfoss.posit.android.AboutActivity"
 				android:summary="Click me, click me!" />			
 		</PreferenceScreen>
 	</PreferenceCategory>

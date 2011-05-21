@@ -19,7 +19,7 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android.plugins.acdivoca;
+package org.hfoss.posit.android.plugin.acdivoca;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.Utils;
