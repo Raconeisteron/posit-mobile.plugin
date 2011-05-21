@@ -31,22 +31,16 @@ public class FindPluginManager {
 	
 	private ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 	
+	// NOTE: When multiple plugins are implemented these should disappear
+	//  from here and possibly move to Plugin.java??
 	private Activity mMainActivity = null;
-	
 	private FindFactory mFindFactory = null;
 	private FindDataManager mFindDataManager = null;
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
-	
-	public static String mPreferences = null;
+	public static String mPreferences = null;  // Shared preferences XML for Settings
 	public static String mMainIcon = null;
-	
-	/**
-	 * Associates preferences with activities.
-	 */
-	public static Hashtable preferencesTable = new Hashtable();
-
-	
+		
 	private FindPluginManager(Activity activity){
 		mMainActivity = activity;
 	}
@@ -93,11 +87,14 @@ public class FindPluginManager {
 
 					mFindActivityClass = (Class<FindActivity>)Class.forName(package_name + "." + findactivity_name);
 					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(package_name + "." + listfindsactivity_name);
-										
-					break;
+				
+					SettingsActivity.loadPluginPreferences(mMainActivity, mPreferences);
+
+					// Remove break to load more than one plugin
+					//break;
 				}
 			}
-			setupSettings(mPreferences);
+			Log.i(TAG,"Loading preferences for Settings Activity");
 		}catch(Exception ex)
 		{
 			Log.i(TAG, "Failed to load plugin");
@@ -105,16 +102,6 @@ public class FindPluginManager {
 			
 			mMainActivity.finish();
 		}
-	}
-	
-	private static void setupSettings(String preferencesXML) {
-		preferencesTable.put("testpref", "org.hfoss.posit.android.AboutActivity");
-		preferencesTable.put("testpref2", "org.hfoss.posit.android.AboutActivity");
-		Log.i(TAG,preferencesTable.toString());
-	}
-	
-	public static Iterator getPreferenceNamesIterator () {
-		return preferencesTable.keySet().iterator();
 	}
 	
 	public FindFactory getFindFactory(){

@@ -1,13 +1,27 @@
 <PluginsPreferences>
 	<FindPlugins>
-		<Plugin active="true" name="AcdiVocaFind" package="org.hfoss.posit.android.plugin.acdivoca"
-		find_factory="AcdiVocaFindFactory" 
-		findactivity_class="AcdiVocaFindActivity"
-		listfindsactivity_class="AcdiVocaListFindsActivity"
-		find_data_manager="AcdiVocaFindDataManager"
-		preferences_xml="acdivoca_preferences"
-		main_icon="acdivoca_logo"				
-		/>
+		<Plugin active="true" name="AcdiVocaFind"
+			package="org.hfoss.posit.android.plugin.acdivoca" 
+			find_factory="AcdiVocaFindFactory"
+			findactivity_class="AcdiVocaFindActivity" 
+			listfindsactivity_class="AcdiVocaListFindsActivity"
+			find_data_manager="AcdiVocaFindDataManager" 
+			preferences_xml="acdivoca_preferences"  
+			main_icon="acdivoca_logo" />
 
+		<Plugin active="true" name="AcdiVocaFind2"
+			package="org.hfoss.posit.android.plugin.acdivoca" 
+			find_factory="AcdiVocaFindFactory"
+			findactivity_class="AcdiVocaFindActivity" 
+			listfindsactivity_class="AcdiVocaListFindsActivity"
+			find_data_manager="AcdiVocaFindDataManager" 
+			preferences_xml="acdivoca_preferences2"  
+			main_icon="acdivoca_logo" />
 	</FindPlugins>
 </PluginsPreferences>
+
+<!-- Specs:
+
+preferences_xml has to be in res/raw
+
+ -->
