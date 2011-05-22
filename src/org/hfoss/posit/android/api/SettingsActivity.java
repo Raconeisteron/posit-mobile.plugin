@@ -23,47 +23,20 @@ package org.hfoss.posit.android.api;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.hfoss.posit.android.AboutActivity;
-//import org.hfoss.posit.android.Log;
-import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.RegisterActivity;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.Toast;
 
 /**
  * Manages preferences for core POSIT preferences and all plugins.  Plugin preferences are
@@ -88,12 +61,6 @@ import android.widget.Toast;
  */
 public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 	private static final String TAG = "API Settings";
-	protected static final int BARCODE_READER = 0;
-	private String server;
-	private String projectName;
-	private Preference serverAddress;
-	private Preference project;
-	private Preference user;
 	
 	/**
 	 * Associates preferences with activities.
@@ -153,7 +120,11 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		public String toString() {
 			return preferencesXmlFile + " table=" + preferencesList.toString();
 		}
-		
+
+		@Override
+		public boolean equals(Object o) {
+			return preferencesXmlFile.equals(((PluginSettings)o).getPreferencesXmlFile());
+		}
 	}
  
 	/**
@@ -165,7 +136,20 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	 */
 	public static void loadPluginPreferences(Context context, String prefsXmlFileName) {
 		Log.i(TAG,"Loading plugin preferences for Settings Activity");
-
+		
+		PluginSettings settingsObject = getKeyActivityPairs(context, prefsXmlFileName);
+		if (!pluginXmlList.contains(settingsObject))
+			pluginXmlList.add(0,settingsObject);		
+	} 
+	
+	/**
+	 * Utility method parses an XML preferences file pulling out domain-specfic attributes
+	 * that associate a Preference key with an Activity.
+	 * @param context this Activity
+	 * @param prefsXmlFileName  the name of the XML file
+	 * @return an PluginSettings object that stores the data for a particular XML file.
+	 */
+	private static PluginSettings getKeyActivityPairs(Context context, String prefsXmlFileName) {
 		PluginSettings settingsObject = new PluginSettings(prefsXmlFileName);
 		int resId = context.getResources().getIdentifier(prefsXmlFileName, "xml", "org.hfoss.posit.android");
 
@@ -195,13 +179,13 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 				}
 				eventType = xpp.next();
 			}
-			pluginXmlList.add(settingsObject);
-
 		} catch (XmlPullParserException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return settingsObject;
 	}
 	
 	@Override
@@ -209,10 +193,14 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		super.onCreate(icicle);
 		Log.i(TAG, "onCreate()");
 		
-		// Add POSIT's core preferences to the Settings 
-		addPreferencesFromResource(R.xml.posit_preferences);
+		// Add POSIT's core preferences to the Settings (if not already added) 
 		
-		// For each plugin 
+		PluginSettings settingsObject = getKeyActivityPairs(this, "posit_preferences");
+		if (!pluginXmlList.contains(settingsObject))
+			pluginXmlList.add(0,settingsObject);
+	
+		
+		// For each plugin add its preferences to the Settings
 		for (int k = 0; k < pluginXmlList.size(); k++) {
 			Log.i(TAG,pluginXmlList.get(k).toString());
 			
@@ -246,6 +234,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 			for (int j=0; j < list.size(); j++) {
 				if (preference.getKey().equals(list.get(j).prefName)) {
 					String className = list.get(j).activityName;
+					Log.i(TAG, "Class = " + className);
 					try {
 						Class activity = Class.forName(className);
 						Log.i(TAG, "Class = " + activity);
@@ -257,45 +246,14 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 				}
 			}
 		}
-
-		if (preference.getTitle().toString().equals("About POSIT")){
-			Intent intent = new Intent(this, AboutActivity.class);
-			startActivity(intent);
-		}
-
-//		if(preference.getTitle().toString().equals("Register this device")){
-//			//Intent i = new Intent(this, RegisterPhoneActivity.class);
-//			Intent intent = new Intent(this, RegisterActivity.class);
-//			intent.setAction(RegisterActivity.REGISTER_PHONE);
-//			startActivity(intent);
-//		}
-//		if(preference.getTitle().toString().equals("Create an account")){
-//			Intent intent = new Intent(this, RegisterActivity.class);
-//			//Intent intent = new Intent(this, RegisterPhoneActivity.class);
-//			//intent.setClass(this, RegisterPhoneActivity.class);
-//			intent.setAction(RegisterActivity.REGISTER_USER);
-//			startActivity(intent);
-//		}
-//		if(preference.getTitle().toString().equals("Change current server")){
-//			if (preference instanceof EditTextPreference) {
-//				EditTextPreference textPreference = (EditTextPreference) preference;
-//				EditText eText =  textPreference.getEditText();
-//				eText.setText(server);
-//			}
-//			Log.i(TAG, "Server = " + server);
-//		}
-////		if(preference.getTitle().toString().equals("Login")){
-////			Intent i = new Intent(this, RegisterPhoneActivity.class);
-////			startActivity(i);
-////		}
-//		if(preference.getTitle().toString().equals("Change current project")){
-//			Intent i = new Intent(this, ShowProjectsActivity.class);
-//			startActivity(i);
-//		}
-//		
 		return false;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * Note:  Not sure if this method is still necessary
+	 * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
+	 */
 	 public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
 		 Log.i(TAG, "onSharedPreferenceChanged");
 //
