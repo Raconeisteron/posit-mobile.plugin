@@ -163,6 +163,11 @@ public class AcdiVocaFindActivity extends FindActivity{
 	}
 
 	
+	/**
+	 * This is just a temporary method and should be integrated into Sync.
+	 * @param type
+	 * @param message
+	 */
 	public void sendMessage(String type, String message) {
 		// setCurrentGpsLocation(null);
 		String phoneNumber = PreferenceManager.getDefaultSharedPreferences(this).getString("smsPhone", "");
