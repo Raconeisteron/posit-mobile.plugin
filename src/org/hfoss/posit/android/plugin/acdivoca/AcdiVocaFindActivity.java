@@ -44,8 +44,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 /**
@@ -69,13 +67,6 @@ public class AcdiVocaFindActivity extends FindActivity{
 		// Create DB helper
 		mDbHelper = new AcdiVocaDbHelper(this);
 
-		//ContentValues communes = mDbHelper.fetchAllCommunes();
-		
-		//SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_dropdown_item, cursor_Names, columns, to);
-		//Spinner communeSpinner = (Spinner) findViewById(R.id.commune);
-		//communeSpinner.setAdapter(mAdapter);
-
-		
 //		setContentView(R.layout.acdivoca_add);
 //		setContentView(R.layout.acdivoca_add_full);
 //		((Button)findViewById(R.id.saveToDB)).setOnClickListener(this);
@@ -162,6 +153,48 @@ public class AcdiVocaFindActivity extends FindActivity{
 		displayContentInView(values);						
 	}
 
+	private boolean checkNumber(String number) {
+		for(int i = 0; i < number.length(); i++) {
+			if(number.charAt(i)<'0'|| number.charAt(i)>'9')
+				if(!(i==0&&number.charAt(i)=='+'))
+					return false;
+		}
+		return true;
+	}
+
+	
+	/**
+	 * This is just a temporary method and should be integrated into Sync.
+	 * @param type
+	 * @param message
+	 */
+	public void sendMessage(String type, String message) {
+		// setCurrentGpsLocation(null);
+		String phoneNumber = PreferenceManager.getDefaultSharedPreferences(this).getString("smsPhone", "");
+		//String phoneNumber = "8608748128";
+		Toast.makeText(this, "SMS Phone Target = " + phoneNumber, Toast.LENGTH_SHORT).show();		
+		message = "Haiti ACDI/VOCA"  + "|" + type + "|" + message;
+
+		String SENT = "SMS_SENT";
+		String DELIVERED = "SMS_DELIVERED";        
+		PendingIntent sentIntent = PendingIntent.getBroadcast(this, 0,
+				new Intent(SENT), 0);
+
+		PendingIntent deliveryIntent = PendingIntent.getBroadcast(this, 0,
+				new Intent(DELIVERED), 0);
+
+		if(phoneNumber.length()>0 && message.length()>0 && message.length()<=160 && checkNumber(phoneNumber)) {
+			try {
+				SmsManager sms = SmsManager.getDefault();
+				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
+				Toast.makeText(this, "SMS Sent!\n"+message + " to " + phoneNumber, Toast.LENGTH_LONG).show();
+				Log.i(TAG,"SMS Sent: " + message);
+			}catch(Exception e){Log.i("TEST",e.toString());}
+		}
+		else
+			Toast.makeText(this, "SMS Failed\nCheck phone number or length of message", Toast.LENGTH_LONG).show();
+	}
+
 	/**
 	 * Retrieves values from the View fields and stores them as <key,value> pairs in a ContentValues.
 	 * This method is invoked from the Save menu item.  It also marks the find 'unsynced'
@@ -179,43 +212,23 @@ public class AcdiVocaFindActivity extends FindActivity{
 		eText = (EditText)findViewById(R.id.firstname);
 		value = eText.getText().toString();
 		result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
-		
-		eText = (EditText)findViewById(R.id.beneficiary);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
-		
-		//value = mMonth + "/" + mDay + "/" + mYear;
-		value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
-			((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
-			((DatePicker)findViewById(R.id.datepicker)).getYear();
-		//Log.i(TAG, "retrieve DOB=" + value);
-		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
-
-		RadioButton sexRB = (RadioButton)findViewById(R.id.female);
-		String sex = "";
-		if (sexRB.isChecked()) 
-			sex = "F";
-		else 
-			sex = "M";
-		result.put(AcdiVocaDbHelper.FINDS_SEX, sex);         
-		
-		eText = (EditText)findViewById(R.id.address);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_ADDRESS, value);
-		
-		Spinner communeSpinner = (Spinner)findViewById(R.id.commune);
-		value = (String)communeSpinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_NAME, value);
-		
-		communeSpinner = (Spinner)findViewById(R.id.commune_section);
-		value = (String)communeSpinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
-		// Stopped coding here professor!
-		//eText = (EditText)findViewById(R.id.cd ..
-		//		);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
-		
+////		value = mMonth + "/" + mDay + "/" + mYear;
+//		value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
+//			((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
+//			((DatePicker)findViewById(R.id.datepicker)).getYear();
+//		Log.i(TAG, "retrieve DOB=" + value);
+//		result.put(DbHelper.FINDS_DOB, value);
+//
+//		RadioButton sexRB = (RadioButton)findViewById(R.id.female);
+//		String sex = "";
+//		if (sexRB.isChecked()) 
+//			sex = "F";
+//		else 
+//			sex = "M";
+//
+//		result.put(DbHelper.FINDS_SEX, sex);         
+//
+//		result.put(DbHelper.FINDS_PROJECT_ID, PROJECT_ID); // All finds have id=0
 		return result;
 	}
 
@@ -231,7 +244,6 @@ public class AcdiVocaFindActivity extends FindActivity{
 		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
 		Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
 
-		
 //		//eText = (EditText) findViewById(R.id.dob);
 //		
 //		//eText.setText(contentValues.getAsString(DbHelper.FINDS_DOB));
@@ -275,10 +287,9 @@ public class AcdiVocaFindActivity extends FindActivity{
 			finish();
 		}
 		if(v.getId()==R.id.sendSMS) { 
-			ContentValues values = retrieveContentFromView();
-			//String name = ((EditText)findViewById(R.id.beneficiary)).getText().toString();
-			//name = name.trim() + "|" 
-			//	+  ((EditText)findViewById(R.id.firstname)).getText().toString();
+			String name = ((EditText)findViewById(R.id.beneficiary)).getText().toString();
+			name = name.trim() + "|" 
+				+  ((EditText)findViewById(R.id.firstname)).getText().toString();
 //			String dob = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
 //				((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
 //				((DatePicker)findViewById(R.id.datepicker)).getYear();
@@ -303,15 +314,9 @@ public class AcdiVocaFindActivity extends FindActivity{
 //				mother = "Expecting";
 //			else 
 //				mother = "Nursing";
+			String message = name;
 			//String message = name + "|" + dob + "|" + sex + "|" + nInHome + "|" + infant + "|" + mother;
-	        //String message = values.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME) + "|" +
-	       // 				 values.get(AcdiVocaDbHelper.FINDS_LASTNAME) + "|" +
-	       // 				 values.get(AcdiVocaDbHelper.FINDS_DOB) + "|" +
-	       // 				 values.get(AcdiVocaDbHelper.FINDS_SEX);
-	        String message = AcdiVocaSmsManager.formatSmsMessage(values);
-	        
-			AcdiVocaSmsManager.sendMessage(this,message,null);
-			Toast.makeText(this, message, 100000000);
+	        sendMessage("Register New", message);
 	        finish();
 		}
 	}
