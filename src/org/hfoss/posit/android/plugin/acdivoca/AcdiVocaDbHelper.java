@@ -55,11 +55,37 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	public static final String FINDS_ID = "_id";
 	public static final String FINDS_PROJECT_ID = "project_id";
 	public static final String FINDS_NAME = "name";
-	public static final String FINDS_FIRSTNAME = "firstname";
-	public static final String FINDS_GUID = "guid";    // Globally unique ID
 	
+	public static final String FINDS_FIRSTNAME = "firstname";
+	public static final String FINDS_LASTNAME = "lastname";
+	
+	public static final String FINDS_ADDRESS = "address";
 	public static final String FINDS_DOB = "dob";
 	public static final String FINDS_SEX = "sex";
+	
+	public static final String FINDS_COMMUNE_ID = "commune_id";
+	public static final String FINDS_COMMUNE_SECTION_ID = "commune_section_id";
+	public static final String FINDS_BENEFICIARY_CATEGORY_ID = "beneficiary_category_id";
+	public static final String FINDS_HOUSEHOLD_SIZE = "household_size";
+
+	public static final String FINDS_GUID = "guid";    // Globally unique ID
+	
+	
+	/** Commune table */
+	
+	public static final String COMMUNE_TABLE = "commune";
+	public static final String COMMUNE_ID = "id";
+	public static final String COMMUNE_NAME = "name";
+	public static final String COMMUNE_ABBR = "abbreviation";
+	
+	/** Commune section table */
+	
+	public static final String COMMUNE_SECTION_TABLE = "commune_section";
+	public static final String COMMUNE_SECTION_ID = "id";
+	public static final String COMMUNE_SECTION_NAME = "name";
+	public static final String COMMUNE_SECTION_ABBR = "abbreviation";
+	public static final String COMMUNE_SECTION_COMMUNE_ID = "commune_id";
+	
 	
 	public static final String FINDS_DESCRIPTION = "description";
 	public static final String FINDS_LATITUDE = "latitude";
@@ -93,11 +119,11 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	//   -->UPDATED UUID is now truncated in display 
 	public static final String[] list_row_data = { 
 		FINDS_ID,
-//		FINDS_GUID,  
-		FINDS_NAME,
-		FINDS_FIRSTNAME
-//		FINDS_DOB,
-//		FINDS_SEX
+		//FINDS_GUID,  
+		FINDS_FIRSTNAME,
+		FINDS_LASTNAME,
+		FINDS_DOB,
+		FINDS_SEX
 //		FINDS_DESCRIPTION,
 //		FINDS_LATITUDE,
 //		FINDS_LONGITUDE,
@@ -111,8 +137,8 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 ////		R.id.idNumberText,
 		R.id.name_id, 
 		R.id.firstname_field,
-//		R.id.datepicker,
-//		R.id.female
+		R.id.datepicker,
+		R.id.female
 //		R.id.description_id,
 //		R.id.latitude_id,
 //		R.id.longitude_id,
@@ -131,10 +157,26 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		+ FINDS_PROJECT_ID + " integer DEFAULT 0, "
 		+ FINDS_NAME + " text, "
 		+ FINDS_FIRSTNAME + " text, "
-		+ FINDS_DOB + " varchar(10), "
-		+ FINDS_SEX + " varchar(1) DEFAULT F"
+		+ FINDS_LASTNAME + " text, "
+		+ FINDS_ADDRESS + " text, "
+		+ FINDS_DOB + " date, "
+		+ FINDS_SEX + " char, "
+		+ FINDS_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + "), "
+		+ FINDS_COMMUNE_SECTION_ID + " references " + COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + ")" 
 		+ ");";
 	
+	private static final String CREATE_COMMUNE_TABLE = "CREATE TABLE IF NOT EXISTS "
+		+ COMMUNE_TABLE + "(" + COMMUNE_ID + " integer primary key autoincrement, "
+		+ COMMUNE_NAME + " text, "
+		+ COMMUNE_ABBR + " text, "
+		+ ")";
+	
+	private static final String CREATE_COMMUNE_SECTION_TABLE = "CREATE TABLE IF NOT EXISTS "
+		+ COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + " integer primary key autoincrement, "
+		+ COMMUNE_SECTION_NAME + " text, "
+		+ COMMUNE_SECTION_ABBR + " text, "
+		+ COMMUNE_SECTION_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + ") "
+		+ ")";
 	/*
 	 * Keeps track of create, update, and delete actions on Finds.
 	 */
@@ -143,9 +185,8 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		+ FINDS_HISTORY_TABLE + "("
 		+ HISTORY_ID + " integer primary key autoincrement,"
 		+ FINDS_TIME + " timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-		+ FINDS_NAME + " text "
 //		+ FINDS_PROJECT_ID + " integer DEFAULT 0,"
-//		+ FINDS_GUID + " varchar(50) NOT NULL,"
+		+ FINDS_GUID + " varchar(50) NOT NULL,"
 //		+ FINDS_ACTION + " varchar(20) NOT NULL"
 		+ ")";
 	/*
@@ -393,7 +434,17 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		return values;
 	}
 	
-	
+	public ContentValues fetchAllCommunes() {
+		mDb = getReadableDatabase();
+		Cursor c = mDb.query(COMMUNE_TABLE, null, null, null, null, null, null);
+		c.moveToFirst();
+		ContentValues values = null;
+		if (c.getCount()!=0)
+			values = this.getContentValuesFromRow(c);
+		c.close();
+		mDb.close();
+		return values;
+	}
 	/**
 	 * Returns selected columns for a find by id.
 	 * @param id the Find's id
