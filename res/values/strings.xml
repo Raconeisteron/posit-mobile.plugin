@@ -298,44 +298,7 @@
 	<string name="toggle_tracks">Toggle Tracks</string>
 	<string name="center_finds">Center Finds</string>
 	
-	<!--  Acdi Voca Strings -->
-	<string name="general_info">General Information</string>
-    <string name="beneficiary">Last Name</string>
-    <string name="firstname">First Name</string>
-    <string name="commune">Commune</string>
-    <string name="commune_section">Communal section</string>
-    <string name="address">Street Address</string>	
-	
-    <string name="sex">Sex</string>
-    <string name="dob">Date of Birth</string>
-    <string name="dob_age">Age</string>
-    <string name="Male">Male</string>
-    <string name="Female">Female</string>	
-    
-      <string name="Number_of_people_in_home">Number of people in home</string>
-    <string name="Infant_Category">Infant Category</string>
-    <string name="Malnourished">Malnourished</string>
-    <string name="In_Prevention">In Prevention</string>
-    <string name="Mother_Category">Mother Category</string>
-    <string name="Expecting">Expecting</string>
-    <string name="Nursing">Nursing</string>
-    <string name="add_save">Save to Db</string>
-    <string name="add_send">Send SMS</string>
-    
-    <!--  list_finds.xml -->
-    <string name="noFinds">No beneficiaries</string>
-    
-        <!-- Add Menu -->
-    <string name="refresh">Clear</string>
-    <string name="delete_find">Delete</string>
-    
-    <!-- ACDI/VOCA Settings and Preferences -->
-    <string name="acdivocaprefs">ACDI/VOCA Preferences</string>
-    <string name="SMS_phone">SMS Phone Target</string>
-    <string name="smsPhoneKey">smsPhone</string>
-    <string name="localeKey">locale</string>
-    <string name="locale">Locale</string>
-    <string name="localePref">locale</string>
+
  
     
     
