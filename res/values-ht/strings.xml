@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!--  main.xml -->
+    <string name="appHeader">Mobil Enskripsyon Sistèm</string>
+    <string name="app_name">MobileRegistration</string>
+    <string name="newBeneficiary">Nouvo benefisyè</string>
+    <string name="listBeneficiary">Benefisyè lis</string>
+    
+    <!--  list_finds.xml -->
+    <string name="noFinds">No benefisyè</string>
+    <string name="delete_finds">Removez</string>
+            
+    <!-- add.xml --> 
+    <string name="general_info">Enfomasyon Jeneral</string>
+    <string name="beneficiary">Nom benefisyè dirèk</string>
+    <string name="firstname">Prènom benefisyè dirèk</string>
+    <string name="commune">Komin</string>
+    <string name="commune_section">Seksyon kominal</string>
+    <string name="address">Lokalite ou byen Adrès</string>
+    
+    <string name="sex">Sèks</string>
+    <string name="dob">Dat Nesans</string>
+    <string name="dob_age">Laj</string>
+    <string name="Male">Gason</string>
+    <string name="Female">Fanm</string>
+
+    <string name="Number_of_people_in_home">Konbyen moun ki gen nan kay la?</string>
+    <string name="Infant_Category">Nan ki kategori benefisyè a ye ?</string>
+    <string name="Malnourished">Enfant mal nourri</string>
+    <string name="In_Prevention">Enfant in prevètion</string>
+    <string name="Mother_Category">Manman Kategori</string>
+    <string name="Expecting">Femme enceinte</string>
+    <string name="Nursing">Femme allaitante</string>
+    <string name="add_save">Reservè au Db</string>
+    <string name="add_send">Envoyè SMS</string>
+
+	<!--  Menu -->
+    <string name="settings">Anviwònman</string>
+    
+    
+    <!-- Add Menu -->
+    <string name="refresh">Refreshez</string>     
+    <string name="delete_find">Removez</string> 
+    
+     <!-- Alert Dialogs -->
+    <string name="alert_dialog_2">Are you sure you want to delete this find?</string>
+	<string name="alert_dialog_save_empty_find">Really save Find with no name/description?</string>
+	<string name="alert_dialog_ok">Ok</string>
+	<string name="alert_dialog_cancel">Cancel</string>      
+	<string name="deleted_from_database">Deleted from database</string>
+	<string name="delete_failed">Cannot delete from database</string>
+	
+    <!-- Settings and Preferences -->
+    <string name="general">Jeneral</string>
+    <string name="SMS_phone">SMS Nimewo telefòn</string>
+    <string name="smsPhoneKey">smsPhone</string>
+    
+    
+</resources>

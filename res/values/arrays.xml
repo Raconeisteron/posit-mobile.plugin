@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+
+<!-- ACDI/VOCA Arrays -->
+	<string-array name="locales"> 
+	<item>English</item>
+	<item>Haitian Creole</item>
+	</string-array>
+	
+	<string-array name="locale_values"> 
+	<item>en</item>
+	<item>ht</item>
+	</string-array>	
+
+	<string-array name="commune_names"> 
+	<item>Anse a Pitres</item>
+	<item>Thiotte</item>
+	<item>Grand Gosier</item>
+	<item>Belle Anse</item>
+	<item>La vallee</item>
+	<item>Bainet</item>
+	<item>Cote de fer</item>
+	</string-array>
+	
+	<string-array name="commune_section_names"> 
+	<item>Anse a Pitres</item>
+	<item>Thiotte</item>
+	<item>Grand Gosier</item>
+	<item>Belle Anse</item>
+	<item>La vallee</item>
+	<item>Bainet</item>
+	<item>Cote de fer</item>
+	</string-array>
+
+<!--  Preferences that start activities in SettingsActivity -->
+	<string-array name="preference_activities">
+	<item>testpref</item>
+	<item>testpref2</item>
+	</string-array>
+	
+	<string-array name="preference_activity_classes">
+	<item>org.hfoss.posit.android.AboutActivity</item>
+	<item>org.hfoss.posit.android.AboutActivity</item>
+	</string-array>
+</resources>
