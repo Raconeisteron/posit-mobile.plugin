@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -136,7 +137,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		//		Uri allFinds = Uri.parse("content://org.hfoss.provider.POSIT/finds_project/"+PROJECT_ID);
 		//	    mCursor = managedQuery(allFinds, null, null, null, null);
 		if (mCursor.getCount() == 0) { // No finds
-			setContentView(R.layout.acdivoca_list_finds);
+			setContentView(R.layout.acdivoca_list_beneficiaries);
 			mCursor.close();
 			return;
 		}
@@ -288,7 +289,19 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		}
 	}
 
-
+//	/**
+//	 * Intercepts the back key (KEYCODE_BACK). Always exits to POSIT Main.
+//	 */
+//	@Override
+//	public boolean onKeyDown(int keyCode, KeyEvent event) {
+//		Log.i(TAG, "onKeyDown");
+//		if(keyCode==KeyEvent.KEYCODE_BACK){
+//			this.startActivity(new Intent().setClass(this, org.hfoss.posit.android.PositMain.class));
+//			return true;
+//		}
+//		Log.i("code", keyCode+"");
+//		return super.onKeyDown(keyCode, event);
+//	}
 
 
 

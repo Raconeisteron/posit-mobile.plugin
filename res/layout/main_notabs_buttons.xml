@@ -28,19 +28,30 @@
     			android:layout_height="fill_parent"
     			android:layout_gravity="center">
 
-				<ImageButton 
+				<!--  <ImageButton -->
+				<Button 
 					android:id="@+id/listFindButton" 
 					android:layout_width="wrap_content" 
 					android:layout_height="wrap_content" 
-					android:src="@drawable/ic_menu_view"
 					android:text="List Find"/>
+			<!--   android:src="@drawable/ic_menu_view" -->
 					
-				<ImageButton 
+				<!--  <ImageButton -->
+				<Button 
 					android:id="@+id/addFindButton" 
 					android:layout_width="wrap_content" 
 					android:layout_height="wrap_content" 
-					android:src="@drawable/ic_menu_add_text"
 					android:text="Add Find"/>
+					
+				<Button 
+					android:id="@+id/extraButton" 
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:visibility="gone"
+					android:text="Extra Button"/>	
+					
+			<!--  android:src="@drawable/ic_menu_add_text" -->
+					
 		</LinearLayout>
 		<!--  <Button
 			android:id="@+id/listFindButton"

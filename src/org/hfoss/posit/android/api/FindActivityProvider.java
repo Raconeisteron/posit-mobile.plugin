@@ -1,5 +1,7 @@
 package org.hfoss.posit.android.api;
 
+import android.app.Activity;
+
 /**
 * Convenience class to quickly get right find activity object without having to do lots of chained calls  
 */
@@ -12,5 +14,9 @@ public class FindActivityProvider {
 
 	public static Class<ListFindsActivity> getListFindsActivityClass(){
 		return FindPluginManager.getInstance().getListFindsActivityClass();
+	}
+
+	public static Class<Activity> getExtraActivityClass(){
+		return FindPluginManager.getInstance().getExtraActivityClass();
 	}
 }

@@ -64,9 +64,9 @@ import android.widget.DatePicker.OnDateChangedListener;
  * Handles Finds for AcdiVoca Mobile App.
  * 
  */
-public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedListener, 
+public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChangedListener, 
 	TextWatcher, OnItemSelectedListener { //, OnKeyListener {
-	public static final String TAG = "AcdiVocaAddActivity";
+	public static final String TAG = "AcdiVocaUpdateActivity";
 
 	private static final int CONFIRM_EXIT = 0;
 
@@ -129,58 +129,58 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		getBaseContext().getResources().updateConfiguration(config, null);
 
 		Log.i(TAG, "Before edited = " + isProbablyEdited);
-		setContentView(R.layout.acdivoca_registration);  // Should be done after locale configuration
+		setContentView(R.layout.acdivoca_update);  // Should be done after locale configuration
 
-		((Button)findViewById(R.id.saveToDbButton)).setOnClickListener(this);
-		((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
-		
-		// Listen for clicks on radio buttons
-		 ((RadioButton)findViewById(R.id.femaleRadio)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.maleRadio)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.malnourishedRadio)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.inpreventionRadio)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.expectingRadio)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.nursingRadio)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.radio_motherleader_yes)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.radio_motherleader_no)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.radio_visit_yes)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.radio_visit_no)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.radio_yes_acdivoca)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.radio_no_acdivoca)).setOnClickListener(this);
-
-		 // Listen for text changes in edit texts and set the isEdited flag
-		 ((EditText)findViewById(R.id.firstnameEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.lastnameEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.addressEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.ageEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.inhomeEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.responsibleIfChildEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.fatherIfChildEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.responsibleIfMotherEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.husbandIfMotherEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.give_name)).addTextChangedListener(this);
-		 
-		 // Initialize the DatePicker and listen for changes
-		 Calendar calendar = Calendar.getInstance();
-		 
-		 ((DatePicker)findViewById(R.id.datepicker)).init(
-				 calendar.get(Calendar.YEAR),
-				 calendar.get(Calendar.MONTH), 
-				 calendar.get(Calendar.DAY_OF_MONTH), this);
-		 
-		 // These don't work
-		 ((Spinner)findViewById(R.id.commune_sectionSpinner)).setOnItemSelectedListener(this);
-		 ((Spinner)findViewById(R.id.communeSpinner)).setOnItemSelectedListener(this);
-		 ((Spinner)findViewById(R.id.healthcenterSpinner)).setOnItemSelectedListener(this);
-		 ((Spinner)findViewById(R.id.distributionSpinner)).setOnItemSelectedListener(this);
-
-		final Intent intent = getIntent();
-		mAction = intent.getAction();
-		if (mAction.equals(Intent.ACTION_EDIT)) {
-			doEditAction();
-			isProbablyEdited = false; // In EDIT mode, initialize after filling in data
-		}
-		 Log.i(TAG, "After edited = " + isProbablyEdited);
+//		((Button)findViewById(R.id.saveToDbButton)).setOnClickListener(this);
+//		((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
+//		
+//		// Listen for clicks on radio buttons
+//		 ((RadioButton)findViewById(R.id.femaleRadio)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.maleRadio)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.malnourishedRadio)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.inpreventionRadio)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.expectingRadio)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.nursingRadio)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.radio_motherleader_yes)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.radio_motherleader_no)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.radio_visit_yes)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.radio_visit_no)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.radio_yes_acdivoca)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.radio_no_acdivoca)).setOnClickListener(this);
+//
+//		 // Listen for text changes in edit texts and set the isEdited flag
+//		 ((EditText)findViewById(R.id.firstnameEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.lastnameEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.addressEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.ageEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.inhomeEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.responsibleIfChildEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.fatherIfChildEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.responsibleIfMotherEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.husbandIfMotherEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.give_name)).addTextChangedListener(this);
+//		 
+//		 // Initialize the DatePicker and listen for changes
+//		 Calendar calendar = Calendar.getInstance();
+//		 
+//		 ((DatePicker)findViewById(R.id.datepicker)).init(
+//				 calendar.get(Calendar.YEAR),
+//				 calendar.get(Calendar.MONTH), 
+//				 calendar.get(Calendar.DAY_OF_MONTH), this);
+//		 
+//		 // These don't work
+//		 ((Spinner)findViewById(R.id.commune_sectionSpinner)).setOnItemSelectedListener(this);
+//		 ((Spinner)findViewById(R.id.communeSpinner)).setOnItemSelectedListener(this);
+//		 ((Spinner)findViewById(R.id.healthcenterSpinner)).setOnItemSelectedListener(this);
+//		 ((Spinner)findViewById(R.id.distributionSpinner)).setOnItemSelectedListener(this);
+//
+//		final Intent intent = getIntent();
+//		mAction = intent.getAction();
+//		if (mAction.equals(Intent.ACTION_EDIT)) {
+//			doEditAction();
+//			isProbablyEdited = false; // In EDIT mode, initialize after filling in data
+//		}
+//		 Log.i(TAG, "After edited = " + isProbablyEdited);
 	}
 	
 	
@@ -209,74 +209,74 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	private ContentValues retrieveContentFromView() {
 		Log.i(TAG, "retrieveContentFromView");
 		ContentValues result = new ContentValues();
-
-		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
-		String value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
-		Log.i(TAG, "retrieve LAST NAME = " + value);
-		
-		eText = (EditText)findViewById(R.id.firstnameEdit);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
-		
-		eText = (EditText)findViewById(R.id.ageEdit);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_AGE, value);
-		
-		//value = mMonth + "/" + mDay + "/" + mYear;
-		value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
-			((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
-			((DatePicker)findViewById(R.id.datepicker)).getYear();
-		//Log.i(TAG, "retrieve DOB=" + value);
-		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
-
-		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
-		String sex = "";
-		if (sexRB.isChecked()) 
-			sex = "FEMALE";
-		else 
-			sex = "MALE";
-		result.put(AcdiVocaDbHelper.FINDS_SEX, sex);         
-		
-		eText = (EditText)findViewById(R.id.addressEdit);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_ADDRESS, value);
-		
-		eText = (EditText)findViewById(R.id.inhomeEdit);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE,value);
-		
-		Spinner communeSpinner = (Spinner)findViewById(R.id.communeSpinner);
-		value = (String)communeSpinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_NAME, value);
-		
-		communeSpinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-		value = (String)communeSpinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
-		
-		RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
-		String infant = "";
-		if (rb.isChecked()) 
-			infant = "MALNOURISHED";
-		else 
-			infant = "PREVENTION";
-		result.put(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY, infant);
-
-		rb = (RadioButton)findViewById(R.id.expectingRadio);
-		String mother = "";
-		if (rb.isChecked()) 
-			mother = "EXPECTING";
-		else 
-			mother = "NURSING";
-		result.put(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY, mother);
-		
-		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
-		String commune = (String) spinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_NAME, commune);
-		
-		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-		String communeSection = (String) spinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, communeSection);		
+//
+//		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
+//		String value = eText.getText().toString();
+//		result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
+//		Log.i(TAG, "retrieve LAST NAME = " + value);
+//		
+//		eText = (EditText)findViewById(R.id.firstnameEdit);
+//		value = eText.getText().toString();
+//		result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
+//		
+//		eText = (EditText)findViewById(R.id.ageEdit);
+//		value = eText.getText().toString();
+//		result.put(AcdiVocaDbHelper.FINDS_AGE, value);
+//		
+//		//value = mMonth + "/" + mDay + "/" + mYear;
+//		value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
+//			((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
+//			((DatePicker)findViewById(R.id.datepicker)).getYear();
+//		//Log.i(TAG, "retrieve DOB=" + value);
+//		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
+//
+//		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
+//		String sex = "";
+//		if (sexRB.isChecked()) 
+//			sex = "FEMALE";
+//		else 
+//			sex = "MALE";
+//		result.put(AcdiVocaDbHelper.FINDS_SEX, sex);         
+//		
+//		eText = (EditText)findViewById(R.id.addressEdit);
+//		value = eText.getText().toString();
+//		result.put(AcdiVocaDbHelper.FINDS_ADDRESS, value);
+//		
+//		eText = (EditText)findViewById(R.id.inhomeEdit);
+//		value = eText.getText().toString();
+//		result.put(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE,value);
+//		
+//		Spinner communeSpinner = (Spinner)findViewById(R.id.communeSpinner);
+//		value = (String)communeSpinner.getSelectedItem();
+//		result.put(AcdiVocaDbHelper.COMMUNE_NAME, value);
+//		
+//		communeSpinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+//		value = (String)communeSpinner.getSelectedItem();
+//		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
+//		
+//		RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
+//		String infant = "";
+//		if (rb.isChecked()) 
+//			infant = "MALNOURISHED";
+//		else 
+//			infant = "PREVENTION";
+//		result.put(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY, infant);
+//
+//		rb = (RadioButton)findViewById(R.id.expectingRadio);
+//		String mother = "";
+//		if (rb.isChecked()) 
+//			mother = "EXPECTING";
+//		else 
+//			mother = "NURSING";
+//		result.put(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY, mother);
+//		
+//		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
+//		String commune = (String) spinner.getSelectedItem();
+//		result.put(AcdiVocaDbHelper.COMMUNE_NAME, commune);
+//		
+//		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+//		String communeSection = (String) spinner.getSelectedItem();
+//		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, communeSection);		
 		return result;
 	}
 
@@ -286,74 +286,74 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	 */
 	private void displayContentInView(ContentValues contentValues) {
 		Log.i(TAG, "displayContentInView");
-		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
-		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
-
-		eText = (EditText) findViewById(R.id.firstnameEdit);
-		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
-		Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
-
-		eText = (EditText)findViewById(R.id.ageEdit);
-		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_AGE));
-		
-		eText = (EditText)findViewById(R.id.addressEdit);
-		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS));
-		
-		eText = (EditText)findViewById(R.id.inhomeEdit);
-		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
-		
-		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
-		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
-		Log.i(TAG,"display DOB = " + date);
-		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
-				Integer.parseInt(date.substring(0,date.indexOf("/"))),
-				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
-				(OnDateChangedListener) this);
-
-		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
-		Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals("FEMALE"))
-			sexRB.setChecked(true);
-		else {
-			sexRB = (RadioButton)findViewById(R.id.maleRadio);
-			sexRB.setChecked(true);
-		}
-		
-		RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY).equals("EXPECTING"))
-			motherRB.setChecked(true);
-		else {
-			motherRB = (RadioButton)findViewById(R.id.nursingRadio);
-			motherRB.setChecked(true);
-		}
-
-		RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY).equals("MALNOURISHED"))
-			infantRB.setChecked(true);
-		else {
-			infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
-			infantRB.setChecked(true);
-		}
-		
-		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
-		String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
-		int k = 0;
-		String item = (String) spinner.getItemAtPosition(k);
-		while (k < spinner.getCount() && !selected.equals(item)) {
-			++k;
-			item = (String) spinner.getItemAtPosition(k);
-		}
-		spinner.setSelection(k);
-
-		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-		selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_SECTION_NAME);
-		k = 0;
-		item = (String) spinner.getItemAtPosition(k);
-		while (k < spinner.getCount() && !selected.equals(item)) {
-			++k;
-			item = (String) spinner.getItemAtPosition(k);
-		}
-		spinner.setSelection(k);
+//		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
+//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
+//
+//		eText = (EditText) findViewById(R.id.firstnameEdit);
+//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+//		Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+//
+//		eText = (EditText)findViewById(R.id.ageEdit);
+//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_AGE));
+//		
+//		eText = (EditText)findViewById(R.id.addressEdit);
+//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS));
+//		
+//		eText = (EditText)findViewById(R.id.inhomeEdit);
+//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
+//		
+//		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
+//		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+//		Log.i(TAG,"display DOB = " + date);
+//		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
+//				Integer.parseInt(date.substring(0,date.indexOf("/"))),
+//				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
+//				(OnDateChangedListener) this);
+//
+//		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
+//		Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
+//		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals("FEMALE"))
+//			sexRB.setChecked(true);
+//		else {
+//			sexRB = (RadioButton)findViewById(R.id.maleRadio);
+//			sexRB.setChecked(true);
+//		}
+//		
+//		RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
+//		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY).equals("EXPECTING"))
+//			motherRB.setChecked(true);
+//		else {
+//			motherRB = (RadioButton)findViewById(R.id.nursingRadio);
+//			motherRB.setChecked(true);
+//		}
+//
+//		RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
+//		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY).equals("MALNOURISHED"))
+//			infantRB.setChecked(true);
+//		else {
+//			infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
+//			infantRB.setChecked(true);
+//		}
+//		
+//		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
+//		String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
+//		int k = 0;
+//		String item = (String) spinner.getItemAtPosition(k);
+//		while (k < spinner.getCount() && !selected.equals(item)) {
+//			++k;
+//			item = (String) spinner.getItemAtPosition(k);
+//		}
+//		spinner.setSelection(k);
+//
+//		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+//		selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_SECTION_NAME);
+//		k = 0;
+//		item = (String) spinner.getItemAtPosition(k);
+//		while (k < spinner.getCount() && !selected.equals(item)) {
+//			++k;
+//			item = (String) spinner.getItemAtPosition(k);
+//		}
+//		spinner.setSelection(k);
 		
 	}
 

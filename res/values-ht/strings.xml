@@ -2,6 +2,10 @@
 <resources>
 
 	<!--  main.xml -->
+	<string name="list_beneficiary_label">List Beneficiary</string>
+	<string name="add_beneficiary_label">Add Beneficiary</string>
+	
+	
     <string name="appHeader">Mobil Enskripsyon Sistèm</string>
     <string name="app_name">MobileRegistration</string>
     <string name="newBeneficiary">Nouvo benefisyè</string>
@@ -15,7 +19,6 @@
     <string name="general_info">Enfomasyon Jeneral</string>
 	<string name="mchn_info">Enfomasyon MCHN</string>
   	<string name="save_info">Sauvegarder l\'enregistrement</string>
-    <string name="beneficiary">Nom benefisyè dirèk</string>
     <string name="name">Nom et byen Adrès</string>
     <string name="firstname">Prènom benefisyè dirèk</string>
     <string name="commune">Komin</string>
@@ -82,6 +85,20 @@
     <!-- Alert Dialogs -->
     <string name="acdivoca_exit_findactivity">Etes-vous sûr de vouloir quitter? Les données peuvent être perdues.</string>
  	<string name="acdivoca_cancel">Annuler</string>
+ 	
+ 	   <!--  Update View -->
+    <string name="beneficiary">Renseignements sur le bénéficiaire</string>
+    <string name="dossier_label">Dossier Id</string>
+    <string name="months_in_program">Mois dans le programme</string>
+    <string name="save_update">Enregistrer ces données</string>
+    <string name="save_button">Marquer</string>
+    <string name="update_questions">Questions de mise à jour</string>
+    <string name="beneficiary_present">A été le bénéficiaire actuel?</string>
+    <string name="transfer_required">Si ce bénéficiaire soit transférée à une nouvelle catégorie?</string>
+    <string name="modifications_needed">Sont des modifications nécessaires dans le dossier de ce bénéficiaire?</string>
+    
+    
+    
  
     
 </resources>

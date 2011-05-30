@@ -52,6 +52,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -139,14 +140,35 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				mainLogo.setImageResource(resID);
 			}
 			
-			final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
-			if (addFindButton != null)
-				addFindButton.setOnClickListener(this);
+			if (FindPluginManager.mAddButtonLabel != null) {
+				//final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
+				final Button addFindButton = (Button)findViewById(R.id.addFindButton);
+				int resid = this.getResources().getIdentifier(FindPluginManager.mAddButtonLabel, "string", "org.hfoss.posit.android");
 
-			final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
-			if (listFindButton != null) {
-				// Log.i(TAG, listFindButton.getText() + "");
-				listFindButton.setOnClickListener(this);
+				addFindButton.setText(resid);
+				if (addFindButton != null)
+					addFindButton.setOnClickListener(this);
+			}
+
+			if (FindPluginManager.mListButtonLabel != null) {
+//				final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
+				final Button listFindButton = (Button) findViewById(R.id.listFindButton);
+				int resid = this.getResources().getIdentifier(FindPluginManager.mListButtonLabel, "string", "org.hfoss.posit.android");
+				listFindButton.setText(resid);
+				if (listFindButton != null) {
+					listFindButton.setOnClickListener(this);
+				}
+			}
+			
+			if (FindPluginManager.mExtraButtonLabel != null) {
+				final Button extraButton = (Button) findViewById(R.id.extraButton);
+				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel, "string", "org.hfoss.posit.android");
+				extraButton.setText(resid);
+				extraButton.setVisibility(View.VISIBLE);
+				if (extraButton != null) {
+					extraButton.setOnClickListener(this);
+				}
+				
 			}
 			
 			final TextView version = (TextView) findViewById(R.id.version);
@@ -259,6 +281,10 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				startActivity(intent);
 				break;
 
+			case R.id.extraButton:
+				intent.setClass(this, FindActivityProvider.getExtraActivityClass());
+				startActivity(intent);
+				break;	
 			}
 //		}
 	}
