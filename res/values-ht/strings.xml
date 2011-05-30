@@ -13,19 +13,24 @@
             
     <!-- add.xml --> 
     <string name="general_info">Enfomasyon Jeneral</string>
+	<string name="mchn_info">Enfomasyon MCHN</string>
+  	<string name="save_info">Sauvegarder l\'enregistrement</string>
     <string name="beneficiary">Nom benefisyè dirèk</string>
+    <string name="name">Nom et byen Adrès</string>
     <string name="firstname">Prènom benefisyè dirèk</string>
     <string name="commune">Komin</string>
     <string name="commune_section">Seksyon kominal</string>
     <string name="address">Lokalite ou byen Adrès</string>
     
     <string name="sex">Sèks</string>
-    <string name="dob">Dat Nesans</string>
+    <string name="dob">Dat Nesans ou Laj</string>
     <string name="dob_age">Laj</string>
+    <string name="dob_age_hint">Laj (si non Dat Nesans)</string>
     <string name="Male">Gason</string>
     <string name="Female">Fanm</string>
 
     <string name="Number_of_people_in_home">Konbyen moun ki gen nan kay la?</string>
+    <string name="Beneficiary_Category">Benefisyè kategori</string>
     <string name="Infant_Category">Nan ki kategori benefisyè a ye ?</string>
     <string name="Malnourished">Enfant mal nourri</string>
     <string name="In_Prevention">Enfant in prevètion</string>
@@ -34,7 +39,25 @@
     <string name="Nursing">Femme allaitante</string>
     <string name="add_save">Reservè au Db</string>
     <string name="add_send">Envoyè SMS</string>
-
+    
+    <string name="relatives_section">Parents bénéficiaires</string>
+    <string name="responsible_if_child">Nom du responsable (si l\'enfant)</string>
+    <string name="responsible_if_mother">Nom du responsable (si la femme enceinte)</string>
+    <string name="father_if_child">Nom du père (si l\'enfant)</string>
+    <string name="husband_if_mother">Nom du mari (si la femme)</string>
+    
+    <string name="health_center">Centre de santé/Dispensaire</string>
+    <string name="distribution_post">Répartition des postes</string>
+    
+    <string name="mchn_questions">Questions</string>
+    <string name="mother_leader">Êtes-vous un chef de file mère?</string>
+    <string name="visit_mother_leader">Ne vous visitez un chef de file mère?</string>
+    <string name="participating_acdivoca">Est-ce quelqu\'un de votre famille dans le Programme d\'agriculture de ACDI/VOCA?</string>
+    <string name="give_name">Si oui, donnez le nom de:</string>
+    <string name="Yes">Oui</string>
+    <string name="No">Non</string>
+	
+	
 	<!--  Menu -->
     <string name="settings">Anviwònman</string>
     
@@ -56,5 +79,9 @@
     <string name="SMS_phone">SMS Nimewo telefòn</string>
     <string name="smsPhoneKey">smsPhone</string>
     
+    <!-- Alert Dialogs -->
+    <string name="acdivoca_exit_findactivity">Etes-vous sûr de vouloir quitter? Les données peuvent être perdues.</string>
+ 	<string name="acdivoca_cancel">Annuler</string>
+ 
     
 </resources>
