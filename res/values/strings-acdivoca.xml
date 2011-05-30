@@ -55,10 +55,12 @@
    
     <!--  Update View -->
     <string name="beneficiary">Beneficiary Information</string>
-    <string name="dossier_label">Dossier Id</string>
+    <string name="dossier_label">Enter dossier number and look up!</string>
+    <string name="dossier_hint">Id #</string>
+    <string name="lookup_button">Lookup beneficiary</string>
     <string name="months_in_program">Months in program</string>
     <string name="save_update">Record the Update</string>
-    <string name="save_button">Record</string>
+    <string name="save_button">Record the Update</string>
     <string name="update_questions">Update Questions</string>
     <string name="beneficiary_present">Was the beneficiary present?</string>
     <string name="transfer_required">Should this beneficiary be transferred to a new category?</string>

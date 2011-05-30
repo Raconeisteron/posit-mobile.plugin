@@ -88,10 +88,12 @@
  	
  	   <!--  Update View -->
     <string name="beneficiary">Renseignements sur le bénéficiaire</string>
-    <string name="dossier_label">Dossier Id</string>
+    <string name="dossier_label">Entrez le numéro de dossier et lève les yeux!</string>
+    <string name="dossier_hint">Id #</string>
+    <string name="lookup_button">Recherchez Bénéficiaire</string>
     <string name="months_in_program">Mois dans le programme</string>
     <string name="save_update">Enregistrer ces données</string>
-    <string name="save_button">Marquer</string>
+    <string name="save_button">Marquer ces données</string>
     <string name="update_questions">Questions de mise à jour</string>
     <string name="beneficiary_present">A été le bénéficiaire actuel?</string>
     <string name="transfer_required">Si ce bénéficiaire soit transférée à une nouvelle catégorie?</string>
