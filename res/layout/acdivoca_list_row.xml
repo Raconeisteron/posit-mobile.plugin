@@ -17,7 +17,7 @@
 	android:layout_marginBottom="2dp" android:layout_marginLeft="2dp"
 	android:layout_toRightOf="@id/find_image"
 	android:orientation="vertical" >
-		<TextView android:id="@+id/name_id" android:layout_width="fill_parent"
+		<TextView android:id="@+id/lastname_field" android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:singleLine="true"
 			android:textSize="20dp" android:layout_marginLeft="3dp"
 			android:layout_alignParentTop="true" />

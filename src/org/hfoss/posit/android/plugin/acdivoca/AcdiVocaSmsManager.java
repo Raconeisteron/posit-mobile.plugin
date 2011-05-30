@@ -11,7 +11,11 @@ import android.widget.Toast;
 
 public class AcdiVocaSmsManager {
 	
-	private static final String TAG = "AcdiVocaSmsManager";
+	public static final String TAG = "AcdiVocaSmsManager";
+	
+	public static final String ATTR_VAL_SEPARATOR = "=";
+	public static final String PAIRS_SEPARATOR = "&";
+	
 	
 	private static boolean checkNumber(String number) {
 		for(int i = 0; i < number.length(); i++) {
@@ -26,7 +30,7 @@ public class AcdiVocaSmsManager {
 		if (phoneNumber==null)
 			phoneNumber = PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
 		
-		Toast.makeText(context, "SMS Phone Target = " + phoneNumber, Toast.LENGTH_SHORT).show();		
+		//Toast.makeText(context, "SMS Phone Target = " + phoneNumber, Toast.LENGTH_SHORT).show();		
 		String SENT = "SMS_SENT";
 		String DELIVERED = "SMS_DELIVERED";        
 		PendingIntent sentIntent = PendingIntent.getBroadcast(context, 0,
@@ -49,12 +53,18 @@ public class AcdiVocaSmsManager {
 	}
 	
 	public static String formatSmsMessage(ContentValues values) {
-		String message = values.get(AcdiVocaDbHelper.FINDS_FIRSTNAME)
-		+ "&fn=" + values.get(AcdiVocaDbHelper.FINDS_LASTNAME)
-		+ "&ln=" + values.get(AcdiVocaDbHelper.FINDS_DOB) 
-		+ "&s="  + values.get(AcdiVocaDbHelper.FINDS_SEX)
-		+ "&ad="  + values.get(AcdiVocaDbHelper.FINDS_ADDRESS)
-		+ "&cn="  + values.get(AcdiVocaDbHelper.COMMUNE_NAME);
+		String message = "fn" + "=" + values.get(AcdiVocaDbHelper.FINDS_FIRSTNAME) + PAIRS_SEPARATOR
+		+  "ln" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_LASTNAME) + PAIRS_SEPARATOR
+		+ "dob" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_DOB)  + PAIRS_SEPARATOR
+		+ "s" + ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.FINDS_SEX) + PAIRS_SEPARATOR
+		+ "ad" + ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.FINDS_ADDRESS) + PAIRS_SEPARATOR
+		+ "a" + ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.FINDS_AGE) + PAIRS_SEPARATOR
+		+ "c" + ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.COMMUNE_NAME) + PAIRS_SEPARATOR
+		+ "cs" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.COMMUNE_SECTION_NAME) + PAIRS_SEPARATOR
+		+ "ic" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY) + PAIRS_SEPARATOR
+		+ "mc" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY) + PAIRS_SEPARATOR
+		+ "nih" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
+		
 		return message;
 		
 	}

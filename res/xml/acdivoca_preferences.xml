@@ -2,8 +2,10 @@
 	<PreferenceCategory android:title="@string/acdivocaprefs">
 
 		<PreferenceScreen android:title="@string/acdivocaprefs">
-			<EditTextPreference android:title="@string/SMS_phone"
-				android:key="@string/smsPhoneKey" />
+			<EditTextPreference 
+				android:numeric="integer"
+				android:title="@string/SMS_phone"
+				android:key="@string/smsPhoneKey"  />
 
 			<ListPreference android:key="@string/localeKey"
 				android:title="@string/locale" android:persistent="true"

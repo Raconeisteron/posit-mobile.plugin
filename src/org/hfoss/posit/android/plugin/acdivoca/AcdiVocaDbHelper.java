@@ -62,11 +62,14 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	public static final String FINDS_ADDRESS = "address";
 	public static final String FINDS_DOB = "dob";
 	public static final String FINDS_SEX = "sex";
+	public static final String FINDS_AGE = "age";
 	
 	public static final String FINDS_COMMUNE_ID = "commune_id";
 	public static final String FINDS_COMMUNE_SECTION_ID = "commune_section_id";
 	public static final String FINDS_BENEFICIARY_CATEGORY_ID = "beneficiary_category_id";
 	public static final String FINDS_HOUSEHOLD_SIZE = "household_size";
+	public static final String FINDS_INFANT_CATEGORY ="infant_category";
+	public static final String FINDS_MOTHER_CATEGORY = "mother_category";
 
 	public static final String FINDS_GUID = "guid";    // Globally unique ID
 	
@@ -75,15 +78,15 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	
 	public static final String COMMUNE_TABLE = "commune";
 	public static final String COMMUNE_ID = "id";
-	public static final String COMMUNE_NAME = "name";
-	public static final String COMMUNE_ABBR = "abbreviation";
+	public static final String COMMUNE_NAME = "commune";
+	public static final String COMMUNE_ABBR = "comm_abbrev";
 	
 	/** Commune section table */
 	
 	public static final String COMMUNE_SECTION_TABLE = "commune_section";
 	public static final String COMMUNE_SECTION_ID = "id";
-	public static final String COMMUNE_SECTION_NAME = "name";
-	public static final String COMMUNE_SECTION_ABBR = "abbreviation";
+	public static final String COMMUNE_SECTION_NAME = "commune_section";
+	public static final String COMMUNE_SECTION_ABBR = "comm_sect_abbrev";
 	public static final String COMMUNE_SECTION_COMMUNE_ID = "commune_id";
 	
 	
@@ -120,10 +123,16 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	public static final String[] list_row_data = { 
 		FINDS_ID,
 		//FINDS_GUID,  
-		FINDS_FIRSTNAME,
 		FINDS_LASTNAME,
+		FINDS_FIRSTNAME,
 		FINDS_DOB,
-		FINDS_SEX
+		FINDS_SEX,
+		FINDS_AGE,
+		FINDS_HOUSEHOLD_SIZE,
+		FINDS_MOTHER_CATEGORY,
+		FINDS_INFANT_CATEGORY,
+		COMMUNE_NAME,
+		COMMUNE_SECTION_NAME
 //		FINDS_DESCRIPTION,
 //		FINDS_LATITUDE,
 //		FINDS_LONGITUDE,
@@ -135,10 +144,16 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	public static final int[] list_row_views = {
 		R.id.row_id,		    
 ////		R.id.idNumberText,
-		R.id.name_id, 
+		R.id.lastname_field, 
 		R.id.firstname_field,
 		R.id.datepicker,
-		R.id.female
+		R.id.femaleRadio,
+		R.id.ageEdit,
+		R.id.inhomeEdit,
+		R.id.expectingRadio,
+		R.id.malnourishedRadio,
+		R.id.communeSpinner,
+		R.id.commune_sectionSpinner
 //		R.id.description_id,
 //		R.id.latitude_id,
 //		R.id.longitude_id,
@@ -160,9 +175,17 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		+ FINDS_LASTNAME + " text, "
 		+ FINDS_ADDRESS + " text, "
 		+ FINDS_DOB + " date, "
-		+ FINDS_SEX + " char, "
-		+ FINDS_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + "), "
-		+ FINDS_COMMUNE_SECTION_ID + " references " + COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + ")" 
+		+ FINDS_SEX + " text, "
+		+ FINDS_AGE + " text, "
+		+ FINDS_HOUSEHOLD_SIZE + " text, "
+		+ FINDS_MOTHER_CATEGORY + " text, "
+		+ FINDS_INFANT_CATEGORY + " text, "
+		+ COMMUNE_NAME + " text, "
+		+ COMMUNE_ABBR + " text, "
+		+ COMMUNE_SECTION_NAME + " text, "
+		+ COMMUNE_SECTION_ABBR + " text "
+//		+ FINDS_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + "), "
+//		+ FINDS_COMMUNE_SECTION_ID + " references " + COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + ")" 
 		+ ");";
 	
 	private static final String CREATE_COMMUNE_TABLE = "CREATE TABLE IF NOT EXISTS "
