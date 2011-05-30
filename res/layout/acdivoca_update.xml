@@ -9,16 +9,38 @@
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:orientation="vertical" android:scrollbars="vertical|horizontal">
-			
-			<TextView android:text="@string/beneficiary" android:textColor="#ff0000"
-				android:layout_width="fill_parent" android:layout_height="wrap_content" 
-				android:textSize="20dp" />
 				
 			<TextView android:text="@string/dossier_label" android:textColor="#ff0000"
 				android:layout_width="fill_parent" 
-				android:layout_marginLeft="10px" 
+				android:textSize="20dp"
 				android:layout_height="wrap_content" />
 				
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >		
+				
+			<EditText android:id="@+id/dossierEdit"
+				android:hint="@string/dossier_hint"
+				android:inputType="textCapSentences"
+				android:minWidth="100px"
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" 
+				android:layout_marginLeft="20px" 
+				android:layout_marginRight="10px" />
+				
+			<Button android:text="@string/lookup_button" 
+				android:id="@+id/update_lookup_button"
+				android:layout_marginRight="20px"
+				android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" />
+						
+			</LinearLayout>			
+				
+			<TextView android:text="@string/beneficiary" android:textColor="#ff0000"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" 
+				android:textSize="20dp" />	
+						
 			<TextView android:textColor="#ff0000"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="20px" 
@@ -293,14 +315,11 @@
 				android:layout_height="fill_parent" android:layout_gravity="center" 
 				android:paddingTop="24dp" >
 
-				<Button android:text="@string/save_button" android:id="@+id/saveToDbButton"
+				<Button android:text="@string/save_button" android:id="@+id/update_to_db_button"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 <!--  
-				<Button android:text="@string/add_send" android:id="@+id/sendSmsButton"
-					android:layout_marginLeft="20px" android:layout_marginRight="20px"
-					android:layout_width="fill_parent" android:layout_height="wrap_content" />
-					
+
 -->					
 			</LinearLayout>
 

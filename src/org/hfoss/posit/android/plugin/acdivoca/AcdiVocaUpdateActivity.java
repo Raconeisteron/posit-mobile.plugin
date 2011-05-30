@@ -130,6 +130,9 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 
 		Log.i(TAG, "Before edited = " + isProbablyEdited);
 		setContentView(R.layout.acdivoca_update);  // Should be done after locale configuration
+		
+		((Button)findViewById(R.id.update_lookup_button)).setOnClickListener(this);
+		((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
 
 //		((Button)findViewById(R.id.saveToDbButton)).setOnClickListener(this);
 //		((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
@@ -286,13 +289,13 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 	 */
 	private void displayContentInView(ContentValues contentValues) {
 		Log.i(TAG, "displayContentInView");
-//		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
-//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
-//
-//		eText = (EditText) findViewById(R.id.firstnameEdit);
-//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
-//		Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
-//
+		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
+		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
+
+		eText = (EditText) findViewById(R.id.firstnameEdit);
+		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+		Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+
 //		eText = (EditText)findViewById(R.id.ageEdit);
 //		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_AGE));
 //		
@@ -302,14 +305,14 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		eText = (EditText)findViewById(R.id.inhomeEdit);
 //		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
 //		
-//		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
-//		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
-//		Log.i(TAG,"display DOB = " + date);
-//		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
-//				Integer.parseInt(date.substring(0,date.indexOf("/"))),
-//				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
-//				(OnDateChangedListener) this);
-//
+		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
+		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+		Log.i(TAG,"display DOB = " + date);
+		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
+				Integer.parseInt(date.substring(0,date.indexOf("/"))),
+				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
+				(OnDateChangedListener) this);
+
 //		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
 //		Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
 //		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals("FEMALE"))
@@ -319,21 +322,21 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //			sexRB.setChecked(true);
 //		}
 //		
-//		RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
-//		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY).equals("EXPECTING"))
-//			motherRB.setChecked(true);
-//		else {
-//			motherRB = (RadioButton)findViewById(R.id.nursingRadio);
-//			motherRB.setChecked(true);
-//		}
-//
-//		RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
-//		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY).equals("MALNOURISHED"))
-//			infantRB.setChecked(true);
-//		else {
-//			infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
-//			infantRB.setChecked(true);
-//		}
+		RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
+		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY).equals("EXPECTING"))
+			motherRB.setChecked(true);
+		else {
+			motherRB = (RadioButton)findViewById(R.id.nursingRadio);
+			motherRB.setChecked(true);
+		}
+
+		RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
+		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY).equals("MALNOURISHED"))
+			infantRB.setChecked(true);
+		else {
+			infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
+			infantRB.setChecked(true);
+		}
 //		
 //		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
 //		String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
@@ -396,34 +399,43 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 			//Toast.makeText(AcdiVocaFindActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
 		}
 
-		if(v.getId()==R.id.saveToDbButton) {
+		if(v.getId()==R.id.update_to_db_button) {
 			boolean result = false;
-			ContentValues data = this.retrieveContentFromView(); 
-			Log.i(TAG,"View Content: " + data.toString());
-			data.put(AcdiVocaDbHelper.FINDS_PROJECT_ID, 0);
-			if (mAction.equals(Intent.ACTION_EDIT)) {
-				result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
-				Log.i(TAG, "Update to Db is " + result);
-			} else {
-				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
-				Log.i(TAG, "Save to Db is " + result);
-			}
-			if (result)
-				Toast.makeText(this, "Find saved to Db", Toast.LENGTH_SHORT).show();
-			else 
-				Toast.makeText(this, "Db error", Toast.LENGTH_SHORT).show();
-			//this.startActivity(new Intent().setClass(this,AcdiVocaListFindsActivity.class));
-			finish();
-		}
-		if(v.getId()==R.id.sendSmsButton) { 
-			ContentValues values = retrieveContentFromView();
+			Toast.makeText(this, "SIMULATION: Saving update to DB", Toast.LENGTH_SHORT).show();
 
-	        String message = AcdiVocaSmsManager.formatSmsMessage(values);
-	        
-			AcdiVocaSmsManager.sendMessage(this,message,null);
-			//Toast.makeText(this, "Sending: " +  message, Toast.LENGTH_SHORT).show();
-			Log.i(TAG,  "Sending: " +  message);
-	        finish();
+//			ContentValues data = this.retrieveContentFromView(); 
+//			Log.i(TAG,"View Content: " + data.toString());
+//			data.put(AcdiVocaDbHelper.FINDS_PROJECT_ID, 0);
+//			if (mAction.equals(Intent.ACTION_EDIT)) {
+//				result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
+//				Log.i(TAG, "Update to Db is " + result);
+//			} else {
+//				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
+//				Log.i(TAG, "Save to Db is " + result);
+//			}
+//			if (result)
+//				Toast.makeText(this, "Find saved to Db", Toast.LENGTH_SHORT).show();
+//			else 
+//				Toast.makeText(this, "Db error", Toast.LENGTH_SHORT).show();
+//			//this.startActivity(new Intent().setClass(this,AcdiVocaListFindsActivity.class));
+//			finish();
+		}
+		
+		// Look up a beneficiary by ID. For now the Id's are integer row_id's. This
+		// will change.
+		if(v.getId()==R.id.update_lookup_button) { 
+			
+			EditText etext = (EditText)findViewById(R.id.dossierEdit);
+			String idStr = etext.getText().toString();
+			int row_id = Integer.parseInt(idStr);
+			
+			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+			ContentValues values = db.fetchFindDataById(row_id, null);
+			if (values == null) {
+				Toast.makeText(this, "ERROR: No beneficiary with ID = " + row_id, Toast.LENGTH_SHORT).show();
+			} else {
+				displayContentInView(values);
+			}
 		}
 	}
 
