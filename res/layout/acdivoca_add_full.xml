@@ -13,45 +13,34 @@
 			<TextView android:text="@string/general_info" android:textColor="#ffffff"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:textSize="24dp" />
-
-<!--  
-			<TextView android:text="@string/firstname" android:textColor="#ffffff"
-				android:layout_width="fill_parent" android:layout_height="wrap_content" />
--->				
-			<EditText android:id="@+id/firstname"
+				
+			<EditText android:id="@+id/firstnameEdit"
 				android:hint="@string/firstname"
 				android:inputType="textCapSentences"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px" />
-<!--				
-			<TextView android:text="@string/beneficiary" android:textColor="#ffffff"
-				android:layout_width="fill_parent" android:layout_height="wrap_content" />
--->
-			<EditText android:id="@+id/beneficiary"
-				android:hint="@string/beneficiary"
+
+			<EditText android:id="@+id/lastnameEdit"
+				android:hint="@string/lastname"
 				android:layout_width="fill_parent" android:layout_marginLeft="30px"
 				android:inputType="textCapSentences"
 				android:layout_marginRight="30px" android:layout_height="wrap_content" />
  				
 			<TextView android:text="@string/commune" android:textColor="#ffffff"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />
-			<Spinner android:id="@+id/commune" 
+			<Spinner android:id="@+id/communeSpinner" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px"
 				android:entries="@+array/commune_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
 
 			<TextView android:text="@string/commune_section" android:textColor="#ffffff"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />
-			<Spinner android:id="@+id/commune_section" 
+			<Spinner android:id="@+id/commune_sectionSpinner" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px"
 				android:entries="@+array/commune_section_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
 
-<!--  
-			<TextView android:text="@string/address" android:textColor="#ffffff"
-				android:layout_width="fill_parent" android:layout_height="wrap_content" />
--->
-			<EditText android:id="@+id/address"
+			<EditText android:id="@+id/addressEdit"
 				android:hint="@string/address"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px" />	
@@ -65,7 +54,7 @@
 			<DatePicker android:id="@+id/datepicker" 
 				android:layout_width="wrap_content" 
 				android:endYear="2020"
-				android:startYear="1950"
+				android:startYear="1947"
 				android:layout_marginLeft="30px" android:layout_marginRight="30px"
 				android:layout_height="wrap_content">
 			</DatePicker>
@@ -74,28 +63,19 @@
 				android:orientation="horizontal" android:layout_width="wrap_content"
 				android:layout_height="fill_parent" android:layout_gravity="left" 
 				android:paddingTop="10dp" >
-<!--  			
-			<TextView android:text="@string/dob_age"
-				android:textColor="#ffffff" android:layout_width="fill_parent"
-				android:layout_height="wrap_content" />
--->
-			<EditText android:id="@+id/age" 
+
+			<EditText android:id="@+id/ageEdit" 
 				android:hint="@string/dob_age"
 				android:paddingLeft="30px"
 				android:layout_width="wrap_content" android:minWidth="75px"
 				android:numeric="integer" android:layout_height="wrap_content" />				
-<!--  				
-			<TextView android:text="@string/sex"
-				android:textColor="#ffffff" android:layout_width="fill_parent"
-				android:paddingLeft="20px"
-				android:layout_height="wrap_content" />
--->
+
 			<RadioGroup android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:id="@+id/sex">
-				<RadioButton android:checked="true" android:id="@+id/female"
+				android:id="@+id/sexRadio">
+				<RadioButton android:checked="true" android:id="@+id/femaleRadio"
 					android:text="@string/Female" />
-				<RadioButton android:checked="false" android:id="@+id/male"
+				<RadioButton android:checked="false" android:id="@+id/maleRadio"
 					android:text="@string/Male" />
 			</RadioGroup>
 			</LinearLayout>
@@ -108,7 +88,7 @@
 			<TextView android:text="@string/Number_of_people_in_home"
 				android:textColor="#ffffff" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" />		
-			<EditText android:id="@+id/inhome" android:layout_width="wrap_content"
+			<EditText android:id="@+id/inhomeEdit" android:layout_width="wrap_content"
 				android:numeric="integer"
 				android:layout_height="wrap_content" android:paddingLeft="20px" 
 				android:minWidth ="48dp"/>
@@ -120,11 +100,11 @@
 				
 			<RadioGroup android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:id="@+id/infantcategory">
+				android:id="@+id/infantcategoryRadio">
 				
-				<RadioButton android:checked="false" android:id="@+id/malnourished"
+				<RadioButton android:checked="false" android:id="@+id/malnourishedRadio"
 					android:text="@string/Malnourished" />
-				<RadioButton android:checked="false" android:id="@+id/inprevention"
+				<RadioButton android:checked="false" android:id="@+id/inpreventionRadio"
 					android:text="@string/In_Prevention" />
 			</RadioGroup>
 			<TextView android:text="@string/Mother_Category"
@@ -132,10 +112,10 @@
 				android:layout_height="wrap_content" />
 			<RadioGroup android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:id="@+id/mothercategory">			
-				<RadioButton android:checked="false" android:id="@+id/expecting"
+				android:id="@+id/mothercategoryRadio">			
+				<RadioButton android:checked="false" android:id="@+id/expectingRadio"
 					android:text="@string/Expecting" />
-				<RadioButton android:checked="false" android:id="@+id/nursing"
+				<RadioButton android:checked="false" android:id="@+id/nursingRadio"
 					android:text="@string/Nursing" />	
 			</RadioGroup>
 
@@ -144,11 +124,11 @@
 				android:layout_height="fill_parent" android:layout_gravity="center" 
 				android:paddingTop="24dp" >
 
-				<Button android:text="@string/add_save" android:id="@+id/saveToDB"
+				<Button android:text="@string/add_save" android:id="@+id/saveToDbButton"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
-				<Button android:text="@string/add_send" android:id="@+id/sendSMS"
+				<Button android:text="@string/add_send" android:id="@+id/sendSmsButton"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 			</LinearLayout>

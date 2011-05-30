@@ -2,7 +2,7 @@
 	
 	<!--  Acdi Voca Strings -->
 	<string name="general_info">General Information</string>
-    <string name="beneficiary">Last Name</string>
+    <string name="lastname">Last Name</string>
     <string name="firstname">First Name</string>
     <string name="commune">Commune</string>
     <string name="commune_section">Communal section</string>
