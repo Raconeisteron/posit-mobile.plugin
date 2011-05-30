@@ -2,6 +2,9 @@
 	
 	<!--  Acdi Voca Strings -->
 	<string name="general_info">General Information</string>
+	<string name="mchn_info">MCHN Information</string>
+ 	<string name="save_info">Save the registration</string>
+    <string name="name_section">Name and Address</string>
     <string name="lastname">Last Name</string>
     <string name="firstname">First Name</string>
     <string name="commune">Commune</string>
@@ -9,12 +12,14 @@
     <string name="address">Street Address</string>	
 	
     <string name="sex">Sex</string>
-    <string name="dob">Date of Birth</string>
+    <string name="dob">Date of Birth or Age</string>
     <string name="dob_age">Age</string>
+    <string name="dob_age_hint">Age (if no DOB)</string>
     <string name="Male">Male</string>
     <string name="Female">Female</string>	
     
-      <string name="Number_of_people_in_home">Number of people in home</string>
+    <string name="Number_of_people_in_home">Number of people in home</string>
+    <string name="Beneficiary_Category">Beneficiary Category</string>
     <string name="Infant_Category">Infant Category</string>
     <string name="Malnourished">Malnourished</string>
     <string name="In_Prevention">In Prevention</string>
@@ -23,6 +28,28 @@
     <string name="Nursing">Nursing</string>
     <string name="add_save">Save to Db</string>
     <string name="add_send">Send SMS</string>
+    
+    <!--   MCHN Strings -->
+    <string name="relatives_section">Beneficiary relatives</string>
+    <string name="responsible_if_child">Responsible party (if child)</string>
+    <string name="responsible_if_mother">Responsible party (if mother)</string>
+    <string name="father_if_child">Father (if child)</string>
+    <string name="husband_if_mother">Husband (if mother)</string>
+    
+    <string name="health_center">Health Center</string>
+    <string name="distribution_post">Distribution Post</string>
+
+
+    <string name="mchn_questions">Questions</string>
+    <string name="mother_leader">Are you a mother leader?</string>
+    <string name="visit_mother_leader">Do you visit a mother leader?</string>
+    <string name="participating_acdivoca">Is someone in your family participating in ACDI/VOCA Agriculture program?</string>
+    <string name="give_name">If so, give name</string>
+    <string name="Yes">Yes</string>
+    <string name="No">No</string>
+    
+    
+    
     
     <!--  list_finds.xml -->
     <string name="noFinds">No beneficiaries</string>
@@ -38,7 +65,10 @@
     <string name="localeKey">locale</string>
     <string name="locale">Locale</string>
     <string name="localePref">locale</string>
- 
+    
+    <!-- Alert Dialogs -->
+    <string name="acdivoca_exit_findactivity">Are you sure you want to exit? Data may be lost.</string>
+ 	<string name="acdivoca_cancel">Cancel</string>
     
     
 </resources>

@@ -31,6 +31,23 @@
 	<item>Bainet</item>
 	<item>Cote de fer</item>
 	</string-array>
+	
+	<string-array name="health_center_names"> 
+	<item>Centre de santé une</item>
+	<item>Centre de santé deux</item>
+	<item>Centre de santé trois</item>
+	<item>Centre de santé quatre</item>
+	<item>Centre de santé cinq</item>
+	</string-array>
+	
+	
+	<string-array name="distribution_names"> 
+	<item>Répartition des postes une</item>
+	<item>Répartition des postes deux</item>
+	<item>Répartition des postes trois</item>
+	<item>Répartition des postesquatre</item>
+	<item>Répartition des postes cinq</item>
+	</string-array>	
 
 <!--  Preferences that start activities in SettingsActivity -->
 	<string-array name="preference_activities">
