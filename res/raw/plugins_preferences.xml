@@ -3,19 +3,27 @@
 		<Plugin active="true" name="AcdiVocaFind"
 			package="org.hfoss.posit.android.plugin.acdivoca" 
 			find_factory="AcdiVocaFindFactory"
-			findactivity_class="AcdiVocaFindActivity" 
-			listfindsactivity_class="AcdiVocaListFindsActivity"
+			find_activity_class="AcdiVocaFindActivity" 
+			extra_activity_class="AcdiVocaUpdateActivity"
+			list_finds_activity_class="AcdiVocaListFindsActivity"
 			find_data_manager="AcdiVocaFindDataManager" 
-			preferences_xml="acdivoca_preferences"  
+			preferences_xml="acdivoca_preferences" 
+			main_list_button_label="list_beneficiary_label"
+			main_add_button_label="add_beneficiary_label"
+			main_extra_button_label="update_beneficiary_label"
 			main_icon="acdivoca_logo" />
 
 		<Plugin active="true" name="AcdiVocaFind2"
 			package="org.hfoss.posit.android.plugin.acdivoca" 
 			find_factory="AcdiVocaFindFactory"
-			findactivity_class="AcdiVocaFindActivity" 
-			listfindsactivity_class="AcdiVocaListFindsActivity"
+			find_activity_class="AcdiVocaFindActivity" 
+			extra_activity_class="AcdiVocaUpdateActivity"
+			list_finds_activity_class="AcdiVocaListFindsActivity"
 			find_data_manager="AcdiVocaFindDataManager" 
 			preferences_xml="acdivoca_preferences2"  
+			main_list_button_label="list_beneficiary_label"
+			main_add_button_label="add_beneficiary_label"
+			main_extra_button_label="update_beneficiary_label"
 			main_icon="acdivoca_logo" />
 	</FindPlugins>
 </PluginsPreferences>

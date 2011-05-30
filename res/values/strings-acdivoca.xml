@@ -1,6 +1,10 @@
 <resources>
 	
 	<!--  Acdi Voca Strings -->
+	<string name="list_beneficiary_label">List\nBeneficiary</string>
+	<string name="add_beneficiary_label">Add\nBeneficiary</string>
+	<string name="update_beneficiary_label">Update\nBeneficiary</string>
+	
 	<string name="general_info">General Information</string>
 	<string name="mchn_info">MCHN Information</string>
  	<string name="save_info">Save the registration</string>
@@ -48,8 +52,17 @@
     <string name="Yes">Yes</string>
     <string name="No">No</string>
     
-    
-    
+   
+    <!--  Update View -->
+    <string name="beneficiary">Beneficiary Information</string>
+    <string name="dossier_label">Dossier Id</string>
+    <string name="months_in_program">Months in program</string>
+    <string name="save_update">Record the Update</string>
+    <string name="save_button">Record</string>
+    <string name="update_questions">Update Questions</string>
+    <string name="beneficiary_present">Was the beneficiary present?</string>
+    <string name="transfer_required">Should this beneficiary be transferred to a new category?</string>
+    <string name="modifications_needed">Are modifications needed in the beneficiary\'s record?</string>
     
     <!--  list_finds.xml -->
     <string name="noFinds">No beneficiaries</string>
