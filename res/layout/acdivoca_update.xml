@@ -10,32 +10,12 @@
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:orientation="vertical" android:scrollbars="vertical|horizontal">
 				
-			<TextView android:text="@string/dossier_label" android:textColor="#ff0000"
+			<TextView android:id="@+id/dossier_label"
+				android:text="@string/dossier_label" 
+				android:textColor="#ff0000"
 				android:layout_width="fill_parent" 
 				android:textSize="20dp"
-				android:layout_height="wrap_content" />
-				
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				android:orientation="horizontal" android:layout_width="wrap_content"
-				android:layout_height="fill_parent" android:layout_gravity="left" 
-				android:paddingTop="10dp" >		
-				
-			<EditText android:id="@+id/dossierEdit"
-				android:hint="@string/dossier_hint"
-				android:inputType="textCapSentences"
-				android:minWidth="100px"
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content" 
-				android:layout_marginLeft="20px" 
-				android:layout_marginRight="10px" />
-				
-			<Button android:text="@string/lookup_button" 
-				android:id="@+id/update_lookup_button"
-				android:layout_marginRight="20px"
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content" />
-						
-			</LinearLayout>			
+				android:layout_height="wrap_content" />		
 				
 			<TextView android:text="@string/beneficiary" android:textColor="#ff0000"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
@@ -157,7 +137,7 @@
 					android:text="@string/Nursing" />	
 			</RadioGroup>
 			
-			<TextView android:text="@string/months_in_program"
+			<TextView android:text="@string/months_left_in_program"
 				android:textColor="#ff0000" 
 				android:layout_marginLeft="10px" 
 				android:layout_width="fill_parent"

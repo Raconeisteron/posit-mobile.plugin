@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:gravity="center"
+	android:layout_width="fill_parent" android:layout_height="wrap_content">
+
+	<TextView android:text="@string/dossier_label"
+		android:textColor="#ff0000" android:layout_width="wrap_content"
+		android:layout_gravity="center" android:textSize="20dp"
+		android:layout_height="wrap_content" />
+
+	<EditText android:id="@+id/dossierEdit" android:hint="@string/dossier_hint"
+		android:inputType="textCapSentences" android:layout_gravity="center"
+		android:minWidth="150px" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" />
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="horizontal" android:gravity="center"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+		
+		<Button android:text="@string/lookup_button" android:id="@+id/update_lookup_button"
+			android:layout_gravity="center" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+		<Button android:text="@string/cancel" android:id="@+id/cancel_lookup_button"
+			android:layout_gravity="center" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+	</LinearLayout>
+
+</LinearLayout>

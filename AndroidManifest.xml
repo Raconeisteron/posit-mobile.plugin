@@ -43,6 +43,9 @@
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity" 
 			android:launchMode="singleTop" />
 
+		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLookupActivity" 
+			android:launchMode="singleTop" />
+			
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUpdateActivity" 
 			android:launchMode="singleTop" />
 					

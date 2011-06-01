@@ -32,6 +32,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -56,6 +57,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.DatePicker.OnDateChangedListener;
@@ -69,6 +71,10 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 	public static final String TAG = "AcdiVocaUpdateActivity";
 
 	private static final int CONFIRM_EXIT = 0;
+
+	private static final int ACTION_ID = 0;
+	
+	private String beneficiaryId = "unknown";
 
 	private boolean isProbablyEdited = false;   // Set to true if user edits a datum
 	private String mAction = "";
@@ -113,13 +119,41 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 		super.onPause();
 	}
 
+	
+	class DbSimulator {
+		
+		private String[] db = {
+				"AB-100-CD,Alicia,Morelli,1/6/1982,EXPECTIONG,2",
+				"AB-101-CD,Baby,Morelli,8/6/2010,PREVENTION,9",
+				"AB-102-CD,Baby,Jones,1/1/2011,PREVENTION,13" };
+		
+		public DbSimulator() {
+		}
+		
+		public ContentValues fetchFindDataById(String id, ContentValues values) {
+			ContentValues result = null;
+			for (int k = 0; k < db.length; k++) {
+				String[] vals = db[k].split(",");
+				if (vals[0].equals(id)) {
+					result = new ContentValues();
+					result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, vals[1]);
+					result.put(AcdiVocaDbHelper.FINDS_LASTNAME, vals[2]);
+					result.put(AcdiVocaDbHelper.FINDS_DOB, vals[3]);
+					result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID, vals[4]);
+					result.put("MonthsRemaining", vals[5]);
+				}
+			}
+			return result;
+		}
+	}
+	
 	/**
 	 * 
 	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume");
+		Log.i(TAG, "onResume beneficiary id = " + beneficiaryId);
 		String localePref = PreferenceManager.getDefaultSharedPreferences(this).getString("locale", "");
 		Log.i(TAG, "Locale = " + localePref);
 		Locale locale = new Locale(localePref); 
@@ -129,10 +163,29 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 		getBaseContext().getResources().updateConfiguration(config, null);
 
 		Log.i(TAG, "Before edited = " + isProbablyEdited);
-		setContentView(R.layout.acdivoca_update);  // Should be done after locale configuration
-		
-		((Button)findViewById(R.id.update_lookup_button)).setOnClickListener(this);
-		((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
+
+		if (beneficiaryId == "unknown") {
+			Intent lookupIntent = new Intent();
+			lookupIntent.setClass(this, AcdiVocaLookupActivity.class);
+			this.startActivityForResult(lookupIntent, ACTION_ID);
+		} else {
+			
+			DbSimulator db = new DbSimulator();
+			//AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+			//ContentValues values = db.fetchFindDataById(row_id, null);
+			ContentValues values = db.fetchFindDataById(beneficiaryId, null);
+			if (values == null) {
+				Toast.makeText(this, "ERROR: No beneficiary with ID = " + beneficiaryId, Toast.LENGTH_SHORT).show();
+			} else {
+				setContentView(R.layout.acdivoca_update);  // Should be done after locale configuration
+				displayContentInView(values);
+
+				//((Button)findViewById(R.id.update_lookup_button)).setOnClickListener(this);
+				TextView tv = ((TextView) findViewById(R.id.dossier_label));
+				tv.setText("Beneficiary Dossier: " + beneficiaryId);
+			}
+		}
+//		((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
 
 //		((Button)findViewById(R.id.saveToDbButton)).setOnClickListener(this);
 //		((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
@@ -186,6 +239,23 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		 Log.i(TAG, "After edited = " + isProbablyEdited);
 	}
 	
+	
+	/**
+	 * Returns the result of the Lookup Activity, which gets the beneficiary Id.
+	 */
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.i(TAG, "onActivityResult");
+		switch(requestCode) {
+		case ACTION_ID:
+			if (resultCode == RESULT_OK) {
+				beneficiaryId = data.getStringExtra("Id");
+				Toast.makeText(this, "Beneficiary Id = " + " " + beneficiaryId, Toast.LENGTH_LONG).show();
+				break;
+			} else {
+				finish();
+			}
+		}   
+	}
 	
 	/**
 	 * Allows editing of editable data for existing finds.  For existing finds, 
@@ -313,6 +383,9 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
 				(OnDateChangedListener) this);
 
+		eText = (EditText)findViewById(R.id.monthsInProgramEdit);
+		eText.setText(contentValues.getAsString("MonthsRemaining"));
+		
 //		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
 //		Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
 //		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals("FEMALE"))
@@ -323,7 +396,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		}
 //		
 		RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY).equals("EXPECTING"))
+		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID).equals("EXPECTING"))
 			motherRB.setChecked(true);
 		else {
 			motherRB = (RadioButton)findViewById(R.id.nursingRadio);
@@ -331,7 +404,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 		}
 
 		RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY).equals("MALNOURISHED"))
+		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID).equals("MALNOURISHED"))
 			infantRB.setChecked(true);
 		else {
 			infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
@@ -419,23 +492,6 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //				Toast.makeText(this, "Db error", Toast.LENGTH_SHORT).show();
 //			//this.startActivity(new Intent().setClass(this,AcdiVocaListFindsActivity.class));
 //			finish();
-		}
-		
-		// Look up a beneficiary by ID. For now the Id's are integer row_id's. This
-		// will change.
-		if(v.getId()==R.id.update_lookup_button) { 
-			
-			EditText etext = (EditText)findViewById(R.id.dossierEdit);
-			String idStr = etext.getText().toString();
-			int row_id = Integer.parseInt(idStr);
-			
-			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-			ContentValues values = db.fetchFindDataById(row_id, null);
-			if (values == null) {
-				Toast.makeText(this, "ERROR: No beneficiary with ID = " + row_id, Toast.LENGTH_SHORT).show();
-			} else {
-				displayContentInView(values);
-			}
 		}
 	}
 
