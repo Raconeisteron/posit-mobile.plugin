@@ -17,9 +17,13 @@
 
     <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
 
-	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
+	<application android:icon="@drawable/acdivoca" 
+		android:label="@string/app_name" 
+		android:debuggable="true">
 		<uses-library android:name="com.google.android.maps" />	
-		<activity android:name=".PositMain" android:label="@string/app_name"
+		<activity android:name=".PositMain" 
+			android:configChanges="orientation|keyboardHidden"
+			android:label="@string/app_name"
 			android:launchMode="singleTop">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -28,7 +32,6 @@
 				<category android:name="android.intent.category.HOME" />
  	         	<category android:name="android.intent.category.DEFAULT" />
  	         	-->
-				
 			</intent-filter>
 		</activity>
 		<activity android:name=".RegisterActivity"/>
@@ -42,13 +45,17 @@
 			/>
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity" 
 			android:launchMode="singleTop" />
-
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLookupActivity" 
+			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />
-			
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUpdateActivity" 
 			android:launchMode="singleTop" />
-					
+		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.LoginActivity" 
+			android:configChanges="orientation|keyboardHidden"
+			android:launchMode="singleTop" />	
+		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity" 
+			android:configChanges="orientation|keyboardHidden"
+			android:launchMode="singleTop" />						
 		<activity android:name="org.hfoss.posit.android.api.SettingsActivity" />
 		
 		

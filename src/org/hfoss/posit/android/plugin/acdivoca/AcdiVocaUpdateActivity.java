@@ -170,10 +170,10 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 			this.startActivityForResult(lookupIntent, ACTION_ID);
 		} else {
 			
-			DbSimulator db = new DbSimulator();
-			//AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-			//ContentValues values = db.fetchFindDataById(row_id, null);
-			ContentValues values = db.fetchFindDataById(beneficiaryId, null);
+			//DbSimulator db = new DbSimulator();
+			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+			ContentValues values = db.fetchBeneficiaryByDossier(beneficiaryId, null);
+			//ContentValues values = db.fetchFindDataById(beneficiaryId, null);
 			if (values == null) {
 				Toast.makeText(this, "ERROR: No beneficiary with ID = " + beneficiaryId, Toast.LENGTH_SHORT).show();
 			} else {
@@ -377,11 +377,13 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		
 		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
 		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
-		Log.i(TAG,"display DOB = " + date);
-		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
-				Integer.parseInt(date.substring(0,date.indexOf("/"))),
-				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
-				(OnDateChangedListener) this);
+		if (date != null) {
+			Log.i(TAG,"display DOB = " + date);
+			dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
+					Integer.parseInt(date.substring(0,date.indexOf("/"))),
+					Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
+					(OnDateChangedListener) this);
+		}
 
 		eText = (EditText)findViewById(R.id.monthsInProgramEdit);
 		eText.setText(contentValues.getAsString("MonthsRemaining"));
@@ -395,21 +397,21 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //			sexRB.setChecked(true);
 //		}
 //		
-		RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID).equals("EXPECTING"))
-			motherRB.setChecked(true);
-		else {
-			motherRB = (RadioButton)findViewById(R.id.nursingRadio);
-			motherRB.setChecked(true);
-		}
-
-		RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID).equals("MALNOURISHED"))
-			infantRB.setChecked(true);
-		else {
-			infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
-			infantRB.setChecked(true);
-		}
+//		RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
+//		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID).equals("EXPECTING"))
+//			motherRB.setChecked(true);
+//		else {
+//			motherRB = (RadioButton)findViewById(R.id.nursingRadio);
+//			motherRB.setChecked(true);
+//		}
+//
+//		RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
+//		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID).equals("MALNOURISHED"))
+//			infantRB.setChecked(true);
+//		else {
+//			infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
+//			infantRB.setChecked(true);
+//		}
 //		
 //		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
 //		String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);

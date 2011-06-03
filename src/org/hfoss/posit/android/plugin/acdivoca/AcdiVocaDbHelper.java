@@ -50,10 +50,26 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	private static final String TAG = "DbHelper";
 
 	/**
+	 * The user table
+	 */
+	
+	public static final String USER_TABLE = "acdi_voca_users";
+	public static final String USER_ID = "_id";
+	public static final String USER_USERNAME = "username";
+	public static final String USER_PASSWORD = "password";
+
+	private static final String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS "
+		+ USER_TABLE + "(" + USER_ID + " integer primary key autoincrement, "
+		+ USER_USERNAME + " text, "
+		+ USER_PASSWORD + " text "
+		+ ")";
+	
+	/**
 	 *  The primary table
 	 */
 	public static final String FINDS_TABLE = "acdi_voca_finds";
 	public static final String FINDS_ID = "_id";
+	public static final String FINDS_DOSSIER = "dossier";
 	public static final String FINDS_PROJECT_ID = "project_id";
 	public static final String FINDS_NAME = "name";
 	
@@ -67,10 +83,13 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	
 	public static final String FINDS_COMMUNE_ID = "commune_id";
 	public static final String FINDS_COMMUNE_SECTION_ID = "commune_section_id";
+	public static final String FINDS_BENEFICIARY_CATEGORY = "beneficiary_category";
 	public static final String FINDS_BENEFICIARY_CATEGORY_ID = "beneficiary_category_id";
 	public static final String FINDS_HOUSEHOLD_SIZE = "household_size";
 	public static final String FINDS_INFANT_CATEGORY ="infant_category";
 	public static final String FINDS_MOTHER_CATEGORY = "mother_category";
+	
+	public static final String FINDS_DISTRIBUTION_POST = "distribution_post";
 
 	public static final String FINDS_GUID = "guid";    // Globally unique ID
 	
@@ -123,7 +142,7 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	//   -->UPDATED UUID is now truncated in display 
 	public static final String[] list_row_data = { 
 		FINDS_ID,
-		//FINDS_GUID,  
+		FINDS_DOSSIER,  
 		FINDS_LASTNAME,
 		FINDS_FIRSTNAME,
 		FINDS_DOB,
@@ -144,7 +163,8 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 
 	public static final int[] list_row_views = {
 		R.id.row_id,		    
-////		R.id.idNumberText,
+		R.id.dossierText,
+//		R.id.idNumberText,
 		R.id.lastname_field, 
 		R.id.firstname_field,
 		R.id.datepicker,
@@ -171,6 +191,7 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		+ FINDS_TABLE  
 		+ " (" + FINDS_ID + " integer primary key autoincrement, "
 		+ FINDS_PROJECT_ID + " integer DEFAULT 0, "
+		+ FINDS_DOSSIER + " text, "
 		+ FINDS_NAME + " text, "
 		+ FINDS_FIRSTNAME + " text, "
 		+ FINDS_LASTNAME + " text, "
@@ -179,10 +200,12 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		+ FINDS_SEX + " text, "
 		+ FINDS_AGE + " text, "
 		+ FINDS_HOUSEHOLD_SIZE + " text, "
+		+ FINDS_BENEFICIARY_CATEGORY + " text, "
 		+ FINDS_MOTHER_CATEGORY + " text, "
 		+ FINDS_INFANT_CATEGORY + " text, "
 		+ COMMUNE_NAME + " text, "
 		+ COMMUNE_ABBR + " text, "
+		+ FINDS_DISTRIBUTION_POST + " text, "
 		+ COMMUNE_SECTION_NAME + " text, "
 		+ COMMUNE_SECTION_ABBR + " text "
 //		+ FINDS_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + "), "
@@ -228,7 +251,7 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		super(context, DBName, null, DBVersion);
 		mDb = getWritableDatabase();
 		onCreate(mDb);
-		mDb = getWritableDatabase();
+		//mDb = getWritableDatabase();
 		this.mContext= context;
 		mDb.close();
 	}
@@ -252,8 +275,56 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) throws SQLException {
 		db.execSQL(CREATE_FINDS_TABLE);
+		db.execSQL(CREATE_USER_TABLE);
+		ContentValues values = new ContentValues();
+		values.put(this.USER_USERNAME, "r");
+		values.put(this.USER_PASSWORD, "a");
+		long rowId = db.insert(USER_TABLE, null, values);
+		Log.i(TAG, "addSuperUser, rowId=" + rowId);
+		//this.addSuperUser(values);	
 	}
 
+	/**
+	 * This method is called when a new Db is installed to create the superuser.
+	 * @param values contains the key/value pairs for each Db column,
+	 * @return the rowId of the new insert or -1 in case of error
+	 */
+	public void addSuperUser(ContentValues values) {
+		//mDb = getWritableDatabase();  // Either create the DB or open it.
+//		long rowId = mDb.insert(USER_TABLE, null, values);
+//		Log.i(TAG, "addSuperUser, rowId=" + rowId);
+		//mDb.close();
+	}
+	
+	
+	/**
+	 * Returns true iff a row containing username and password is found
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public boolean authenicateUser(String username, String password) {
+		mDb = getReadableDatabase();  // Either open or create the DB    	
+		String[] columns = { USER_PASSWORD };
+		Cursor c = mDb.query(USER_TABLE, columns, 
+				USER_USERNAME + "="+ "'" + username + "'" + 
+				" and " + USER_PASSWORD + "=" + "'" + password + "'" , null, null, null, null);
+		c.moveToFirst();
+		boolean result;
+		if (c.isAfterLast()) 
+			result =  false;
+		else 
+			result = true;
+		ContentValues values = null;
+		if (c.getCount() != 0)
+			values = this.getContentValuesFromRow(c);
+		c.close();
+		mDb.close();
+		return result;
+	}
+	
+	
+	
 	/**
 	 * This method is called when the DB needs to be upgraded -- not
 	 *   sure when that is??
@@ -435,6 +506,48 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		Log.i(TAG,"fetchFindsByProjectId " + FINDS_PROJECT_ID + "=" + project_id + " count=" + c.getCount());
 		mDb.close();
 		return c;
+	}
+
+	/**
+	 * Returns key/value pairs for selected columns with row selected by guId 
+	 * @param guId the Find's globally unique Id
+	 * @param columns an array of column names, can be left null
+	 * @return
+	 */
+	public ContentValues fetchBeneficiaryByDossier(String dossier, String[] columns) {
+		mDb = getReadableDatabase();  // Either open or create the DB    	
+		String[] selectionArgs = null;
+		String groupBy = null, having = null, orderBy = null;
+		Cursor c = mDb.query(FINDS_TABLE, columns, FINDS_DOSSIER+"= '"+dossier + "'", selectionArgs, groupBy, having, orderBy);
+		c.moveToFirst();
+		ContentValues values = null;
+		if (c.getCount() != 0)
+			values = this.getContentValuesFromRow(c);
+		c.close();
+		mDb.close();
+		return values;
+	}
+	
+	/** 
+	 * Returns an array of dossier numbers for all beneficiaries.
+	 * @return
+	 */
+	public String[] fetchAllBeneficiayIds() {
+		mDb = getReadableDatabase(); // Either open or create the DB.
+		Cursor c = mDb.query(FINDS_TABLE,null, null, null, null, null,null);
+		Log.i(TAG,"fetchAllBeneficiaryIds count=" + c.getCount());
+		
+		mDb.close();
+		String dossiers[] = new String[c.getCount()];
+		c.moveToFirst();
+		int k = 0;
+		while (!c.isAfterLast()) {
+			dossiers[k] = c.getString(c.getColumnIndex(AcdiVocaDbHelper.FINDS_DOSSIER));
+			c.moveToNext();
+			++k;
+		}
+		c.close();
+		return dossiers;
 	}
 	
 	/**

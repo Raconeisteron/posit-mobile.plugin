@@ -380,6 +380,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		
 		if (id == R.id.expectingRadio || id == R.id.nursingRadio) {
 			RadioButton rb = (RadioButton) v;
+			findViewById(R.id.relatives).setVisibility(View.VISIBLE);
 			findViewById(R.id.mchm).setVisibility(View.VISIBLE);
 			findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.VISIBLE);
 			findViewById(R.id.husbandIfMotherEdit).setVisibility(View.VISIBLE);
@@ -388,6 +389,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			//Toast.makeText(AcdiVocaFindActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
 		} else if (id == R.id.malnourishedRadio || id == R.id.inpreventionRadio) {
 			RadioButton rb = (RadioButton) v;
+			findViewById(R.id.relatives).setVisibility(View.VISIBLE);		
 			findViewById(R.id.mchm).setVisibility(View.VISIBLE);
 			findViewById(R.id.responsibleIfChildEdit).setVisibility(View.VISIBLE);
 			findViewById(R.id.fatherIfChildEdit).setVisibility(View.VISIBLE);

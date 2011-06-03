@@ -1,6 +1,12 @@
 <resources>
 	
 	<!--  Acdi Voca Strings -->
+	
+	<string name="admin_menu">Admin</string>
+	<string name="admin_welcome">Admin Functions\nChoose from the Menu</string>
+	<string name="load_beneficiary_data">Import Beneficiary Data</string>
+	<string name="distribution_point">Distribution Point</string>
+	
 	<string name="list_beneficiary_label">List\nBeneficiary</string>
 	<string name="add_beneficiary_label">Add\nBeneficiary</string>
 	<string name="update_beneficiary_label">Update\nBeneficiary</string>
@@ -84,6 +90,15 @@
     <!-- Alert Dialogs -->
     <string name="acdivoca_exit_findactivity">Are you sure you want to exit? Data may be lost.</string>
  	<string name="acdivoca_cancel">Cancel</string>
+ 	
+ 	<!--  Login View -->
+ 	<string name="login_prompt">Login, please.</string>
+ 	<string name="username_hint">Username</string>
+ 	<string name="password_hint">Password</string>
+ 	<string name="login_button">Login</string>
+ 	<string name="cancel_login_button">Cancel</string>
+ 	
+ 	
     
     
 </resources>

@@ -32,6 +32,36 @@
 	<item>Cote de fer</item>
 	</string-array>
 	
+	
+	<string-array name="distribution_point_names"> 
+	<item>Centre Platon Cedre</item>
+	<item>Point Fixe Ka Tousen</item>
+	<item>Anse a Pitres</item>
+	<item>Dispensaire Banane</item>
+	<item>Pt fixe Calumette</item>
+	<item>Centre Belle-Ance</item>
+	<item>Dispensaire Mapou</item>
+	<item>Pt fixe Baie d_orange</item>
+	<item>Dispensaire marbriole</item>	
+	<item>Pt fixe Corail Lamothe</item>
+	<item>Pt fixe Pichon</item>	
+	<item>Pt Fixe Bel-air</item>	
+	<item>Labiche</item>	
+	<item>Centre St Joseph</item>	
+	<item>Dispensaire Ste rose de lima</item>	
+	<item>Dispensaire Boucan Belier</item>	
+	<item>Dispensaire Ricot</item>	
+	<item>Pt Fixe Macieux</item>	
+	<item>Point Fixe de Mayette</item>	
+	<item>Point Fixe de Amazone</item>
+	<item>Dispensaire Grand Gosier</item>
+	<item>Dispensaire Bodarie</item>
+	<item>Pt fixe Boulay</item>
+	<item>Centre Sacre Coeur</item>
+	<item>Dispensaire de Savane Zombi</item>
+	<item>Dispensaire de Bleck/ Mar Mirande</item>
+	</string-array>
+	
 	<string-array name="health_center_names"> 
 	<item>Centre de santé une</item>
 	<item>Centre de santé deux</item>

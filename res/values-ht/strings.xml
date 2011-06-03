@@ -2,8 +2,15 @@
 <resources>
 
 	<!--  main.xml -->
-	<string name="list_beneficiary_label">List Beneficiary</string>
-	<string name="add_beneficiary_label">Add Beneficiary</string>
+	
+	<string name="admin_menu">Admin</string>
+	<string name="admin_welcome">Admin Fonctions\nUtiliser le menu</string>
+	<string name="load_beneficiary_data">Import Beneficiary Data</string>
+	<string name="distribution_point">Point de distribution</string>
+	
+	<string name="list_beneficiary_label">Lis Benefisyè</string>
+	<string name="add_beneficiary_label">Ajoute Benefisyè</string>
+	<string name="update_beneficiary_label">Mete ajou Benefisyè</string>
 	
 	
     <string name="appHeader">Mobil Enskripsyon Sistèm</string>
@@ -99,7 +106,12 @@
     <string name="transfer_required">Si ce bénéficiaire soit transférée à une nouvelle catégorie?</string>
     <string name="modifications_needed">Sont des modifications nécessaires dans le dossier de ce bénéficiaire?</string>
     
-    
+    <!--  Login View -->
+ 	<string name="login_prompt">Please Login with your username and password</string>
+ 	<string name="username_hint">Username</string>
+ 	<string name="password_hint">Password</string>
+ 	<string name="login_button">Login</string>
+ 	<string name="cancel_login_button">Cancel</string>
     
  
     

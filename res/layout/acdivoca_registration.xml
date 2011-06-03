@@ -54,25 +54,30 @@
 			
 			<EditText android:id="@+id/ageEdit" 
 				android:hint="@string/dob_age_hint"
+				android:visibility="gone"
 				android:layout_marginLeft="30px" 
 				android:paddingLeft="20px"
 				android:layout_width="wrap_content" android:minWidth="75px"
 				android:numeric="integer" android:layout_height="wrap_content" />	
 			
 			<TextView android:text="@string/commune" android:textColor="#ff0000"
+				android:visibility="gone"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
 			<Spinner android:id="@+id/communeSpinner" 
+				android:visibility="gone"
 				android:layout_marginLeft="20px" android:layout_marginRight="30px"
 				android:entries="@+array/commune_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
 
 			<TextView android:text="@string/commune_section" android:textColor="#ff0000"
+				android:visibility="gone"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
 			<Spinner android:id="@+id/commune_sectionSpinner" 
+				android:visibility="gone"
 				android:layout_marginLeft="20px" android:layout_marginRight="30px"
 				android:entries="@+array/commune_section_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
@@ -176,36 +181,38 @@
 				android:entries="@+array/distribution_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
 
-			<TextView android:text="@string/relatives_section" android:textColor="#ff0000"
+			<TextView android:text="@string/relatives_section" android:id="@+id/relatives"
+				android:textColor="#ff0000"
+				android:visibility="gone"
 				android:layout_width="fill_parent"
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
 								
 			<EditText android:id="@+id/responsibleIfChildEdit"
+				android:visibility="gone"
 				android:hint="@string/responsible_if_child"
 				android:inputType="textCapSentences"
-				android:visibility="invisible"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px" />
 
 			<EditText android:id="@+id/fatherIfChildEdit"
+				android:visibility="gone"
 				android:hint="@string/father_if_child"
 				android:inputType="textCapSentences"
-				android:visibility="invisible"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px" />
 				
 			<EditText android:id="@+id/responsibleIfMotherEdit"
+				android:visibility="gone"
 				android:hint="@string/responsible_if_mother"
 				android:inputType="textCapSentences"
-				android:visibility="invisible"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px" />
 
 			<EditText android:id="@+id/husbandIfMotherEdit"
+				android:visibility="gone"
 				android:hint="@string/husband_if_mother"
 				android:inputType="textCapSentences"
-				android:visibility="invisible"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px" />	
 
