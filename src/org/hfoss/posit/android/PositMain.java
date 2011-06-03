@@ -27,6 +27,7 @@ import java.util.Locale;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
 
@@ -71,6 +72,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	public static final int LOGIN_SUCCESSFUL = 4;
 	private static final int REGISTRATION_ACTIVITY = 11;
 
+	private static final int ACTION_LOGIN = 0;
+
 	private SharedPreferences mSharedPrefs;
 	private Editor mSpEditor;
 
@@ -104,6 +107,15 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		
 		// initialize plugins
 		FindPluginManager.initInstance(this);
+		
+		// Run login activity, if necessary
+		
+		Intent intent = new Intent();
+		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
+		if (loginActivity != null) {
+			intent.setClass(this, loginActivity);
+			this.startActivityForResult(intent, ACTION_LOGIN);
+		}
 
 //		// Give the user the tutorial if they haven't yet had it. 
 //		if (!mSharedPrefs.getBoolean("tutorialComplete", false)) {
@@ -250,10 +262,18 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				Log.i(TAG,"Login canceled");
 				finish();
 			}
+		case ACTION_LOGIN:
+			if (resultCode == RESULT_OK) {
+				Toast.makeText(this, "Thank you", Toast.LENGTH_LONG).show();
+				break;
+			} else {
+				Toast.makeText(this, "Sorry. Incorrect username or password.", Toast.LENGTH_LONG).show();
+				finish();
+			} 
+		
 		default:
 			super.onActivityResult(requestCode, resultCode, data);
 		}
-
 	}
 
 	/**
@@ -326,9 +346,9 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		case R.id.about_menu_item:
 			startActivity(new Intent(this, AboutActivity.class));
 			break;
-//		case R.id.tutorial_menu_item:
-//			startActivity(new Intent(this, TutorialActivity.class));
-//			break;
+		case R.id.admin_menu_item:
+			startActivity(new Intent(this, AcdiVocaAdminActivity.class));
+			break;
 //		case R.id.projects_menu_item:
 //			startActivity(new Intent(this, ShowProjectsActivity.class));
 //			break;

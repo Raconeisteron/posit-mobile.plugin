@@ -8,22 +8,19 @@
 				android:key="@string/smsPhoneKey"  />
 
 			<ListPreference android:key="@string/localeKey"
-				android:title="@string/locale" android:persistent="true"
-				android:defaultValue="English" android:summary="@string/locale"
-				android:entries="@array/locales" android:entryValues="@array/locale_values" />
+				android:title="@string/locale" 
+				android:persistent="true"
+				android:defaultValue="English" 
+				android:summary="@string/locale"
+				android:entries="@array/locales" 
+				android:entryValues="@array/locale_values" />
 				
-			<Preference android:key="testpref" 
-				android:title="About ACDI/VOCA"
-				android:defaultValue="true"
-				android:persistent="true"
-				activity_class="org.hfoss.posit.android.AboutActivity"
-				android:summary="Click me and see!" />
-
-			<Preference android:key="testpref2" 
-				android:title="More About ACDI/VOCA"
-				android:persistent="true"
-				activity_class="org.hfoss.posit.android.AboutActivity"
-				android:summary="Click me, click me!" />			
+			<ListPreference android:key="@string/distribution_point" 
+				android:title="@string/distribution_point"
+				android:entries="@array/distribution_point_names"
+				android:entryValues="@array/distribution_point_names"
+				android:summary="@string/distribution_point" />
+			
 		</PreferenceScreen>
 	</PreferenceCategory>
 

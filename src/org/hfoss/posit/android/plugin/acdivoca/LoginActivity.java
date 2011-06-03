@@ -22,14 +22,12 @@
  */
 package org.hfoss.posit.android.plugin.acdivoca;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.Locale;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.R.id;
+import org.hfoss.posit.android.R.layout;
 import org.hfoss.posit.android.api.FindActivity;
 
 import android.app.Activity;
@@ -55,7 +53,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -67,23 +64,18 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.DatePicker.OnDateChangedListener;
 
 /**
- * Handles Finds for AcdiVoca Mobile App.
+ * Handles Login for ACDI/VOCA application.
  * 
  */
-public class AcdiVocaLookupActivity extends Activity implements OnClickListener, TextWatcher {
+public class LoginActivity extends Activity implements OnClickListener {
 	public static final String TAG = "AcdiVocaLookupActivity";
 
-	private Spinner lookupSpinner;
-	private ArrayAdapter<String> adapter;
-	private String dossiers[] = new String[100];
-	private EditText eText;
-	
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(TAG, "onCreate");
-		Log.i(TAG, PreferenceManager.getDefaultSharedPreferences(this).getAll().toString());
+		 Log.i(TAG, "onCreate");
 	}
+
 
 	@Override
 	protected void onPause() {
@@ -101,54 +93,17 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 		String localePref = PreferenceManager.getDefaultSharedPreferences(this).getString("locale", "");
 		Log.i(TAG, "Locale = " + localePref);
 		Locale locale = new Locale(localePref); 
-		Locale.setDefault(locale);
-		Configuration config = new Configuration();
-		config.locale = locale;
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
 		getBaseContext().getResources().updateConfiguration(config, null);
 
-		setContentView(R.layout.acdivoca_lookup);  // Should be done after locale configuration
-
-		((Button)findViewById(R.id.update_lookup_button)).setOnClickListener(this);
-		((Button)findViewById(R.id.cancel_lookup_button)).setOnClickListener(this);
-		lookupSpinner = ((Spinner)findViewById(R.id.lookupSpinner));
-
-		// See http://mylifewithandroid.blogspot.com/2009/10/spinner-and-its-data-behind.html
-		//final String items[] = new String[100];
-		//	    for (int k = 0; k < items.length; k++) 
-		//	    	items[k] = "Str" + k;
-
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		dossiers = db.fetchAllBeneficiayIds();
-		adapter = 
-			new ArrayAdapter<String>( 
-					this,
-					android.R.layout.simple_spinner_item,
-					dossiers );
-		adapter.sort(String.CASE_INSENSITIVE_ORDER);
-		adapter.setDropDownViewResource(
-				android.R.layout.simple_spinner_dropdown_item);
-		lookupSpinner.setAdapter(adapter);
-		lookupSpinner.setOnItemSelectedListener(
-				new AdapterView.OnItemSelectedListener() {
-					public void onItemSelected(
-							AdapterView<?> parent, 
-							View view, 
-							int position, 
-							long id) {
-						String d = dossiers[position];
-
-						//eText.setText(d);
-					}
-
-					public void onNothingSelected(AdapterView<?> parent) {
-					}
-				}
-		);
-		eText = ((EditText)findViewById(R.id.dossierEdit));
-		eText.addTextChangedListener(this);
-		eText.setText(""); 
+		setContentView(R.layout.acdivoca_login);  // Should be done after locale configuration
+		
+		((Button)findViewById(R.id.login_button)).setOnClickListener(this);
+		((Button)findViewById(R.id.cancel_login_button)).setOnClickListener(this);
 	}
-	
+
 	/**
 	 * Required as part of OnClickListener interface. Handles button clicks.
 	 */
@@ -156,45 +111,24 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 		Log.i(TAG, "onClick");
 	    Intent returnIntent = new Intent();
 	
-		if (v.getId() == R.id.update_lookup_button) {
-			String id = (String)lookupSpinner.getSelectedItem();
-//			EditText etext = ((EditText)findViewById(R.id.dossierEdit));
-//			String id = etext.getText().toString();
-			returnIntent.putExtra("Id",id);
-			setResult(RESULT_OK,returnIntent); 
-			Toast.makeText(this, "Id= " + id, Toast.LENGTH_SHORT).show();
+		if (v.getId() == R.id.login_button) {
+			EditText etext = ((EditText)findViewById(R.id.usernameEdit));
+			String username = etext.getText().toString();
+			etext = ((EditText)findViewById(R.id.passwordEdit));
+			String password = etext.getText().toString();
+			if (authenticateUser(username, password)) {
+				setResult(RESULT_OK,returnIntent);
+			} else {
+				setResult(this.RESULT_CANCELED, returnIntent);
+			}
 		} else {
 			setResult(this.RESULT_CANCELED, returnIntent);
 		}
 	    finish();
 	}
-
-
-	public void afterTextChanged(Editable s) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void beforeTextChanged(CharSequence s, int start, int count,
-			int after) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		int k = 0;
-		String prefix = s.toString();
-		Log.i(TAG, "Prefix = " + prefix);
-		String item = dossiers[k];
-		while (!item.startsWith(prefix.toUpperCase()) && k < dossiers.length) {
-			k += 1;
-			if (k < dossiers.length)
-				item = dossiers[k];
-		}
-		Log.i(TAG, "onTextChanged " + prefix + " " + k);
-		if (k < dossiers.length)
-			lookupSpinner.setSelection(k);				
+	
+	private boolean authenticateUser(String username, String password) {
+		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+		return db.authenicateUser(username, password);
 	}
 }

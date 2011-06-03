@@ -41,6 +41,7 @@ public class FindPluginManager {
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	private Class<Activity> mExtraActivityClass = null;
+	private Class<Activity> mLoginActivityClass = null;
 	
 	public static String mPreferences = null;  // Shared preferences XML for Settings
 	public static String mMainIcon = null;
@@ -81,7 +82,8 @@ public class FindPluginManager {
 					String findactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_activity_class").getTextContent();
 					String listfindsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("list_finds_activity_class").getTextContent();
 					String extra_activity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("extra_activity_class").getTextContent();
-					
+					String login_activity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("login_activity_class").getTextContent();
+
 					mMainIcon = plugin_nodes.item(ii).getAttributes().getNamedItem("main_icon").getTextContent();
 					mAddButtonLabel = plugin_nodes.item(ii).getAttributes().getNamedItem("main_add_button_label").getTextContent();
 					mListButtonLabel = plugin_nodes.item(ii).getAttributes().getNamedItem("main_list_button_label").getTextContent();
@@ -98,6 +100,8 @@ public class FindPluginManager {
 					mFindActivityClass = (Class<FindActivity>)Class.forName(package_name + "." + findactivity_name);
 					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(package_name + "." + listfindsactivity_name);
 					mExtraActivityClass = (Class<Activity>)Class.forName(package_name + "." + extra_activity_name);
+					mLoginActivityClass = (Class<Activity>)Class.forName(package_name + "." + login_activity_name);
+						
 					Log.i(TAG,"Loading preferences for Settings Activity");
 					SettingsActivity.loadPluginPreferences(mMainActivity, mPreferences);
 
@@ -137,10 +141,18 @@ public class FindPluginManager {
 	public void setExtraActivityClass(Class<Activity> extraActivityClass) {
 		mExtraActivityClass = extraActivityClass;
 	}
-
-	
 	public ArrayList<Plugin> getPlugins(){
 		return plugins;
 	}
+
+	public Class<Activity> getLoginActivityClass() {
+		return mLoginActivityClass;
+	}
+
+	public void setLoginActivityClass(Class<Activity> loginActivityClass) {
+		mLoginActivityClass = loginActivityClass;
+	}
+	
+	
 	
 }

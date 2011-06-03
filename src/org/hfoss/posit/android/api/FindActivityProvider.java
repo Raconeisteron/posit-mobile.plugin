@@ -19,4 +19,8 @@ public class FindActivityProvider {
 	public static Class<Activity> getExtraActivityClass(){
 		return FindPluginManager.getInstance().getExtraActivityClass();
 	}
+	
+	public static Class<Activity> getLoginActivityClass(){
+		return FindPluginManager.getInstance().getLoginActivityClass();
+	}
 }
