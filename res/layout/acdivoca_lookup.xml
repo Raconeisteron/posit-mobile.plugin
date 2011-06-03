@@ -6,6 +6,11 @@
 	android:scrollbars="vertical"
 	android:layout_width="fill_parent" 
 	android:layout_height="fill_parent">
+	
+	<TextView android:id="@+id/distribution_label"
+		android:textColor="#ff0000" android:layout_width="wrap_content"
+		android:layout_gravity="center" android:textSize="20dp"
+		android:layout_height="wrap_content" />
 
 	<TextView android:text="@string/dossier_label"
 		android:textColor="#ff0000" android:layout_width="wrap_content"

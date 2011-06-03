@@ -29,8 +29,10 @@ import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.Locale;
 
+import org.hfoss.posit.android.AboutActivity;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindActivity;
+import org.hfoss.posit.android.api.SettingsActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -39,6 +41,7 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
@@ -62,6 +65,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.DatePicker.OnDateChangedListener;
@@ -91,6 +95,35 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 		super.onPause();
 	}
 
+	
+	/**
+	 * Creates the menu options.
+	 * 
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.acdi_voca_lookup_menu, menu);
+		return true;
+	}
+	
+	/**
+	 * Manages the selection of menu items.
+	 * 
+	 * @see android.app.Activity#onMenuItemSelected(int, android.view.MenuItem)
+	 */
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.settings_menu_item:
+			startActivity(new Intent(this, SettingsActivity.class));
+			break;
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * 
 	 */
@@ -118,7 +151,14 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 		//	    	items[k] = "Str" + k;
 
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		dossiers = db.fetchAllBeneficiayIds();
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		String distrKey = this.getResources().getString(R.string.distribution_point);
+		String distributionCtr = sharedPrefs.getString(distrKey, "");
+		Log.i(TAG, distrKey +"="+ distributionCtr);
+		
+		((TextView)findViewById(R.id.distribution_label)).setText(distributionCtr);
+
+		dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
 		adapter = 
 			new ArrayAdapter<String>( 
 					this,
