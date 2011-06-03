@@ -542,9 +542,10 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	 * Returns an array of dossier numbers for all beneficiaries.
 	 * @return
 	 */
-	public String[] fetchAllBeneficiayIds() {
+	public String[] fetchAllBeneficiaryIdsByDistributionSite(String distribSite) {
 		mDb = getReadableDatabase(); // Either open or create the DB.
-		Cursor c = mDb.query(FINDS_TABLE,null, null, null, null, null,null);
+		Cursor c = mDb.query(FINDS_TABLE,null, 
+				FINDS_DISTRIBUTION_POST + "=" + "'" + distribSite + "'" , null, null, null,null);
 		Log.i(TAG,"fetchAllBeneficiaryIds count=" + c.getCount());
 		
 		mDb.close();
