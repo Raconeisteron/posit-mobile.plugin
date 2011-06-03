@@ -89,4 +89,15 @@
 	<item>org.hfoss.posit.android.AboutActivity</item>
 	<item>org.hfoss.posit.android.AboutActivity</item>
 	</string-array>
+	
+	<string-array name="types_of_units">
+	<item>Livre</item>
+	<item>Marmites</item>
+	<item>Pote</item>
+	<item>Kg</item>
+	<item>Plantules</item>
+	<item>Boutures</item>
+	</string-array>
+	
+	
 </resources>

@@ -17,15 +17,15 @@
 				android:textSize="20dp"
 				android:layout_height="wrap_content" />		
 				
-			<TextView android:text="@string/beneficiary" android:textColor="#ff0000"
+<!-- 			<TextView android:text="@string/beneficiary" android:textColor="#ff0000"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:textSize="20dp" />	
-						
+ 						
 			<TextView android:textColor="#ff0000"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="20px" 
 				android:layout_height="wrap_content" />
-				
+		-->		
 			<EditText android:id="@+id/firstnameEdit"
 				android:hint="@string/firstname"
 				android:inputType="textCapSentences"
@@ -88,7 +88,7 @@
 				android:orientation="horizontal" android:layout_width="wrap_content"
 				android:layout_height="fill_parent" android:layout_gravity="left" 
 				android:paddingTop="10dp" >			
-
+-->
 			<TextView android:text="@string/sex" android:textColor="#ff0000"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
@@ -105,8 +105,8 @@
 				<RadioButton android:checked="false" android:id="@+id/maleRadio"
 					android:text="@string/Male" />
 			</RadioGroup>
-			</LinearLayout>
--->			
+<!-- 			</LinearLayout>
+-->		
 
 			<TextView android:text="@string/Beneficiary_Category"
 				android:textColor="#ff0000" 

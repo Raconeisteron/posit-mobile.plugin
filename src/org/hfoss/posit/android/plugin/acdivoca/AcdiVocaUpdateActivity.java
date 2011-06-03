@@ -91,6 +91,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 		// Create DB helper
 		mDbHelper = new AcdiVocaDbHelper(this);
 		isProbablyEdited = false;
+		
 	}
 
 	/**
@@ -120,32 +121,33 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 	}
 
 	
-	class DbSimulator {
-		
-		private String[] db = {
-				"AB-100-CD,Alicia,Morelli,1/6/1982,EXPECTIONG,2",
-				"AB-101-CD,Baby,Morelli,8/6/2010,PREVENTION,9",
-				"AB-102-CD,Baby,Jones,1/1/2011,PREVENTION,13" };
-		
-		public DbSimulator() {
-		}
-		
-		public ContentValues fetchFindDataById(String id, ContentValues values) {
-			ContentValues result = null;
-			for (int k = 0; k < db.length; k++) {
-				String[] vals = db[k].split(",");
-				if (vals[0].equals(id)) {
-					result = new ContentValues();
-					result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, vals[1]);
-					result.put(AcdiVocaDbHelper.FINDS_LASTNAME, vals[2]);
-					result.put(AcdiVocaDbHelper.FINDS_DOB, vals[3]);
-					result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID, vals[4]);
-					result.put("MonthsRemaining", vals[5]);
-				}
-			}
-			return result;
-		}
-	}
+//	class DbSimulator {
+//		
+//		private String[] db = {
+//				"A,Alicia,Morelli,1/6/1982,FEMALE,EXPECTIONG,2",
+//				"B,Baby,Morelli,8/6/2010,MALE,PREVENTION,9",
+//				"C,Baby,Jones,1/1/2011,MALE,PREVENTION,13" };
+//		
+//		public DbSimulator() {
+//		}
+//		
+//		public ContentValues fetchFindDataById(String id, ContentValues values) {
+//			ContentValues result = null;
+//			for (int k = 0; k < db.length; k++) {
+//				String[] vals = db[k].split(",");
+//				if (vals[0].equals(id)) {
+//					result = new ContentValues();
+//					result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, vals[1]);
+//					result.put(AcdiVocaDbHelper.FINDS_LASTNAME, vals[2]);
+//					result.put(AcdiVocaDbHelper.FINDS_DOB, vals[3]);
+//					result.put(AcdiVocaDbHelper.FINDS_SEX, vals[4]);
+//					result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID, vals[5]);
+//					result.put("MonthsRemaining", vals[6]);
+//				}
+//			}
+//			return result;
+//		}
+//	}
 	
 	/**
 	 * 
@@ -163,7 +165,9 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 		getBaseContext().getResources().updateConfiguration(config, null);
 
 		Log.i(TAG, "Before edited = " + isProbablyEdited);
+	//	setContentView(R.layout.acdivoca_registration);  // Should be done after locale configuration
 
+		
 		if (beneficiaryId == "unknown") {
 			Intent lookupIntent = new Intent();
 			lookupIntent.setClass(this, AcdiVocaLookupActivity.class);
@@ -180,23 +184,40 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 				setContentView(R.layout.acdivoca_update);  // Should be done after locale configuration
 				displayContentInView(values);
 
-				//((Button)findViewById(R.id.update_lookup_button)).setOnClickListener(this);
 				TextView tv = ((TextView) findViewById(R.id.dossier_label));
 				tv.setText("Beneficiary Dossier: " + beneficiaryId);
+				
+				 // Listen for text changes in edit texts and set the isEdited flag
+				((EditText)findViewById(R.id.firstnameEdit)).addTextChangedListener(this);
+				((EditText)findViewById(R.id.lastnameEdit)).addTextChangedListener(this);
+				((EditText)findViewById(R.id.monthsInProgramEdit)).addTextChangedListener(this);
+				
+				 // Initialize the DatePicker and listen for changes
+				 Calendar calendar = Calendar.getInstance();
+				 
+				 ((DatePicker)findViewById(R.id.datepicker)).init(
+						 calendar.get(Calendar.YEAR),
+						 calendar.get(Calendar.MONTH), 
+						 calendar.get(Calendar.DAY_OF_MONTH), this);
+				
+				// Listen for clicks on radio buttons
+				((RadioButton)findViewById(R.id.femaleRadio)).setOnClickListener(this);
+				((RadioButton)findViewById(R.id.maleRadio)).setOnClickListener(this);
+			    ((RadioButton)findViewById(R.id.malnourishedRadio)).setOnClickListener(this);
+			    ((RadioButton)findViewById(R.id.inpreventionRadio)).setOnClickListener(this);
+				((RadioButton)findViewById(R.id.expectingRadio)).setOnClickListener(this);
+				((RadioButton)findViewById(R.id.nursingRadio)).setOnClickListener(this);
+				
+				
+				((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
+				
 			}
 		}
-//		((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
 
 //		((Button)findViewById(R.id.saveToDbButton)).setOnClickListener(this);
 //		((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
 //		
-//		// Listen for clicks on radio buttons
-//		 ((RadioButton)findViewById(R.id.femaleRadio)).setOnClickListener(this);
-//		 ((RadioButton)findViewById(R.id.maleRadio)).setOnClickListener(this);
-//		 ((RadioButton)findViewById(R.id.malnourishedRadio)).setOnClickListener(this);
-//		 ((RadioButton)findViewById(R.id.inpreventionRadio)).setOnClickListener(this);
-//		 ((RadioButton)findViewById(R.id.expectingRadio)).setOnClickListener(this);
-//		 ((RadioButton)findViewById(R.id.nursingRadio)).setOnClickListener(this);
+
 //		 ((RadioButton)findViewById(R.id.radio_motherleader_yes)).setOnClickListener(this);
 //		 ((RadioButton)findViewById(R.id.radio_motherleader_no)).setOnClickListener(this);
 //		 ((RadioButton)findViewById(R.id.radio_visit_yes)).setOnClickListener(this);
@@ -204,9 +225,6 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		 ((RadioButton)findViewById(R.id.radio_yes_acdivoca)).setOnClickListener(this);
 //		 ((RadioButton)findViewById(R.id.radio_no_acdivoca)).setOnClickListener(this);
 //
-//		 // Listen for text changes in edit texts and set the isEdited flag
-//		 ((EditText)findViewById(R.id.firstnameEdit)).addTextChangedListener(this);
-//		 ((EditText)findViewById(R.id.lastnameEdit)).addTextChangedListener(this);
 //		 ((EditText)findViewById(R.id.addressEdit)).addTextChangedListener(this);
 //		 ((EditText)findViewById(R.id.ageEdit)).addTextChangedListener(this);
 //		 ((EditText)findViewById(R.id.inhomeEdit)).addTextChangedListener(this);
@@ -216,13 +234,6 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		 ((EditText)findViewById(R.id.husbandIfMotherEdit)).addTextChangedListener(this);
 //		 ((EditText)findViewById(R.id.give_name)).addTextChangedListener(this);
 //		 
-//		 // Initialize the DatePicker and listen for changes
-//		 Calendar calendar = Calendar.getInstance();
-//		 
-//		 ((DatePicker)findViewById(R.id.datepicker)).init(
-//				 calendar.get(Calendar.YEAR),
-//				 calendar.get(Calendar.MONTH), 
-//				 calendar.get(Calendar.DAY_OF_MONTH), this);
 //		 
 //		 // These don't work
 //		 ((Spinner)findViewById(R.id.commune_sectionSpinner)).setOnItemSelectedListener(this);
@@ -282,34 +293,40 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 	private ContentValues retrieveContentFromView() {
 		Log.i(TAG, "retrieveContentFromView");
 		ContentValues result = new ContentValues();
-//
-//		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
-//		String value = eText.getText().toString();
-//		result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
-//		Log.i(TAG, "retrieve LAST NAME = " + value);
-//		
-//		eText = (EditText)findViewById(R.id.firstnameEdit);
-//		value = eText.getText().toString();
-//		result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
+
+		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
+		String value = eText.getText().toString();
+		result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
+		Log.i(TAG, "retrieve LAST NAME = " + value);
+		
+		eText = (EditText)findViewById(R.id.firstnameEdit);
+		value = eText.getText().toString();
+		result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
+		
+		eText = (EditText)findViewById(R.id.monthsInProgramEdit);
+		value = eText.getText().toString();
+		result.put("MonthsRemaining", value);
+		
 //		
 //		eText = (EditText)findViewById(R.id.ageEdit);
 //		value = eText.getText().toString();
 //		result.put(AcdiVocaDbHelper.FINDS_AGE, value);
-//		
-//		//value = mMonth + "/" + mDay + "/" + mYear;
-//		value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
-//			((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
-//			((DatePicker)findViewById(R.id.datepicker)).getYear();
-//		//Log.i(TAG, "retrieve DOB=" + value);
-//		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
-//
-//		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
-//		String sex = "";
-//		if (sexRB.isChecked()) 
-//			sex = "FEMALE";
-//		else 
-//			sex = "MALE";
-//		result.put(AcdiVocaDbHelper.FINDS_SEX, sex);         
+		
+		//value = mMonth + "/" + mDay + "/" + mYear;
+		value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
+			((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
+			((DatePicker)findViewById(R.id.datepicker)).getYear();
+		//Log.i(TAG, "retrieve DOB=" + value);
+		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
+
+		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
+		String sex = "";
+		if (sexRB.isChecked()) 
+			sex = "FEMALE";
+		else 
+			sex = "MALE";
+		result.put(AcdiVocaDbHelper.FINDS_SEX, sex); 	
+		
 //		
 //		eText = (EditText)findViewById(R.id.addressEdit);
 //		value = eText.getText().toString();
@@ -327,21 +344,21 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		value = (String)communeSpinner.getSelectedItem();
 //		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
 //		
-//		RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
-//		String infant = "";
-//		if (rb.isChecked()) 
-//			infant = "MALNOURISHED";
-//		else 
-//			infant = "PREVENTION";
-//		result.put(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY, infant);
-//
-//		rb = (RadioButton)findViewById(R.id.expectingRadio);
-//		String mother = "";
-//		if (rb.isChecked()) 
-//			mother = "EXPECTING";
-//		else 
-//			mother = "NURSING";
-//		result.put(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY, mother);
+		RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
+		String infant = "";
+		if (rb.isChecked()) 
+			infant = "MALNOURISHED";
+		else 
+			infant = "PREVENTION";
+		result.put(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY, infant);
+
+		rb = (RadioButton)findViewById(R.id.expectingRadio);
+		String mother = "";
+		if (rb.isChecked()) 
+			mother = "EXPECTING";
+		else 
+			mother = "NURSING";
+		result.put(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY, mother);
 //		
 //		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
 //		String commune = (String) spinner.getSelectedItem();
@@ -349,7 +366,33 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		
 //		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
 //		String communeSection = (String) spinner.getSelectedItem();
-//		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, communeSection);		
+//		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, communeSection);	
+		
+		
+		RadioButton presentRB = (RadioButton)findViewById(R.id.radio_present_yes);
+		String present = "";
+		if (presentRB.isChecked()) 
+			present = "true";
+		else 
+			present = "false";
+		result.put("Present", present); 
+		
+		RadioButton transferRB = (RadioButton)findViewById(R.id.radio_transfer_yes);
+		String transfer = "";
+		if (transferRB.isChecked()) 
+			transfer = "true";
+		else 
+			transfer = "false";
+		result.put("Transfer", transfer); 
+		
+		RadioButton modRB = (RadioButton)findViewById(R.id.radio_modifications_yes);
+		String mod = "";
+		if (modRB.isChecked()) 
+			mod = "true";
+		else 
+			mod = "false";
+		result.put("Modifications", mod); 
+		
 		return result;
 	}
 
@@ -456,29 +499,31 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 		if (id == R.id.datepicker) 
 			isProbablyEdited = true;
 		
-		if (id == R.id.expectingRadio || id == R.id.nursingRadio) {
-			RadioButton rb = (RadioButton) v;
-			findViewById(R.id.mchm).setVisibility(View.VISIBLE);
-			findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.VISIBLE);
-			findViewById(R.id.husbandIfMotherEdit).setVisibility(View.VISIBLE);
-			findViewById(R.id.responsibleIfChildEdit).setVisibility(View.INVISIBLE);
-			findViewById(R.id.fatherIfChildEdit).setVisibility(View.INVISIBLE);	        
-			//Toast.makeText(AcdiVocaFindActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
-		} else if (id == R.id.malnourishedRadio || id == R.id.inpreventionRadio) {
-			RadioButton rb = (RadioButton) v;
-			findViewById(R.id.mchm).setVisibility(View.VISIBLE);
-			findViewById(R.id.responsibleIfChildEdit).setVisibility(View.VISIBLE);
-			findViewById(R.id.fatherIfChildEdit).setVisibility(View.VISIBLE);
-			findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.INVISIBLE);
-			findViewById(R.id.husbandIfMotherEdit).setVisibility(View.INVISIBLE);	        
-			//Toast.makeText(AcdiVocaFindActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
-		}
-
+//		if (id == R.id.expectingRadio || id == R.id.nursingRadio) {
+//			RadioButton rb = (RadioButton) v;
+//			findViewById(R.id.mchm).setVisibility(View.VISIBLE);
+//			findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.VISIBLE);
+//			findViewById(R.id.husbandIfMotherEdit).setVisibility(View.VISIBLE);
+//			findViewById(R.id.responsibleIfChildEdit).setVisibility(View.INVISIBLE);
+//			findViewById(R.id.fatherIfChildEdit).setVisibility(View.INVISIBLE);	        
+//			//Toast.makeText(AcdiVocaFindActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
+//		} else if (id == R.id.malnourishedRadio || id == R.id.inpreventionRadio) {
+//			RadioButton rb = (RadioButton) v;
+//			findViewById(R.id.mchm).setVisibility(View.VISIBLE);
+//			findViewById(R.id.responsibleIfChildEdit).setVisibility(View.VISIBLE);
+//			findViewById(R.id.fatherIfChildEdit).setVisibility(View.VISIBLE);
+//			findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.INVISIBLE);
+//			findViewById(R.id.husbandIfMotherEdit).setVisibility(View.INVISIBLE);	        
+//			//Toast.makeText(AcdiVocaFindActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
+//		} 
+		
+		
 		if(v.getId()==R.id.update_to_db_button) {
 			boolean result = false;
 			Toast.makeText(this, "SIMULATION: Saving update to DB", Toast.LENGTH_SHORT).show();
 
-//			ContentValues data = this.retrieveContentFromView(); 
+			ContentValues data = this.retrieveContentFromView(); 
+			Log.i(TAG, "Retrieved = " + data.toString());
 //			Log.i(TAG,"View Content: " + data.toString());
 //			data.put(AcdiVocaDbHelper.FINDS_PROJECT_ID, 0);
 //			if (mAction.equals(Intent.ACTION_EDIT)) {
@@ -488,12 +533,12 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
 //				Log.i(TAG, "Save to Db is " + result);
 //			}
-//			if (result)
-//				Toast.makeText(this, "Find saved to Db", Toast.LENGTH_SHORT).show();
-//			else 
-//				Toast.makeText(this, "Db error", Toast.LENGTH_SHORT).show();
-//			//this.startActivity(new Intent().setClass(this,AcdiVocaListFindsActivity.class));
-//			finish();
+			if (result)
+				Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_SHORT).show();
+			else 
+				Toast.makeText(this, "Db error", Toast.LENGTH_SHORT).show();
+
+			finish();
 		}
 	}
 
@@ -505,8 +550,8 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		Log.i(TAG, "onKeyDown keyCode = " + keyCode);
-		if(keyCode==KeyEvent.KEYCODE_BACK && isProbablyEdited){
-			//Toast.makeText(this, "Backkey isEdited=" +  isProbablyEdited, Toast.LENGTH_SHORT).show();
+		if(keyCode==KeyEvent.KEYCODE_BACK && isProbablyEdited){  // 
+			Toast.makeText(this, "Backkey isEdited=" +  isProbablyEdited, Toast.LENGTH_SHORT).show();
 			showDialog(CONFIRM_EXIT);
 			return true;
 		}
@@ -579,7 +624,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 
 	// Unused
 	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-		Log.i(TAG, "onTextChanged " + arg0.toString());		
+		Log.i(TAG, "onTextChanged " + arg0.toString());	
 	}
 
 	

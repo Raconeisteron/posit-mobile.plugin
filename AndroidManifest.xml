@@ -3,7 +3,7 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="org.hfoss.posit.android"
 	android:versionCode="1" android:versionName="0.7.2 beta">
-	<uses-sdk android:minSdkVersion="3"/>
+	<uses-sdk android:minSdkVersion="8"/>
 	<uses-permission android:name="android.permission.CAMERA"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
@@ -43,19 +43,28 @@
 			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden"
 			/>
+		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaNewAgriActivity" 
+			android:launchMode="singleTop"
+			android:configChanges="orientation|keyboardHidden"
+			/>
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity" 
 			android:launchMode="singleTop" />
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLookupActivity" 
 			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUpdateActivity" 
+			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.LoginActivity" 
 			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />	
+
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity" 
 			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />						
+			android:launchMode="singleTop" 
+			/>
+					
 		<activity android:name="org.hfoss.posit.android.api.SettingsActivity" />
 		
 		
