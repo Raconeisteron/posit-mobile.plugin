@@ -99,6 +99,14 @@
  	<string name="cancel_login_button">Cancel</string>
  	
  	
+ 	<!-- New string constants for agriculture registration form -->
+	<string name="amount_of_land">Amount of Land</string>
+	<string name="Ex:1over16"></string>
+    <string name="seed_group">Seed Types</string>
+    <string name="unit_of_measurement">Unit of Measurement</string>
+    <string name="quantity_of_seeds">Quantity of Seeds</string>
+    <string name="tools">Tools</string>
+ 	
     
     
 </resources>

@@ -93,6 +93,16 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 
 	public static final String FINDS_GUID = "guid";    // Globally unique ID
 	
+	//added to handle the agriculture registration form
+	public static final String MARKET_GARDEN_NAME = "vege_seed";
+	public static final String CEREAL_NAME = "cereal_seed";
+	public static final String TUBER_NAME = "tuber_seed";
+	public static final String TREE_NAME = "tree";
+	public static final String FINDS_LAND_AMOUNT = "amount_of_land";	
+	public static final String SEED_GROUP = "seed_type";
+	public static final String FINDS_TOOL_CATAGORY = "tools";
+	public static final String FINDS_UNIT = "unit";
+
 	
 	/** Commune table */
 	

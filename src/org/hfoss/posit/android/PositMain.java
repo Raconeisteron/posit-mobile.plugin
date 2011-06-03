@@ -28,6 +28,7 @@ import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaNewAgriActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
 
@@ -183,6 +184,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				
 			}
 			
+			((Button)findViewById(R.id.extraButton2)).setOnClickListener(this);
+			
 			final TextView version = (TextView) findViewById(R.id.version);
 			try {
 				version.setText(getPackageManager().getPackageInfo("org.hfoss.posit.android", 0).versionName);
@@ -305,6 +308,12 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				intent.setClass(this, FindActivityProvider.getExtraActivityClass());
 				startActivity(intent);
 				break;	
+
+			case R.id.extraButton2:
+				intent.setAction(Intent.ACTION_INSERT);
+				intent.setClass(this, AcdiVocaNewAgriActivity.class);
+				startActivity(intent);
+				break;			
 			}
 //		}
 	}

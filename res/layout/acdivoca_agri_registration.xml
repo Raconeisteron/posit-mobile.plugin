@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:orientation="vertical">
+
+	<ScrollView android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:orientation="vertical" android:scrollbars="vertical|horizontal">
+			
+			<TextView android:text="@string/general_info" android:textColor="#ff0000"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" 
+				android:textSize="20dp" />
+				
+			<TextView android:text="@string/name_section" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+				
+			<EditText android:id="@+id/firstnameEdit"
+				android:hint="@string/firstname"
+				android:inputType="textCapSentences"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" 
+				android:layout_marginLeft="20px" android:layout_marginRight="30px" />
+
+			<EditText android:id="@+id/lastnameEdit"
+				android:hint="@string/lastname"
+				android:layout_width="fill_parent" android:layout_marginRight="30px"
+				android:layout_marginLeft="20px" 
+				android:inputType="textCapSentences"
+				android:layout_height="wrap_content" />
+ 				
+			<EditText android:id="@+id/addressEdit"
+				android:hint="@string/address"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" 
+				android:layout_marginLeft="20px" android:layout_marginRight="30px" />	
+				
+	 		<!--  <TextView android:text="Date of Birth / Age" -->
+				<TextView android:text="@string/dob"
+					android:textColor="#ff0000" 
+					android:layout_marginLeft="10px" 
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content" />
+				
+				<DatePicker android:id="@+id/datepicker" 
+					android:layout_width="wrap_content" 
+					android:endYear="2020"
+					android:startYear="1947"
+					android:layout_marginLeft="20px" android:layout_marginRight="30px"
+					android:layout_height="wrap_content">
+				</DatePicker>	
+			
+			<TextView android:text="@string/commune" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+			<Spinner android:id="@+id/communeSpinner" 
+				android:layout_marginLeft="20px" android:layout_marginRight="30px"
+				android:entries="@+array/commune_names"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
+
+			<TextView android:text="@string/commune_section" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+			<Spinner android:id="@+id/commune_sectionSpinner" 
+				android:layout_marginLeft="20px" android:layout_marginRight="30px"
+				android:entries="@+array/commune_section_names"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
+
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >			
+
+			<TextView android:text="@string/sex" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+				
+			<RadioGroup android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:orientation="horizontal"
+				android:id="@+id/sexRadio">
+				<RadioButton android:checked="true" 
+					android:layout_marginLeft="20px" 
+					android:id="@+id/femaleRadio"
+					android:text="@string/Female" />
+				<RadioButton android:checked="false" android:id="@+id/maleRadio"
+					android:text="@string/Male" />
+			</RadioGroup>
+			</LinearLayout>
+	
+	
+			<TextView android:text="@string/Beneficiary_Category" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+				
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			
+			
+			<CheckBox android:id="@+id/farmerCheckBox"
+			 android:text="Farmer"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id="@+id/musoCheckBox"
+			 android:text="MUSO"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id="@+id/rancherCheckBox"
+			 android:text="Cattle Rancher"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			</LinearLayout>
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			<CheckBox android:id ="@+id/storeOwnerCheckBox"
+			 android:text="Store Owner"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id ="@+id/fisherCheckBox"
+			 android:text="Fisherman"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id ="@+id/otherCheckBox"
+			 android:text="Other"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			</LinearLayout>
+			
+			
+			<TextView android:text="@string/Number_of_people_in_home"
+				android:textColor="#ff0000" 
+				android:layout_marginLeft="10px" 
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content" />		
+			<EditText android:id="@+id/inhomeEdit" android:layout_width="wrap_content"
+				android:numeric="integer"
+				android:layout_marginLeft="30px" 
+				android:layout_height="wrap_content" android:paddingLeft="20px" 
+				android:minWidth ="48dp"/>
+	
+			<TextView android:text="@string/amount_of_land" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />	
+			<EditText android:id="@+id/amount_of_land"
+				android:hint="@string/Ex:1over16"
+				android:numeric="integer"   
+				android:layout_width="fill_parent" android:layout_height="wrap_content" 
+				android:layout_marginLeft="20px" android:layout_marginRight="30px" />
+
+			<TextView android:text="@string/seed_group" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+
+
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			
+			
+			<CheckBox android:id="@+id/vegeCheckBox"
+			 android:text="Vegetables"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id="@+id/cerealCheckBox"
+			 android:text="Cereal"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			</LinearLayout>
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			<CheckBox android:id ="@+id/tuberCheckBox"
+			 android:text="Tubers"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id ="@+id/treeCheckBox"
+			 android:text="Tree"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			</LinearLayout>
+			
+			<TextView android:text="@string/quantity_of_seeds" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+
+			<EditText android:id="@+id/quantityEdit" android:layout_width="wrap_content"
+				android:numeric="integer"
+				android:layout_marginLeft="30px" 
+				android:layout_height="wrap_content" android:paddingLeft="20px" 
+				android:minWidth ="48dp"/>
+			<TextView android:text="@string/unit_of_measurement" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+			<Spinner android:id="@+id/unitSpinner" 
+				android:layout_marginLeft="20px" android:layout_marginRight="30px"
+				android:entries="@+array/types_of_units"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
+				
+				<TextView android:text="@string/tools" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+				
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			
+			
+			<CheckBox android:id="@+id/houeCheckBox"
+			 android:text="Houe"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id="@+id/piocheCheckBox"
+			 android:text="Pioche"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id="@+id/brouetteCheckBox"
+			 android:text="Brouette"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			</LinearLayout>
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			<CheckBox android:id ="@+id/machetteCheckBox"
+			 android:text="Machette"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id ="@+id/serpetteCheckBox"
+			 android:text="Serpette"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id ="@+id/pelleCheckBox"
+			 android:text="Pelle"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			</LinearLayout>
+	
+	
+				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			
+			
+			<CheckBox android:id="@+id/barreAMinesCheckBox"
+			 android:text="Barre a Mines"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"/>
+		 </LinearLayout>
+				
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+				<Button android:text="@string/add_save" android:id="@+id/saveToDbButton"
+					android:layout_marginLeft="20px" android:layout_marginRight="20px"
+					android:layout_width="fill_parent" android:layout_height="wrap_content" />
+
+				<Button android:text="@string/add_send" android:id="@+id/sendSmsButton"
+					android:layout_marginLeft="20px" android:layout_marginRight="20px"
+					android:layout_width="fill_parent" android:layout_height="wrap_content" />
+			</LinearLayout>
+
+</LinearLayout>
+	</ScrollView>
+</LinearLayout>

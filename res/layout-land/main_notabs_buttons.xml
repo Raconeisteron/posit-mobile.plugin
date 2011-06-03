@@ -23,18 +23,12 @@
 			android:layout_marginBottom="10dp"/>
 
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    			android:orientation="vertical"
-    			android:layout_width="wrap_content"
-    			android:layout_height="fill_parent"
-    			android:layout_gravity="center">
-
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     			android:orientation="horizontal"
     			android:layout_width="wrap_content"
     			android:layout_height="fill_parent"
     			android:layout_gravity="center">
+
 				<Button 
-				
 					android:id="@+id/listFindButton" 
 					android:layout_width="wrap_content" 
 					android:layout_height="wrap_content" 
@@ -46,13 +40,6 @@
 					android:layout_height="wrap_content" 
 					android:text="Add Find"/>
 					
-			</LinearLayout>
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    			android:orientation="horizontal"
-    			android:layout_width="wrap_content"
-    			android:layout_height="fill_parent"
-    			android:layout_gravity="center">	
-    					
 				<Button 
 					android:id="@+id/extraButton" 
 					android:layout_width="wrap_content" 
@@ -66,7 +53,6 @@
 					android:layout_height="wrap_content" 
 					android:visibility="visible"
 					android:text="New\nAgriculture"/>	
-			</LinearLayout>
 										
 		</LinearLayout>
 
