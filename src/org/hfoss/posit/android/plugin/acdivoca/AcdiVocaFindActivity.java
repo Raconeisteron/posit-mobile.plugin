@@ -120,13 +120,8 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume");
-		String localePref = PreferenceManager.getDefaultSharedPreferences(this).getString("locale", "");
-		Log.i(TAG, "Locale = " + localePref);
-		Locale locale = new Locale(localePref); 
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-		getBaseContext().getResources().updateConfiguration(config, null);
+		
+		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		Log.i(TAG, "Before edited = " + isProbablyEdited);
 		setContentView(R.layout.acdivoca_registration);  // Should be done after locale configuration
