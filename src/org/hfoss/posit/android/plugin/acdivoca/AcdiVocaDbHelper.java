@@ -147,6 +147,9 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_DOSSIER = "dossier";
 	public static final String FINDS_PROJECT_ID = "project_id";
 	public static final String FINDS_NAME = "name";
+	public static final String FINDS_TYPE = "type";
+	public static final int FINDS_TYPE_MCHN = 0;
+	public static final int FINDS_TYPE_AGRI = 1;
 
 	public static final String FINDS_FIRSTNAME = "firstname";
 	public static final String FINDS_LASTNAME = "lastname";
@@ -166,9 +169,17 @@ public class AcdiVocaDbHelper {
 
 	public static final String FINDS_DISTRIBUTION_POST = "distribution_post";
 	public static final String FINDS_HEALTH_CENTER = "health_center";
-
+	public static final String FINDS_Q_MOTHER_LEADER = "mother_leader";
+	public static final String FINDS_Q_VISIT_MOTHER_LEADER = "visit_mother_leader";
+	public static final String FINDS_Q_PARTICIPATING_AGRI = "pariticipating_agri";
+	public static final String FINDS_NAME_AGRI_PARTICIPANT = "name_agri_paricipant";
+	
+	
 	public static final String FINDS_GUID = "guid";    // Globally unique ID
 
+	
+	
+	
 	//added to handle the agriculture registration form
 	public static final String MARKET_GARDEN_NAME = "vege_seed";
 	public static final String CEREAL_NAME = "cereal_seed";
@@ -294,6 +305,7 @@ public class AcdiVocaDbHelper {
 		+ " (" + FINDS_ID + " integer primary key autoincrement, "
 		+ FINDS_PROJECT_ID + " integer DEFAULT 0, "
 		+ FINDS_DOSSIER + " text, "
+		+ FINDS_TYPE + " integer DEFAULT 0, " 
 		+ FINDS_NAME + " text, "
 		+ FINDS_FIRSTNAME + " text, "
 		+ FINDS_LASTNAME + " text, "
@@ -303,16 +315,12 @@ public class AcdiVocaDbHelper {
 		+ FINDS_AGE + " text, "
 		+ FINDS_HOUSEHOLD_SIZE + " text, "
 		+ FINDS_BENEFICIARY_CATEGORY + " text, "
-		//		+ FINDS_MOTHER_CATEGORY + " text, "
-		//		+ FINDS_INFANT_CATEGORY + " text, "
-		//		+ COMMUNE_NAME + " text, "
-		//		+ COMMUNE_ABBR + " text, "
 		+ FINDS_HEALTH_CENTER + " text, "
-		+ FINDS_DISTRIBUTION_POST + " text "
-		//		+ COMMUNE_SECTION_NAME + " text, "
-		//		+ COMMUNE_SECTION_ABBR + " text "
-		//		+ FINDS_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + "), "
-		//		+ FINDS_COMMUNE_SECTION_ID + " references " + COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + ")" 
+		+ FINDS_DISTRIBUTION_POST + " text, "
+		+ FINDS_Q_MOTHER_LEADER + " boolean, "
+		+ FINDS_Q_VISIT_MOTHER_LEADER + "boolean, "
+		+ FINDS_Q_PARTICIPATING_AGRI + "boolean, "
+		+ FINDS_NAME_AGRI_PARTICIPANT + " text "
 		+ ");";
 
 //	private static final String CREATE_COMMUNE_TABLE = "CREATE TABLE IF NOT EXISTS "
