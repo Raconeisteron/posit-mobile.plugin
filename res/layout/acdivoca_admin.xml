@@ -20,6 +20,15 @@
 		android:textColor="#ff0000" android:layout_width="wrap_content"
 		android:layout_gravity="center" android:textSize="20dp"
 		android:layout_height="wrap_content" />
+		
+	<ProgressBar
+		android:id="@+id/fileload_progressbar"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         style="@android:style/Widget.ProgressBar.Small"
+         android:visibility="invisible"
+         android:layout_marginRight="5dp" />
+		
 
 <!--  
 	<EditText android:id="@+id/usernameEdit" 

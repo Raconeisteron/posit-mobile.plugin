@@ -89,7 +89,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 		 Log.i(TAG, "onCreate");
 
 		// Create DB helper
-		mDbHelper = new AcdiVocaDbHelper(this);
+//		mDbHelper = new AcdiVocaDbHelper(this);
 		isProbablyEdited = false;
 		
 	}
@@ -313,11 +313,15 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		result.put(AcdiVocaDbHelper.FINDS_AGE, value);
 		
 		//value = mMonth + "/" + mDay + "/" + mYear;
-		value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
-			((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
-			((DatePicker)findViewById(R.id.datepicker)).getYear();
-		//Log.i(TAG, "retrieve DOB=" + value);
+		DatePicker picker = ((DatePicker)findViewById(R.id.datepicker));
+		value = picker.getYear() + "/" + picker.getMonth() + "/" + picker.getDayOfMonth();
+		Log.i(TAG, "Date = " + value);
 		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
+
+//		value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
+//			((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
+//			((DatePicker)findViewById(R.id.datepicker)).getYear();
+		//Log.i(TAG, "retrieve DOB=" + value);
 
 		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
 		String sex = "";
@@ -344,21 +348,24 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		value = (String)communeSpinner.getSelectedItem();
 //		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
 //		
+
+		// Set the Beneficiary's category (4 exclusive radio buttons)
+		String category = "";
 		RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
-		String infant = "";
 		if (rb.isChecked()) 
-			infant = "MALNOURISHED";
-		else 
-			infant = "PREVENTION";
-		result.put(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY, infant);
+			category = "MALNOURISHED";
+		rb = (RadioButton)findViewById(R.id.inpreventionRadio);
+		if (rb.isChecked())
+			category = "PREVENTION";
 
 		rb = (RadioButton)findViewById(R.id.expectingRadio);
-		String mother = "";
 		if (rb.isChecked()) 
-			mother = "EXPECTING";
-		else 
-			mother = "NURSING";
-		result.put(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY, mother);
+			category = "EXPECTING";
+		rb = (RadioButton)findViewById(R.id.nursingRadio);
+		if (rb.isChecked())
+			category = "NURSING";
+		result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, category);
+
 //		
 //		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
 //		String commune = (String) spinner.getSelectedItem();
@@ -420,12 +427,17 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //		
 		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
 		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+		int yr=0, mon=0, day=0;
+		day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
+		yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
+		mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
+		
+		Log.i(TAG, yr + "/" + mon + "/" + day);
+//		mon = mon + 1;  // Months are number 0..11
+//		day = day - 1;
 		if (date != null) {
 			Log.i(TAG,"display DOB = " + date);
-			dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
-					Integer.parseInt(date.substring(0,date.indexOf("/"))),
-					Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
-					(OnDateChangedListener) this);
+			dp.init(yr, mon, day, (OnDateChangedListener) this);
 		}
 
 		eText = (EditText)findViewById(R.id.monthsInProgramEdit);

@@ -13,7 +13,7 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:layout_centerHorizontal="true"
-		android:src="@drawable/acdivoca_logo"/>
+		android:src="@drawable/acdivoca_usaid"/>
 
 <!--  
 	<TextView android:text="@string/login_prompt"
@@ -23,7 +23,7 @@
 -->
 
 	<EditText android:id="@+id/usernameEdit" 
-		android:layout_marginTop="15px"
+		android:layout_marginTop="15px"	
 		android:hint="@string/username_hint"
 		android:layout_gravity="center"
 		android:nextFocusDown="@+id/passwordEdit"

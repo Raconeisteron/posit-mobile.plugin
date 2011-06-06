@@ -78,7 +78,7 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 	public static final String TAG = "AcdiVocaLookupActivity";
 
 	private Spinner lookupSpinner;
-	private ArrayAdapter<String> adapter;
+	private ArrayAdapter<String> mAdapter;
 	private String dossiers[] = new String[100];
 	private EditText eText;
 	
@@ -159,15 +159,26 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 		((TextView)findViewById(R.id.distribution_label)).setText(distributionCtr);
 
 		dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
-		adapter = 
-			new ArrayAdapter<String>( 
+		
+		if (dossiers == null) {
+			Toast.makeText(this, "Sorry, there are no beneficiaries in the Db.", Toast.LENGTH_SHORT).show();
+			dossiers = new String[1];
+			dossiers[0] = "No beneficiaries found";
+			((Button)findViewById(R.id.update_lookup_button)).setEnabled(false);
+		} 
+		setUpSpinnerAdapter(dossiers);
+	}
+	
+	private void setUpSpinnerAdapter(final String[] data) {
+		mAdapter = 
+			new ArrayAdapter<String>(
 					this,
 					android.R.layout.simple_spinner_item,
-					dossiers );
-		adapter.sort(String.CASE_INSENSITIVE_ORDER);
-		adapter.setDropDownViewResource(
+					data );
+		mAdapter.sort(String.CASE_INSENSITIVE_ORDER);
+		mAdapter.setDropDownViewResource(
 				android.R.layout.simple_spinner_dropdown_item);
-		lookupSpinner.setAdapter(adapter);
+		lookupSpinner.setAdapter(mAdapter);
 		lookupSpinner.setOnItemSelectedListener(
 				new AdapterView.OnItemSelectedListener() {
 					public void onItemSelected(
@@ -175,7 +186,7 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 							View view, 
 							int position, 
 							long id) {
-						String d = dossiers[position];
+						String d = data[position];
 
 						//eText.setText(d);
 					}

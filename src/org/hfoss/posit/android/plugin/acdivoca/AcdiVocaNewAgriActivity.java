@@ -132,7 +132,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 					result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, vals[1]);
 					result.put(AcdiVocaDbHelper.FINDS_LASTNAME, vals[2]);
 					result.put(AcdiVocaDbHelper.FINDS_DOB, vals[3]);
-					result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID, vals[4]);
+					result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, vals[4]);
 					result.put("MonthsRemaining", vals[5]);
 				}
 			}
@@ -309,13 +309,13 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		value = eText.getText().toString();
 		result.put(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE,value);
 		
-		Spinner communeSpinner = (Spinner)findViewById(R.id.communeSpinner);
-		value = (String)communeSpinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_NAME, value);
-		
-		communeSpinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-		value = (String)communeSpinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
+//		Spinner communeSpinner = (Spinner)findViewById(R.id.communeSpinner);
+//		value = (String)communeSpinner.getSelectedItem();
+//		result.put(AcdiVocaDbHelper.COMMUNE_NAME, value);
+//		
+//		communeSpinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+//		value = (String)communeSpinner.getSelectedItem();
+//		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
 		
 		// Add Seed types
 		CheckBox seedCB = (CheckBox)findViewById(R.id.vegeCheckBox);
@@ -368,17 +368,19 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		
 		result.put(AcdiVocaDbHelper.FINDS_TOOL_CATAGORY, toolCtg);
 		
-		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
-		String commune = (String) spinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_NAME, commune);
+//		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
+//		String commune = (String) spinner.getSelectedItem();
+//		result.put(AcdiVocaDbHelper.COMMUNE_NAME, commune);
 
+		Spinner spinner = null;
 		spinner = (Spinner)findViewById(R.id.unitSpinner);
 		String unit = (String) spinner.getSelectedItem();
 		result.put(AcdiVocaDbHelper.FINDS_UNIT, unit);
 		
-		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-		String communeSection = (String) spinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, communeSection);		
+//		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+//		String communeSection = (String) spinner.getSelectedItem();
+//		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, communeSection);		
+
 		return result;
 	}
 
@@ -447,25 +449,25 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 			test -= 1;
 	}		
 		
-		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
-		String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
-		int k = 0;
-		String item = (String) spinner.getItemAtPosition(k);
-		while (k < spinner.getCount() && !selected.equals(item)) {
-			++k;
-			item = (String) spinner.getItemAtPosition(k);
-		}
-		spinner.setSelection(k);
-
-		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-		selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_SECTION_NAME);
-		k = 0;
-		item = (String) spinner.getItemAtPosition(k);
-		while (k < spinner.getCount() && !selected.equals(item)) {
-			++k;
-			item = (String) spinner.getItemAtPosition(k);
-		}
-		spinner.setSelection(k);
+//		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
+//		String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
+//		int k = 0;
+//		String item = (String) spinner.getItemAtPosition(k);
+//		while (k < spinner.getCount() && !selected.equals(item)) {
+//			++k;
+//			item = (String) spinner.getItemAtPosition(k);
+//		}
+//		spinner.setSelection(k);
+//
+//		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+//		selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_SECTION_NAME);
+//		k = 0;
+//		item = (String) spinner.getItemAtPosition(k);
+//		while (k < spinner.getCount() && !selected.equals(item)) {
+//			++k;
+//			item = (String) spinner.getItemAtPosition(k);
+//		}
+//		spinner.setSelection(k);
 		
 	}
 

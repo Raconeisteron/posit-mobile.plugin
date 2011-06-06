@@ -64,7 +64,7 @@ public class AcdiVocaFindDataManager extends FindDataManager{
 	 */
 	public boolean addNewFind(Context context, ContentValues data) {
 		AcdiVocaDbHelper dbHelper = new AcdiVocaDbHelper(context); 
-		return dbHelper.addNewFind(data) != -1;
+		return dbHelper.addNewBeneficiary(data) != -1;
 	}	
 	
 	/**
