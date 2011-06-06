@@ -89,6 +89,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+
 
 //		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		project_id = 0; //sp.getInt("PROJECT_ID", 0);

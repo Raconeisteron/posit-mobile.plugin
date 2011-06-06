@@ -121,34 +121,6 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 	}
 
 	
-//	class DbSimulator {
-//		
-//		private String[] db = {
-//				"A,Alicia,Morelli,1/6/1982,FEMALE,EXPECTIONG,2",
-//				"B,Baby,Morelli,8/6/2010,MALE,PREVENTION,9",
-//				"C,Baby,Jones,1/1/2011,MALE,PREVENTION,13" };
-//		
-//		public DbSimulator() {
-//		}
-//		
-//		public ContentValues fetchFindDataById(String id, ContentValues values) {
-//			ContentValues result = null;
-//			for (int k = 0; k < db.length; k++) {
-//				String[] vals = db[k].split(",");
-//				if (vals[0].equals(id)) {
-//					result = new ContentValues();
-//					result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, vals[1]);
-//					result.put(AcdiVocaDbHelper.FINDS_LASTNAME, vals[2]);
-//					result.put(AcdiVocaDbHelper.FINDS_DOB, vals[3]);
-//					result.put(AcdiVocaDbHelper.FINDS_SEX, vals[4]);
-//					result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY_ID, vals[5]);
-//					result.put("MonthsRemaining", vals[6]);
-//				}
-//			}
-//			return result;
-//		}
-//	}
-	
 	/**
 	 * 
 	 */
@@ -156,17 +128,10 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume beneficiary id = " + beneficiaryId);
-		String localePref = PreferenceManager.getDefaultSharedPreferences(this).getString("locale", "");
-		Log.i(TAG, "Locale = " + localePref);
-		Locale locale = new Locale(localePref); 
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-		getBaseContext().getResources().updateConfiguration(config, null);
+		
+		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		Log.i(TAG, "Before edited = " + isProbablyEdited);
-	//	setContentView(R.layout.acdivoca_registration);  // Should be done after locale configuration
-
 		
 		if (beneficiaryId == "unknown") {
 			Intent lookupIntent = new Intent();
@@ -174,10 +139,8 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 			this.startActivityForResult(lookupIntent, ACTION_ID);
 		} else {
 			
-			//DbSimulator db = new DbSimulator();
 			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 			ContentValues values = db.fetchBeneficiaryByDossier(beneficiaryId, null);
-			//ContentValues values = db.fetchFindDataById(beneficiaryId, null);
 			if (values == null) {
 				Toast.makeText(this, "ERROR: No beneficiary with ID = " + beneficiaryId, Toast.LENGTH_SHORT).show();
 			} else {

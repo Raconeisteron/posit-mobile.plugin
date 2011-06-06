@@ -131,24 +131,14 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume");
-		String localePref = PreferenceManager.getDefaultSharedPreferences(this).getString("locale", "");
-		Log.i(TAG, "Locale = " + localePref);
-		Locale locale = new Locale(localePref); 
-		Locale.setDefault(locale);
-		Configuration config = new Configuration();
-		config.locale = locale;
-		getBaseContext().getResources().updateConfiguration(config, null);
+		
+		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		setContentView(R.layout.acdivoca_lookup);  // Should be done after locale configuration
 
 		((Button)findViewById(R.id.update_lookup_button)).setOnClickListener(this);
 		((Button)findViewById(R.id.cancel_lookup_button)).setOnClickListener(this);
 		lookupSpinner = ((Spinner)findViewById(R.id.lookupSpinner));
-
-		// See http://mylifewithandroid.blogspot.com/2009/10/spinner-and-its-data-behind.html
-		//final String items[] = new String[100];
-		//	    for (int k = 0; k < items.length; k++) 
-		//	    	items[k] = "Str" + k;
 
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);

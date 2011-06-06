@@ -29,6 +29,7 @@ import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaNewAgriActivity;
 import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
@@ -220,14 +221,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG,"Resuming");
-		String localePref = PreferenceManager.getDefaultSharedPreferences(this).getString("locale", "");
-		Log.i(TAG, "Locale = " + localePref);
-		Locale locale = new Locale(localePref); 
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-		getBaseContext().getResources().updateConfiguration(config, null);
 		
+		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 		startPOSIT();
 	}
 

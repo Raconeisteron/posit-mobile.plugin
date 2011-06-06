@@ -86,13 +86,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 		Log.i(TAG, "onResume()");
 		super.onResume();
 		
-		String localePref = PreferenceManager.getDefaultSharedPreferences(this).getString("locale", "");
-		Log.i(TAG, "Locale = " + localePref);
-		Locale locale = new Locale(localePref); 
-		Locale.setDefault(locale);
-		Configuration config = new Configuration();
-		config.locale = locale;
-		getBaseContext().getResources().updateConfiguration(config, null);
+		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		setContentView(R.layout.acdivoca_admin);
 	}	
