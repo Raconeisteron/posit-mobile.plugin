@@ -3,28 +3,40 @@
 	<item 
         android:title="Sort by description" 
         android:id="@+id/sort_name_menu_item"
-        android:icon="@android:drawable/ic_menu_sort_alphabetically"></item>
+        android:icon="@android:drawable/ic_menu_sort_alphabetically">
+    </item>
     <item 
         android:title="Sort by date" 
         android:id="@+id/sort_date_menu_item"
-        android:icon="@android:drawable/ic_menu_recent_history"></item>
+        android:icon="@android:drawable/ic_menu_recent_history">
+    </item>
        
-	<item 
-		android:icon="@drawable/ic_menu_refresh" 
-		android:title="@string/sync"
-		android:id="@+id/sync_finds_menu_item"></item>
+
 	<item
 		android:icon="@drawable/ic_menu_bluetooth"
 		android:title="@string/bluetooth_sync"
-		android:id="@+id/bluetooth_sync_menu_item"></item>
+		android:id="@+id/bluetooth_sync_menu_item">
+	</item>
 	<item 
 		android:title="@string/map" 
 		android:id="@+id/map_finds_menu_item"
-		android:icon="@android:drawable/ic_menu_mapmode"></item>
--->		
+		android:icon="@android:drawable/ic_menu_mapmode">
+	</item>
+-->	
+	<item
+		android:icon="@drawable/ic_menu_refresh"
+		android:title="@string/list_messages"
+		android:id="@+id/list_messages" >
+	</item>
+	<item 
+		android:icon="@drawable/ic_menu_refresh" 
+		android:title="@string/sync_messages"
+		android:id="@+id/sync_messages" >
+	</item>	
 	<item 
 		android:title="@string/delete_finds" 
 		android:id="@+id/delete_finds_menu_item"
-		android:icon="@android:drawable/ic_menu_delete"></item>
+		android:icon="@android:drawable/ic_menu_delete">
+	</item>
 </menu>
 
