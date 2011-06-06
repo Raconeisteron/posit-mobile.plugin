@@ -274,6 +274,17 @@ public class AcdiVocaDbHelper {
 		//		R.id.find_image     // Thumbnail in ListFindsActivity
 	};
 
+	public static final String[] message_row_data = { 
+		FINDS_ID,
+		FINDS_DOSSIER, 
+		MESSAGE_TEXT
+	};
+
+	public static final int[] message_row_views = {
+		R.id.row_id,		    
+		R.id.dossierText,
+		R.id.messageText 
+	};
 
 	/*
 	 * Finds table creation sql statement. 

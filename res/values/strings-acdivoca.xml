@@ -78,10 +78,12 @@
     <!--  list_finds.xml -->
     <string name="noFinds">No beneficiaries</string>
     
-        <!-- Add Menu -->
+        <!-- Add and List Menu -->
     <string name="refresh">Clear</string>
-    <string name="delete_find">Delete</string>
-    
+    <string name="delete_find">Delete</string> 
+    <string name="list_messages">List SMS Messages</string>
+    <string name="sync_messages">Send SMS Messages</string>
+  
     <!-- ACDI/VOCA Settings and Preferences -->
     <string name="acdivocaprefs">ACDI/VOCA Preferences</string>
     <string name="SMS_phone">SMS Phone Target</string>

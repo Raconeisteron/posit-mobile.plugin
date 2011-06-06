@@ -33,18 +33,24 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
 /**
@@ -62,6 +68,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	public static final int FIND_FROM_LIST = 0;
 	private int project_id;
     private static final boolean DBG = false;
+	private ArrayAdapter<String> mAdapter;
 
 	/** 
 	 * Called when the Activity starts and
@@ -208,11 +215,56 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Intent intent;
-		switch (item.getItemId()) {		
+		switch (item.getItemId()) {	
+		case R.id.list_messages:
+			String messages[] = new String[1];
+			messages[0] = "No messages to display";
+			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+			String distrKey = this.getResources().getString(R.string.distribution_point);
+			String distributionCtr = sharedPrefs.getString(distrKey, "");
+			Log.i(TAG, distrKey +"="+ distributionCtr);
+			messages = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
+			if (messages == null) {
+				Toast.makeText(this, "Sorry, there are no messages in the Db.", Toast.LENGTH_SHORT).show();
+				messages = new String[1];
+				messages[0] = "No messages to display";
+			}
+			setUpMessagesList(messages);
+			break;
+		case R.id.sync_messages:
+			break;
 		}
 		return true;
 	}
 
+	private void setUpMessagesList(final String[] data) {
+		
+		setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, data));
+		ListView lv = getListView();
+		lv.setTextFilterEnabled(true);
+		lv.setOnItemClickListener(new OnItemClickListener() {
+		    public void onItemClick(AdapterView<?> parent, View view,
+		        int position, long id) {
+		      // When clicked, show a toast with the TextView text
+		      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
+		          Toast.LENGTH_SHORT).show();
+		    }
+		  });
+
+		  //		mAdapter = 
+//			new ArrayAdapter<String>(
+//					this,
+//					R.layout.acdivoca_list_beneficiaries,
+//					android.R.layout.simple_list_item_1,
+//					data );
+//		mAdapter.sort(String.CASE_INSENSITIVE_ORDER);
+//		setContentView(R.layout.acdivoca_list_beneficiaries);
+		
+	}
+
+	
+	
 	/**
 	 * Called automatically by the SimpleCursorAdapter.  
 	 */

@@ -70,9 +70,10 @@
     <string name="No">Non</string>
 	
 	
-	<!--  Menu -->
-    <string name="settings">Anviwònman</string>
-    
+	<!--  Menus -->
+    <string name="settings">Anviwònman</string> 
+    <string name="list_messages">Liste messages SMS</string>
+    <string name="sync_messages">Envoyer messages SMS</string>
     
     <!-- Add Menu -->
     <string name="refresh">Refreshez</string>     
