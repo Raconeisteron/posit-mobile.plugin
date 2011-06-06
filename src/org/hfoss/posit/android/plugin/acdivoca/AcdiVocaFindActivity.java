@@ -83,7 +83,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		 Log.i(TAG, "onCreate");
 
 		// Create DB helper
-		mDbHelper = new AcdiVocaDbHelper(this);
+//		mDbHelper = new AcdiVocaDbHelper(this);
 		isProbablyEdited = false;
 	}
 
@@ -152,7 +152,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		 ((EditText)findViewById(R.id.firstnameEdit)).addTextChangedListener(this);
 		 ((EditText)findViewById(R.id.lastnameEdit)).addTextChangedListener(this);
 		 ((EditText)findViewById(R.id.addressEdit)).addTextChangedListener(this);
-		 ((EditText)findViewById(R.id.ageEdit)).addTextChangedListener(this);
+//		 ((EditText)findViewById(R.id.ageEdit)).addTextChangedListener(this);
 		 ((EditText)findViewById(R.id.inhomeEdit)).addTextChangedListener(this);
 		 ((EditText)findViewById(R.id.responsibleIfChildEdit)).addTextChangedListener(this);
 		 ((EditText)findViewById(R.id.fatherIfChildEdit)).addTextChangedListener(this);
@@ -169,8 +169,8 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				 calendar.get(Calendar.DAY_OF_MONTH), this);
 		 
 		 // These don't work
-		 ((Spinner)findViewById(R.id.commune_sectionSpinner)).setOnItemSelectedListener(this);
-		 ((Spinner)findViewById(R.id.communeSpinner)).setOnItemSelectedListener(this);
+//		 ((Spinner)findViewById(R.id.commune_sectionSpinner)).setOnItemSelectedListener(this);
+//		 ((Spinner)findViewById(R.id.communeSpinner)).setOnItemSelectedListener(this);
 		 ((Spinner)findViewById(R.id.healthcenterSpinner)).setOnItemSelectedListener(this);
 		 ((Spinner)findViewById(R.id.distributionSpinner)).setOnItemSelectedListener(this);
 
@@ -209,74 +209,100 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	private ContentValues retrieveContentFromView() {
 		Log.i(TAG, "retrieveContentFromView");
 		ContentValues result = new ContentValues();
+		String value = "";
 
 		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
-		String value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
-		Log.i(TAG, "retrieve LAST NAME = " + value);
+		if (eText != null) {
+			value = eText.getText().toString();
+			result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
+			Log.i(TAG, "retrieve LAST NAME = " + value);
+		}
 		
 		eText = (EditText)findViewById(R.id.firstnameEdit);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
+		if (eText != null) {
+			value = eText.getText().toString();
+			result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
+		}
 		
-		eText = (EditText)findViewById(R.id.ageEdit);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_AGE, value);
+// Eliminated because redundant and possibly inconsistent with DoB		
+//		eText = (EditText)findViewById(R.id.ageEdit);
+//		if (eText != null) {
+//			value = eText.getText().toString();
+//			result.put(AcdiVocaDbHelper.FINDS_AGE, value);
+//		}
 		
 		//value = mMonth + "/" + mDay + "/" + mYear;
-		value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
-			((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
-			((DatePicker)findViewById(R.id.datepicker)).getYear();
-		//Log.i(TAG, "retrieve DOB=" + value);
+		DatePicker picker = ((DatePicker)findViewById(R.id.datepicker));
+		value = picker.getYear() + "/" + picker.getMonth() + "/" + picker.getDayOfMonth();
+		Log.i(TAG, "Date = " + value);
 		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
 
 		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
-		String sex = "";
-		if (sexRB.isChecked()) 
-			sex = "FEMALE";
-		else 
-			sex = "MALE";
-		result.put(AcdiVocaDbHelper.FINDS_SEX, sex);         
+		if (sexRB != null) {
+			String sex = "";
+			if (sexRB.isChecked()) 
+				sex = "FEMALE";
+			else 
+				sex = "MALE";
+			result.put(AcdiVocaDbHelper.FINDS_SEX, sex);   
+		}
 		
 		eText = (EditText)findViewById(R.id.addressEdit);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_ADDRESS, value);
+		if (eText != null) {
+			value = eText.getText().toString();
+			result.put(AcdiVocaDbHelper.FINDS_ADDRESS, value);
+		}
 		
 		eText = (EditText)findViewById(R.id.inhomeEdit);
-		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE,value);
+		if (eText != null) {
+			value = eText.getText().toString();
+			result.put(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE,value);
+		}
 		
-		Spinner communeSpinner = (Spinner)findViewById(R.id.communeSpinner);
-		value = (String)communeSpinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_NAME, value);
+//  NOTE:  These are removed because they are redundant with the
+//   Distribution point or health center locations.	
+//		Spinner communeSpinner = (Spinner)findViewById(R.id.communeSpinner);
+//		if (communeSpinner != null) {
+//			value = (String)communeSpinner.getSelectedItem();
+//			result.put(AcdiVocaDbHelper.COMMUNE_NAME, value);
+//		}
+//
+//		communeSpinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+//		if (communeSpinner != null) {
+//			value = (String)communeSpinner.getSelectedItem();
+//			result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
+//		}
 		
-		communeSpinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-		value = (String)communeSpinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
-		
+		// Set the Beneficiary's category (4 exclusive radio buttons)
+		String category = "";
 		RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
-		String infant = "";
 		if (rb.isChecked()) 
-			infant = "MALNOURISHED";
-		else 
-			infant = "PREVENTION";
-		result.put(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY, infant);
+			category = "MALNOURISHED";
+		rb = (RadioButton)findViewById(R.id.inpreventionRadio);
+		if (rb.isChecked())
+			category = "PREVENTION";
 
 		rb = (RadioButton)findViewById(R.id.expectingRadio);
-		String mother = "";
 		if (rb.isChecked()) 
-			mother = "EXPECTING";
-		else 
-			mother = "NURSING";
-		result.put(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY, mother);
+			category = "EXPECTING";
+		rb = (RadioButton)findViewById(R.id.nursingRadio);
+		if (rb.isChecked())
+			category = "NURSING";
+		result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, category);
+
+		String spinnerStr = "";
+		Spinner spinner = (Spinner)findViewById(R.id.healthcenterSpinner);
+		if (spinner != null) {
+			spinnerStr = (String) spinner.getSelectedItem();
+			result.put(AcdiVocaDbHelper.FINDS_HEALTH_CENTER, spinnerStr);
+		}
 		
-		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
-		String commune = (String) spinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_NAME, commune);
+		if (spinner != null) {
+			spinner = (Spinner)findViewById(R.id.distributionSpinner);
+			spinnerStr = (String) spinner.getSelectedItem();
+			result.put(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST, spinnerStr);
+		}
 		
-		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-		String communeSection = (String) spinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, communeSection);		
 		return result;
 	}
 
@@ -293,8 +319,9 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
 		Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
 
-		eText = (EditText)findViewById(R.id.ageEdit);
-		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_AGE));
+// Removed b/c redundant with and maybe inconsistent with DoB
+//		eText = (EditText)findViewById(R.id.ageEdit);
+//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_AGE));
 		
 		eText = (EditText)findViewById(R.id.addressEdit);
 		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS));
@@ -305,10 +332,26 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
 		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
 		Log.i(TAG,"display DOB = " + date);
-		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
-				Integer.parseInt(date.substring(0,date.indexOf("/"))),
-				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
-				(OnDateChangedListener) this);
+		int yr=0, mon=0, day=0;
+		day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
+		yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
+		mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
+		Log.i(TAG, yr + "/" + mon + "/" + day);
+//		mon = mon + 1;  // Months are number 0..11
+//		day = day - 1;
+		
+		
+//		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
+//		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+//		Log.i(TAG,"display DOB = " + date);
+		if (date != null) {
+			Log.i(TAG,"display DOB = " + date);
+			dp.init(yr, mon, day, (OnDateChangedListener) this);
+		}
+//		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
+//				Integer.parseInt(date.substring(0,date.indexOf("/"))),
+//				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
+//				(OnDateChangedListener) this);
 
 		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
 		Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
@@ -319,41 +362,47 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			sexRB.setChecked(true);
 		}
 		
+		RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
 		RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY).equals("EXPECTING"))
-			motherRB.setChecked(true);
-		else {
-			motherRB = (RadioButton)findViewById(R.id.nursingRadio);
+		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals("EXPECTING")) {
 			motherRB.setChecked(true);
 		}
-
-		RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY).equals("MALNOURISHED"))
+		else if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals("NURSING")) {
+			motherRB = (RadioButton)findViewById(R.id.nursingRadio);
+			motherRB.setChecked(true);
+		} else if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals("MALNOURISHED")) {
 			infantRB.setChecked(true);
-		else {
+		} else  {
 			infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
 			infantRB.setChecked(true);
 		}
 		
-		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
-		String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
-		int k = 0;
-		String item = (String) spinner.getItemAtPosition(k);
-		while (k < spinner.getCount() && !selected.equals(item)) {
-			++k;
-			item = (String) spinner.getItemAtPosition(k);
-		}
-		spinner.setSelection(k);
-
-		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-		selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_SECTION_NAME);
-		k = 0;
-		item = (String) spinner.getItemAtPosition(k);
-		while (k < spinner.getCount() && !selected.equals(item)) {
-			++k;
-			item = (String) spinner.getItemAtPosition(k);
-		}
-		spinner.setSelection(k);
+//		Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
+//		String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
+//		int k = 0;
+//		String item = null;
+//		if (selected != null) {
+//			item = (String) spinner.getItemAtPosition(k);
+//			while (k < spinner.getCount() && !selected.equals(item)) {
+//				item = (String) spinner.getItemAtPosition(k);
+//				++k;
+//			}
+//			spinner.setSelection(k);
+//		}
+//
+//		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+//		selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_SECTION_NAME);
+//		if (selected != null) {
+//			Log.i(TAG, "Commune section spinner count = " + spinner.getCount());
+//			k = 0;
+//			item = (String) spinner.getItemAtPosition(k);
+//			while (k < spinner.getCount() && !selected.equals(item)) {
+//				Log.i(TAG, "Commune section item = " + item + " " + k);
+//				item = (String) spinner.getItemAtPosition(k);
+//				++k;
+//			}
+//			spinner.setSelection(k);
+//		}
 		
 	}
 

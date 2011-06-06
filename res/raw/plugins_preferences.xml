@@ -12,7 +12,7 @@
 			main_list_button_label="list_beneficiary_label"
 			main_add_button_label="add_beneficiary_label"
 			main_extra_button_label="update_beneficiary_label"
-			main_icon="acdivoca_logo" />
+			main_icon="acdivoca_usaid" />
 
 		<Plugin active="true" name="AcdiVocaFind2"
 			package="org.hfoss.posit.android.plugin.acdivoca" 

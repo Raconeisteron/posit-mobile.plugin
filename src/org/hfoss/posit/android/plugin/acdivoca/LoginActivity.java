@@ -29,6 +29,7 @@ import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.R.id;
 import org.hfoss.posit.android.R.layout;
 import org.hfoss.posit.android.api.FindActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -69,11 +70,26 @@ import android.widget.DatePicker.OnDateChangedListener;
  */
 public class LoginActivity extends Activity implements OnClickListener {
 	public static final String TAG = "AcdiVocaLookupActivity";
+	public static final int ACTION_LOGIN = 0;
 
+	private UserType userType;
+	
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		 Log.i(TAG, "onCreate");
+		 
+		 Intent intent = this.getIntent();
+		 Bundle extras = intent.getExtras();
+			if (extras == null) {
+				return;
+			}
+			int userTypeInt = extras.getInt(AcdiVocaDbHelper.USER_TYPE_STRING);
+			if (userTypeInt == UserType.USER.ordinal()) {
+				userType = UserType.USER;
+			} else if (userTypeInt == UserType.SUPER.ordinal()) {
+				userType = UserType.SUPER;
+			}		
 	}
 
 
@@ -119,16 +135,16 @@ public class LoginActivity extends Activity implements OnClickListener {
 			if (authenticateUser(username, password)) {
 				setResult(RESULT_OK,returnIntent);
 			} else {
-				setResult(this.RESULT_CANCELED, returnIntent);
+				setResult(Activity.RESULT_CANCELED, returnIntent);
 			}
 		} else {
-			setResult(this.RESULT_CANCELED, returnIntent);
+			setResult(Activity.RESULT_CANCELED, returnIntent);
 		}
 	    finish();
 	}
 	
 	private boolean authenticateUser(String username, String password) {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		return db.authenicateUser(username, password);
+		return db.authenicateUser(username, password, userType);
 	}
 }

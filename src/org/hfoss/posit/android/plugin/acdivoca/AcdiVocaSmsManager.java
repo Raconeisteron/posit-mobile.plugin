@@ -82,10 +82,11 @@ public class AcdiVocaSmsManager {
 		+ "s" + ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.FINDS_SEX) + PAIRS_SEPARATOR
 		+ "ad" + ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.FINDS_ADDRESS) + PAIRS_SEPARATOR
 		+ "a" + ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.FINDS_AGE) + PAIRS_SEPARATOR
-		+ "c" + ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.COMMUNE_NAME) + PAIRS_SEPARATOR
-		+ "cs" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.COMMUNE_SECTION_NAME) + PAIRS_SEPARATOR
-		+ "ic" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY) + PAIRS_SEPARATOR
-		+ "mc" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY) + PAIRS_SEPARATOR
+//		+ "c" + ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.COMMUNE_NAME) + PAIRS_SEPARATOR
+//		+ "cs" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.COMMUNE_SECTION_NAME) + PAIRS_SEPARATOR
+		+ "bc" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY) + PAIRS_SEPARATOR
+//		+ "ic" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_INFANT_CATEGORY) + PAIRS_SEPARATOR
+//		+ "mc" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_MOTHER_CATEGORY) + PAIRS_SEPARATOR
 		+ "nih" + ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
 		
 		return message;

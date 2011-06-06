@@ -1,7 +1,7 @@
 /*
  * File: AcdiVocaDbHelper.java
  * 
-* Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
  * This file is part of the ACDI/VOCA plugin for POSIT, Portable Open Search 
  * and Identification Tool.
@@ -35,64 +35,111 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
- * The class is the interface with the Database. It controls all Db access 
+ * The class is the interface with the Database. 
+ *  It controls all Db access 
  *  and directly handles all Db queries.
  */
-public class AcdiVocaDbHelper extends SQLiteOpenHelper {
-	/*
-	 * Add new tables here.
-	 */
-    private static final boolean DBG = true;
-	private static final String DBName ="posit";
-	public static final int DBVersion = 2;
+public class AcdiVocaDbHelper {
+
+
 	private static final String TAG = "DbHelper";
+
+	private static final boolean DBG = true;
+	private static final String DATABASE_NAME ="posit";
+	public static final int DATABASE_VERSION = 2;
+	public enum UserType {SUPER, OWNER, USER};
+
+	/**
+	 * Private helper class for managing Db operations.
+	 * @see http://www.screaming-penguin.com/node/7742
+	 */
+	private static class OpenHelper extends SQLiteOpenHelper {
+
+		OpenHelper(Context context) {
+			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		}
+
+		/*
+		 * Add new tables here.
+		 */
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+			db.execSQL(CREATE_FINDS_TABLE);
+			db.execSQL(CREATE_USER_TABLE);			
+			//db.execSQL("CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY, name TEXT)");
+
+			ContentValues values = new ContentValues();
+
+			values.put(USER_USERNAME, SUPERUSER_NAME);
+			values.put(USER_PASSWORD, SUPERUSER_PASSWORD);
+			addUser(db, values, UserType.SUPER);
+			values.put(USER_USERNAME, USER_DEFAULT_NAME);
+			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD);
+
+			addUser(db, values, UserType.USER);	
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			Log.w("Example", "Upgrading database, this will drop tables and recreate.");
+			//db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+			onCreate(db);
+		}
+	}
+
 
 	/**
 	 * The user table
 	 */
-	
 	public static final String USER_TABLE = "acdi_voca_users";
 	public static final String USER_ID = "_id";
 	public static final String USER_USERNAME = "username";
 	public static final String USER_PASSWORD = "password";
+	public static final String USER_DEFAULT_NAME = "b";      // For testing purposes
+	public static final String USER_DEFAULT_PASSWORD = "b";
+	public static final String SUPERUSER_NAME = "r";
+	public static final String SUPERUSER_PASSWORD = "a";
+	public static final String USER_TYPE_STRING = "UserType";
 
 	private static final String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS "
 		+ USER_TABLE + "(" + USER_ID + " integer primary key autoincrement, "
 		+ USER_USERNAME + " text, "
 		+ USER_PASSWORD + " text "
 		+ ")";
-	
+
 	/**
-	 *  The primary table
+	 *  The Beneficiary table
 	 */
 	public static final String FINDS_TABLE = "acdi_voca_finds";
 	public static final String FINDS_ID = "_id";
 	public static final String FINDS_DOSSIER = "dossier";
 	public static final String FINDS_PROJECT_ID = "project_id";
 	public static final String FINDS_NAME = "name";
-	
+
 	public static final String FINDS_FIRSTNAME = "firstname";
 	public static final String FINDS_LASTNAME = "lastname";
-	
+
 	public static final String FINDS_ADDRESS = "address";
 	public static final String FINDS_DOB = "dob";
 	public static final String FINDS_SEX = "sex";
 	public static final String FINDS_AGE = "age";
-	
+
 	public static final String FINDS_COMMUNE_ID = "commune_id";
-	public static final String FINDS_COMMUNE_SECTION_ID = "commune_section_id";
+	//	public static final String FINDS_COMMUNE_SECTION_ID = "commune_section_id";
 	public static final String FINDS_BENEFICIARY_CATEGORY = "beneficiary_category";
-	public static final String FINDS_BENEFICIARY_CATEGORY_ID = "beneficiary_category_id";
+	//	public static final String FINDS_BENEFICIARY_CATEGORY_ID = "beneficiary_category_id";
 	public static final String FINDS_HOUSEHOLD_SIZE = "household_size";
-	public static final String FINDS_INFANT_CATEGORY ="infant_category";
-	public static final String FINDS_MOTHER_CATEGORY = "mother_category";
-	
+	//	public static final String FINDS_INFANT_CATEGORY ="infant_category";
+	//	public static final String FINDS_MOTHER_CATEGORY = "mother_category";
+
 	public static final String FINDS_DISTRIBUTION_POST = "distribution_post";
+	public static final String FINDS_HEALTH_CENTER = "health_center";
 
 	public static final String FINDS_GUID = "guid";    // Globally unique ID
-	
+
 	//added to handle the agriculture registration form
 	public static final String MARKET_GARDEN_NAME = "vege_seed";
 	public static final String CEREAL_NAME = "cereal_seed";
@@ -103,23 +150,23 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	public static final String FINDS_TOOL_CATAGORY = "tools";
 	public static final String FINDS_UNIT = "unit";
 
-	
-	/** Commune table */
-	
-	public static final String COMMUNE_TABLE = "commune";
-	public static final String COMMUNE_ID = "id";
-	public static final String COMMUNE_NAME = "commune";
-	public static final String COMMUNE_ABBR = "comm_abbrev";
-	
-	/** Commune section table */
-	
-	public static final String COMMUNE_SECTION_TABLE = "commune_section";
-	public static final String COMMUNE_SECTION_ID = "id";
-	public static final String COMMUNE_SECTION_NAME = "commune_section";
-	public static final String COMMUNE_SECTION_ABBR = "comm_sect_abbrev";
-	public static final String COMMUNE_SECTION_COMMUNE_ID = "commune_id";
-	
-	
+
+//	/** Commune table */
+//
+//	public static final String COMMUNE_TABLE = "commune";
+//	public static final String COMMUNE_ID = "id";
+//	public static final String COMMUNE_NAME = "commune";
+//	public static final String COMMUNE_ABBR = "comm_abbrev";
+//
+//	/** Commune section table */
+//
+//	public static final String COMMUNE_SECTION_TABLE = "commune_section";
+//	public static final String COMMUNE_SECTION_ID = "id";
+//	public static final String COMMUNE_SECTION_NAME = "commune_section";
+//	public static final String COMMUNE_SECTION_ABBR = "comm_sect_abbrev";
+//	public static final String COMMUNE_SECTION_COMMUNE_ID = "commune_id";
+
+
 	public static final String FINDS_DESCRIPTION = "description";
 	public static final String FINDS_LATITUDE = "latitude";
 	public static final String FINDS_LONGITUDE = "longitude";
@@ -138,13 +185,13 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	public static final String WHERE_NOT_DELETED = " " + FINDS_DELETED + " != " + DELETE_FIND + " ";
 	public static final String DATETIME_NOW = "`datetime('now')`";
 
-//	public static final String SYNC_HISTORY_TABLE = "sync_history";
+	//	public static final String SYNC_HISTORY_TABLE = "sync_history";
 	public static final String FINDS_HISTORY_TABLE = "acdi_voca_finds_history";
-//	public static final String SYNC_COLUMN_SERVER = "server";
-//	public static final String SYNC_ID = "_id";
+	//	public static final String SYNC_COLUMN_SERVER = "server";
+	//	public static final String SYNC_ID = "_id";
 	public static final String HISTORY_ID = "_id" ;
 
-	
+
 	// The following two arrays go together to form a <DB value, UI View> pair
 	// except for the first DB value, which is just a filler.
 	//	 GUID commented out so that in the list of finds the ID is no longer displayed
@@ -157,42 +204,47 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		FINDS_FIRSTNAME,
 		FINDS_DOB,
 		FINDS_SEX,
-		FINDS_AGE,
+		//		FINDS_AGE,
 		FINDS_HOUSEHOLD_SIZE,
-		FINDS_MOTHER_CATEGORY,
-		FINDS_INFANT_CATEGORY,
-		COMMUNE_NAME,
-		COMMUNE_SECTION_NAME
-//		FINDS_DESCRIPTION,
-//		FINDS_LATITUDE,
-//		FINDS_LONGITUDE,
-//		FINDS_SYNCED, //,
-//		FINDS_GUID,  // Bogus but you need some field in the table to go with Thumbnail
-//		FINDS_GUID   //  Bogus, but SimpleCursorAdapter needs it
+		FINDS_BENEFICIARY_CATEGORY,
+		//		FINDS_MOTHER_CATEGORY,
+		//		FINDS_INFANT_CATEGORY,
+		FINDS_HEALTH_CENTER,
+		FINDS_DISTRIBUTION_POST
+		//		COMMUNE_NAME,
+		//		COMMUNE_SECTION_NAME
+		//		FINDS_DESCRIPTION,
+		//		FINDS_LATITUDE,
+		//		FINDS_LONGITUDE,
+		//		FINDS_SYNCED, //,
+		//		FINDS_GUID,  // Bogus but you need some field in the table to go with Thumbnail
+		//		FINDS_GUID   //  Bogus, but SimpleCursorAdapter needs it
 	};
 
 	public static final int[] list_row_views = {
 		R.id.row_id,		    
 		R.id.dossierText,
-//		R.id.idNumberText,
+		//		R.id.idNumberText,
 		R.id.lastname_field, 
 		R.id.firstname_field,
 		R.id.datepicker,
 		R.id.femaleRadio,
-		R.id.ageEdit,
+		//		R.id.ageEdit,
 		R.id.inhomeEdit,
 		R.id.expectingRadio,
-		R.id.malnourishedRadio,
-		R.id.communeSpinner,
-		R.id.commune_sectionSpinner
-//		R.id.description_id,
-//		R.id.latitude_id,
-//		R.id.longitude_id,
-//		R.id.status, //,
-//		R.id.num_photos,
-//		R.id.find_image     // Thumbnail in ListFindsActivity
+		//		R.id.malnourishedRadio,
+		R.id.healthcenterSpinner,
+		R.id.distributionSpinner
+		//		R.id.communeSpinner,
+		//		R.id.commune_sectionSpinner
+		//		R.id.description_id,
+		//		R.id.latitude_id,
+		//		R.id.longitude_id,
+		//		R.id.status, //,
+		//		R.id.num_photos,
+		//		R.id.find_image     // Thumbnail in ListFindsActivity
 	};
-	
+
 
 	/*
 	 * Finds table creation sql statement. 
@@ -211,29 +263,30 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		+ FINDS_AGE + " text, "
 		+ FINDS_HOUSEHOLD_SIZE + " text, "
 		+ FINDS_BENEFICIARY_CATEGORY + " text, "
-		+ FINDS_MOTHER_CATEGORY + " text, "
-		+ FINDS_INFANT_CATEGORY + " text, "
-		+ COMMUNE_NAME + " text, "
-		+ COMMUNE_ABBR + " text, "
-		+ FINDS_DISTRIBUTION_POST + " text, "
-		+ COMMUNE_SECTION_NAME + " text, "
-		+ COMMUNE_SECTION_ABBR + " text "
-//		+ FINDS_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + "), "
-//		+ FINDS_COMMUNE_SECTION_ID + " references " + COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + ")" 
+		//		+ FINDS_MOTHER_CATEGORY + " text, "
+		//		+ FINDS_INFANT_CATEGORY + " text, "
+		//		+ COMMUNE_NAME + " text, "
+		//		+ COMMUNE_ABBR + " text, "
+		+ FINDS_HEALTH_CENTER + " text, "
+		+ FINDS_DISTRIBUTION_POST + " text "
+		//		+ COMMUNE_SECTION_NAME + " text, "
+		//		+ COMMUNE_SECTION_ABBR + " text "
+		//		+ FINDS_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + "), "
+		//		+ FINDS_COMMUNE_SECTION_ID + " references " + COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + ")" 
 		+ ");";
-	
-	private static final String CREATE_COMMUNE_TABLE = "CREATE TABLE IF NOT EXISTS "
-		+ COMMUNE_TABLE + "(" + COMMUNE_ID + " integer primary key autoincrement, "
-		+ COMMUNE_NAME + " text, "
-		+ COMMUNE_ABBR + " text, "
-		+ ")";
-	
-	private static final String CREATE_COMMUNE_SECTION_TABLE = "CREATE TABLE IF NOT EXISTS "
-		+ COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + " integer primary key autoincrement, "
-		+ COMMUNE_SECTION_NAME + " text, "
-		+ COMMUNE_SECTION_ABBR + " text, "
-		+ COMMUNE_SECTION_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + ") "
-		+ ")";
+
+//	private static final String CREATE_COMMUNE_TABLE = "CREATE TABLE IF NOT EXISTS "
+//		+ COMMUNE_TABLE + "(" + COMMUNE_ID + " integer primary key autoincrement, "
+//		+ COMMUNE_NAME + " text, "
+//		+ COMMUNE_ABBR + " text, "
+//		+ ")";
+//
+//	private static final String CREATE_COMMUNE_SECTION_TABLE = "CREATE TABLE IF NOT EXISTS "
+//		+ COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + " integer primary key autoincrement, "
+//		+ COMMUNE_SECTION_NAME + " text, "
+//		+ COMMUNE_SECTION_ABBR + " text, "
+//		+ COMMUNE_SECTION_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + ") "
+//		+ ")";
 	/*
 	 * Keeps track of create, update, and delete actions on Finds.
 	 */
@@ -242,9 +295,9 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		+ FINDS_HISTORY_TABLE + "("
 		+ HISTORY_ID + " integer primary key autoincrement,"
 		+ FINDS_TIME + " timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-//		+ FINDS_PROJECT_ID + " integer DEFAULT 0,"
+		//		+ FINDS_PROJECT_ID + " integer DEFAULT 0,"
 		+ FINDS_GUID + " varchar(50) NOT NULL,"
-//		+ FINDS_ACTION + " varchar(20) NOT NULL"
+		//		+ FINDS_ACTION + " varchar(20) NOT NULL"
 		+ ")";
 	/*
 	 * Keeps track of sync actions between client (phone) and serve
@@ -253,73 +306,98 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		"UPDATE " + FINDS_TABLE + " SET " 
 		+ FINDS_MODIFY_TIME + " = " 
 		+ " datetime('now') ";
-	
-	private Context mContext;   // The Activity
+
+	// Fields for reading the beneficiaries.txt file
+	private static final int FIELD_DOSSIER = 0;
+	private static final int FIELD_LASTNAME = 1;
+	private static final int FIELD_FIRSTNAME = 2;
+	private static final int FIELD_SECTION = 3;
+	private static final int FIELD_LOCALITY = 4;
+	private static final int FIELD_ENTRY_DATE = 5;
+	private static final int FIELD_BIRTH_DATE = 6;
+	private static final int FIELD_SEX = 7;
+	private static final int FIELD_CATEGORY = 8;
+	private static final int FIELD_DISTRIBUTION_POST = 9;
+	private static final String COMMA= ",";
+
+
+	private static Context mContext;   // The Activity
 	private SQLiteDatabase mDb;  // Pointer to the DB	
-  
+
+	
+	/**
+	 * Constructor just saves and opens the Db. The Db
+	 * is closed in the public methods.
+	 * @param context
+	 */
 	public AcdiVocaDbHelper(Context context) {
-		super(context, DBName, null, DBVersion);
-		mDb = getWritableDatabase();
-		onCreate(mDb);
-		//mDb = getWritableDatabase();
 		this.mContext= context;
-		mDb.close();
-	}
-	
-
-	/* (non-Javadoc)
-	 * @see android.database.sqlite.SQLiteOpenHelper#close()
-	 */
-	@Override
-	public synchronized void close() {
-		// TODO Auto-generated method stub
-		super.close();
-		mDb.close();
-	}
-
-
- 
-	/**
-	 * This method is called only when the DB is first created.
-	 */
-	@Override
-	public void onCreate(SQLiteDatabase db) throws SQLException {
-		db.execSQL(CREATE_FINDS_TABLE);
-		db.execSQL(CREATE_USER_TABLE);
-		ContentValues values = new ContentValues();
-		values.put(this.USER_USERNAME, "r");
-		values.put(this.USER_PASSWORD, "a");
-		long rowId = db.insert(USER_TABLE, null, values);
-		Log.i(TAG, "addSuperUser, rowId=" + rowId);
-		//this.addSuperUser(values);	
+		OpenHelper openHelper = new OpenHelper(this.mContext);
+		this.mDb = openHelper.getWritableDatabase();
 	}
 
 	/**
-	 * This method is called when a new Db is installed to create the superuser.
-	 * @param values contains the key/value pairs for each Db column,
-	 * @return the rowId of the new insert or -1 in case of error
+	 * Insert a new user into the USER_TABLE.  Will not insert duplicate users.
+	 * @param values the key/value pairs for each Db column.
+	 * @param userType the type of user, either SUPER or USER
+	 * @return true if the insertion succeeds and false otherwise
 	 */
-	public void addSuperUser(ContentValues values) {
-		//mDb = getWritableDatabase();  // Either create the DB or open it.
-//		long rowId = mDb.insert(USER_TABLE, null, values);
-//		Log.i(TAG, "addSuperUser, rowId=" + rowId);
-		//mDb.close();
+	public boolean addUser(ContentValues values, UserType userType) {
+		//		mDb = getWritableDatabase();
+		boolean result = addUser(mDb, values, userType);
+		//		mDb.close();
+		return result;
 	}
-	
-	
+
+
+	/**
+	 * Helper method to insert a new user into the USER_TABLE
+	 * @param db the previously open database
+	 * @param values  the attribute/value pairs to insert into the USER_TABLE
+	 * @param the type of user, SUPER or USER.
+	 */
+	private static boolean addUser(SQLiteDatabase db, ContentValues values, UserType userType) {
+		String username = values.getAsString(USER_USERNAME);
+		String password = values.getAsString(USER_PASSWORD);
+
+		// Check against duplicates
+		String[] columns = null; //{ USER_PASSWORD };
+		Cursor c = db.query(USER_TABLE, columns, 
+				USER_USERNAME + "="+ "'" + username + "'" ,
+				//+ " and " + USER_PASSWORD + "=" + "'" + password + "'" , 
+				null, null, null, null);
+		Log.i(TAG, "Cursor size = " + c.getCount());
+		if (c.getCount() == 0) {
+			long rowId = db.insert(USER_TABLE, null, values);
+			//mDb.close();
+			Log.i(TAG, "addUser " + username + "at rowId=" + rowId);
+			return true;
+		}	
+		return false;
+	}
+
+
 	/**
 	 * Returns true iff a row containing username and password is found
 	 * @param username
 	 * @param password
+	 * @param userType is an enum that defines whether this is a regular or super user.
 	 * @return
 	 */
-	public boolean authenicateUser(String username, String password) {
-		mDb = getReadableDatabase();  // Either open or create the DB    	
+	public boolean authenicateUser(String username, String password, UserType userType) {
+		if (userType.equals(UserType.SUPER)) {
+			if (!username.equals(SUPERUSER_NAME) ||  !password.equals(SUPERUSER_PASSWORD)) {
+				Toast.makeText(mContext,"Sorry you must be SUPER USER to do this.", Toast.LENGTH_SHORT);
+				return false;
+			}
+		}
+		//		mDb = getReadableDatabase();  // Either open or create the DB    	
 		String[] columns = { USER_PASSWORD };
 		Cursor c = mDb.query(USER_TABLE, columns, 
 				USER_USERNAME + "="+ "'" + username + "'" + 
 				" and " + USER_PASSWORD + "=" + "'" + password + "'" , null, null, null, null);
 		c.moveToFirst();
+		Log.i(TAG, "Cursor size = " + c.getCount());
 		boolean result;
 		if (c.isAfterLast()) 
 			result =  false;
@@ -330,73 +408,84 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 			values = this.getContentValuesFromRow(c);
 		c.close();
 		mDb.close();
+		//dumpUsers();
 		return result;
 	}
-	
-	
-	
-	/**
-	 * This method is called when the DB needs to be upgraded -- not
-	 *   sure when that is??
-	 */
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if (DBG) Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-				+ newVersion + ", which will destroy all old data");
-		db.execSQL("DROP TABLE IF EXISTS " + FINDS_TABLE);
-		onCreate(db);	
-	}
 
-	
-	/**
-	 * Invoked to records an entry in the Finds history log, each time a 
-	 * Find is created, updated or deleted
-	 * @param guid the Find's globally unique Id
-	 * @param action the action taken--update, delete, create
-	 * @return true if the insertion was successful
-	 */
-	public boolean logFindHistory (String guId, String action) {
-		mDb = getWritableDatabase();
-		ContentValues values = new ContentValues();
-		values.put(FINDS_GUID, guId);
-		values.put(FINDS_ACTION, action);   
-		long result = -1;
-		result = mDb.insert(FINDS_HISTORY_TABLE, null, values);
-		Log.i(TAG, "logFindHistory result = " + result + " for guid=" + guId + " " + action);
-		mDb.close();
-		return result != -1;
-	}
-
-
-	/**
-	 * Looks up a Find by its guId
-	 * @param guId the find's globally unique Id
-	 * @return
-	 */
-	public boolean containsFind(String guId) {
-		mDb = getWritableDatabase();  // Either create or open the DB.
-		Cursor c = mDb.rawQuery("Select * from " + FINDS_TABLE + 
-				" where " + FINDS_GUID + " = \"" + guId +"\" AND " + WHERE_NOT_DELETED, null);
-		boolean result = c.getCount() > 0;
+	public void dumpUsers() {
+		Log.i(TAG, "Dumping user table");
+		//		mDb = getReadableDatabase();
+		Cursor c = mDb.query(USER_TABLE, null, null, null, null, null, null);
+		c.moveToFirst();
+		while (!c.isAfterLast()) {
+			Log.i(TAG,this.getContentValuesFromRow(c).toString());
+			c.moveToNext();
+		}
 		c.close();
 		mDb.close();
-		return result;
 	}
-	
+
 	/**
-	 * This method is called from a Find object to add its data to DB.
+	 * This method is called from a Beneficiary object to add its data to DB.
 	 * @param values contains the key/value pairs for each Db column,
 	 * @return the rowId of the new insert or -1 in case of error
 	 */
-	public long addNewFind(ContentValues values) {
-		mDb = getWritableDatabase();  // Either create the DB or open it.
+	public long addNewBeneficiary(ContentValues values) {
+		//		mDb = getWritableDatabase();  // Either create the DB or open it.
 		long rowId = mDb.insert(FINDS_TABLE, null, values);
 		Log.i(TAG, "addNewFind, rowId=" + rowId);
 		mDb.close();
 		return rowId;
 	}
 
-	
+	/**
+	 * Inserts an array of beneficiaries read from AcdiVoca Db.
+	 * NOTE:  The Android date picker stores months as 0..11, so
+	 *  we have to adjust dates.
+	 * @param beneficiaries
+	 * @return
+	 */
+	public int addNewBeneficiaries(String[] beneficiaries) {
+		Log.i(TAG, "Adding " + beneficiaries.length + " beneficiaries to Db.");
+		String fields[] = null;
+		ContentValues values = new ContentValues();
+		int count = 0;
+
+		for (int k = 0; k < beneficiaries.length; k++) {
+			//for (int k = 0; k < 100; k++) {
+
+			fields = beneficiaries[k].split(COMMA);
+			values.put(AcdiVocaDbHelper.FINDS_DOSSIER,fields[FIELD_DOSSIER]);
+			values.put(AcdiVocaDbHelper.FINDS_LASTNAME, fields[FIELD_LASTNAME]);
+			values.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, fields[FIELD_FIRSTNAME]);
+			//				values.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, fields[FIELD_SECTION]);
+			values.put(AcdiVocaDbHelper.FINDS_ADDRESS, fields[FIELD_LOCALITY]);
+			String adjustedDate = adjustDateForDatePicker(fields[FIELD_BIRTH_DATE]);
+			values.put(AcdiVocaDbHelper.FINDS_DOB, adjustedDate);
+			values.put(AcdiVocaDbHelper.FINDS_SEX, fields[FIELD_SEX]);         
+			values.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, fields[FIELD_CATEGORY]);
+			values.put(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST, fields[FIELD_DISTRIBUTION_POST]);
+
+			long rowId = mDb.insert(FINDS_TABLE, null, values);
+			if (rowId != -1) 
+				++count;
+
+			//addNewBeneficiary(values);
+		}
+		Log.i(TAG, "Inserted " + count + " Beneficiaries");
+		return count;
+	}
+
+	/**
+	 * The Android date picker stores dates as 0..11.
+	 * @param date
+	 * @return
+	 */
+	private String adjustDateForDatePicker(String date) {
+		String[] yrmonday = date.split("/");
+		return yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
+	}
+
 	/**
 	 * Updates a Find using it primary key, id. This should increment its
 	 *  revision number.
@@ -408,12 +497,12 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		boolean success = false;
 		if (args == null)
 			return false;
-		mDb = getWritableDatabase();  // Either create or open the DB.
+		//		mDb = getWritableDatabase();  // Either create or open the DB.
 
 		try {
 			Log.i(TAG, "updateFind id = " + id);
 
-			
+
 			// Update the Finds table with the new data
 			success = mDb.update(FINDS_TABLE, args, FINDS_ID + "=" + id, null) > 0;
 			Log.i(TAG,"updateFind result = "+success);  
@@ -424,93 +513,13 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		}
 		return success;
 	}
-	
-	/**
-	 * Updates a Find using its guId, primarily for Finds received from the
-	 *  server.
-	 * @param guId  the Find's globally unique Id
-	 * @param args   The key/value pairs for each column of the table.
-	 * @return
-	 */
-	public boolean updateFind(String guId, ContentValues args, List<ContentValues> images ) {
-		mDb = getWritableDatabase();  // Either create or open the DB.
-		boolean success = false;
-		if (args != null) {
-			if (DBG) Log.i(TAG, "updateFind guId = "+guId);
-
-			// Select the revision number and increment it
-			Cursor c = mDb.rawQuery("SELECT " + FINDS_REVISION + " FROM " + FINDS_TABLE
-					+ " WHERE " + FINDS_GUID + "='" + guId + "'", null);
-			c.moveToFirst();
-			int revision = c.getInt(c.getColumnIndex(FINDS_REVISION));
-			++revision;
-			c.close();
-
-			args.put(FINDS_REVISION, revision);
-						
-			// Update the Finds table with new data
-			success = mDb.update(FINDS_TABLE, args, FINDS_GUID + "=\"" + guId + "\"", null) > 0;
-			if (DBG) Log.i(TAG,"updateFind success = "  + success);
-
-			// Timestamp the time_modify field in the Find table (by default)
-			mDb.execSQL(TIMESTAMP_FIND_UPDATE 
-  			+ " WHERE " + FINDS_GUID + " = '" + guId + "'");     
-		}
-
-		mDb.close();
-		return success;
-	}
-
-
-	/**
-	 * This method is called from a Find object, passing its ID. It marks the item
-	 * 'deleted' in the Finds table. (Remember to modify all Select queries to include
-	 * the "where deleted != '1'" clause.)
-	 *   
-	 *   We first get the guId so we can log the deletion in the find_history table.
-	 * @param mRowId
-	 * @return
-	 */
-	public boolean deleteFind(long id) {
-		ContentValues content = new ContentValues();
-		content.put(FINDS_DELETED, DELETE_FIND);
-		boolean success = updateFind (id, content);  // Just use updateFind()
-		String guId = getGuIdFromRowId(id);
-
-		// If successful, timestamp this action in FindsHistory table
-		if (success) {   
-			Log.i(TAG, "delete find update log, guid= " + guId);
-			success = logFindHistory(guId, "delete");
-		}
-		
-		return success;
-	}
-	
-	/**
-	 * This method is called from ListActivity to delete all the finds currently
-	 *  in the DB. It marks them all "deleted" and deletes their images.
-	 * @return
-	 */
-	public boolean deleteAllFinds() {
-		mDb = getWritableDatabase();
-		ContentValues content = new ContentValues();
-		content.put(FINDS_DELETED, DELETE_FIND);
-
-		boolean success = mDb.update(FINDS_TABLE, content, null, null) > 0;
-		mDb.close();
-		if (success)
-			Log.i(TAG, "deleteAllFinds marked finds deleted ... deleting photos");
-		//			return deleteAllPhotos();
-		return success;
-	}
-
 	/** 
 	 * SUSPECT:  PositDbHelper should not return a Cursor -- causes memory leaks: 
 	 * Returns a Cursor with rows for all Finds of a given project.
 	 * @return
 	 */
 	public Cursor fetchFindsByProjectId(int project_id, String order_by) {
-		mDb = getReadableDatabase(); // Either open or create the DB.
+		//		mDb = getReadableDatabase(); // Either open or create the DB.
 		Cursor c = mDb.query(FINDS_TABLE,null, 
 				FINDS_PROJECT_ID +"="+project_id, null, null, null, order_by);
 		Log.i(TAG,"fetchFindsByProjectId " + FINDS_PROJECT_ID + "=" + project_id + " count=" + c.getCount());
@@ -525,7 +534,7 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	 * @return
 	 */
 	public ContentValues fetchBeneficiaryByDossier(String dossier, String[] columns) {
-		mDb = getReadableDatabase();  // Either open or create the DB    	
+		//		mDb = getReadableDatabase();  // Either open or create the DB    	
 		String[] selectionArgs = null;
 		String groupBy = null, having = null, orderBy = null;
 		Cursor c = mDb.query(FINDS_TABLE, columns, FINDS_DOSSIER+"= '"+dossier + "'", selectionArgs, groupBy, having, orderBy);
@@ -537,62 +546,46 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		mDb.close();
 		return values;
 	}
-	
+
 	/** 
 	 * Returns an array of dossier numbers for all beneficiaries.
-	 * @return
+	 * @distribSite the Distribution Site of the beneficiaries
+	 * @return an array of N strings or null if no beneficiaries are found
 	 */
 	public String[] fetchAllBeneficiaryIdsByDistributionSite(String distribSite) {
-		mDb = getReadableDatabase(); // Either open or create the DB.
+		//		mDb = getReadableDatabase(); // Either open or create the DB.
 		Cursor c = mDb.query(FINDS_TABLE,null, 
 				FINDS_DISTRIBUTION_POST + "=" + "'" + distribSite + "'" , null, null, null,null);
 		Log.i(TAG,"fetchAllBeneficiaryIds count=" + c.getCount());
-		
+
 		mDb.close();
-		String dossiers[] = new String[c.getCount()];
-		c.moveToFirst();
-		int k = 0;
-		while (!c.isAfterLast()) {
-			dossiers[k] = c.getString(c.getColumnIndex(AcdiVocaDbHelper.FINDS_DOSSIER));
-			c.moveToNext();
-			++k;
+		String dossiers[] = null;
+		if (c.getCount() != 0) {
+			dossiers = new String[c.getCount()];
+			c.moveToFirst();
+			int k = 0;
+			while (!c.isAfterLast()) {
+				dossiers[k] = c.getString(c.getColumnIndex(AcdiVocaDbHelper.FINDS_DOSSIER));
+				c.moveToNext();
+				++k;
+			}
 		}
 		c.close();
 		return dossiers;
 	}
-	
-	/**
-	 * Returns key/value pairs for selected columns with row selected by guId 
-	 * @param guId the Find's globally unique Id
-	 * @param columns an array of column names, can be left null
-	 * @return
-	 */
-	public ContentValues fetchFindDataByGuId(String guId, String[] columns) {
-		mDb = getReadableDatabase();  // Either open or create the DB    	
-		String[] selectionArgs = null;
-		String groupBy = null, having = null, orderBy = null;
-		Cursor c = mDb.query(FINDS_TABLE, columns, 
-				WHERE_NOT_DELETED + " AND " + FINDS_GUID+"="+guId, selectionArgs, groupBy, having, orderBy);
-		c.moveToFirst();
-		ContentValues values = null;
-		if (c.getCount() != 0)
-			values = this.getContentValuesFromRow(c);
-		c.close();
-		mDb.close();
-		return values;
-	}
-	
-	public ContentValues fetchAllCommunes() {
-		mDb = getReadableDatabase();
-		Cursor c = mDb.query(COMMUNE_TABLE, null, null, null, null, null, null);
-		c.moveToFirst();
-		ContentValues values = null;
-		if (c.getCount()!=0)
-			values = this.getContentValuesFromRow(c);
-		c.close();
-		mDb.close();
-		return values;
-	}
+
+
+//	public ContentValues fetchAllCommunes() {
+//		//		mDb = getReadableDatabase();
+//		Cursor c = mDb.query(COMMUNE_TABLE, null, null, null, null, null, null);
+//		c.moveToFirst();
+//		ContentValues values = null;
+//		if (c.getCount()!=0)
+//			values = this.getContentValuesFromRow(c);
+//		c.close();
+//		mDb.close();
+//		return values;
+//	}
 	/**
 	 * Returns selected columns for a find by id.
 	 * @param id the Find's id
@@ -600,13 +593,13 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 	 * @return
 	 */
 	public ContentValues fetchFindDataById(long id, String[] columns) {
-		mDb = getReadableDatabase();  // Either open or create the DB    	
+		//		mDb = getReadableDatabase();  // Either open or create the DB    	
 
 		String[] selectionArgs = null;
 		String groupBy = null, having = null, orderBy = null;
 		Cursor c = mDb.query(FINDS_TABLE, columns, 
 				FINDS_ID+"="+id, selectionArgs, groupBy, having, orderBy);
-				//WHERE_NOT_DELETED + " AND " + FINDS_ID+"="+id, selectionArgs, groupBy, having, orderBy);
+		//WHERE_NOT_DELETED + " AND " + FINDS_ID+"="+id, selectionArgs, groupBy, having, orderBy);
 		c.moveToFirst();
 		ContentValues values = null;
 		if (c.getCount() != 0)
@@ -615,44 +608,6 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		mDb.close();
 		return values;
 	}
-
-
-	/**
-	 * Utility method to retrieve a Find's rowId from it's guId
-	 * @param guId the globally unique ID
-	 * @return the _id for this Find in the Db
-	 */
-	public long getRowIdFromGuId(String guId) {
-		mDb = getReadableDatabase();
-		long id = 0;
-		Cursor c = mDb.query(FINDS_TABLE, null, FINDS_GUID + "=\"" + guId+"\"", null, null, null, null);
-		if ( c.getCount() != 0) {
-			c.moveToFirst();
-			id = (c.getLong(c.getColumnIndexOrThrow(FINDS_ID)));
-		}
-		c.close();
-		mDb.close();
-		return id;
-	}
-	
-	/**
-	 * Utility method to retrieve a find's guId from it's rowId
-	 * @param rowId, the _id for this Find
-	 * @return the guId, globally unique Id
-	 */
-	public String getGuIdFromRowId(long rowId) {
-		mDb = getReadableDatabase();
-		String guId = "";
-		Cursor c = mDb.query(FINDS_TABLE, null, FINDS_ID + "=" + rowId, null, null, null, null);
-		if ( c.getCount() != 0) {
-			c.moveToFirst();
-			guId =  (c.getString(c.getColumnIndexOrThrow(FINDS_GUID)));
-		}
-		c.close();
-		mDb.close();
-		return guId;
-	}
-	
 	/**
 	 * This helper method is passed a cursor, which points to a row of the DB.
 	 *  It extracts the names of the columns and the values in the columns,
@@ -664,39 +619,12 @@ public class AcdiVocaDbHelper extends SQLiteOpenHelper {
 		ContentValues values = new ContentValues();
 		c.moveToFirst();
 		for (String column : c.getColumnNames()) {
-			
-				if (DBG) Log.i(TAG, "getContentValuesFromRow, Column " + column + " = " + 
+
+			if (DBG) Log.i(TAG, "getContentValuesFromRow, Column " + column + " = " + 
 					c.getString(c.getColumnIndexOrThrow(column)));
 			values.put(column, c.getString(c.getColumnIndexOrThrow(column)));
 		}
 		return values;
 	}
 
-	/**
-	 * This method is called from a Find object, passing its ID. It marks the item
-	 * 'deleted' in the Finds table. (Remember to modify all Select queries to include
-	 * the "where deleted != '1'" clause.)
-	 *   
-	 *   We first get the guId so we can log the deletion in the find_history table.
-	 * @param mRowId
-	 * @return
-	 */
-	public boolean deleteFind(String guid) {
-		ContentValues content = new ContentValues();
-		content.put(FINDS_DELETED, DELETE_FIND);
-		long id = getRowIdFromGuId(guid); 
-		boolean success = updateFind (id, content);  // Just use updateFind()
-
-		// If successful, timestamp this action in FindsHistory table
-		if (success) {   
-			Log.i(TAG, "delete find update log, guid= \"" + guid+"\"");
-			success = logFindHistory(guid, "delete");
-		}
-
-		if (success) {
-			Log.i(TAG, "deleteFind " + id + " deleted photos");
-		}
-		
-		return success;
-	}
 }

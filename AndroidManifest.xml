@@ -62,8 +62,6 @@
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity" 
 			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />						
-			android:launchMode="singleTop" 
-			/>
 					
 		<activity android:name="org.hfoss.posit.android.api.SettingsActivity" />
 		
@@ -75,4 +73,3 @@
 		<activity android:name=".SyncActivity" android:configChanges="orientation|keyboardHidden" />
 	</application>
 </manifest>
-	

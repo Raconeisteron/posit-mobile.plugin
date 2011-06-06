@@ -28,7 +28,9 @@ import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaNewAgriActivity;
+import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
 
@@ -73,7 +75,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	public static final int LOGIN_SUCCESSFUL = 4;
 	private static final int REGISTRATION_ACTIVITY = 11;
 
-	private static final int ACTION_LOGIN = 0;
 
 	private SharedPreferences mSharedPrefs;
 	private Editor mSpEditor;
@@ -115,7 +116,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
 		if (loginActivity != null) {
 			intent.setClass(this, loginActivity);
-			this.startActivityForResult(intent, ACTION_LOGIN);
+			intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.USER.ordinal());
+			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 		}
 
 //		// Give the user the tutorial if they haven't yet had it. 
@@ -265,7 +267,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				Log.i(TAG,"Login canceled");
 				finish();
 			}
-		case ACTION_LOGIN:
+		case LoginActivity.ACTION_LOGIN:
 			if (resultCode == RESULT_OK) {
 				Toast.makeText(this, "Thank you", Toast.LENGTH_LONG).show();
 				break;

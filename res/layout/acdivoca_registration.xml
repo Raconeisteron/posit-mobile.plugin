@@ -21,7 +21,7 @@
 				
 			<EditText android:id="@+id/firstnameEdit"
 				android:hint="@string/firstname"
-				android:inputType="textCapSentences"
+				android:inputType="textCapWords"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="20px" android:layout_marginRight="30px" />
 
@@ -29,11 +29,12 @@
 				android:hint="@string/lastname"
 				android:layout_width="fill_parent" android:layout_marginRight="30px"
 				android:layout_marginLeft="20px" 
-				android:inputType="textCapSentences"
+				android:inputType="textCapWords"
 				android:layout_height="wrap_content" />
  				
 			<EditText android:id="@+id/addressEdit"
 				android:hint="@string/address"
+				android:inputType="textCapWords"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="20px" android:layout_marginRight="30px" />	
 				
@@ -52,6 +53,7 @@
 				android:layout_height="wrap_content">
 			</DatePicker>
 			
+<!--   Removed as Redundant elements
 			<EditText android:id="@+id/ageEdit" 
 				android:hint="@string/dob_age_hint"
 				android:visibility="gone"
@@ -81,6 +83,7 @@
 				android:layout_marginLeft="20px" android:layout_marginRight="30px"
 				android:entries="@+array/commune_section_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
+Removed redundant elements -->
 
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="horizontal" android:layout_width="wrap_content"
@@ -104,12 +107,7 @@
 					android:text="@string/Male" />
 			</RadioGroup>
 			</LinearLayout>
-<!--  	
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				android:orientation="horizontal" android:layout_width="wrap_content"
-				android:layout_height="fill_parent" android:layout_gravity="left" 
-				android:paddingTop="10dp" >
--->			
+		
 			<TextView android:text="@string/Number_of_people_in_home"
 				android:textColor="#ff0000" 
 				android:layout_marginLeft="10px" 
@@ -120,7 +118,6 @@
 				android:layout_marginLeft="30px" 
 				android:layout_height="wrap_content" android:paddingLeft="20px" 
 				android:minWidth ="48dp"/>
-<!--  			</LinearLayout> -->
 				
 			<TextView android:text="@string/Beneficiary_Category"
 				android:textColor="#ff0000" 
@@ -141,16 +138,7 @@
 					android:text="@string/Expecting" />
 				<RadioButton android:checked="false" android:id="@+id/nursingRadio"
 					android:text="@string/Nursing" />	
-			</RadioGroup>
-<!--  
-			</RadioGroup>
-			<TextView android:text="@string/Mother_Category"
-				android:textColor="#ffffff" android:layout_width="fill_parent"
-				android:layout_height="wrap_content" />
-			<RadioGroup android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:id="@+id/mothercategoryRadio">	
--->		
+			</RadioGroup>	
 			
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="vertical" android:layout_width="wrap_content"
@@ -167,6 +155,7 @@
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
+				
 			<Spinner android:id="@+id/healthcenterSpinner" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px"
 				android:entries="@+array/health_center_names"
@@ -176,6 +165,7 @@
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
+				
 			<Spinner android:id="@+id/distributionSpinner" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px"
 				android:entries="@+array/distribution_names"
