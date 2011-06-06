@@ -63,13 +63,16 @@ public class AcdiVocaDbHelper {
 		}
 
 		/*
-		 * Add new tables here.
+		 * Add new tables here. This version creates the default SUPER
+		 * user and a default non-super user.
 		 */
 		@Override
 		public void onCreate(SQLiteDatabase db) {
+			Log.i(TAG, "Creating database tables: " 
+					+ FINDS_TABLE + "," + USER_TABLE + "," + MESSAGE_TABLE);
 			db.execSQL(CREATE_FINDS_TABLE);
-			db.execSQL(CREATE_USER_TABLE);			
-			//db.execSQL("CREATE TABLE " + TABLE_NAME + " (id INTEGER PRIMARY KEY, name TEXT)");
+			db.execSQL(CREATE_USER_TABLE);	
+			db.execSQL(CREATE_MESSAGE_TABLE);
 
 			ContentValues values = new ContentValues();
 
@@ -82,9 +85,13 @@ public class AcdiVocaDbHelper {
 			addUser(db, values, UserType.USER);	
 		}
 
+		/**
+		 * Called when the Database requires upgrading to a new version. Not
+		 * sure how it works.
+		 */
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w("Example", "Upgrading database, this will drop tables and recreate.");
+			Log.i(TAG, "Upgrading database, this will drop tables and recreate.");
 			//db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
 			onCreate(db);
 		}
@@ -110,6 +117,28 @@ public class AcdiVocaDbHelper {
 		+ USER_PASSWORD + " text "
 		+ ")";
 
+	public static final String MESSAGE_TABLE = "sms_message_log";
+	public static final String MESSAGE_ID = "_id";
+	public static final String MESSAGE_BENEFICIARY_ID = "beneficiary_id";  // Row Id in Beneficiary table
+	public static final String MESSAGE_TEXT = "message";
+	public static final String MESSAGE_STATUS = "status"; 
+	public static final int MESSAGE_STATUS_PENDING = 0;
+	public static final int MESSAGE_STATUS_SENT = 1;
+	public static final int MESSAGE_STATUS_ACK = 2;
+	public static final String MESSAGE_CREATED_AT = "created_time";
+	public static final String MESSAGE_SENT_AT = "sent_time";
+	public static final String MESSAGE_ACK_AT = "acknowledged_time";
+	
+	private static final String CREATE_MESSAGE_TABLE = "CREATE TABLE IF NOT EXISTS "
+		+ MESSAGE_TABLE + "(" + MESSAGE_ID + " integer primary key autoincrement, "
+		+ MESSAGE_BENEFICIARY_ID + " integer DEFAULT 0, "  // Beneficiary's Row_id
+		+ MESSAGE_TEXT + " text, "
+		+ MESSAGE_STATUS + " integer default " + MESSAGE_STATUS_PENDING + ", "
+		+ MESSAGE_CREATED_AT + " timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+		+ MESSAGE_SENT_AT + " timestamp, "
+		+ MESSAGE_ACK_AT + " timestamp"
+		+ ")";
+	
 	/**
 	 *  The Beneficiary table
 	 */
@@ -366,11 +395,11 @@ public class AcdiVocaDbHelper {
 				USER_USERNAME + "="+ "'" + username + "'" ,
 				//+ " and " + USER_PASSWORD + "=" + "'" + password + "'" , 
 				null, null, null, null);
-		Log.i(TAG, "Cursor size = " + c.getCount());
+		//Log.i(TAG, "Cursor size = " + c.getCount());
 		if (c.getCount() == 0) {
 			long rowId = db.insert(USER_TABLE, null, values);
 			//mDb.close();
-			Log.i(TAG, "addUser " + username + "at rowId=" + rowId);
+			Log.i(TAG, "addUser " + username + " at rowId=" + rowId);
 			return true;
 		}	
 		return false;
@@ -472,6 +501,7 @@ public class AcdiVocaDbHelper {
 
 			//addNewBeneficiary(values);
 		}
+		mDb.close();
 		Log.i(TAG, "Inserted " + count + " Beneficiaries");
 		return count;
 	}
@@ -620,7 +650,8 @@ public class AcdiVocaDbHelper {
 		c.moveToFirst();
 		for (String column : c.getColumnNames()) {
 
-			if (DBG) Log.i(TAG, "getContentValuesFromRow, Column " + column + " = " + 
+			if (DBG && !column.equals(USER_PASSWORD)) 
+				Log.i(TAG, "getContentValuesFromRow, Column " + column + " = " + 
 					c.getString(c.getColumnIndexOrThrow(column)));
 			values.put(column, c.getString(c.getColumnIndexOrThrow(column)));
 		}

@@ -8,9 +8,11 @@
 	<string name="load_beneficiary_data">Import Beneficiary Data</string>
 	<string name="distribution_point">Point de distribution</string>
 	
-	<string name="list_beneficiary_label">Lis Benefisyè</string>
-	<string name="add_beneficiary_label">Ajoute Benefisyè</string>
-	<string name="update_beneficiary_label">Mete ajou Benefisyè</string>
+	<!--  Button Labels -->
+	<string name="list_beneficiary_label">Lis\nBenefisyè</string>
+	<string name="add_beneficiary_label">Nouveau\nBenefisyè</string>
+	<string name="update_beneficiary_label">Mete ajou\nBenefisyè</string>
+	<string name="new_agri_beneficiary_label">Nouveau\nAgricole</string>
 	
 	
     <string name="appHeader">Mobil Enskripsyon Sistèm</string>

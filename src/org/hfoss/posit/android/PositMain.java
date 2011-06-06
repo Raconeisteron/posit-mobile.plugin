@@ -125,7 +125,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 //			Intent i = new Intent(this, TutorialActivity.class);
 //			startActivity(i);
 //		} else { 
-			startPOSIT();
+//			startPOSIT();
 //		}
 
 //		Toast.makeText(this, "Server: "  + mSharedPrefs.getString("SERVER_ADDRESS", ""), Toast.LENGTH_SHORT).show();
@@ -183,10 +183,19 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				if (extraButton != null) {
 					extraButton.setOnClickListener(this);
 				}
-				
+			}
+
+			if (FindPluginManager.mExtraButtonLabel2 != null) {
+				final Button extraButton = (Button) findViewById(R.id.extraButton2);
+				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel2, "string", "org.hfoss.posit.android");
+				extraButton.setText(resid);
+				extraButton.setVisibility(View.VISIBLE);
+				if (extraButton != null) {
+					extraButton.setOnClickListener(this);
+				}
 			}
 			
-			((Button)findViewById(R.id.extraButton2)).setOnClickListener(this);
+			//((Button)findViewById(R.id.extraButton2)).setOnClickListener(this);
 			
 			final TextView version = (TextView) findViewById(R.id.version);
 			try {
@@ -211,14 +220,15 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG,"Resuming");
-	       //  For testing purposes we switch to Haitian creole
-//		String localePref = mSharedPrefs.getString("locale", "");
-//
-//        Locale locale = new Locale(localePref); 
-//        Locale.setDefault(locale);
-//        Configuration config = new Configuration();
-//        config.locale = locale;
-  //      getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+		String localePref = PreferenceManager.getDefaultSharedPreferences(this).getString("locale", "");
+		Log.i(TAG, "Locale = " + localePref);
+		Locale locale = new Locale(localePref); 
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+		getBaseContext().getResources().updateConfiguration(config, null);
+		
+		startPOSIT();
 	}
 
 	@Override
@@ -313,7 +323,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 
 			case R.id.extraButton2:
 				intent.setAction(Intent.ACTION_INSERT);
-				intent.setClass(this, AcdiVocaNewAgriActivity.class);
+				intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
 				startActivity(intent);
 				break;			
 			}

@@ -7,9 +7,12 @@
 	<string name="load_beneficiary_data">Import Beneficiary Data</string>
 	<string name="distribution_point">Distribution Point</string>
 	
+	<!--  Button Labels -->
+	
 	<string name="list_beneficiary_label">List\nBeneficiary</string>
-	<string name="add_beneficiary_label">Add\nBeneficiary</string>
+	<string name="add_beneficiary_label">New\nBeneficiary</string>
 	<string name="update_beneficiary_label">Update\nBeneficiary</string>
+	<string name="new_agri_beneficiary_label">New\nAgriculture</string>
 	
 	<string name="general_info">General Information</string>
 	<string name="mchn_info">MCHN Information</string>

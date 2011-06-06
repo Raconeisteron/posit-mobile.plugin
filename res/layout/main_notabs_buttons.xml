@@ -65,7 +65,7 @@
 					android:layout_width="wrap_content" 
 					android:layout_height="wrap_content" 
 					android:visibility="visible"
-					android:text="New\nAgriculture"/>	
+					android:text="Extra Button2"/>	
 			</LinearLayout>
 										
 		</LinearLayout>
