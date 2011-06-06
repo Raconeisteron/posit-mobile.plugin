@@ -15,12 +15,16 @@ public class FindActivityProvider {
 	public static Class<ListFindsActivity> getListFindsActivityClass(){
 		return FindPluginManager.getInstance().getListFindsActivityClass();
 	}
+	
+	public static Class<Activity> getLoginActivityClass(){
+		return FindPluginManager.getInstance().getLoginActivityClass();
+	}
 
 	public static Class<Activity> getExtraActivityClass(){
 		return FindPluginManager.getInstance().getExtraActivityClass();
 	}
 	
-	public static Class<Activity> getLoginActivityClass(){
-		return FindPluginManager.getInstance().getLoginActivityClass();
+	public static Class<Activity> getExtraActivityClass2(){
+		return FindPluginManager.getInstance().getExtraActivityClass2();
 	}
 }

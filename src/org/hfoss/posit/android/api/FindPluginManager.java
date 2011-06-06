@@ -41,6 +41,7 @@ public class FindPluginManager {
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	private Class<Activity> mExtraActivityClass = null;
+	private Class<Activity> mExtraActivityClass2 = null;
 	private Class<Activity> mLoginActivityClass = null;
 	
 	public static String mPreferences = null;  // Shared preferences XML for Settings
@@ -48,6 +49,7 @@ public class FindPluginManager {
 	public static String mAddButtonLabel = null;
 	public static String mListButtonLabel = null;
 	public static String mExtraButtonLabel = null;
+	public static String mExtraButtonLabel2 = null;
 
 	private FindPluginManager(Activity activity){
 		mMainActivity = activity;
@@ -82,12 +84,14 @@ public class FindPluginManager {
 					String findactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_activity_class").getTextContent();
 					String listfindsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("list_finds_activity_class").getTextContent();
 					String extra_activity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("extra_activity_class").getTextContent();
+					String extra_activity_name2 = plugin_nodes.item(ii).getAttributes().getNamedItem("extra_activity_class2").getTextContent();
 					String login_activity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("login_activity_class").getTextContent();
 
 					mMainIcon = plugin_nodes.item(ii).getAttributes().getNamedItem("main_icon").getTextContent();
 					mAddButtonLabel = plugin_nodes.item(ii).getAttributes().getNamedItem("main_add_button_label").getTextContent();
 					mListButtonLabel = plugin_nodes.item(ii).getAttributes().getNamedItem("main_list_button_label").getTextContent();
 					mExtraButtonLabel = plugin_nodes.item(ii).getAttributes().getNamedItem("main_extra_button_label").getTextContent();
+					mExtraButtonLabel2 = plugin_nodes.item(ii).getAttributes().getNamedItem("main_extra_button_label2").getTextContent();
 					mPreferences = plugin_nodes.item(ii).getAttributes().getNamedItem("preferences_xml").getTextContent();
 
 					@SuppressWarnings({ "rawtypes" })
@@ -99,8 +103,9 @@ public class FindPluginManager {
 
 					mFindActivityClass = (Class<FindActivity>)Class.forName(package_name + "." + findactivity_name);
 					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(package_name + "." + listfindsactivity_name);
-					mExtraActivityClass = (Class<Activity>)Class.forName(package_name + "." + extra_activity_name);
 					mLoginActivityClass = (Class<Activity>)Class.forName(package_name + "." + login_activity_name);
+					mExtraActivityClass = (Class<Activity>)Class.forName(package_name + "." + extra_activity_name);
+					mExtraActivityClass2 = (Class<Activity>)Class.forName(package_name + "." + extra_activity_name2);
 						
 					Log.i(TAG,"Loading preferences for Settings Activity");
 					SettingsActivity.loadPluginPreferences(mMainActivity, mPreferences);
@@ -141,8 +146,14 @@ public class FindPluginManager {
 	public void setExtraActivityClass(Class<Activity> extraActivityClass) {
 		mExtraActivityClass = extraActivityClass;
 	}
-	public ArrayList<Plugin> getPlugins(){
-		return plugins;
+	
+
+	public Class<Activity> getExtraActivityClass2() {
+		return mExtraActivityClass2;
+	}
+
+	public void setExtraActivityClass2(Class<Activity> extraActivityClass2) {
+		mExtraActivityClass2 = extraActivityClass2;
 	}
 
 	public Class<Activity> getLoginActivityClass() {
@@ -152,6 +163,12 @@ public class FindPluginManager {
 	public void setLoginActivityClass(Class<Activity> loginActivityClass) {
 		mLoginActivityClass = loginActivityClass;
 	}
+	
+	
+	public ArrayList<Plugin> getPlugins(){
+		return plugins;
+	}
+
 	
 	
 	

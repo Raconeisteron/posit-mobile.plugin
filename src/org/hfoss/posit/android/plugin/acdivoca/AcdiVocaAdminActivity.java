@@ -36,10 +36,14 @@ import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.SettingsActivity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,12 +64,14 @@ public class AcdiVocaAdminActivity extends Activity  {
 	public static String TAG = "AdminActivity";
 	public static final int MAX_BENEFICIARIES = 20000;  // Max readable
 	public static final String COMMA= ",";
-	
+	public static final int DONE = 0;
 
 
 
 	private ArrayAdapter<String> adapter;
 	private String items[] = new String[100];
+	private ProgressDialog mProgressDialog;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -144,9 +150,16 @@ public class AcdiVocaAdminActivity extends Activity  {
 		case LoginActivity.ACTION_LOGIN:
 			if (resultCode == RESULT_OK) {
 				//Toast.makeText(this, "Thank you", Toast.LENGTH_LONG).show();
-				findViewById(R.id.fileload_progressbar).setVisibility(View.VISIBLE);
-				importBeneficiaryDataToDb();
-				findViewById(R.id.fileload_progressbar).setVisibility(View.INVISIBLE);
+				//findViewById(R.id.fileload_progressbar).setVisibility(View.VISIBLE);
+				
+				mProgressDialog = ProgressDialog.show(this, "Loading data",
+						"Please wait.", true, true);
+				
+				ImportDataThread thread = new ImportDataThread(this, new ImportThreadHandler());
+				thread.start();
+				
+				
+				//findViewById(R.id.fileload_progressbar).setVisibility(View.INVISIBLE);
 				break;
 			} else {
 				Toast.makeText(this, "Sorry. Incorrect username or password.", Toast.LENGTH_LONG).show();
@@ -190,8 +203,8 @@ public class AcdiVocaAdminActivity extends Activity  {
 			br = new BufferedReader(new InputStreamReader(iStream));
 			data = new String[MAX_BENEFICIARIES];
 			line = br.readLine();
-			while (line != null && k < 100)  {
-			//while (line != null)  {
+			//while (line != null && k < 1000)  {
+			while (line != null)  {
 				//Log.i(TAG, line);
 				if (line.charAt(0) != '*')  {
 					data[k] = line;
@@ -208,7 +221,28 @@ public class AcdiVocaAdminActivity extends Activity  {
 			dossiers[i] = data[i];
 		return dossiers;
 	}
-
-
-
+	
+	class ImportThreadHandler extends Handler {
+		public void handleMessage(Message msg) {
+			if (msg.what == DONE) {
+				mProgressDialog.dismiss();
+			}
+		}
+	}
+	
+	class ImportDataThread extends Thread {
+		private Context mContext;
+		private Handler mHandler;
+		
+		public ImportDataThread(Context context, Handler handler) {
+			mHandler = handler;
+			mContext = context;
+		}
+	
+		public void run() {
+			importBeneficiaryDataToDb();
+			mHandler.sendEmptyMessage(AcdiVocaAdminActivity.DONE);
+		}
+	}
 }
+
