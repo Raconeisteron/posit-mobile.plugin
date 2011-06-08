@@ -113,6 +113,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 			version.setVisibility(View.INVISIBLE);
 		}
 		
+		
 		// Register existing user button
 		Button register = (Button) findViewById(R.id.register);
 		if (register != null) {
