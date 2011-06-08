@@ -48,6 +48,7 @@
 			android:configChanges="orientation|keyboardHidden"
 			/>
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity" 
+			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLookupActivity" 
 			android:configChanges="orientation|keyboardHidden"
@@ -58,7 +59,9 @@
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.LoginActivity" 
 			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />	
-
+		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.SearchFilterActivity" 
+			android:configChanges="orientation|keyboardHidden"
+			android:launchMode="singleTop" />	
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity" 
 			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />						

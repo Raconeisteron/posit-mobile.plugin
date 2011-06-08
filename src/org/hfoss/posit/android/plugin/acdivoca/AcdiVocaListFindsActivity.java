@@ -24,9 +24,11 @@ package org.hfoss.posit.android.plugin.acdivoca;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.Utils;
+import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.ListFindsActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -66,9 +68,17 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 
 	private static final int CONFIRM_DELETE_DIALOG = 0;
 	public static final int FIND_FROM_LIST = 0;
+	public static final String MESSAGE_START_SUBSTRING = "t=";
+	
+	
 	private int project_id;
     private static final boolean DBG = false;
 	private ArrayAdapter<String> mAdapter;
+	
+	private MenuItem mSyncFinds = null;
+
+	
+	private boolean mMessageListDisplayed = false;
 
 	/** 
 	 * Called when the Activity starts and
@@ -99,12 +109,13 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
-
 //		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		project_id = 0; //sp.getInt("PROJECT_ID", 0);
-		fillData(null);
-		NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-    	nm.cancel(Utils.NOTIFICATION_ID);
+		if (!mMessageListDisplayed) {
+			fillData(null);
+			NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+			nm.cancel(Utils.NOTIFICATION_ID);
+		}
 	}
 
 	/**
@@ -168,14 +179,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	}
 
 
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onActivityResult(int, int, android.content.Intent)
-	 */
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-
 	/**
 	 * Invoked when the user clicks on one of the Finds in the
 	 *   list. It starts the PhotoFindActivity in EDIT mode, which will read
@@ -216,51 +219,122 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {	
+		
+		// Start a SearchFilterActivity for result
 		case R.id.list_messages:
-			String messages[] = new String[1];
-			messages[0] = "No messages to display";
-			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-			String distrKey = this.getResources().getString(R.string.distribution_point);
-			String distributionCtr = sharedPrefs.getString(distrKey, "");
-			Log.i(TAG, distrKey +"="+ distributionCtr);
-			messages = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
-			if (messages == null) {
-				Toast.makeText(this, "Sorry, there are no messages in the Db.", Toast.LENGTH_SHORT).show();
-				messages = new String[1];
-				messages[0] = "No messages to display";
-			}
-			setUpMessagesList(messages);
+			intent = new Intent();
+			intent.setClass(this, SearchFilterActivity.class);
+			this.startActivityForResult(intent, SearchFilterActivity.ACTION_SELECT);
 			break;
+			
+		// This case sends all messages	(if messages are cuurently displayed)
 		case R.id.sync_messages:
+			if (this.mMessageListDisplayed) {
+				int nMsgs = mAdapter.getCount();
+				int k = 0;
+				while (k < nMsgs) {
+					String message = mAdapter.getItem(k);
+					int id = getBeneficiaryId(message);
+					message = cleanMessage(message);
+					Log.i(TAG, "ToSend:" + message);
+					AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+					if (AcdiVocaSmsManager.sendMessage(this, message, null)) {
+						Log.i(TAG, "Message Sent--should update as SENT");
+						db.updateMessageStatus(id, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
+					} else {
+						Log.i(TAG, "Message Not Sent -- should update as PENDING");
+						db.updateMessageStatus(id, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+					}
+					++k;
+				}
+			}
 			break;
 		}
 		return true;
 	}
 
-	private void setUpMessagesList(final String[] data) {
+	
+	private int getBeneficiaryId(String message) {
+		return Integer.parseInt(message.substring(message.indexOf(":")+1, message.indexOf(" ")));
+	}
+	
+	/**
+	 * Cleans leading display data from the message as it is displayed
+	 * in the list adapter.  Current format should start with "t="  for Type.
+	 * This could change .
+	 * @param msg
+	 * @return
+	 */
+	private String cleanMessage(String msg) {
+		String cleaned = "";
+		cleaned = msg.substring(msg.indexOf(MESSAGE_START_SUBSTRING));
+		return cleaned;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.i(TAG, "onActivityResult = " + resultCode);
+		switch (requestCode) {
+		case SearchFilterActivity.ACTION_SELECT:
+			if (resultCode == RESULT_CANCELED) {
+//				Toast.makeText(this, "Cancel " + resultCode, Toast.LENGTH_SHORT).show();
+				break;
+			} else {
+//				Toast.makeText(this, "Ok " + resultCode, Toast.LENGTH_SHORT).show();
+				displayMessageList(resultCode);	
+			} 
 		
-		setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, data));
+		default:
+			super.onActivityResult(requestCode, resultCode, data);
+		}
+	}
+
+
+	/**
+	 * Displays SMS messages, filter by status and type.
+	 */
+	private void displayMessageList(int filter) {
+		String messages[] = new String[1];
+		messages[0] = "No messages to display";
+		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+		messages = db.fetchAllBeneficiariesAsSms(filter, null); // Second arg is orderby
+		if (messages == null) {
+			Toast.makeText(this, "Sorry, there are no " +
+					SearchFilterActivity.MESSAGE_STATUS_STRINGS[filter] + " messages.", 
+					Toast.LENGTH_SHORT).show();
+			messages = new String[1];
+			messages[0] = "No messages to display";
+		} else {
+			Log.i(TAG, "Fetched " + messages.length + " messages");
+		}
+		setUpMessagesList(messages);		
+	}
+	
+	/**
+	 * Helper method to set up a simple list view using an ArrayAdapter.
+	 * @param data
+	 */
+	private void setUpMessagesList(final String[] data) {
+		Log.i(TAG, "setUpMessagesList");
+		mMessageListDisplayed = true;
+		//mSyncFinds.setEnabled(true);
+		
+		mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, data);
+		setListAdapter(mAdapter);
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
 		lv.setOnItemClickListener(new OnItemClickListener() {
-		    public void onItemClick(AdapterView<?> parent, View view,
-		        int position, long id) {
-		      // When clicked, show a toast with the TextView text
-		      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
-		          Toast.LENGTH_SHORT).show();
-		    }
-		  });
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 
-		  //		mAdapter = 
-//			new ArrayAdapter<String>(
-//					this,
-//					R.layout.acdivoca_list_beneficiaries,
-//					android.R.layout.simple_list_item_1,
-//					data );
-//		mAdapter.sort(String.CASE_INSENSITIVE_ORDER);
-//		setContentView(R.layout.acdivoca_list_beneficiaries);
-		
+				// When clicked, show a toast with the TextView text
+				Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
+						Toast.LENGTH_SHORT).show();
+			}
+		});
 	}
 
 	
@@ -277,17 +351,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 			return false;
 		}
 	}
-	/*@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-		if(keyCode==KeyEvent.KEYCODE_BACK){
-			showDialog(confirm_exit);
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
-	}*/
-
-
 
 	/**
 	 * This method is invoked by showDialog() when a dialog window is created. It displays
@@ -358,6 +421,14 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 //		return super.onKeyDown(keyCode, event);
 //	}
 
-
+//	/*@Override
+//	public boolean onKeyDown(int keyCode, KeyEvent event) {
+//
+//		if(keyCode==KeyEvent.KEYCODE_BACK){
+//			showDialog(confirm_exit);
+//			return true;
+//		}
+//		return super.onKeyDown(keyCode, event);
+//	}*/
 
 }
