@@ -75,8 +75,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
     private static final boolean DBG = false;
 	private ArrayAdapter<String> mAdapter;
 	
-	private MenuItem mSyncFinds = null;
-
+	private int mMessageFilter = -1;   		// Set in SearchFilterActivity result
+	private int mNMessagesDisplayed = 0;
 	
 	private boolean mMessageListDisplayed = false;
 
@@ -159,9 +159,10 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		//	    mCursor = managedQuery(allFinds, null, null, null, null);
 		if (mCursor.getCount() == 0) { // No finds
 			setContentView(R.layout.acdivoca_list_beneficiaries);
-			mCursor.close();
+	        mCursor.close();
 			return;
 		}
+
 		startManagingCursor(mCursor); // NOTE: Can't close DB while managing cursor
 
 		// CursorAdapter binds the data in 'columns' to the views in 'views' 
@@ -211,12 +212,35 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		return true;
 	}
 
+	
+	/**
+	 * Prepare the menu options based on the message search filter.
+	 */
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		Log.i(TAG, "Prepare Menus, N messages = " + mNMessagesDisplayed);
+        MenuItem menuItem = menu.findItem(R.id.sync_messages);
+		if (mNMessagesDisplayed > 0 && 
+				(mMessageFilter == SearchFilterActivity.RESULT_SELECT_NEW ||
+						mMessageFilter == SearchFilterActivity.RESULT_SELECT_PENDING))  {
+			
+	        menuItem.setEnabled(true);		
+		} else {
+	        menuItem.setEnabled(false);		
+
+		}
+		return super.onPrepareOptionsMenu(menu);
+	}
+
 	/** 
 	 * Starts the appropriate Activity when a MenuItem is selected.
 	 * @see android.app.Activity#onMenuItemSelected(int, android.view.MenuItem)
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		        
 		Intent intent;
 		switch (item.getItemId()) {	
 		
@@ -253,24 +277,33 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		return true;
 	}
 
-	
+
+	/**                                                                                                                                                                                       
+	 * Retrieves the Beneficiary Id from the Message string.                                                                                                                                  
+	 * TODO:  Probably not the best way                                                                                                                                                       
+	 * to handle this.  A better way would be to have DbHelper return an array of Benefiiary                                                                                                  
+	 * objects (containing the Id) and display the message field of those objects in the                                                                                                      
+	 * list.  Not sure how to do this with an ArrayAdapter??                                                                                                                                  
+	 * @param message                                                                                                                                                                         
+	 * @return                                                                                                                                                                                
+	 */
 	private int getBeneficiaryId(String message) {
 		return Integer.parseInt(message.substring(message.indexOf(":")+1, message.indexOf(" ")));
 	}
-	
-	/**
-	 * Cleans leading display data from the message as it is displayed
-	 * in the list adapter.  Current format should start with "t="  for Type.
-	 * This could change .
-	 * @param msg
-	 * @return
+
+	/**                                                                                                                                                                                       
+	 * Cleans leading display data from the message as it is displayed                                                                                                                        
+	 * in the list adapter.  Current format should start with "t="  for Type.                                                                                                                 
+	 * TODO:  See the comment on the previous method.                                                                                                                                         
+	 * @param msg                                                                                                                                                                             
+	 * @return                                                                                                                                                                                
 	 */
 	private String cleanMessage(String msg) {
 		String cleaned = "";
 		cleaned = msg.substring(msg.indexOf(MESSAGE_START_SUBSTRING));
 		return cleaned;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -283,6 +316,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 //				Toast.makeText(this, "Cancel " + resultCode, Toast.LENGTH_SHORT).show();
 				break;
 			} else {
+				mMessageFilter = resultCode;   
 //				Toast.makeText(this, "Ok " + resultCode, Toast.LENGTH_SHORT).show();
 				displayMessageList(resultCode);	
 			} 
@@ -297,8 +331,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	 * Displays SMS messages, filter by status and type.
 	 */
 	private void displayMessageList(int filter) {
-		String messages[] = new String[1];
-		messages[0] = "No messages to display";
+		String messages[] = null;
+		
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		messages = db.fetchAllBeneficiariesAsSms(filter, null); // Second arg is orderby
 		if (messages == null) {
@@ -307,10 +341,16 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 					Toast.LENGTH_SHORT).show();
 			messages = new String[1];
 			messages[0] = "No messages to display";
+			mNMessagesDisplayed = 0;
+			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
+
 		} else {
-			Log.i(TAG, "Fetched " + messages.length + " messages");
+			mNMessagesDisplayed = messages.length;
+			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
+	        Log.i(TAG, "Fetched " + messages.length + " messages");
 		}
-		setUpMessagesList(messages);		
+		
+		setUpMessagesList(messages);
 	}
 	
 	/**

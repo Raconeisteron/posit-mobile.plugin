@@ -31,7 +31,7 @@
 	<item 
 		android:icon="@drawable/ic_menu_refresh" 
 		android:title="@string/sync_messages"
-		android:enabled="true"
+		android:enabled="false"
 		android:id="@+id/sync_messages" >
 	</item>	
 	<item 
