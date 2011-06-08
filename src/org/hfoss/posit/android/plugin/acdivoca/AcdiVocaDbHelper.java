@@ -121,10 +121,12 @@ public class AcdiVocaDbHelper {
 	public static final String MESSAGE_ID = "_id";
 	public static final String MESSAGE_BENEFICIARY_ID = "beneficiary_id";  // Row Id in Beneficiary table
 	public static final String MESSAGE_TEXT = "message";
-	public static final String MESSAGE_STATUS = "status"; 
-	public static final int MESSAGE_STATUS_PENDING = 0;
-	public static final int MESSAGE_STATUS_SENT = 1;
-	public static final int MESSAGE_STATUS_ACK = 2;
+	public static final String MESSAGE_STATUS = "message_status"; 
+	public static final String[] MESSAGE_STATUS_STRINGS = {"New", "Pending", "Sent", "Acknowledged"};
+	public static final int MESSAGE_STATUS_NEW = 0;
+	public static final int MESSAGE_STATUS_PENDING = 1;
+	public static final int MESSAGE_STATUS_SENT = 2;
+	public static final int MESSAGE_STATUS_ACK = 3;
 	public static final String MESSAGE_CREATED_AT = "created_time";
 	public static final String MESSAGE_SENT_AT = "sent_time";
 	public static final String MESSAGE_ACK_AT = "acknowledged_time";
@@ -150,6 +152,9 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_TYPE = "type";
 	public static final int FINDS_TYPE_MCHN = 0;
 	public static final int FINDS_TYPE_AGRI = 1;
+	
+	public static final String FINDS_MESSAGE_STATUS = MESSAGE_STATUS;
+	public static final String FINDS_MESSAGE_TEXT = MESSAGE_TEXT;
 
 	public static final String FINDS_FIRSTNAME = "firstname";
 	public static final String FINDS_LASTNAME = "lastname";
@@ -159,7 +164,7 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_SEX = "sex";
 	public static final String FINDS_AGE = "age";
 
-	public static final String FINDS_COMMUNE_ID = "commune_id";
+	//public static final String FINDS_COMMUNE_ID = "commune_id";
 	//	public static final String FINDS_COMMUNE_SECTION_ID = "commune_section_id";
 	public static final String FINDS_BENEFICIARY_CATEGORY = "beneficiary_category";
 	//	public static final String FINDS_BENEFICIARY_CATEGORY_ID = "beneficiary_category_id";
@@ -244,45 +249,23 @@ public class AcdiVocaDbHelper {
 		FINDS_FIRSTNAME,
 		FINDS_DOB,
 		FINDS_SEX,
-		//		FINDS_AGE,
 		FINDS_HOUSEHOLD_SIZE,
 		FINDS_BENEFICIARY_CATEGORY,
-		//		FINDS_MOTHER_CATEGORY,
-		//		FINDS_INFANT_CATEGORY,
 		FINDS_HEALTH_CENTER,
 		FINDS_DISTRIBUTION_POST
-		//		COMMUNE_NAME,
-		//		COMMUNE_SECTION_NAME
-		//		FINDS_DESCRIPTION,
-		//		FINDS_LATITUDE,
-		//		FINDS_LONGITUDE,
-		//		FINDS_SYNCED, //,
-		//		FINDS_GUID,  // Bogus but you need some field in the table to go with Thumbnail
-		//		FINDS_GUID   //  Bogus, but SimpleCursorAdapter needs it
 	};
 
 	public static final int[] list_row_views = {
 		R.id.row_id,		    
 		R.id.dossierText,
-		//		R.id.idNumberText,
 		R.id.lastname_field, 
 		R.id.firstname_field,
 		R.id.datepicker,
 		R.id.femaleRadio,
-		//		R.id.ageEdit,
 		R.id.inhomeEdit,
 		R.id.expectingRadio,
-		//		R.id.malnourishedRadio,
 		R.id.healthcenterSpinner,
 		R.id.distributionSpinner
-		//		R.id.communeSpinner,
-		//		R.id.commune_sectionSpinner
-		//		R.id.description_id,
-		//		R.id.latitude_id,
-		//		R.id.longitude_id,
-		//		R.id.status, //,
-		//		R.id.num_photos,
-		//		R.id.find_image     // Thumbnail in ListFindsActivity
 	};
 
 	public static final String[] message_row_data = { 
@@ -306,7 +289,9 @@ public class AcdiVocaDbHelper {
 		+ FINDS_PROJECT_ID + " integer DEFAULT 0, "
 		+ FINDS_DOSSIER + " text, "
 		+ FINDS_TYPE + " integer DEFAULT 0, " 
-		+ FINDS_NAME + " text, "
+		+ FINDS_MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_NEW + " ,"
+		+ FINDS_MESSAGE_TEXT + " text, "
+ 		+ FINDS_NAME + " text, "
 		+ FINDS_FIRSTNAME + " text, "
 		+ FINDS_LASTNAME + " text, "
 		+ FINDS_ADDRESS + " text, "
@@ -318,8 +303,8 @@ public class AcdiVocaDbHelper {
 		+ FINDS_HEALTH_CENTER + " text, "
 		+ FINDS_DISTRIBUTION_POST + " text, "
 		+ FINDS_Q_MOTHER_LEADER + " boolean, "
-		+ FINDS_Q_VISIT_MOTHER_LEADER + "boolean, "
-		+ FINDS_Q_PARTICIPATING_AGRI + "boolean, "
+		+ FINDS_Q_VISIT_MOTHER_LEADER + " boolean, "
+		+ FINDS_Q_PARTICIPATING_AGRI + " boolean, "
 		+ FINDS_NAME_AGRI_PARTICIPANT + " text "
 		+ ");";
 
@@ -536,6 +521,30 @@ public class AcdiVocaDbHelper {
 	}
 
 	/**
+	 * Updates the message status.  The Beneficiary's row id is contained at
+	 * the beginning of the message as Id=nnn<space>
+	 * @param message the SMS message
+	 * @param status the new status
+	 * @return
+	 */
+	public boolean updateMessageStatus(int id, int status) {
+		boolean success = false;
+		ContentValues args = new ContentValues();
+		args.put(MESSAGE_STATUS, status);
+		
+//		try {
+			success = mDb.update(FINDS_TABLE, args, FINDS_ID + "=" + id, null) > 0;
+			Log.i(TAG,"updateFind result = "+success);  
+//		} catch (Exception e){
+//			Log.i("Error in update Find transaction", e.toString());
+//		} finally {
+			mDb.close();
+//		}
+		return success;
+	}
+
+	
+	/**
 	 * Updates a Find using it primary key, id. This should increment its
 	 *  revision number.
 	 * @param rowId  The Find's primary key.
@@ -550,8 +559,7 @@ public class AcdiVocaDbHelper {
 
 		try {
 			Log.i(TAG, "updateFind id = " + id);
-
-
+			
 			// Update the Finds table with the new data
 			success = mDb.update(FINDS_TABLE, args, FINDS_ID + "=" + id, null) > 0;
 			Log.i(TAG,"updateFind result = "+success);  
@@ -586,7 +594,9 @@ public class AcdiVocaDbHelper {
 		//		mDb = getReadableDatabase();  // Either open or create the DB    	
 		String[] selectionArgs = null;
 		String groupBy = null, having = null, orderBy = null;
-		Cursor c = mDb.query(FINDS_TABLE, columns, FINDS_DOSSIER+"= '"+dossier + "'", selectionArgs, groupBy, having, orderBy);
+		Cursor c = mDb.query(FINDS_TABLE, columns, 
+				FINDS_DOSSIER + "= '" + dossier + "'", 
+				selectionArgs, groupBy, having, orderBy);
 		c.moveToFirst();
 		ContentValues values = null;
 		if (c.getCount() != 0)
@@ -595,6 +605,146 @@ public class AcdiVocaDbHelper {
 		mDb.close();
 		return values;
 	}
+	
+	/** 
+	 * Returns an array of Strings where each String represents an SMS
+	 * message for a Beneficiary.
+	 * @param filter a int that selects messages by status
+	 * @return an array of SMS strings
+	 */
+	public String[] fetchAllBeneficiariesAsSms(int filter, String order_by) {
+		Cursor c = null;
+		if (filter == SearchFilterActivity.RESULT_SELECT_NEW)
+			c = mDb.query(FINDS_TABLE, null, 
+					FINDS_MESSAGE_STATUS + "=" + MESSAGE_STATUS_NEW, 
+					null, null, null, order_by);
+		else if (filter == SearchFilterActivity.RESULT_SELECT_PENDING)
+			c = mDb.query(FINDS_TABLE, null, 
+					FINDS_MESSAGE_STATUS + "=" + MESSAGE_STATUS_PENDING, 
+					null, null, null, order_by);
+		else if (filter == SearchFilterActivity.RESULT_SELECT_SENT)
+			c = mDb.query(FINDS_TABLE, null, 
+					FINDS_MESSAGE_STATUS + "=" + MESSAGE_STATUS_SENT, 
+					null, null, null, order_by);
+		else if (filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED)
+			c = mDb.query(FINDS_TABLE, null, 
+					FINDS_MESSAGE_STATUS + "=" + MESSAGE_STATUS_ACK, 
+					null, null, null, order_by);
+		else  // All
+			c = mDb.query(FINDS_TABLE, null, 
+					null,
+					null, null, null, order_by);
+		
+		Log.i(TAG,"fetchAllBeneficiaries " +  " count=" + c.getCount());
+		
+		// Construct the messages and store in a String array
+		String beneRecords[] = null;
+		if (c.getCount() != 0) {
+			beneRecords = new String[c.getCount()];
+			c.moveToFirst();
+			int k = 0;
+			String message = null;
+			int find_id = -1;
+			int msg_status = -1;
+			String columns[] = null;
+			String beneficiary = "";
+			ContentValues values = null;
+			
+			while (!c.isAfterLast()) {
+				
+				// Check whether the message has already been constructed
+				message = c.getString(c.getColumnIndex(FINDS_MESSAGE_TEXT));
+				find_id = c.getInt(c.getColumnIndex(FINDS_ID));
+				msg_status = c.getInt(c.getColumnIndex(FINDS_MESSAGE_STATUS));
+				if (message == null || msg_status == MESSAGE_STATUS_NEW) {
+					
+					// If not already constructed, then construct the beneficiary string
+					columns = c.getColumnNames();
+					beneficiary = "";
+					
+					// For each column (attribute), put an attr=val pair in the string
+					for (int j = 0; j < columns.length; j++) {
+						if (!columns[j].equals(FINDS_MESSAGE_TEXT)) {
+						beneficiary += 
+							columns[j] +  "=" +
+							c.getString(c.getColumnIndex(columns[j])) + ",";
+						}
+					}
+					
+					// Now abbreviate the message
+					message = convertBeneficiaryStringToSms(beneficiary);
+					
+					// Add length and status to message
+					beneRecords[k] = "Id:" + find_id + " Status= " + MESSAGE_STATUS_STRINGS[msg_status] + "\n" +  message;
+
+					//beneRecords[k] = "" + message.length() + " m=" + msg_status + "," +  message;
+					
+					// Store the message in the FINDS_TABLE
+					values = new ContentValues();
+					values.put(FINDS_MESSAGE_TEXT, message);
+					values.put(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_NEW);
+			
+					int count = mDb.update(FINDS_TABLE, values, FINDS_ID + "=" + find_id, null);
+					Log.i(TAG, "Inserted " + count + " new message into FINDS_TABLE");
+
+					c.moveToNext();
+					++k;
+				} else {           // The message is already constructed, add length and status
+					beneRecords[k] = "Id:" + find_id + " Status= " + MESSAGE_STATUS_STRINGS[msg_status] + "\n" +  message;
+					c.moveToNext();
+					++k;
+				}
+			}
+		}
+		mDb.close();
+		c.close();
+		return beneRecords;
+	}
+	
+	
+	/**
+	 * Converts a String representing a beneficiary into an abbreviated
+	 * string. If the String already contains an SMS message in its 'message_text'
+	 * field, then no need to construct it again.
+	 * @param beneficiary a string of the form attr1-value1,attr2=value2...
+	 * @return a String of the form a1=v1, ..., aN=vN
+	 */
+	private String convertBeneficiaryStringToSms(String beneficiary) {
+		String message = "";
+		String abbrev = "";
+		String[] pair = null;
+		
+		String[] attr_val_pairs = beneficiary.split(",");
+		String attr = "";
+		String val = "";
+		for (int k = 0; k < attr_val_pairs.length; k++) {
+			//Log.i(TAG, "Pair-" + k + " = " + attr_val_pairs[k]);
+			pair = attr_val_pairs[k].split("=");
+			if (pair.length == 0) {
+				attr = "";
+				val = "";
+			} else if (pair.length == 1) {
+				attr = pair[0].trim();
+				val = "";
+			} else {
+				attr = pair[0].trim();
+				val = pair[1].trim();
+			}
+
+			if (!attr.equals(FINDS_ID) 
+					&& !attr.equals(FINDS_PROJECT_ID) 
+					&& !attr.equals(FINDS_MESSAGE_TEXT) 
+					&& !val.equals("null")) {
+				abbrev = AcdiVocaSmsManager.convertAttrValToAbbrev(attr, val);
+				if (!abbrev.equals(""))
+					message += abbrev + ",";
+//				if (k < attr_val_pairs.length-1) 
+//					message += ",";
+			}
+		}
+		return message;
+	}
+	
 
 	/** 
 	 * Returns an array of dossier numbers for all beneficiaries.

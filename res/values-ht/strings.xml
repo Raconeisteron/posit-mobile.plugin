@@ -23,6 +23,13 @@
     <!--  list_finds.xml -->
     <string name="noFinds">No benefisyè</string>
     <string name="delete_finds">Removez</string>
+    <string name="pick_criterion_prompt">Sélectionnez un filtre de recherche.</string>
+    <string name="search_filter_select_button">Sélectionnez</string>
+    <string name="all_messages">Tous les messages</string>
+    <string name="new_messages">Les nouveaux messages</string>
+    <string name="sent_messages">Les messages envoyés</string>
+    <string name="pending_messages">Les messages en attente</string>
+    <string name="acknowledged_messages">Reconnu messages</string>    
             
     <!-- add.xml --> 
     <string name="general_info">Enfomasyon Jeneral</string>
