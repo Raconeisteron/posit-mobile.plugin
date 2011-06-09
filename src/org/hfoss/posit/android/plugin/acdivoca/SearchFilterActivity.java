@@ -1,5 +1,5 @@
 /*
- * File: AcdiVocaFindActivity.java
+ * File: SearchFilterActivity.java
  * 
  * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
@@ -75,10 +75,11 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 	// NOTE: Activity_RESULT_CANCELED = 1
 	public static final int RESULT_SELECT_ALL = 2;
 	public static final int RESULT_SELECT_NEW = 3;
-	public static final int RESULT_SELECT_PENDING = 4;
-	public static final int RESULT_SELECT_SENT = 5;
-	public static final int RESULT_SELECT_ACKNOWLEDGED = 6;
-	public static final String[] MESSAGE_STATUS_STRINGS = {"","","","NEW", "PENDING", "SENT","ACKNOWLEDGED"};
+	public static final int RESULT_SELECT_UPDATE = 4;
+	public static final int RESULT_SELECT_PENDING = 5;
+	public static final int RESULT_SELECT_SENT = 6;
+	public static final int RESULT_SELECT_ACKNOWLEDGED = 7;
+	public static final String[] MESSAGE_STATUS_STRINGS = {"","","","NEW", "UPDATE", "PENDING", "SENT","ACKNOWLEDGED"};
 	
 	/** Called when the activity is first created. */
 	public void onCreate(Bundle savedInstanceState) {
@@ -137,6 +138,9 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 		rb = (RadioButton)findViewById(R.id.new_messages);
 		if (rb.isChecked())
 			result = RESULT_SELECT_NEW;
+		rb = (RadioButton)findViewById(R.id.update_messages);
+		if (rb.isChecked())
+			result = RESULT_SELECT_UPDATE;
 		rb = (RadioButton)findViewById(R.id.sent_messages);
 		if (rb.isChecked())
 			result = RESULT_SELECT_SENT;

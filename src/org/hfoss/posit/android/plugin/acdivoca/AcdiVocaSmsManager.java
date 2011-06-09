@@ -36,11 +36,27 @@ public class AcdiVocaSmsManager {
 	
 	public static final String TAG = "AcdiVocaSmsManager";
 	
+//
 	public static final String ATTR_VAL_SEPARATOR = "=";
-	public static final String PAIRS_SEPARATOR = "&";
+	public static final String PAIRS_SEPARATOR = ",";
+	
+	public static final int MAX_MESSAGE_LENGTH = 140;
+	public static final int MAX_PHONE_NUMBER_LENGTH = 10;
+	public static final int MIN_PHONE_NUMBER_LENGTH = 5;
 	
 	
-	private static boolean checkNumber(String number) {
+	/**
+	 * Checks for a validly-formatted phone number, which 
+	 * takes the form: [+]1234567890
+	 * @param number
+	 * @return
+	 */
+	private static boolean checkPhoneNumber(String number) {
+		if (number.length() < MIN_PHONE_NUMBER_LENGTH
+				|| number.length() > MAX_PHONE_NUMBER_LENGTH)
+			return false;
+		
+		// Check for valid digits
 		for(int i = 0; i < number.length(); i++) {
 			if(number.charAt(i)<'0'|| number.charAt(i)>'9')
 				if(!(i==0&&number.charAt(i)=='+'))
@@ -49,28 +65,35 @@ public class AcdiVocaSmsManager {
 		return true;
 	}
 	
-	public static boolean sendMessage(Context context, String message, String phoneNumber) {
+	/**
+	 * Adds the ACDI/VOCA Prefix and sends the message, returning false if an error occurs.
+	 * @param context
+	 * @param beneficiary_id
+	 * @param message
+	 * @param phoneNumber
+	 * @return
+	 */
+	//public static boolean sendMessage(Context context, int beneficiary_id, String message, String phoneNumber) {
+	public static boolean sendMessage(Context context, int beneficiary_id, AcdiVocaMessage acdiVocaMessage, String phoneNumber) {
 		if (phoneNumber==null)
 			phoneNumber = PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
+
+		String message = acdiVocaMessage.ACDI_VOCA_PREFIX + ATTR_VAL_SEPARATOR +
+			+ acdiVocaMessage.getBeneficiaryId() +   PAIRS_SEPARATOR
+			+ acdiVocaMessage.getSmsMessage();
 		
-		//Toast.makeText(context, "SMS Phone Target = " + phoneNumber, Toast.LENGTH_SHORT).show();		
-		String SENT = "SMS_SENT";
-		String DELIVERED = "SMS_DELIVERED";        
-		PendingIntent sentIntent = PendingIntent.getBroadcast(context, 0,
-				new Intent(SENT), 0);
-
-		PendingIntent deliveryIntent = PendingIntent.getBroadcast(context, 0,
-				new Intent(DELIVERED), 0);
-
-		if(phoneNumber.length()>0 && message.length()>0 && message.length()<=160 && checkNumber(phoneNumber)) {
+		if (checkPhoneNumber(phoneNumber)
+				&& message.length() > 0 
+				&& message.length() <= MAX_MESSAGE_LENGTH) {
 			try {
 				SmsManager sms = SmsManager.getDefault();
-				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
+				//sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
 				Toast.makeText(context, "SMS Sent!\n"+message + " to " + phoneNumber, Toast.LENGTH_LONG).show();
 				Log.i(TAG,"SMS Sent: " + message);
 			}catch(Exception e) {
 				Log.i(TAG,e.toString());
 				e.printStackTrace();
+				return false;
 			}
 			return true;
 		}
@@ -80,9 +103,9 @@ public class AcdiVocaSmsManager {
 		}
 	}
 	
-	public static String formatAcdiVocaMessage(String rawMessage) {
+	public static String formatAcdiVocaMessage(int id, String rawMessage) {
 		String msg = "";
-		
+		//msg = ACDI_VOCA_PREFIX + "=" + id + "," + rawMessage;
 		return msg;
 	}
 	
@@ -106,8 +129,9 @@ public class AcdiVocaSmsManager {
 		} else if (attr.equals(AcdiVocaDbHelper.FINDS_TYPE)) {
 			attrAbbrev="t";
 			valAbbrev = val;
-		} else if (attr.equals(AcdiVocaDbHelper.FINDS_MESSAGE_TEXT)) {
-			return "";
+		} else if (attr.equals(AcdiVocaDbHelper.MESSAGE_TEXT)) {
+			attrAbbrev="t";
+			valAbbrev = "[" + val + "]";
 		} else if (attr.equals(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS)) {
 			return "";
 //			attrAbbrev="m";
@@ -146,6 +170,18 @@ public class AcdiVocaSmsManager {
 		else if (attr.equals(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST)) {
 			attrAbbrev = "d";
 			valAbbrev = ""+ (int)(Math.random() * 30); // convertValToAbbrev(val);
+		} else if (attr.equals(AcdiVocaDbHelper.MESSAGE_BENEFICIARY_ID)) {
+			attrAbbrev = "#";
+			valAbbrev = val;
+		} else if (attr.equals(AcdiVocaDbHelper.MESSAGE_CREATED_AT)) {
+			attrAbbrev = "t1";
+			valAbbrev = val;
+		} else if (attr.equals(AcdiVocaDbHelper.MESSAGE_SENT_AT)) {
+			attrAbbrev = "t2";
+			valAbbrev = val;
+		} else if (attr.equals(AcdiVocaDbHelper.MESSAGE_ACK_AT)) {
+			attrAbbrev = "t3";
+			valAbbrev = val;
 		}
 		else {
 			attrAbbrev = attr;
