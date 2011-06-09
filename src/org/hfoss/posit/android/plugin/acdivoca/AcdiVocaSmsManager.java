@@ -23,27 +23,93 @@
 
 package org.hfoss.posit.android.plugin.acdivoca;
 
+import java.util.ArrayList;
+
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
+import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
-public class AcdiVocaSmsManager {
+public class AcdiVocaSmsManager extends BroadcastReceiver {
 	
 	public static final String TAG = "AcdiVocaSmsManager";
 	
 //
 	public static final String ATTR_VAL_SEPARATOR = "=";
 	public static final String PAIRS_SEPARATOR = ",";
+	public static final String SENT = "SMS_SENT";
+	public static final String DELIVERED = "SMS_DELIVERED";
+	
+	public static final String INCOMING_PREFIX = "AV=";
+
 	
 	public static final int MAX_MESSAGE_LENGTH = 140;
 	public static final int MAX_PHONE_NUMBER_LENGTH = 10;
 	public static final int MIN_PHONE_NUMBER_LENGTH = 5;
 	
+	public int msgId = 0;
+	
+	@Override
+	public void onReceive(Context arg0, Intent intent) {
+		Log.i(TAG, "Intent action = " + intent.getAction());
+
+		Bundle bundle = intent.getExtras();
+
+		ArrayList<SmsMessage> messages = new ArrayList<SmsMessage>();
+
+		if (bundle != null) {
+			Object[] pdus = (Object[]) bundle.get("pdus");
+
+			for (Object pdu : pdus) {
+				SmsMessage message = SmsMessage.createFromPdu((byte[]) pdu);
+				messages.add(message);
+				String body = message.getMessageBody();
+
+				String incomingMsg = message.getMessageBody();
+				String originatingNumber = message.getOriginatingAddress();
+
+				Log.i(TAG, "FROM: " + originatingNumber);
+				Log.i(TAG, "MESSAGE: " + incomingMsg);
+				
+				if (incomingMsg.startsWith(INCOMING_PREFIX)) {
+					msgId = getMsgIdFromIncomingMsg(incomingMsg);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get's the message id from the incoming message.
+	 * @param msg
+	 * @return
+	 */
+	private int getMsgIdFromIncomingMsg (String msg) {
+		int id = -1;
+		try {
+			id = Integer.parseInt(msg.substring(
+					msg.indexOf(INCOMING_PREFIX) + INCOMING_PREFIX.length(), 
+					msg.indexOf(PAIRS_SEPARATOR)));
+		} catch (NumberFormatException e){
+			e.printStackTrace();
+			return -1;
+		}
+		return id;
+	}
+	
+	@Override
+	public IBinder peekService(Context myContext, Intent service) {
+		// TODO Auto-generated method stub
+		return super.peekService(myContext, service);
+	}
+
 	
 	/**
 	 * Checks for a validly-formatted phone number, which 
@@ -82,12 +148,15 @@ public class AcdiVocaSmsManager {
 			+ acdiVocaMessage.getBeneficiaryId() +   PAIRS_SEPARATOR
 			+ acdiVocaMessage.getSmsMessage();
 		
+		PendingIntent sentIntent = PendingIntent.getBroadcast(context, 0,new Intent(SENT), 0);
+		PendingIntent deliveryIntent = PendingIntent.getBroadcast(context, 0,new Intent(DELIVERED), 0);
+		
 		if (checkPhoneNumber(phoneNumber)
 				&& message.length() > 0 
 				&& message.length() <= MAX_MESSAGE_LENGTH) {
 			try {
 				SmsManager sms = SmsManager.getDefault();
-				//sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
+				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
 				Toast.makeText(context, "SMS Sent!\n"+message + " to " + phoneNumber, Toast.LENGTH_LONG).show();
 				Log.i(TAG,"SMS Sent: " + message);
 			}catch(Exception e) {
