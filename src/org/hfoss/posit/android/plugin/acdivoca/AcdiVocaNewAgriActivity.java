@@ -525,7 +525,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 
 	        String message = AcdiVocaSmsManager.formatSmsMessage(values);
 	        
-			AcdiVocaSmsManager.sendMessage(this,message,null);
+//			AcdiVocaSmsManager.sendMessage(this,message,null);
 			//Toast.makeText(this, "Sending: " +  message, Toast.LENGTH_SHORT).show();
 			Log.i(TAG,  "Sending: " +  message);
 	        finish();

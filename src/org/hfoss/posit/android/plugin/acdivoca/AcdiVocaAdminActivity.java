@@ -174,7 +174,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 		ContentValues values = new ContentValues();
 		
 		items = loadBeneficiaryData();
-		long nImports = db.addNewBeneficiaries(items);
+		long nImports = db.addUpdateBeneficiaries(items, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
 		Log.i(TAG, "Imported " + nImports + " Beneficiaries");		
 	}
 	

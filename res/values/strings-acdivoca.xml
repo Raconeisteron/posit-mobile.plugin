@@ -79,11 +79,12 @@
     <string name="noFinds">No beneficiaries</string>
     <string name="pick_criterion_prompt">Select a search filter.</string>
     <string name="search_filter_select_button">Select</string>
-    <string name="all_messages">All Messages</string>
-    <string name="new_messages">New Messages</string>
-    <string name="sent_messages">Sent Messages</string>
-    <string name="pending_messages">Pending Messages</string>
-    <string name="acknowledged_messages">Acknowledged Messages</string>
+    <string name="all_messages">List all Messages</string>
+    <string name="new_messages">Messages for New Beneficiaries</string>
+    <string name="update_messages">Messages for Beneficiary Updates</string>
+    <string name="sent_messages">List Sent Messages</string>
+    <string name="pending_messages">List Pending Messages</string>
+    <string name="acknowledged_messages">List Acknowledged Messages</string>
     
    
         <!-- Add and List Menu -->

@@ -29,7 +29,8 @@
 					android:text="@string/all_messages" />
 				<RadioButton android:checked="false" android:id="@+id/new_messages"
 					android:text="@string/new_messages" />
-
+				<RadioButton android:checked="false" android:id="@+id/update_messages"
+					android:text="@string/update_messages" />
 				<RadioButton android:checked="false" android:id="@+id/pending_messages"
 					android:text="@string/pending_messages" />
 				<RadioButton android:checked="false" android:id="@+id/sent_messages"

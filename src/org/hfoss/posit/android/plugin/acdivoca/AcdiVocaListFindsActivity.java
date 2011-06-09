@@ -73,8 +73,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	
 	private int project_id;
     private static final boolean DBG = false;
-	private ArrayAdapter<String> mAdapter;
-	
+	//private ArrayAdapter<String> mAdapter;
+	private ArrayAdapter<AcdiVocaMessage> mAdapter;
+
 	private int mMessageFilter = -1;   		// Set in SearchFilterActivity result
 	private int mNMessagesDisplayed = 0;
 	
@@ -223,9 +224,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		Log.i(TAG, "Prepare Menus, N messages = " + mNMessagesDisplayed);
         MenuItem menuItem = menu.findItem(R.id.sync_messages);
 		if (mNMessagesDisplayed > 0 && 
-				(mMessageFilter == SearchFilterActivity.RESULT_SELECT_NEW ||
-						mMessageFilter == SearchFilterActivity.RESULT_SELECT_PENDING))  {
-			
+				(mMessageFilter == SearchFilterActivity.RESULT_SELECT_NEW 
+						|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_PENDING
+						|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_UPDATE))  {
 	        menuItem.setEnabled(true);		
 		} else {
 	        menuItem.setEnabled(false);		
@@ -254,29 +255,39 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		// This case sends all messages	(if messages are cuurently displayed)
 		case R.id.sync_messages:
 			if (this.mMessageListDisplayed) {
-				int nMsgs = mAdapter.getCount();
-				int k = 0;
-				while (k < nMsgs) {
-					String message = mAdapter.getItem(k);
-					int id = getBeneficiaryId(message);
-					message = cleanMessage(message);
-					Log.i(TAG, "ToSend:" + message);
-					AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-					if (AcdiVocaSmsManager.sendMessage(this, message, null)) {
-						Log.i(TAG, "Message Sent--should update as SENT");
-						db.updateMessageStatus(id, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
-					} else {
-						Log.i(TAG, "Message Not Sent -- should update as PENDING");
-						db.updateMessageStatus(id, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-					}
-					++k;
-				}
+				sendMessages();
 			}
+			mNMessagesDisplayed = 0;
+			fillData(null);
 			break;
+			//break;
 		}
 		return true;
 	}
 
+	/**
+	 * Helper method to send SMS messages. 
+	 */
+	private void sendMessages() {
+		int nMsgs = mAdapter.getCount();
+		int k = 0;
+		while (k < nMsgs) {
+			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
+			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+			Log.i(TAG, "Raw Message: " + acdiVocaMsg.getRawMessage());
+			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
+			
+			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+			if (AcdiVocaSmsManager.sendMessage(this, beneficiary_id, acdiVocaMsg, null)) {
+				Log.i(TAG, "Message Sent--should update as SENT");
+				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
+			} else {
+				Log.i(TAG, "Message Not Sent -- should update as PENDING");
+				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+			}
+			++k;
+		}
+	}
 
 	/**                                                                                                                                                                                       
 	 * Retrieves the Beneficiary Id from the Message string.                                                                                                                                  
@@ -332,37 +343,54 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	 */
 	private void displayMessageList(int filter) {
 		String messages[] = null;
+		AcdiVocaMessage[] acdiVocaMsgs = null;
 		
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		messages = db.fetchAllBeneficiariesAsSms(filter, null); // Second arg is orderby
-		if (messages == null) {
-			Toast.makeText(this, "Sorry, there are no " +
-					SearchFilterActivity.MESSAGE_STATUS_STRINGS[filter] + " messages.", 
-					Toast.LENGTH_SHORT).show();
-			messages = new String[1];
-			messages[0] = "No messages to display";
+		
+		if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
+				|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {
+			acdiVocaMsgs = db.createMessagesForBeneficiaries(filter, null);
+		} else {
+			acdiVocaMsgs = db.fetchSmsMessages(filter, null); // Second arg is order by
+		}
+		
+		if (acdiVocaMsgs == null) {
+			
+//			Toast.makeText(this, "Sorry, there are no " +
+//					SearchFilterActivity.MESSAGE_STATUS_STRINGS[filter] + " messages.", 
+//					Toast.LENGTH_SHORT).show();
+			acdiVocaMsgs = new AcdiVocaMessage[1];
+			acdiVocaMsgs[0] = new AcdiVocaMessage();
+			acdiVocaMsgs[0].setSmsMessage("No messages to display");
+			
 			mNMessagesDisplayed = 0;
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
 
 		} else {
-			mNMessagesDisplayed = messages.length;
+			mNMessagesDisplayed = acdiVocaMsgs.length;
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
-	        Log.i(TAG, "Fetched " + messages.length + " messages");
+	        Log.i(TAG, "Fetched " + acdiVocaMsgs.length + " messages");
 		}
 		
-		setUpMessagesList(messages);
+		setUpMessagesList(acdiVocaMsgs);
 	}
 	
 	/**
 	 * Helper method to set up a simple list view using an ArrayAdapter.
 	 * @param data
 	 */
-	private void setUpMessagesList(final String[] data) {
+	private void setUpMessagesList(final AcdiVocaMessage[] data) {
 		Log.i(TAG, "setUpMessagesList");
 		mMessageListDisplayed = true;
-		//mSyncFinds.setEnabled(true);
 		
-		mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, data);
+		String messages[] = new String[data.length];
+		for (int k = 0; k < messages.length; k++) {
+			messages[k] = data[k].getSmsMessage();
+		}
+		
+		// For this to work, AcdiVocaMessage.toString() returns what is displayed in the list.
+		// TODO:  Implement a custom Adapter and View.
+		mAdapter = new ArrayAdapter<AcdiVocaMessage>(this, android.R.layout.simple_list_item_1, data);
 		setListAdapter(mAdapter);
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
