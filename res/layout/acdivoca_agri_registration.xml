@@ -52,22 +52,22 @@
 					android:layout_height="wrap_content">
 				</DatePicker>	
 			
-			<TextView android:text="@string/commune" android:textColor="#ff0000"
+			<TextView android:text="@string/health_center" android:textColor="#ff0000"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
-			<Spinner android:id="@+id/communeSpinner" 
+			<Spinner android:id="@+id/healthcenterSpinner" 
 				android:layout_marginLeft="20px" android:layout_marginRight="30px"
-				android:entries="@+array/commune_names"
+				android:entries="@+array/health_center_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
 
-			<TextView android:text="@string/commune_section" android:textColor="#ff0000"
+			<TextView android:text="@string/distribution_post" android:textColor="#ff0000"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
-			<Spinner android:id="@+id/commune_sectionSpinner" 
+			<Spinner android:id="@+id/distributionSpinner" 
 				android:layout_marginLeft="20px" android:layout_marginRight="30px"
-				android:entries="@+array/commune_section_names"
+				android:entries="@+array/distribution_centers"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
 
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -84,7 +84,7 @@
 				android:layout_height="wrap_content" 
 				android:orientation="horizontal"
 				android:id="@+id/sexRadio">
-				<RadioButton android:checked="true" 
+				<RadioButton android:checked="false" 
 					android:layout_marginLeft="20px" 
 					android:id="@+id/femaleRadio"
 					android:text="@string/Female" />
