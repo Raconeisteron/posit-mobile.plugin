@@ -186,6 +186,9 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_Q_PARTICIPATING_AGRI = "pariticipating_agri";
 	public static final String FINDS_NAME_AGRI_PARTICIPANT = "name_agri_paricipant";
 	
+
+	
+	
 	
 	public static final String FINDS_GUID = "guid";    // Globally unique ID
 
@@ -193,14 +196,50 @@ public class AcdiVocaDbHelper {
 	
 	
 	//added to handle the agriculture registration form
-	public static final String MARKET_GARDEN_NAME = "vege_seed";
-	public static final String CEREAL_NAME = "cereal_seed";
-	public static final String TUBER_NAME = "tuber_seed";
-	public static final String TREE_NAME = "tree";
+//	public static final String MARKET_GARDEN_NAME = "vege_seed";
+//	public static final String CEREAL_NAME = "cereal_seed";
+//	public static final String TUBER_NAME = "tuber_seed";
+//	public static final String TREE_NAME = "tree";
 	public static final String FINDS_LAND_AMOUNT = "amount_of_land";	
-	public static final String SEED_GROUP = "seed_type";
-	public static final String FINDS_TOOL_CATAGORY = "tools";
+//	public static final String SEED_GROUP = "seed_type";
+//	public static final String FINDS_TOOL_CATAGORY = "tools";
+	public static final String FINDS_SEED_AMOUNT = "seed_amount";
 	public static final String FINDS_UNIT = "unit";
+	public static final String FINDS_IS_FARMER = "is_farmer";
+	public static final String FINDS_IS_MUSO = "is_MUSO";
+	public static final String FINDS_IS_RANCHER = "is_rancher";
+	public static final String FINDS_IS_STOREOWN = "is_store_owner";
+	public static final String FINDS_IS_FISHER = "is_fisher";
+	public static final String FINDS_IS_OTHER = "is_other";
+	public static final String FINDS_HAVE_VEGE = "have_vege";
+	public static final String FINDS_HAVE_CEREAL = "have_cereal";
+	public static final String FINDS_HAVE_TUBER = "have_tuber";
+	public static final String FINDS_HAVE_TREE = "have_tree";
+	public static final String FINDS_HAVE_HOUE = "have_houe";
+	public static final String FINDS_HAVE_PIOCHE = "have_pioche";
+	public static final String FINDS_HAVE_BROUETTE = "have_brouette";
+	public static final String FINDS_HAVE_MACHETTE = "have_machette";
+	public static final String FINDS_HAVE_SERPETTE = "have_serpette";
+	public static final String FINDS_HAVE_PELLE = "have_pelle";
+	public static final String FINDS_HAVE_BARREAMINES = "have_barreamines";
+	public static final String FINDS_RELATIVE_1 = "relative_1";
+	public static final String FINDS_RELATIVE_2 = "relative_2";
+	public static final String FINDS_MALNOURISHED = "MALNOURISHED";
+	public static final String FINDS_PREVENTION = "PREVENTION";
+	public static final String FINDS_EXPECTING = "EXPECTING";
+	public static final String FINDS_NURSING = "NURSING";
+	public static final String FINDS_Q_PRESENT = "Present";
+	public static final String FINDS_Q_TRANSFER = "Transfer";
+	public static final String FINDS_Q_MODIFICATION = "Modifications";
+	public static final String FINDS_MONTHS_REMAINING = "MonthsRemaining";
+    public static final String FINDS_MALE = "MALE";
+    public static final String FINDS_FEMALE = "FEMALE";
+    public static final String FINDS_YES = "YES";
+    public static final String FINDS_NO = "NO";
+    public static final String FINDS_TRUE = "TRUE";
+    public static final String FINDS_FALSE = "FALSE";
+    
+	
 
 
 //	/** Commune table */
@@ -295,8 +334,7 @@ public class AcdiVocaDbHelper {
 		+ " (" + FINDS_ID + " integer primary key autoincrement, "
 		+ FINDS_PROJECT_ID + " integer DEFAULT 0, "
 		+ FINDS_DOSSIER + " text, "
-		+ FINDS_TYPE + " integer DEFAULT 0, " 
-		+ FINDS_STATUS + " integer DEFAULT 0, "
+		+ FINDS_TYPE + " integer DEFAULT 0, " // New or Update record
 		+ FINDS_MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_UNSENT + " ,"
 		+ FINDS_MESSAGE_TEXT + " text, "
  		+ FINDS_NAME + " text, "
@@ -313,6 +351,32 @@ public class AcdiVocaDbHelper {
 		+ FINDS_Q_MOTHER_LEADER + " boolean, "
 		+ FINDS_Q_VISIT_MOTHER_LEADER + " boolean, "
 		+ FINDS_Q_PARTICIPATING_AGRI + " boolean, "
+		+ FINDS_IS_FARMER + " boolean, "
+		+ FINDS_IS_MUSO + " boolean, "
+		+ FINDS_IS_RANCHER + " boolean, "
+		+ FINDS_IS_STOREOWN + " boolean, "
+		+ FINDS_IS_FISHER + " boolean, "
+		+ FINDS_IS_OTHER + " boolean, "
+		+ FINDS_LAND_AMOUNT+ " integer DEFAULT 0, "
+		+ FINDS_HAVE_VEGE+ " boolean, "
+		+ FINDS_HAVE_TUBER+ " boolean, "
+		+ FINDS_HAVE_CEREAL+ " boolean, "
+		+ FINDS_HAVE_TREE+ " boolean, "
+		+ FINDS_SEED_AMOUNT+ " integer DEFAULT 0, "
+		+ FINDS_UNIT + " text, "
+		+ FINDS_HAVE_HOUE+ " boolean, "
+		+ FINDS_HAVE_PIOCHE+ " boolean, "
+		+ FINDS_HAVE_BROUETTE+ " boolean, "
+		+ FINDS_HAVE_MACHETTE+ " boolean, "
+		+ FINDS_HAVE_SERPETTE+ " boolean, "
+		+ FINDS_HAVE_PELLE+ " boolean, "
+		+ FINDS_HAVE_BARREAMINES+ " boolean, "
+		+ FINDS_RELATIVE_1 + " text, "
+		+ FINDS_RELATIVE_2 + " text, "
+		+ FINDS_Q_PRESENT + " boolean, "
+		+ FINDS_Q_TRANSFER + " boolean, "
+		+ FINDS_Q_MODIFICATION + " boolean, " 
+		+ FINDS_MONTHS_REMAINING + " integer DEFAULT 0, "
 		+ FINDS_NAME_AGRI_PARTICIPANT + " text "
 		+ ");";
 

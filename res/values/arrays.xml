@@ -99,5 +99,34 @@
 	<item>Boutures</item>
 	</string-array>
 	
+<!-- 	Distribution center list -->
+	<string-array name="distribution_centers">
+	<item>Anse a Pitres</item>
+	<item>Centre Belle-Ance</item>
+	<item>Centre Platon Cedre</item>
+	<item>Centre Sacre Coeur</item>
+	<item>Centre St Joseph</item>
+	<item>dispensaire Banane</item>
+	<item>Dispensaire Bodarie</item>
+	<item>Dispensaire Boucan Belier</item>
+	<item>Dispensaire de Bleck/ Mar Mirande</item>
+	<item>Dispensaire de Savane Zombi</item>
+	<item>Dispensaire Grand Gosier</item>
+	<item>Dispensaire Mapou</item>
+	<item>Dispensaire marbriole</item>
+	<item>Dispensaire Ricot</item>
+	<item>Dispensaire Ste rose de lima</item>
+	<item>Labiche</item>
+	<item>Point Fixe Ka Tousen</item>
+	<item>Pt fixe Baie d_orange</item>
+	<item>Pt Fixe Bel-air</item>
+	<item>Pt fixe Boulay</item>
+	<item>Pt fixe Calumette</item>
+	<item>Pt fixe Corail Lamothe</item>
+	<item>Pt Fixe Macieux</item>
+	<item>Pt fixe Pichon</item>
+	<item>Point Fixe de Mayette(CDF)</item>
+	<item>Point Fixe d\'Amazone (CDF)</item>
+	</string-array>
 	
 </resources>
