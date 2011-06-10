@@ -176,6 +176,28 @@ public class AttributeManager {
 	public static final String URL_PLUS = "%2B";
 	public static final String PLUS = "+";
 	public static final String FORM_BENEFICIARY = null;
+	
+	
+	// Added for mobile app
+	// This group refers to the abbreviated column names in the on-phone Db
+	public static final String FINDS_DOSSIER =  "dossier";
+	public static final String FINDS_TYPE =  "type";
+	public static final String FINDS_STATUS =  "status";
+	public static final String MESSAGE_TEXT =  "message";
+	public static final String FINDS_MESSAGE_STATUS =  "message_status";
+	public static final String FINDS_FIRSTNAME =  "firstname";
+	public static final String FINDS_LASTNAME =  "lastname";
+	public static final String FINDS_ADDRESS =  "address";
+	public static final String FINDS_DOB =  "dob";
+	public static final String FINDS_HOUSEHOLD_SIZE =  "household_size";
+	public static final String FINDS_BENEFICIARY_CATEGORY =  "beneficiary_category";
+	public static final String FINDS_SEX =  "sex";
+	public static final String FINDS_HEALTH_CENTER =  "health_center";
+	public static final String FINDS_DISTRIBUTION_POST =  "distribution_post";
+	public static final String MESSAGE_BENEFICIARY_ID =  "beneficiary_id";
+	public static final String MESSAGE_CREATED_AT =  "created_time";
+	public static final String MESSAGE_SENT_AT =  "sent_time";
+	public static final String MESSAGE_ACK_AT =  "acknowledged_time";
 
 	/**
 	 * Private constructor means it can't be instantiated.
@@ -239,24 +261,24 @@ public class AttributeManager {
 		
 		// Added for mobile app
 		// This group refers to the column names in the on-phone Db
-		abbreviations.put(AcdiVocaDbHelper.FINDS_DOSSIER, "i");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_TYPE, "t");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_STATUS, "s");
-		abbreviations.put(AcdiVocaDbHelper.MESSAGE_TEXT, "t");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS, "m");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, "f");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_LASTNAME, "l");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_ADDRESS, "a");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_DOB, "b");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE, "n");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, "c");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_SEX, "g");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_HEALTH_CENTER, "h");
-		abbreviations.put(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST, "d");
-		abbreviations.put(AcdiVocaDbHelper.MESSAGE_BENEFICIARY_ID, "#");
-		abbreviations.put(AcdiVocaDbHelper.MESSAGE_CREATED_AT, "t1");
-		abbreviations.put(AcdiVocaDbHelper.MESSAGE_SENT_AT, "t2");
-		abbreviations.put(AcdiVocaDbHelper.MESSAGE_ACK_AT, "t3");
+		abbreviations.put(FINDS_DOSSIER, "i");
+		abbreviations.put(FINDS_TYPE, "t");
+		abbreviations.put(FINDS_STATUS, "s");
+		abbreviations.put(MESSAGE_TEXT, "t");
+		abbreviations.put(FINDS_MESSAGE_STATUS, "m");
+		abbreviations.put(FINDS_FIRSTNAME, "f");
+		abbreviations.put(FINDS_LASTNAME, "l");
+		abbreviations.put(FINDS_ADDRESS, "a");
+		abbreviations.put(FINDS_DOB, "b");
+		abbreviations.put(FINDS_HOUSEHOLD_SIZE, "n");
+		abbreviations.put(FINDS_BENEFICIARY_CATEGORY, "c");
+		abbreviations.put(FINDS_SEX, "g");
+		abbreviations.put(FINDS_HEALTH_CENTER, "h");
+		abbreviations.put(FINDS_DISTRIBUTION_POST, "d");
+		abbreviations.put(MESSAGE_BENEFICIARY_ID, "#");
+		abbreviations.put(MESSAGE_CREATED_AT, "t1");
+		abbreviations.put(MESSAGE_SENT_AT, "t2");
+		abbreviations.put(MESSAGE_ACK_AT, "t3");
 		
 		// These correspond to data values represented as Enums in the server app
 		abbreviations.put("FEMALE", "F");

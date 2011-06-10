@@ -119,17 +119,17 @@ public class AcdiVocaDbHelper {
 
 	public static final String MESSAGE_TABLE = "sms_message_log";
 	public static final String MESSAGE_ID = "_id";
-	public static final String MESSAGE_BENEFICIARY_ID = "beneficiary_id";  // Row Id in Beneficiary table
-	public static final String MESSAGE_TEXT = "message";
-	public static final String MESSAGE_STATUS = "message_status"; 
+	public static final String MESSAGE_BENEFICIARY_ID = AttributeManager.MESSAGE_BENEFICIARY_ID;  // Row Id in Beneficiary table
+	public static final String MESSAGE_TEXT = AttributeManager.MESSAGE_TEXT;
+	public static final String MESSAGE_STATUS = AttributeManager.FINDS_MESSAGE_STATUS; 
 	public static final String[] MESSAGE_STATUS_STRINGS = {"Unsent", "Pending", "Sent", "Acknowledged"};
 	public static final int MESSAGE_STATUS_UNSENT = 0;
 	public static final int MESSAGE_STATUS_PENDING = 1;
 	public static final int MESSAGE_STATUS_SENT = 2;
 	public static final int MESSAGE_STATUS_ACK = 3;
-	public static final String MESSAGE_CREATED_AT = "created_time";
-	public static final String MESSAGE_SENT_AT = "sent_time";
-	public static final String MESSAGE_ACK_AT = "acknowledged_time";
+	public static final String MESSAGE_CREATED_AT = AttributeManager.MESSAGE_CREATED_AT;
+	public static final String MESSAGE_SENT_AT = AttributeManager.MESSAGE_SENT_AT;
+	public static final String MESSAGE_ACK_AT = AttributeManager.MESSAGE_ACK_AT;
 	
 	private static final String CREATE_MESSAGE_TABLE = "CREATE TABLE IF NOT EXISTS "
 		+ MESSAGE_TABLE + "(" 
@@ -147,15 +147,15 @@ public class AcdiVocaDbHelper {
 	 */
 	public static final String FINDS_TABLE = "acdi_voca_finds";
 	public static final String FINDS_ID = "_id";
-	public static final String FINDS_DOSSIER = "dossier";
+	public static final String FINDS_DOSSIER = AttributeManager.FINDS_DOSSIER;
 	public static final String FINDS_PROJECT_ID = "project_id";
 	public static final String FINDS_NAME = "name";
 	
-	public static final String FINDS_TYPE = "type";    
+	public static final String FINDS_TYPE = AttributeManager.FINDS_TYPE;    
 	public static final int FINDS_TYPE_MCHN = 0;
 	public static final int FINDS_TYPE_AGRI = 1;
 	
-	public static final String FINDS_STATUS = "status";
+	public static final String FINDS_STATUS = AttributeManager.FINDS_STATUS;
 	public static final int FINDS_STATUS_NEW = 0;      // New registration, no Dossier ID
 	public static final int FINDS_STATUS_UPDATE = 1;   // Update, imported from TBS, with Dossier ID
 	public static final String[] FIND_STATUS_STRINGS = {"New", "Update"};  // For display purpose
@@ -163,24 +163,24 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_MESSAGE_STATUS = MESSAGE_STATUS;
 	public static final String FINDS_MESSAGE_TEXT = MESSAGE_TEXT;
 
-	public static final String FINDS_FIRSTNAME = "firstname";
-	public static final String FINDS_LASTNAME = "lastname";
+	public static final String FINDS_FIRSTNAME = AttributeManager.FINDS_FIRSTNAME;
+	public static final String FINDS_LASTNAME = AttributeManager.FINDS_LASTNAME;
 
-	public static final String FINDS_ADDRESS = "address";
-	public static final String FINDS_DOB = "dob";
-	public static final String FINDS_SEX = "sex";
+	public static final String FINDS_ADDRESS = AttributeManager.FINDS_ADDRESS;
+	public static final String FINDS_DOB = AttributeManager.FINDS_DOB;
+	public static final String FINDS_SEX = AttributeManager.FINDS_SEX;
 	public static final String FINDS_AGE = "age";
 
 	//public static final String FINDS_COMMUNE_ID = "commune_id";
 	//	public static final String FINDS_COMMUNE_SECTION_ID = "commune_section_id";
-	public static final String FINDS_BENEFICIARY_CATEGORY = "beneficiary_category";
+	public static final String FINDS_BENEFICIARY_CATEGORY = AttributeManager.FINDS_BENEFICIARY_CATEGORY;
 	//	public static final String FINDS_BENEFICIARY_CATEGORY_ID = "beneficiary_category_id";
-	public static final String FINDS_HOUSEHOLD_SIZE = "household_size";
+	public static final String FINDS_HOUSEHOLD_SIZE = AttributeManager.FINDS_HOUSEHOLD_SIZE;
 	//	public static final String FINDS_INFANT_CATEGORY ="infant_category";
 	//	public static final String FINDS_MOTHER_CATEGORY = "mother_category";
 
-	public static final String FINDS_DISTRIBUTION_POST = "distribution_post";
-	public static final String FINDS_HEALTH_CENTER = "health_center";
+	public static final String FINDS_DISTRIBUTION_POST = AttributeManager.FINDS_DISTRIBUTION_POST;
+	public static final String FINDS_HEALTH_CENTER = AttributeManager.FINDS_HEALTH_CENTER;
 	public static final String FINDS_Q_MOTHER_LEADER = "mother_leader";
 	public static final String FINDS_Q_VISIT_MOTHER_LEADER = "visit_mother_leader";
 	public static final String FINDS_Q_PARTICIPATING_AGRI = "pariticipating_agri";
