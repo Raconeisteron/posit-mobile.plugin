@@ -202,14 +202,14 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			
 			//((Button)findViewById(R.id.extraButton2)).setOnClickListener(this);
 			
-			final TextView version = (TextView) findViewById(R.id.version);
-			try {
-				version.setText(getPackageManager().getPackageInfo("org.hfoss.posit.android", 0).versionName);
-			} catch(NameNotFoundException nnfe) {
+			//final TextView version = (TextView) findViewById(R.id.version);
+			//try {
+			//	version.setText(getPackageManager().getPackageInfo("org.hfoss.posit.android", 0).versionName);
+			//} catch(NameNotFoundException nnfe) {
 				//shouldn't happen
-				Log.w(TAG, nnfe.toString(), nnfe);
-				version.setVisibility(View.INVISIBLE);
-			}
+			//	Log.w(TAG, nnfe.toString(), nnfe);
+			//	version.setVisibility(View.INVISIBLE);
+			//}
 //		}
 	}
 
@@ -278,10 +278,13 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			}
 		case LoginActivity.ACTION_LOGIN:
 			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, "Thank you", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Thank you", Toast.LENGTH_SHORT).show();
 				break;
 			} else {
-				Toast.makeText(this, "Sorry. Incorrect username or password.", Toast.LENGTH_LONG).show();
+				//Toast.makeText(this, "Sorry. Incorrect username or password.", Toast.LENGTH_LONG).show();
+				//showDialog(LOGIN_CANCELED);
+				//super.onActivityResult(requestCode, resultCode, data);
+				//setContentView(R.layout.main);
 				finish();
 			} 
 		

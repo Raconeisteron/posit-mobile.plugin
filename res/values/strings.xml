@@ -296,10 +296,5 @@
 	<string name="my_location">My Location</string>
 	<string name="search_finds">Search Finds</string>
 	<string name="toggle_tracks">Toggle Tracks</string>
-	<string name="center_finds">Center Finds</string>
-	
-
- 
-    
-    
+	<string name="center_finds">Center Finds</string>   
 </resources>

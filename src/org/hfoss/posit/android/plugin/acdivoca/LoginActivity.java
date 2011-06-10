@@ -71,7 +71,11 @@ import android.widget.DatePicker.OnDateChangedListener;
 public class LoginActivity extends Activity implements OnClickListener {
 	public static final String TAG = "AcdiVocaLookupActivity";
 	public static final int ACTION_LOGIN = 0;
-
+	public static final int INVALID_LOGIN = 1;
+	public static final int VALID_LOGIN = 2;
+	
+	private static final int CONFIRM_EXIT = 0;
+	
 	private UserType userType;
 	
 	/** Called when the activity is first created. */
@@ -129,13 +133,39 @@ public class LoginActivity extends Activity implements OnClickListener {
 			String password = etext.getText().toString();
 			if (authenticateUser(username, password)) {
 				setResult(RESULT_OK,returnIntent);
+				finish();
 			} else {
-				setResult(Activity.RESULT_CANCELED, returnIntent);
+				showDialog(INVALID_LOGIN);
 			}
 		} else {
 			setResult(Activity.RESULT_CANCELED, returnIntent);
+			finish();
 		}
-	    finish();
+	    //finish();
+	}
+	
+	/**
+	 * Creates a dialog to confirm that the user wants to exit POSIT.
+	 */
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case INVALID_LOGIN:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(R.string.password_alert_message)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// User clicked OK so do nothing
+
+						}
+					}
+					).create();
+
+		default:
+			return null;
+		}
 	}
 	
 	private boolean authenticateUser(String username, String password) {
