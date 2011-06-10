@@ -726,7 +726,9 @@ public class AcdiVocaDbHelper {
 	
 	
 	/**
-	 * Returns an array of AcdiVocaMessages for new or updated beneficiaries.
+	 * Returns an array of AcdiVocaMessages for new or updated beneficiaries. 
+	 * Fetches the beneficiary records from the Db and converts the column names
+	 * and their respective values to abbreviated attribute-value pairs.
 	 * @param filter
 	 * @param order_by
 	 * @return
@@ -735,7 +737,7 @@ public class AcdiVocaDbHelper {
 		Cursor c = lookupBeneficiaryRecords(filter, order_by);
 		Log.i(TAG,"createMessagesForBeneficiaries " +  " count=" + c.getCount() + " filter= " + filter);
 
-		// Construct the messages and store in a String array
+		// Construct the messages and return as a String array
 		AcdiVocaMessage acdiVocaMsgs[] = null;
 		if (c.getCount() != 0) {
 			
@@ -750,7 +752,8 @@ public class AcdiVocaDbHelper {
 			int beneficiary_status = -1;
 			String columns[] = null;
 			
-			columns = c.getColumnNames();
+			// For debugging
+//			columns = c.getColumnNames();   // The Db columns represent the attribute names
 //			for (int j = 0; j < columns.length; j++) 
 //				Log.i(TAG, columns[j] + "=" + c.getString(c.getColumnIndex(columns[j])));
 			
@@ -758,53 +761,35 @@ public class AcdiVocaDbHelper {
 			String statusStr = "";
 
 			while (!c.isAfterLast()) {
-				
-				if (filter == SearchFilterActivity.RESULT_SELECT_SENT    // MESSAGE_TABLE
-						|| filter == SearchFilterActivity.RESULT_SELECT_PENDING
-						|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED
-						|| filter == SearchFilterActivity.RESULT_SELECT_ALL	)  {
-					msg_id = c.getInt(c.getColumnIndex(MESSAGE_ID));
-					beneficiary_id = c.getInt(c.getColumnIndex(MESSAGE_BENEFICIARY_ID));
-					beneficiary_status = c.getInt(c.getColumnIndex(MESSAGE_STATUS));	
-					statusStr = ""+ beneficiary_status; //SearchFilterActivity.MESSAGE_STATUS_STRINGS[find_status];
-				}
-				else {  // FINDS_TABLE
-					beneficiary_id = c.getInt(c.getColumnIndex(FINDS_ID));
-					beneficiary_status = c.getInt(c.getColumnIndex(FINDS_STATUS));
-					statusStr = SearchFilterActivity.MESSAGE_STATUS_STRINGS[beneficiary_status];
-				}
+				beneficiary_id = c.getInt(c.getColumnIndex(FINDS_ID));
+				beneficiary_status = c.getInt(c.getColumnIndex(FINDS_STATUS));
+				statusStr = SearchFilterActivity.MESSAGE_STATUS_STRINGS[beneficiary_status];
 
 				columns = c.getColumnNames();
 				rawMessage = "";
 
 				// Construct the raw message with full attribute names
 				// For each column (attribute), put an attr=val pair in the string
-				String textAttrVal = "";
-				
+
 				for (int j = 0; j < columns.length; j++) {
-					if (columns[j].equals(MESSAGE_TEXT)) {
-						
-						//textAttrVal = "txt=["+ c.getString(c.getColumnIndex(columns[j])) + "]";			
-					} else {
+					if (!columns[j].equals(MESSAGE_TEXT)) {
 						rawMessage += 
 							columns[j] +  "=" +
 							c.getString(c.getColumnIndex(columns[j])) + ",";
 					}
 				}
 
-				// Now abbreviate the message and add in the text
+				// Now abbreviate the message
 				smsMessage = abbreviateBeneficiaryStringForSms(rawMessage);
-				smsMessage += textAttrVal;
-				
+
 				// Add a header (length and status) to message
 				msgHeader = "Id:" + msg_id + " Status= " + statusStr + "\n";
-				//beneRecords[k] = msgHeader +  smsMessage;
-				
+
 				acdiVocaMsgs[k] = new AcdiVocaMessage(msg_id, 
 						beneficiary_id, 
 						MESSAGE_STATUS_UNSENT,
 						rawMessage, smsMessage, msgHeader);
-				
+
 				c.moveToNext();
 				++k;
 			}
@@ -854,7 +839,7 @@ public class AcdiVocaDbHelper {
 	
 	
 	/**
-	 * Converts a String representing a beneficiary into an abbreviated
+	 * Converts a String representing a beneficiary string into an abbreviated
 	 * string. If the String already contains an SMS message in its 'message_text'
 	 * field, then no need to construct it again.
 	 * @param beneficiary a string of the form attr1-value1,attr2=value2...
@@ -887,7 +872,7 @@ public class AcdiVocaDbHelper {
 					//&& !attr.equals(FINDS_MESSAGE_TEXT) 
 					&& !val.equals("null")
 					) {
-				abbrev = AcdiVocaSmsManager.convertAttrValToAbbrev(attr, val);
+				abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
 				if (!abbrev.equals(""))
 					message += abbrev + ",";
 			}
