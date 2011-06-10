@@ -461,16 +461,16 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			//this.startActivity(new Intent().setClass(this,AcdiVocaListFindsActivity.class));
 			finish();
 		}
-		if(v.getId()==R.id.sendSmsButton) { 
-			ContentValues values = retrieveContentFromView();
-
-	        String message = AcdiVocaSmsManager.formatSmsMessage(values);
-	        
-//			AcdiVocaSmsManager.sendMessage(this,message,null);
-			//Toast.makeText(this, "Sending: " +  message, Toast.LENGTH_SHORT).show();
-			Log.i(TAG,  "Sending: " +  message);
-	        finish();
-		}
+//		if(v.getId()==R.id.sendSmsButton) { 
+//			ContentValues values = retrieveContentFromView();
+//
+//	        String message = AcdiVocaSmsManager.formatSmsMessage(values);
+//	        
+////			AcdiVocaSmsManager.sendMessage(this,message,null);
+//			//Toast.makeText(this, "Sending: " +  message, Toast.LENGTH_SHORT).show();
+//			Log.i(TAG,  "Sending: " +  message);
+//	        finish();
+//		}
 	}
 
 	

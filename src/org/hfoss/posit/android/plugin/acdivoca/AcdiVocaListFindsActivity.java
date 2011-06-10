@@ -395,6 +395,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
 		lv.setOnItemClickListener(new OnItemClickListener() {
+			
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 

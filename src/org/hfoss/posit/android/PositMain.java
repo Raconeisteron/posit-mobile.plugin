@@ -31,6 +31,8 @@ import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaNewAgriActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
+import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
@@ -110,6 +112,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		
 		// initialize plugins
 		FindPluginManager.initInstance(this);
+		AcdiVocaSmsManager.initInstance(this);
+		AttributeManager.init();
 		
 		// Run login activity, if necessary
 		
