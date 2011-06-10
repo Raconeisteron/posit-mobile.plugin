@@ -7,6 +7,7 @@
 	<string name="admin_welcome">Admin Fonctions\nUtiliser le menu</string>
 	<string name="load_beneficiary_data">Import Beneficiary Data</string>
 	<string name="distribution_point">Point de distribution</string>
+	<string name="password_alert_message">Votre nom d\'utilisateur ou mot de passe est incorrect.</string>
 	
 	<!--  Button Labels -->
 	<string name="list_beneficiary_label">Lis\nBenefisyè</string>

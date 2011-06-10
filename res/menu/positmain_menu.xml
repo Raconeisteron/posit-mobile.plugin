@@ -7,12 +7,12 @@
 	<item 
 		android:id="@+id/about_menu_item" 
 		android:title="@string/aboutItem"
-		android:icon="@drawable/about">
+		android:icon="@drawable/about2">
 	</item>
 		
 	<item 
 		android:id="@+id/admin_menu_item" 
 		android:title="@string/admin_menu"
-		android:icon="@drawable/about">
+		android:icon="@drawable/admin3">
 	</item>	
 </menu>

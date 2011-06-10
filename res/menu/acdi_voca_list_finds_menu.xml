@@ -24,7 +24,7 @@
 	</item>
 -->	
 	<item
-		android:icon="@drawable/ic_menu_refresh"
+		android:icon="@drawable/list"
 		android:title="@string/list_messages"
 		android:id="@+id/list_messages" >
 	</item>

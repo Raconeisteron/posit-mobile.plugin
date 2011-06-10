@@ -9,9 +9,10 @@
 			android:id="@+id/website"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_gravity="center"
 			android:textSize="18sp"
 			android:textColor="#ffffff"
-			android:text="http://www.posit-project.org"
+			android:text="\n         Powered by POSIT\n(http://www.posit-project.org)"
 			android:autoLink="web"
 			android:layout_marginBottom="10dp"/>
 		<TextView
