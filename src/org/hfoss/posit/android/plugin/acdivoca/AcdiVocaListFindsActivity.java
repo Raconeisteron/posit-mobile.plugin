@@ -32,6 +32,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -193,8 +194,23 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-		intent.setAction(Intent.ACTION_EDIT);
+		
+		//lookup the id and check the beneficiary type
+		//based on that prepare the intent
+		//Intent intent = new Intent(this, AcdiVocaFindActivity.class);
+        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+        ContentValues values = db.fetchFindDataById(id, null);
+        Log.i(TAG, "###############################################");
+        Log.i(TAG, values.toString());
+        Intent intent = null;
+ 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_MCHN){
+ 			intent = new Intent(this, AcdiVocaFindActivity.class);
+ 		}
+ 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
+ 			intent = new Intent(this, AcdiVocaNewAgriActivity.class);
+ 		}
+ 		
+ 		intent.setAction(Intent.ACTION_EDIT);
 		if (DBG) Log.i(TAG,"id = " + id);
 		intent.putExtra(AcdiVocaDbHelper.FINDS_ID, id);
 

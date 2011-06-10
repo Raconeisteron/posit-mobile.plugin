@@ -335,7 +335,8 @@ public class AcdiVocaDbHelper {
 		+ FINDS_PROJECT_ID + " integer DEFAULT 0, "
 		+ FINDS_DOSSIER + " text, "
 		+ FINDS_TYPE + " integer DEFAULT 0, " // New or Update record
-		+ FINDS_MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_UNSENT + " ,"
+		+ FINDS_STATUS + " integer DEFAULT " + FINDS_STATUS_NEW + ", "
+		+ FINDS_MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_UNSENT + ", "
 		+ FINDS_MESSAGE_TEXT + " text, "
  		+ FINDS_NAME + " text, "
 		+ FINDS_FIRSTNAME + " text, "

@@ -23,22 +23,16 @@
 package org.hfoss.posit.android.plugin.acdivoca;
 
 import java.util.Calendar;
-import java.util.Locale;
-
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.telephony.gsm.SmsManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -47,14 +41,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -520,7 +511,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //		Log.i(TAG,"display DOB = " + date);
 		if (date != null) {
 			Log.i(TAG,"display DOB = " + date);
-			dp.init(yr, mon, day, (OnDateChangedListener) this);
+			dp.init(yr, mon, day, this);
 		}
 //		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
 //				Integer.parseInt(date.substring(0,date.indexOf("/"))),
@@ -555,13 +546,24 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		
 //New code - Chris		
 		
-		RadioButton motherLeaderRB = (RadioButton)findViewById(R.id.radio_motherleader_yes);
+		RadioButton aRadioButton = (RadioButton)findViewById(R.id.radio_motherleader_yes);
 		Log.i(TAG, "motherLeader=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER));
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER).equals(AcdiVocaDbHelper.FINDS_YES))
-			motherLeaderRB.setChecked(true);
-	    motherLeaderRB = (RadioButton)findViewById(R.id.radio_motherleader_no);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER).equals(AcdiVocaDbHelper.FINDS_NO)){
-			motherLeaderRB.setChecked(true);
+
+		String value = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER);
+		if (value != null) {
+			if (value.equals(AcdiVocaDbHelper.FINDS_YES))
+				aRadioButton.setChecked(true);
+			else 
+				aRadioButton.setChecked(false);
+
+			aRadioButton = (RadioButton)findViewById(R.id.radio_motherleader_no);
+		
+			if (value.equals(AcdiVocaDbHelper.FINDS_NO)){
+				aRadioButton.setChecked(true);
+			} else {
+				aRadioButton.setChecked(false);
+
+			}
 		}
 		
 		RadioButton visitMotherLeaderRB = (RadioButton)findViewById(R.id.radio_visit_yes);
