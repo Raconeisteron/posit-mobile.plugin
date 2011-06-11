@@ -23,11 +23,13 @@
 package org.hfoss.posit.android.plugin.acdivoca;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindPluginManager;
 
 import android.app.Activity;
+import android.util.Log;
 
 /**
  * Manages attributes.
@@ -259,8 +261,30 @@ public class AttributeManager {
 		abbreviations.put(ABBREV_AV, LONG_AV);
 		abbreviations.put(ABBREV_TYPE, LONG_TYPE);
 		
+		
+		// This group maps SMS abbreviations to full attribute names
+		abbreviations.put("i", FINDS_DOSSIER);
+		abbreviations.put("t", FINDS_TYPE);
+		abbreviations.put( "s", FINDS_STATUS);
+		abbreviations.put("t", MESSAGE_TEXT);
+		abbreviations.put( "m", FINDS_MESSAGE_STATUS);
+		abbreviations.put("f", FINDS_FIRSTNAME);
+		abbreviations.put("l", FINDS_LASTNAME);
+		abbreviations.put("a", FINDS_ADDRESS);
+		abbreviations.put("b", FINDS_DOB);
+		abbreviations.put("n", FINDS_HOUSEHOLD_SIZE);
+		abbreviations.put("c", FINDS_BENEFICIARY_CATEGORY);
+		abbreviations.put("g", FINDS_SEX);
+		abbreviations.put("h", FINDS_HEALTH_CENTER);
+		abbreviations.put("d", FINDS_DISTRIBUTION_POST);
+		abbreviations.put("#", MESSAGE_BENEFICIARY_ID);
+		abbreviations.put("t1", MESSAGE_CREATED_AT);
+		abbreviations.put("t2", MESSAGE_SENT_AT);
+		abbreviations.put("t3", MESSAGE_ACK_AT);
+		
+		
 		// Added for mobile app
-		// This group refers to the column names in the on-phone Db
+		// This group maps Db column names in the on-phone Db to SMS abbreviations
 		abbreviations.put(FINDS_DOSSIER, "i");
 		abbreviations.put(FINDS_TYPE, "t");
 		abbreviations.put(FINDS_STATUS, "s");
@@ -290,7 +314,8 @@ public class AttributeManager {
 		abbreviations.put("PREVENTION", "P");
 		abbreviations.put("Enfant Prevention", "P");		
 		abbreviations.put("MALNOURISHED", "M");
-		abbreviations.put("Enfant Mal", "M");	}
+		abbreviations.put("Enfant Mal", "M");	
+	}
 	
 	/**
 	 * Maps the short form field names to long form
@@ -356,6 +381,13 @@ public class AttributeManager {
 			return val;
 	}
 	
+	
+	public void testAllAttributes() {
+		Iterator<String> it = abbreviations.values().iterator();
+		while (it.hasNext()) {
+			System.out.println(it.next());
+		}
+	}
 	/**
 	 * TODO:  This method should thoroughly test this class. For example, 
 	 * print out all mappings of short to long.
@@ -363,8 +395,10 @@ public class AttributeManager {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		System.out.println("Hello Attribue Manager");
 		AttributeManager am = AttributeManager.getInstance(); // new AttributeManager();
 		System.out.print(am.mapToLong(Beneficiary.Abbreviated.FALSE, "f"));
+		am.testAllAttributes();
 	}
 
 }

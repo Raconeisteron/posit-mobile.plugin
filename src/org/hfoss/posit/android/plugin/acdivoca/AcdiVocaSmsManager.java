@@ -192,7 +192,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 				&& message.length() <= MAX_MESSAGE_LENGTH) {
 			try {
 				SmsManager sms = SmsManager.getDefault();
-				//sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
+				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
 				Toast.makeText(context, "SMS Sent!\n"+message + " to " + phoneNumber, Toast.LENGTH_LONG).show();
 				Log.i(TAG,"SMS Sent: " + message);
 			}catch(Exception e) {
