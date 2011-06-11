@@ -358,6 +358,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	 * Displays SMS messages, filter by status and type.
 	 */
 	private void displayMessageList(int filter) {
+		Log.i(TAG, "Display messages for filter " + filter);
 		String messages[] = null;
 		AcdiVocaMessage[] acdiVocaMsgs = null;
 		
@@ -366,9 +367,13 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
 				|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {
 			acdiVocaMsgs = db.createMessagesForBeneficiaries(filter, null);
-		} else {
+		} else if (filter == SearchFilterActivity.RESULT_SELECT_ALL 
+				|| filter == SearchFilterActivity.RESULT_SELECT_PENDING
+				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
+				|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
 			acdiVocaMsgs = db.fetchSmsMessages(filter, null); // Second arg is order by
-		}
+		} else 
+			return;
 		
 		if (acdiVocaMsgs == null) {
 			

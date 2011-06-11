@@ -108,6 +108,14 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 		
 		((Button)findViewById(R.id.search_filter_select_button)).setOnClickListener(this);
 		((Button)findViewById(R.id.cancel_select_filter_button)).setOnClickListener(this);
+
+		// Listen for clicks on radio buttons
+		 ((RadioButton)findViewById(R.id.all_messages)).setOnClickListener(this);
+		 ((RadioButton)findViewById(R.id.new_messages)).setOnClickListener(this);
+		 ((RadioButton)findViewById(R.id.update_messages)).setOnClickListener(this);
+		 ((RadioButton)findViewById(R.id.pending_messages)).setOnClickListener(this);
+		 ((RadioButton)findViewById(R.id.sent_messages)).setOnClickListener(this);
+		 ((RadioButton)findViewById(R.id.acknowledged_messages)).setOnClickListener(this);
 	}
 
 	/**
@@ -116,6 +124,18 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		Log.i(TAG, "onClick");
 	    Intent returnIntent = new Intent();
+	    
+		try {
+			if (v.getClass().equals(Class.forName("android.widget.RadioButton"))) {
+					//Toast.makeText(this, "RadioClicked", Toast.LENGTH_SHORT).show();
+				((Button)findViewById(R.id.search_filter_select_button)).setEnabled(true);
+				return;
+			}
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	
 		if (v.getId() == R.id.search_filter_select_button) {
 			int result = selectRadioResult();

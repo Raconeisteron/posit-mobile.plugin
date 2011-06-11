@@ -21,7 +21,7 @@
 				
 			<EditText android:id="@+id/firstnameEdit"
 				android:hint="@string/firstname"
-				android:inputType="textCapSentences"
+				android:inputType="textCapWords"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="20px" android:layout_marginRight="30px" />
 
@@ -29,11 +29,12 @@
 				android:hint="@string/lastname"
 				android:layout_width="fill_parent" android:layout_marginRight="30px"
 				android:layout_marginLeft="20px" 
-				android:inputType="textCapSentences"
+				android:inputType="textCapWords"
 				android:layout_height="wrap_content" />
  				
 			<EditText android:id="@+id/addressEdit"
 				android:hint="@string/address"
+				android:inputType="textCapWords"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="20px" android:layout_marginRight="30px" />	
 				
@@ -289,13 +290,14 @@
 				
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="horizontal" android:layout_width="wrap_content"
-				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:layout_height="fill_parent" android:layout_gravity="center" 
 				android:paddingTop="10dp" >
 				<Button android:text="@string/add_save" android:id="@+id/saveToDbButton"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
 				<Button android:text="@string/add_send" android:id="@+id/sendSmsButton"
+					android:visibility="gone"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 			</LinearLayout>

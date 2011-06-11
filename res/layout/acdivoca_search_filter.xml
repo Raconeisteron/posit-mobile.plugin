@@ -49,6 +49,7 @@
 		<Button android:text="@string/search_filter_select_button" 
 			android:id="@+id/search_filter_select_button"
 			android:hapticFeedbackEnabled="true"
+			android:enabled="false"
 			android:minWidth="75px"
 			android:layout_gravity="bottom" 
 			android:layout_width="wrap_content"
