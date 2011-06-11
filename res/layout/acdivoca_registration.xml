@@ -289,10 +289,12 @@ Removed redundant elements -->
 				android:paddingTop="24dp" >
 
 				<Button android:text="@string/add_save" android:id="@+id/saveToDbButton"
+					android:enabled="false"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
 				<Button android:text="@string/add_send" android:id="@+id/sendSmsButton"
+					android:visibility="gone"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 			</LinearLayout>

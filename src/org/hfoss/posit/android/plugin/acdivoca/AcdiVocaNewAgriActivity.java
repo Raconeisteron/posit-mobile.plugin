@@ -589,6 +589,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 			} else {
 //				DbSimulator db = new DbSimulator();   // Temporary Simulator
 //				result = db.addNewFind(data);
+				data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New Agri");
 				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
 				Log.i(TAG, "Save to Db is " + result);
 			}
