@@ -24,6 +24,7 @@
 package org.hfoss.posit.android.plugin.acdivoca;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hfoss.posit.android.R;
@@ -798,16 +799,16 @@ public class AcdiVocaDbHelper {
 	 * @param order_by
 	 * @return
 	 */
-	public AcdiVocaMessage[] createMessagesForBeneficiaries(int filter, String order_by) {
+	public ArrayList<AcdiVocaMessage> createMessagesForBeneficiaries(int filter, String order_by) {
 		Cursor c = lookupBeneficiaryRecords(filter, order_by);
 		Log.i(TAG,"createMessagesForBeneficiaries " +  " count=" + c.getCount() + " filter= " + filter);
 
 		// Construct the messages and return as a String array
-		AcdiVocaMessage acdiVocaMsgs[] = null;
+		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
 		if (c.getCount() != 0) {
 			
 			Log.i(TAG, "Columns=" + c.getColumnNames().toString());
-			acdiVocaMsgs = new AcdiVocaMessage[c.getCount()];
+			//acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
 			c.moveToFirst();
 			int k = 0;
 			String smsMessage = null;
@@ -828,7 +829,7 @@ public class AcdiVocaDbHelper {
 			while (!c.isAfterLast()) {
 				beneficiary_id = c.getInt(c.getColumnIndex(FINDS_ID));
 				beneficiary_status = c.getInt(c.getColumnIndex(FINDS_STATUS));
-				statusStr = SearchFilterActivity.MESSAGE_STATUS_STRINGS[beneficiary_status];
+				statusStr = MESSAGE_STATUS_STRINGS[beneficiary_status];
 
 				columns = c.getColumnNames();
 				rawMessage = "";
@@ -848,13 +849,12 @@ public class AcdiVocaDbHelper {
 				smsMessage = abbreviateBeneficiaryStringForSms(rawMessage);
 
 				// Add a header (length and status) to message
-				msgHeader = "Id:" + msg_id + " Status= " + statusStr + "\n";
+				msgHeader = "Id:" + msg_id + " Status= " + statusStr;
 
-				acdiVocaMsgs[k] = new AcdiVocaMessage(msg_id, 
+				acdiVocaMsgs.add(new AcdiVocaMessage(msg_id, 
 						beneficiary_id, 
 						MESSAGE_STATUS_UNSENT,
-						rawMessage, smsMessage, msgHeader);
-
+						rawMessage, smsMessage, msgHeader));
 				c.moveToNext();
 				++k;
 			}
@@ -871,15 +871,15 @@ public class AcdiVocaDbHelper {
 	 * @param filter a int that selects messages by status
 	 * @return an array of SMS strings
 	 */
-	public AcdiVocaMessage[] fetchSmsMessages(int filter, String order_by) {
+	public ArrayList<AcdiVocaMessage> fetchSmsMessages(int filter, String order_by) {
 		Cursor c = lookupMessages(filter, order_by);
 		Log.i(TAG,"fetchSmsMessages " +  " count=" + c.getCount() + " filter= " + filter);
 
 		// Construct the messages and store in a String array
-		AcdiVocaMessage acdiVocaMsgs[] = null;
+		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
 		if (c.getCount() != 0) {
 			
-			acdiVocaMsgs = new AcdiVocaMessage[c.getCount()];
+			//acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
 			c.moveToFirst();
 			
 			int k = 0;
@@ -889,10 +889,11 @@ public class AcdiVocaDbHelper {
 				int beneficiary_id = c.getInt(c.getColumnIndex(MESSAGE_BENEFICIARY_ID));
 				int msg_status = c.getInt(c.getColumnIndex(MESSAGE_STATUS));
 				String smsMessage = c.getString(c.getColumnIndex(MESSAGE_TEXT));
-				String msgHeader = "Id:" + msg_id + " Status= " + msg_status + "\n";
-				acdiVocaMsgs[k] = new AcdiVocaMessage(msg_id, beneficiary_id, msg_status,
-						"", smsMessage, msgHeader);
-				
+				String statusStr = MESSAGE_STATUS_STRINGS[msg_status];
+
+				String msgHeader = "Id:" + msg_id + " Status= " + statusStr;
+				acdiVocaMsgs.add (new AcdiVocaMessage(msg_id, beneficiary_id, msg_status,
+						"", smsMessage, msgHeader));
 				c.moveToNext();
 				++k;
 			}
