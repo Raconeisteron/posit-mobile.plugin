@@ -22,9 +22,12 @@
  */
 package org.hfoss.posit.android.plugin.acdivoca;
 
+import java.util.ArrayList;
+
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.Utils;
 import org.hfoss.posit.android.api.FindActivityProvider;
+import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.ListFindsActivity;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
@@ -38,14 +41,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -75,7 +81,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	private int project_id;
     private static final boolean DBG = false;
 	//private ArrayAdapter<String> mAdapter;
-	private ArrayAdapter<AcdiVocaMessage> mAdapter;
+    
+    private MessageListAdapter<AcdiVocaMessage> mAdapter;
+	//private ArrayAdapter<AcdiVocaMessage> mAdapter;
 
 	private int mMessageFilter = -1;   		// Set in SearchFilterActivity result
 	private int mNMessagesDisplayed = 0;
@@ -200,6 +208,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		//Intent intent = new Intent(this, AcdiVocaFindActivity.class);
         AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
         ContentValues values = db.fetchFindDataById(id, null);
+        
         Log.i(TAG, "###############################################");
         Log.i(TAG, values.toString());
         Intent intent = null;
@@ -231,9 +240,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 
 	
 	/**
-	 * Prepare the menu options based on the message search filter.
+	 * Prepares the menu options based on the message search filter. This
+	 * is called just before the menu is displayed.
 	 */
-	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
@@ -359,72 +368,66 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	 */
 	private void displayMessageList(int filter) {
 		Log.i(TAG, "Display messages for filter " + filter);
-		String messages[] = null;
-		AcdiVocaMessage[] acdiVocaMsgs = null;
-		
+		ArrayList<AcdiVocaMessage> acdiVocaMsgs = null;
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		
 		if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
-				|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {
+				|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {  // Second arg is order by
 			acdiVocaMsgs = db.createMessagesForBeneficiaries(filter, null);
 		} else if (filter == SearchFilterActivity.RESULT_SELECT_ALL 
 				|| filter == SearchFilterActivity.RESULT_SELECT_PENDING
 				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
 				|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
-			acdiVocaMsgs = db.fetchSmsMessages(filter, null); // Second arg is order by
+			acdiVocaMsgs = db.fetchSmsMessages(filter, null); 
 		} else 
 			return;
-		
-		if (acdiVocaMsgs == null) {
-			
-//			Toast.makeText(this, "Sorry, there are no " +
-//					SearchFilterActivity.MESSAGE_STATUS_STRINGS[filter] + " messages.", 
-//					Toast.LENGTH_SHORT).show();
-			acdiVocaMsgs = new AcdiVocaMessage[1];
-			acdiVocaMsgs[0] = new AcdiVocaMessage();
-			acdiVocaMsgs[0].setSmsMessage("No messages to display");
-			
+				
+//		if (acdiVocaMsgs == null) {
+		if (acdiVocaMsgs.size() == 0) {
 			mNMessagesDisplayed = 0;
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
+			//setContentView(R.layout.acdivoca_list_messsages);
+			acdiVocaMsgs.add(new AcdiVocaMessage(-1,-1,-1,"",getString(R.string.no_messages),""));
 
 		} else {
-			mNMessagesDisplayed = acdiVocaMsgs.length;
+			mNMessagesDisplayed = acdiVocaMsgs.size();
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
-	        Log.i(TAG, "Fetched " + acdiVocaMsgs.length + " messages");
+	        Log.i(TAG, "Fetched " + acdiVocaMsgs.size() + " messages");
 		}
-		
 		setUpMessagesList(acdiVocaMsgs);
+
 	}
 	
 	/**
 	 * Helper method to set up a simple list view using an ArrayAdapter.
 	 * @param data
 	 */
-	private void setUpMessagesList(final AcdiVocaMessage[] data) {
-		Log.i(TAG, "setUpMessagesList");
+	private void setUpMessagesList(final ArrayList<AcdiVocaMessage> data) {
+		if (data != null) 
+			Log.i(TAG, "setUpMessagesList, size = " + data.size());
+		else 
+			Log.i(TAG, "setUpMessagesList, data = null");
+
 		mMessageListDisplayed = true;
-		
-		String messages[] = new String[data.length];
-		for (int k = 0; k < messages.length; k++) {
-			messages[k] = data[k].getSmsMessage();
-		}
-		
-		// For this to work, AcdiVocaMessage.toString() returns what is displayed in the list.
-		// TODO:  Implement a custom Adapter and View.
-		mAdapter = new ArrayAdapter<AcdiVocaMessage>(this, android.R.layout.simple_list_item_1, data);
+
+		mAdapter = new MessageListAdapter<AcdiVocaMessage>(this, R.layout.acdivoca_list_messsages, data);
+
 		setListAdapter(mAdapter);
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
 		lv.setOnItemClickListener(new OnItemClickListener() {
-			
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
 
-				// When clicked, show a toast with the TextView text
-				Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
-						Toast.LENGTH_SHORT).show();
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				String display = "";
+				TextView tv = ((TextView)parent.findViewById(R.id.message_header));
+				display += tv.getText();
+				tv = ((TextView)parent.findViewById(R.id.message_body));
+				display += "\n" + tv.getText();
+
+				Toast.makeText(getApplicationContext(), display, Toast.LENGTH_SHORT).show();
 			}
 		});
+
 	}
 
 	
@@ -497,28 +500,45 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		}
 	}
 
-//	/**
-//	 * Intercepts the back key (KEYCODE_BACK). Always exits to POSIT Main.
-//	 */
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		Log.i(TAG, "onKeyDown");
-//		if(keyCode==KeyEvent.KEYCODE_BACK){
-//			this.startActivity(new Intent().setClass(this, org.hfoss.posit.android.PositMain.class));
-//			return true;
-//		}
-//		Log.i("code", keyCode+"");
-//		return super.onKeyDown(keyCode, event);
-//	}
 
-//	/*@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//
-//		if(keyCode==KeyEvent.KEYCODE_BACK){
-//			showDialog(confirm_exit);
-//			return true;
-//		}
-//		return super.onKeyDown(keyCode, event);
-//	}*/
+	private class MessageListAdapter<AcdiVocaMessage> extends ArrayAdapter<AcdiVocaMessage> {
+
+        private ArrayList<AcdiVocaMessage> items;
+
+        public MessageListAdapter(Context context, int textViewResourceId, ArrayList<AcdiVocaMessage> items) {
+                super(context, textViewResourceId, items);
+                this.items = items;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+                View v = convertView;
+                if (v == null) {
+                    LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    v = vi.inflate(R.layout.acdivoca_list_messages_row, null);
+                }
+                AcdiVocaMessage msg = items.get(position);
+                if (msg != null) {
+                        TextView tt = (TextView) v.findViewById(R.id.message_header);
+                        TextView bt = (TextView) v.findViewById(R.id.message_body);
+                        if (items.size() > 1) {
+                        	if (tt != null) {
+                        		tt.setText("Header: " + ((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getMsgHeader());                            
+                        	}
+                        	if(bt != null){
+                        		bt.setText("SMS: " + ((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getSmsMessage());
+                        	}
+                        } else {
+                           	if(bt != null){
+                           		bt.setTextColor(Color.RED);
+                           		bt.setTextSize(24);
+                        		bt.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getSmsMessage());
+                        	}
+                       	
+                        }
+                }
+                return v;
+        }
+}
 
 }
