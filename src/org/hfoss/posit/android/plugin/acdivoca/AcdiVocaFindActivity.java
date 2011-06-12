@@ -787,20 +787,36 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	}
 	
 	
+//	Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
+//	String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
+//	int k = 0;
+//	String item = null;
+//	if (selected != null) {
+//		item = (String) spinner.getItemAtPosition(k);
+//		while (k < spinner.getCount() && !selected.equals(item)) {
+//			item = (String) spinner.getItemAtPosition(k);
+//			++k;
+//		}
+//		spinner.setSelection(k);
+//	}
+	
 //spinner function	
-	public static void spinnerSetter(Spinner spinner, ContentValues contentValues, String ident){
-		String selected = contentValues.getAsString(ident);
+	public static void spinnerSetter(Spinner spinner, ContentValues contentValues, String attribute){
+		String selected = contentValues.getAsString(attribute);
 		int k = 0;
 		if(selected != null){
 			String item = (String) spinner.getItemAtPosition(k);
 			while (k < spinner.getCount() && !selected.equals(item)) {
-				++k;
 				item = (String) spinner.getItemAtPosition(k);
+				++k;
 			}
-			spinner.setSelection(k);
+			if (k < spinner.getCount())
+				spinner.setSelection(k);
+			else
+				spinner.setSelection(0);
 		}
 		else{
-			spinner.setSelection(k);
+			spinner.setSelection(0);
 		}
 	}
 	

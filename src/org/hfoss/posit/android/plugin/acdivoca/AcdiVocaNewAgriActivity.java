@@ -428,11 +428,11 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 //		result.put(AcdiVocaDbHelper.FINDS_TOOL_CATAGORY, toolCtg);
 		
 		Spinner spinner = null;
-		String unit = "";
-		spinner = (Spinner)findViewById(R.id.unitSpinner);
-		unit = (String) spinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.FINDS_UNIT, unit);
-		
+//		String unit = "";
+//		spinner = (Spinner)findViewById(R.id.unitSpinner);
+//		unit = (String) spinner.getSelectedItem();
+//		result.put(AcdiVocaDbHelper.FINDS_UNIT, unit);
+//		
 		String health = "";
 		spinner = (Spinner)findViewById(R.id.healthcenterSpinner);
 		health = (String)spinner.getSelectedItem();
@@ -472,8 +472,8 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		eText = (EditText)findViewById(R.id.inhomeEdit);
 		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
 		
-		eText = (EditText)findViewById(R.id.quantityEdit);
-		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEED_AMOUNT));
+//		eText = (EditText)findViewById(R.id.quantityEdit);
+//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEED_AMOUNT));
 		
 		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
 		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
@@ -491,22 +491,48 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_MALE))
 			sexRB.setChecked(true);
 
-		// HANDLE CHECKBOX NEES TO FIND A BETTER WAY
+		// HANDLE CHECKBOX NEEDS TO FIND A BETTER WAY
 		CheckBox aCheckBox = (CheckBox)findViewById(R.id.farmerCheckBox);
-        Log.i(TAG, contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_IS_FARMER).toString());
-		aCheckBox.setChecked(contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_IS_FARMER));
+        Log.i(TAG, "isFarmer = " +  contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FARMER).toString());
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FARMER) == 1);
 		aCheckBox = (CheckBox)findViewById(R.id.musoCheckBox);
-		aCheckBox.setChecked(contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_IS_MUSO));
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_MUSO) == 1);
 		aCheckBox = (CheckBox)findViewById(R.id.rancherCheckBox);
-		aCheckBox.setChecked(contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_IS_RANCHER));
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_RANCHER) == 1);
 		aCheckBox = (CheckBox)findViewById(R.id.storeOwnerCheckBox);
-		aCheckBox.setChecked(contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_IS_STOREOWN));
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_STOREOWN) == 1);
 		aCheckBox = (CheckBox)findViewById(R.id.fisherCheckBox);
-		aCheckBox.setChecked(contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_IS_FISHER));
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FISHER) == 1);
 		aCheckBox = (CheckBox)findViewById(R.id.otherCheckBox);
-		aCheckBox.setChecked(contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_IS_OTHER));
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_OTHER) == 1);
+		
+		aCheckBox = (CheckBox)findViewById(R.id.barreAMinesCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_BARREAMINES) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.vegeCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_VEGE) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.cerealCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_CEREAL) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.tuberCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TUBER) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.treeCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TREE) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.houeCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_HOUE) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.piocheCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_PIOCHE) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.brouetteCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_BROUETTE) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.machetteCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_MACHETTE) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.serpetteCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_SERPETTE) == 1);
+		aCheckBox = (CheckBox)findViewById(R.id.pelleCheckBox);
+		aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_PELLE) == 1);
+		
 		Log.i(TAG, "display Beneficiary Catagory=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY));
-//		int test = Integer.parseInt(contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY));
+
+		
+		//		int test = Integer.parseInt(contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY));
 //		if (test >= 32){
 //			otherCB.setChecked(true);
 //			test -= 32;
@@ -534,7 +560,9 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
     spinner = (Spinner)findViewById(R.id.distributionSpinner);
 	AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
 	spinner = (Spinner)findViewById(R.id.unitSpinner);
-	AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_UNIT);
+	
+//	AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_UNIT);
+	
 //		String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
 //		int k = 0;
 //		String item = (String) spinner.getItemAtPosition(k);
@@ -587,33 +615,18 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 				result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
 				Log.i(TAG, "Update to Db is " + result);
 			} else {
-//				DbSimulator db = new DbSimulator();   // Temporary Simulator
-//				result = db.addNewFind(data);
 				data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New Agri");
 				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
 				Log.i(TAG, "Save to Db is " + result);
 			}
 			if (result){
-				Toast.makeText(this, data.toString(), Toast.LENGTH_LONG).show();
-				Toast.makeText(this, data.toString(), Toast.LENGTH_LONG).show();
-
-		
+				//Toast.makeText(this, data.toString(), Toast.LENGTH_LONG).show();
 			}
 			else 
 				Toast.makeText(this, "Db error", Toast.LENGTH_SHORT).show();
 			//this.startActivity(new Intent().setClass(this,AcdiVocaListFindsActivity.class));
 			finish();
 		}
-//		if(v.getId()==R.id.sendSmsButton) { 
-//			ContentValues values = retrieveContentFromView();
-//
-//	        String message = AcdiVocaSmsManager.formatSmsMessage(values);
-//	        
-////			AcdiVocaSmsManager.sendMessage(this,message,null);
-//			//Toast.makeText(this, "Sending: " +  message, Toast.LENGTH_SHORT).show();
-//			Log.i(TAG,  "Sending: " +  message);
-//	        finish();
-//		}
 	}
 
 	

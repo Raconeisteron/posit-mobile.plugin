@@ -523,7 +523,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
                         TextView bt = (TextView) v.findViewById(R.id.message_body);
                         if (items.size() > 1) {
                         	if (tt != null) {
-                        		tt.setText("Header: " + ((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getMsgHeader());                            
+                        		tt.setTextColor(Color.RED);
+                        		tt.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getMsgHeader());                            
                         	}
                         	if(bt != null){
                         		bt.setText("SMS: " + ((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getSmsMessage());
