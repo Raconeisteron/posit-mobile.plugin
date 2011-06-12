@@ -18,8 +18,8 @@
 	<uses-permission android:name="android.permission.WRITE_SMS"/>
 	
     <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
-<!--  Careful with these.  They let the app delete conversation threads.
     <uses-permission android:name="android.permission.RECEIVE_SMS"></uses-permission>
+<!--  Careful with these.  They let the app delete conversation threads.
 -->
 
 	<application android:icon="@drawable/acdivoca" 

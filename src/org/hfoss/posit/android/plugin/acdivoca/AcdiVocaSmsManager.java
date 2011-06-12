@@ -23,15 +23,14 @@
 
 package org.hfoss.posit.android.plugin.acdivoca;
 
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.util.ArrayList;
-
-import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.api.FindPluginManager;
 
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -40,7 +39,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
@@ -50,12 +48,13 @@ import android.widget.Toast;
 public class AcdiVocaSmsManager extends BroadcastReceiver {
 	
 	public static final String TAG = "AcdiVocaSmsManager";
-	private static AcdiVocaSmsManager sInstance = null; 
 
 	public static final String SENT = "SMS_SENT";
 	public static final String DELIVERED = "SMS_DELIVERED";
 	
-	public static final String INCOMING_PREFIX = "AV=";
+	public static final String INCOMING_PREFIX = 
+		AcdiVocaMessage.ACDI_VOCA_PREFIX 
+		+ AttributeManager.ATTR_VAL_SEPARATOR;
 
 	
 	public static final int MAX_MESSAGE_LENGTH = 140;
@@ -63,29 +62,48 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	public static final int MIN_PHONE_NUMBER_LENGTH = 5;
 	
 	public int msgId = 0;
-	private Activity mMainActivity = null;
-	private Handler mHandler;
+	private static Context mContext = null;
+	private static Handler mHandler;
+	private static AcdiVocaSmsManager mInstance = null; 
+	private static String acdiVocaPhone = null;
 	
 	public AcdiVocaSmsManager()  {
 	}
 	
-	private AcdiVocaSmsManager(Activity activity){
-		mMainActivity = activity;
+	public static AcdiVocaSmsManager getInstance(Activity activity){
+		mInstance = new AcdiVocaSmsManager();
+		mInstance.initInstance(activity);
+		return mInstance;
+	}
+	
+	public static void initInstance(Context context) {
+		mContext = context;
+		mInstance = new AcdiVocaSmsManager();
 		String url = "content://sms/"; 
         Uri uri = Uri.parse(url); 
-        mMainActivity.getContentResolver().registerContentObserver(uri, true, new SmsContentObserver(mHandler));                    
-	}
-	
-	public static AcdiVocaSmsManager initInstance(Activity activity){
-		sInstance = new AcdiVocaSmsManager(activity);
-		return sInstance;
-	}
-	
-	public static AcdiVocaSmsManager getInstance(){
-		assert(sInstance != null);
-		return sInstance;
-	}
+        acdiVocaPhone = 
+			PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
 
+ //       mContext.getContentResolver().registerContentObserver(uri, 
+ //       		true, new AcdiVocaSmsManager().new SmsContentObserver(mHandler));                    
+	}
+	
+//	public static AcdiVocaSmsManager initInstance(Activity activity){
+//		sInstance = new AcdiVocaSmsManager(activity);
+//		return sInstance;
+//	}
+//	
+//	public static AcdiVocaSmsManager getInstance(){
+//		assert(sInstance != null);
+//		return sInstance;
+//	}
+
+	/**
+	 * Invoked automatically when a message is received.  Requires Manifest:
+	 * <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
+     * <uses-permission android:name="android.permission.RECEIVE_SMS"></uses-permission>
+     * 
+ 	 */
 	@Override
 	public void onReceive(Context arg0, Intent intent) {
 		Log.i(TAG, "Intent action = " + intent.getAction());
@@ -100,7 +118,6 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			for (Object pdu : pdus) {
 				SmsMessage message = SmsMessage.createFromPdu((byte[]) pdu);
 				messages.add(message);
-				String body = message.getMessageBody();
 
 				String incomingMsg = message.getMessageBody();
 				String originatingNumber = message.getOriginatingAddress();
@@ -112,32 +129,95 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 				msgLen = SmsMessage.calculateLength(message.getMessageBody(), false);
 				Log.i(TAG, "" + msgLen[0]  + " " + msgLen[1] + " " + msgLen[2] + " " + msgLen[3]);
 
-				Log.i(TAG, "Protocol = " + message.getProtocolIdentifier());
-				
-				Log.i(TAG, " String length = " + incomingMsg.length());
+				//Log.i(TAG, "Protocol = " + message.getProtocolIdentifier());
+				Log.i(TAG, "LENGTH: " + incomingMsg.length());				 
+
 				if (incomingMsg.startsWith(INCOMING_PREFIX)) {
-					msgId = getMsgIdFromIncomingMsg(incomingMsg);
+					handleAcdiVocaIncoming(incomingMsg);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Get's the message id from the incoming message.
+	 * Handles an incoming Sms from AcdiVoca Hdqts. 
+	 * 
+	 * We are interested in AcdiVoca ACK messages, which are:
+	 * 
+	 * AV=ACK,IDS=id1|id2|id3|...|idN,...,
+	 * 
+	 * The list of ids represent beneficiary row_ids (which were sent in the original
+	 * message to the server.  These messages should be marked acknowledged.
+
 	 * @param msg
-	 * @return
 	 */
-	private int getMsgIdFromIncomingMsg (String msg) {
-		int id = -1;
-		try {
-			id = Integer.parseInt(msg.substring(
-					msg.indexOf(INCOMING_PREFIX) + INCOMING_PREFIX.length(), 
-					msg.indexOf(AttributeManager.PAIRS_SEPARATOR)));
-		} catch (NumberFormatException e){
-			e.printStackTrace();
-			return -1;
+	private void handleAcdiVocaIncoming(String msg) {
+		Log.i(TAG, "Processing incoming SMS: " + msg);
+		boolean isAck  = false;
+		String attrvalPairs[] = msg.split(AttributeManager.PAIRS_SEPARATOR);
+
+		AcdiVocaDbHelper db = null;
+
+		// The message has the format AV=ACK,IDS=1/2/3/.../,  so just two pairs
+		for (int k = 0; k < attrvalPairs.length; k++) {
+			String attrval[] = attrvalPairs[k].split(AttributeManager.ATTR_VAL_SEPARATOR);
+			String attr = "", val = "";
+			if (attrval.length == 2) {
+				attr = attrval[0];
+				val = attrval[1];
+			} else if (attrval.length == 1) {
+				attr = attrval[0];
+			}
+
+			// If this is an ACK message,  set on the isAck flag
+			if (attr.equals(AcdiVocaMessage.ACDI_VOCA_PREFIX)
+					&& val.equals(AcdiVocaMessage.ACK)) {
+				isAck = true;
+			}
+			// If this is the list of IDs,  parse the ID numbers and update the Db
+			if (attr.equals(AcdiVocaMessage.IDS) && isAck) {
+				Log.i(TAG, attr + "=" + val);
+
+				// We use a tokenizer with a number parser so we can handle non-numeric 
+				//  data without crashing.  It skips all non-numerics as it reads the stream.
+				StreamTokenizer t = new StreamTokenizer(new StringReader(val));
+				t.resetSyntax( );
+				t.parseNumbers( );
+				try {
+
+					//  While not end-of-file, get the next token and extract number
+					int token =  t.nextToken();
+					while (token != t.TT_EOF) {
+						if (token != t.TT_NUMBER )  {
+							//Log.i(TAG, "Integer parser skipping token = " + token); // Skip nonnumerics
+						}
+						else {
+							
+							// Construct an SmsMessage and update the Db
+							int msgId = (int)t.nval;
+							Log.i(TAG, "ACKing: " + msgId);
+							AcdiVocaMessage avMsg = new AcdiVocaMessage(
+									msgId,
+									-1,      // Beneficiary Id, unknown
+									AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
+									attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
+									"",   // SmsMessage N/A
+									""    // Header  N/A
+							);
+							db = new AcdiVocaDbHelper(mContext);
+							db.updateMessageStatus(avMsg,AcdiVocaDbHelper.MESSAGE_STATUS_ACK);
+						}
+						token = t.nextToken();
+					}
+				}
+				catch ( IOException e ) {
+					Log.i(TAG,"Number format exception");
+					e.printStackTrace();
+					continue;					
+				}
+			}
 		}
-		return id;
+
 	}
 	
 	@Override
@@ -153,7 +233,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	 * @param number
 	 * @return
 	 */
-	private static boolean checkPhoneNumber(String number) {
+	private static boolean isValidPhoneString(String number) {
 		if (number.length() < MIN_PHONE_NUMBER_LENGTH
 				|| number.length() > MAX_PHONE_NUMBER_LENGTH)
 			return false;
@@ -175,7 +255,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	 * @param phoneNumber
 	 * @return
 	 */
-	//public static boolean sendMessage(Context context, int beneficiary_id, String message, String phoneNumber) {
+	
 	public static boolean sendMessage(Context context, int beneficiary_id, AcdiVocaMessage acdiVocaMessage, String phoneNumber) {
 		if (phoneNumber==null)
 			phoneNumber = PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
@@ -187,25 +267,36 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		PendingIntent sentIntent = PendingIntent.getBroadcast(context, 0,new Intent(SENT), 0);
 		PendingIntent deliveryIntent = PendingIntent.getBroadcast(context, 0,new Intent(DELIVERED), 0);
 		
-		if (checkPhoneNumber(phoneNumber)
-				&& message.length() > 0 
-				&& message.length() <= MAX_MESSAGE_LENGTH) {
+		// The length array contains 4 result:
+		// length[0]  the number of Sms messages required 
+		// length[1]  the number of 7-bit code units used
+		// length[2]  the number of 7-bit code units remaining
+		// length[3]  an indicator of the encoding code unit size
+		int[] length = SmsMessage.calculateLength(message, true);
+		Log.i(TAG, "Length - 7 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
+		length = SmsMessage.calculateLength(message, false);
+		Log.i(TAG, "Length - 16 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
+	
+		if (!isValidPhoneString(phoneNumber)) {
+			Toast.makeText(context, "SMS Failed\nCheck phone number.", Toast.LENGTH_LONG).show();
+			return false;			
+		}
+		// This can go in a single method, send it
+		// TODO:  Add code to break the message into 2 or more.
+		if (length[0] == 1) {  
 			try {
 				SmsManager sms = SmsManager.getDefault();
 //				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
 				Toast.makeText(context, "SMS Sent!\n"+message + " to " + phoneNumber, Toast.LENGTH_LONG).show();
 				Log.i(TAG,"SMS Sent: " + message);
+				return true;
 			}catch(Exception e) {
 				Log.i(TAG,e.toString());
 				e.printStackTrace();
 				return false;
 			}
-			return true;
-		}
-		else {
-			Toast.makeText(context, "SMS Failed\nCheck phone number or length of message", Toast.LENGTH_LONG).show();
-			return false;
-		}
+		} 
+		return false;
 	}
 	
 	public static String formatAcdiVocaMessage(int id, String rawMessage) {
@@ -257,7 +348,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 //		    mHandler.sendMessage(msg);
 
 		    Uri uriSMSURI = Uri.parse("content://sms/");
-		    Cursor cur = mMainActivity.getContentResolver().query(uriSMSURI, null, null,
+		    Cursor cur = mContext.getContentResolver().query(uriSMSURI, null, null,
 		                 null, null);
 		    Log.i(TAG, "Cursor size " + cur.getCount());
 		    String[] columns = cur.getColumnNames();
@@ -270,7 +361,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		           int threadId = cur.getInt(cur.getColumnIndex("thread_id"));
 
 		           Log.d("SmsContentObserver", "SMS SEND ID = " + threadId); 
-		           Cursor c = mMainActivity.getContentResolver().query(Uri.parse("content://sms/outbox/" + threadId), null, null,
+		           Cursor c = mContext.getContentResolver().query(Uri.parse("content://sms/outbox/" + threadId), null, null,
 		                   null, null);
 		           c.moveToNext();
 		           int p = cur.getInt(cur.getColumnIndex("person"));
