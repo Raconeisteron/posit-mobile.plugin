@@ -69,15 +69,7 @@
 	<item>Centre de santé quatre</item>
 	<item>Centre de santé cinq</item>
 	</string-array>
-	
-	
-	<string-array name="distribution_names"> 
-	<item>Répartition des postes une</item>
-	<item>Répartition des postes deux</item>
-	<item>Répartition des postes trois</item>
-	<item>Répartition des postesquatre</item>
-	<item>Répartition des postes cinq</item>
-	</string-array>	
+
 
 <!--  Preferences that start activities in SettingsActivity -->
 	<string-array name="preference_activities">
@@ -106,7 +98,7 @@
 	<item>Centre Platon Cedre</item>
 	<item>Centre Sacre Coeur</item>
 	<item>Centre St Joseph</item>
-	<item>dispensaire Banane</item>
+	<item>Dispensaire Banane</item>
 	<item>Dispensaire Bodarie</item>
 	<item>Dispensaire Boucan Belier</item>
 	<item>Dispensaire de Bleck/ Mar Mirande</item>

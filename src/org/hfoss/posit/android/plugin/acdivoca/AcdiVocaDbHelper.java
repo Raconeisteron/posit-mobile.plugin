@@ -155,7 +155,8 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_TYPE = AttributeManager.FINDS_TYPE;    
 	public static final int FINDS_TYPE_MCHN = 0;
 	public static final int FINDS_TYPE_AGRI = 1;
-	
+	public static final String[] FIND_TYPE_STRINGS = {"MCHN", "AGRI"};  // For display purpose
+
 	public static final String FINDS_STATUS = AttributeManager.FINDS_STATUS;
 	public static final int FINDS_STATUS_NEW = 0;      // New registration, no Dossier ID
 	public static final int FINDS_STATUS_UPDATE = 1;   // Update, imported from TBS, with Dossier ID
@@ -172,93 +173,62 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_SEX = AttributeManager.FINDS_SEX;
 	public static final String FINDS_AGE = "age";
 
-	//public static final String FINDS_COMMUNE_ID = "commune_id";
-	//	public static final String FINDS_COMMUNE_SECTION_ID = "commune_section_id";
 	public static final String FINDS_BENEFICIARY_CATEGORY = AttributeManager.FINDS_BENEFICIARY_CATEGORY;
-	//	public static final String FINDS_BENEFICIARY_CATEGORY_ID = "beneficiary_category_id";
 	public static final String FINDS_HOUSEHOLD_SIZE = AttributeManager.FINDS_HOUSEHOLD_SIZE;
-	//	public static final String FINDS_INFANT_CATEGORY ="infant_category";
-	//	public static final String FINDS_MOTHER_CATEGORY = "mother_category";
 
 	public static final String FINDS_DISTRIBUTION_POST = AttributeManager.FINDS_DISTRIBUTION_POST;
 	public static final String FINDS_HEALTH_CENTER = AttributeManager.FINDS_HEALTH_CENTER;
-	public static final String FINDS_Q_MOTHER_LEADER = "mother_leader";
-	public static final String FINDS_Q_VISIT_MOTHER_LEADER = "visit_mother_leader";
-	public static final String FINDS_Q_PARTICIPATING_AGRI = "pariticipating_agri";
-	public static final String FINDS_NAME_AGRI_PARTICIPANT = "name_agri_paricipant";
-	
-
-	
-	
+	public static final String FINDS_Q_MOTHER_LEADER = AttributeManager.FINDS_Q_MOTHER_LEADER; // "mother_leader";
+	public static final String FINDS_Q_VISIT_MOTHER_LEADER = AttributeManager.FINDS_Q_VISIT_MOTHER_LEADER; // "visit_mother_leader";
+	public static final String FINDS_Q_PARTICIPATING_AGRI = AttributeManager.FINDS_Q_PARTICIPATING_AGRI; // "pariticipating_agri";
+	public static final String FINDS_NAME_AGRI_PARTICIPANT = AttributeManager.FINDS_NAME_AGRI_PARTICIPANT; // "name_agri_paricipant";
 	
 	public static final String FINDS_GUID = "guid";    // Globally unique ID
 
-	
-	
-	
+
 	//added to handle the agriculture registration form
-//	public static final String MARKET_GARDEN_NAME = "vege_seed";
-//	public static final String CEREAL_NAME = "cereal_seed";
-//	public static final String TUBER_NAME = "tuber_seed";
-//	public static final String TREE_NAME = "tree";
-	public static final String FINDS_LAND_AMOUNT = "amount_of_land";	
-//	public static final String SEED_GROUP = "seed_type";
-//	public static final String FINDS_TOOL_CATAGORY = "tools";
-	public static final String FINDS_SEED_AMOUNT = "seed_amount";
-	public static final String FINDS_UNIT = "unit";
-	public static final String FINDS_IS_FARMER = "is_farmer";
-	public static final String FINDS_IS_MUSO = "is_MUSO";
-	public static final String FINDS_IS_RANCHER = "is_rancher";
-	public static final String FINDS_IS_STOREOWN = "is_store_owner";
-	public static final String FINDS_IS_FISHER = "is_fisher";
-	public static final String FINDS_IS_OTHER = "is_other";
-	public static final String FINDS_HAVE_VEGE = "have_vege";
-	public static final String FINDS_HAVE_CEREAL = "have_cereal";
-	public static final String FINDS_HAVE_TUBER = "have_tuber";
-	public static final String FINDS_HAVE_TREE = "have_tree";
-	public static final String FINDS_HAVE_HOUE = "have_houe";
-	public static final String FINDS_HAVE_PIOCHE = "have_pioche";
-	public static final String FINDS_HAVE_BROUETTE = "have_brouette";
-	public static final String FINDS_HAVE_MACHETTE = "have_machette";
-	public static final String FINDS_HAVE_SERPETTE = "have_serpette";
-	public static final String FINDS_HAVE_PELLE = "have_pelle";
-	public static final String FINDS_HAVE_BARREAMINES = "have_barreamines";
-	public static final String FINDS_RELATIVE_1 = "relative_1";
-	public static final String FINDS_RELATIVE_2 = "relative_2";
-	public static final String FINDS_MALNOURISHED = "MALNOURISHED";
-	public static final String FINDS_PREVENTION = "PREVENTION";
-	public static final String FINDS_EXPECTING = "EXPECTING";
-	public static final String FINDS_NURSING = "NURSING";
+	public static final String FINDS_LAND_AMOUNT = AttributeManager.FINDS_LAND_AMOUNT; // "amount_of_land";	
+//	public static final String FINDS_SEED_AMOUNT = "seed_amount";
+//	public static final String FINDS_UNIT = "unit";
+	public static final String FINDS_IS_FARMER = AttributeManager.FINDS_IS_FARMER; //  "is_farmer";
+	public static final String FINDS_IS_MUSO = AttributeManager.FINDS_IS_MUSO;  // "is_MUSO";
+	public static final String FINDS_IS_RANCHER = AttributeManager.FINDS_IS_RANCHER;  //  "is_rancher";
+	public static final String FINDS_IS_STOREOWN = AttributeManager.FINDS_IS_STOREOWN; //  "is_store_owner";
+	public static final String FINDS_IS_FISHER = AttributeManager.FINDS_IS_FISHER;  // "is_fisher";
+	public static final String FINDS_IS_OTHER = AttributeManager.FINDS_IS_OTHER;  // "is_other";
+	
+	public static final String FINDS_HAVE_VEGE = AttributeManager.FINDS_HAVE_VEGE; //  "have_vege";
+	public static final String FINDS_HAVE_CEREAL = AttributeManager.FINDS_HAVE_CEREAL;  //  "have_cereal";
+	public static final String FINDS_HAVE_TUBER = AttributeManager.FINDS_HAVE_TUBER;  // "have_tuber";
+	public static final String FINDS_HAVE_TREE = AttributeManager.FINDS_HAVE_TREE; // "have_tree";
+	public static final String FINDS_HAVE_HOUE = AttributeManager.FINDS_HAVE_HOUE;  //  "have_houe";
+	public static final String FINDS_HAVE_PIOCHE = AttributeManager.FINDS_HAVE_PIOCHE;  // "have_pioche";
+	public static final String FINDS_HAVE_BROUETTE = AttributeManager.FINDS_HAVE_BROUETTE; // "have_brouette";
+	public static final String FINDS_HAVE_MACHETTE = AttributeManager.FINDS_HAVE_MACHETTE; //  "have_machette";
+	public static final String FINDS_HAVE_SERPETTE = AttributeManager.FINDS_HAVE_SERPETTE;  // "have_serpette";
+	public static final String FINDS_HAVE_PELLE = AttributeManager.FINDS_HAVE_PELLE;  // "have_pelle";
+	public static final String FINDS_HAVE_BARREAMINES = AttributeManager.FINDS_HAVE_BARREAMINES; // "have_barreamines";
+	public static final String FINDS_RELATIVE_1 = AttributeManager.FINDS_RELATIVE_1;  // "relative_1";
+	public static final String FINDS_RELATIVE_2 = AttributeManager.FINDS_RELATIVE_2;  // "relative_2";
+
+	public static final String FINDS_MALNOURISHED = AttributeManager.FINDS_MALNOURISHED;  // "MALNOURISHED";
+	public static final String FINDS_PREVENTION = AttributeManager.FINDS_PREVENTION;     // "PREVENTION";
+	public static final String FINDS_EXPECTING = AttributeManager.FINDS_EXPECTING;   // "EXPECTING";
+	public static final String FINDS_NURSING = AttributeManager.FINDS_NURSING;      // "NURSING";
+	
+    public static final String FINDS_MALE = AttributeManager.FINDS_MALE;          // "MALE";
+    public static final String FINDS_FEMALE = AttributeManager.FINDS_FEMALE;        // "FEMALE";
+    public static final String FINDS_YES = AttributeManager.FINDS_YES;           // "YES";
+    public static final String FINDS_NO = AttributeManager.FINDS_NO;            // "NO";
+    public static final String FINDS_TRUE = "TRUE";
+    public static final String FINDS_FALSE = "FALSE";
+    
+    
 	public static final String FINDS_Q_PRESENT = "Present";
 	public static final String FINDS_Q_TRANSFER = "Transfer";
 	public static final String FINDS_Q_MODIFICATION = "Modifications";
 	public static final String FINDS_MONTHS_REMAINING = "MonthsRemaining";
-    public static final String FINDS_MALE = "MALE";
-    public static final String FINDS_FEMALE = "FEMALE";
-    public static final String FINDS_YES = "YES";
-    public static final String FINDS_NO = "NO";
-    public static final String FINDS_TRUE = "TRUE";
-    public static final String FINDS_FALSE = "FALSE";
-    
 	
-
-
-//	/** Commune table */
-//
-//	public static final String COMMUNE_TABLE = "commune";
-//	public static final String COMMUNE_ID = "id";
-//	public static final String COMMUNE_NAME = "commune";
-//	public static final String COMMUNE_ABBR = "comm_abbrev";
-//
-//	/** Commune section table */
-//
-//	public static final String COMMUNE_SECTION_TABLE = "commune_section";
-//	public static final String COMMUNE_SECTION_ID = "id";
-//	public static final String COMMUNE_SECTION_NAME = "commune_section";
-//	public static final String COMMUNE_SECTION_ABBR = "comm_sect_abbrev";
-//	public static final String COMMUNE_SECTION_COMMUNE_ID = "commune_id";
-
-
 	public static final String FINDS_DESCRIPTION = "description";
 	public static final String FINDS_LATITUDE = "latitude";
 	public static final String FINDS_LONGITUDE = "longitude";
@@ -277,13 +247,82 @@ public class AcdiVocaDbHelper {
 	public static final String WHERE_NOT_DELETED = " " + FINDS_DELETED + " != " + DELETE_FIND + " ";
 	public static final String DATETIME_NOW = "`datetime('now')`";
 
-	//	public static final String SYNC_HISTORY_TABLE = "sync_history";
 	public static final String FINDS_HISTORY_TABLE = "acdi_voca_finds_history";
-	//	public static final String SYNC_COLUMN_SERVER = "server";
-	//	public static final String SYNC_ID = "_id";
 	public static final String HISTORY_ID = "_id" ;
 
+	/*
+	 * Finds table creation sql statement. 
+	 */
+	private static final String CREATE_FINDS_TABLE = "CREATE TABLE IF NOT EXISTS "
+		+ FINDS_TABLE  
+		+ " (" + FINDS_ID + " integer primary key autoincrement, "
+		+ FINDS_PROJECT_ID + " integer DEFAULT 0, "
+		+ FINDS_DOSSIER + " text, "
+		+ FINDS_TYPE + " integer DEFAULT 0, "                             // MCHN or Agri                 
+		+ FINDS_STATUS + " integer DEFAULT " + FINDS_STATUS_NEW + ", "    // New or Update record
+		+ FINDS_MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_UNSENT + ", "
+		+ FINDS_MESSAGE_TEXT + " text, "
+ 		+ FINDS_NAME + " text, "
+		+ FINDS_FIRSTNAME + " text, "
+		+ FINDS_LASTNAME + " text, "
+		+ FINDS_ADDRESS + " text, "
+		+ FINDS_DOB + " date, "
+		+ FINDS_SEX + " text, "
+//		+ FINDS_AGE + " text, "
+		+ FINDS_HOUSEHOLD_SIZE + " text, "
+		+ FINDS_BENEFICIARY_CATEGORY + " text, "
+		+ FINDS_HEALTH_CENTER + " text, "
+		+ FINDS_DISTRIBUTION_POST + " text, "
+		+ FINDS_Q_MOTHER_LEADER + " boolean, "
+		+ FINDS_Q_VISIT_MOTHER_LEADER + " boolean, "
+		+ FINDS_Q_PARTICIPATING_AGRI + " boolean, "
+		+ FINDS_IS_FARMER + " boolean, "
+		+ FINDS_IS_MUSO + " boolean, "
+		+ FINDS_IS_RANCHER + " boolean, "
+		+ FINDS_IS_STOREOWN + " boolean, "
+		+ FINDS_IS_FISHER + " boolean, "
+		+ FINDS_IS_OTHER + " boolean, "
+		+ FINDS_LAND_AMOUNT+ " integer DEFAULT 0, "
+		+ FINDS_HAVE_VEGE+ " boolean, "
+		+ FINDS_HAVE_TUBER+ " boolean, "
+		+ FINDS_HAVE_CEREAL+ " boolean, "
+		+ FINDS_HAVE_TREE+ " boolean, "
+//		+ FINDS_SEED_AMOUNT+ " integer DEFAULT 0, "
+//		+ FINDS_UNIT + " text, "
+		+ FINDS_HAVE_HOUE+ " boolean, "
+		+ FINDS_HAVE_PIOCHE+ " boolean, "
+		+ FINDS_HAVE_BROUETTE+ " boolean, "
+		+ FINDS_HAVE_MACHETTE+ " boolean, "
+		+ FINDS_HAVE_SERPETTE+ " boolean, "
+		+ FINDS_HAVE_PELLE+ " boolean, "
+		+ FINDS_HAVE_BARREAMINES+ " boolean, "
+		+ FINDS_RELATIVE_1 + " text, "
+		+ FINDS_RELATIVE_2 + " text, "
+		+ FINDS_Q_PRESENT + " boolean, "
+		+ FINDS_Q_TRANSFER + " boolean, "
+		+ FINDS_Q_MODIFICATION + " boolean, " 
+		+ FINDS_MONTHS_REMAINING + " integer DEFAULT 0, "
+		+ FINDS_NAME_AGRI_PARTICIPANT + " text "
+		+ ");";
 
+	// Fields for reading the beneficiaries.txt file. The numbers correspond to
+	// the columns.  These might need to be changed.
+//	*No dossier,Nom,Prenom,Section Communale,Localite beneficiaire,Date entree,Date naissance,Sexe,Categorie,Poste distribution,
+//	068MP-FAT, Balthazar,Denisana,Mapou,Saint Michel,2010/08/03,1947/12/31, F,Enfant Prevention,Dispensaire Mapou,
+	private static final int FIELD_DOSSIER = 0;
+	private static final int FIELD_LASTNAME = 1;
+	private static final int FIELD_FIRSTNAME = 2;
+	private static final int FIELD_SECTION = 3;
+	private static final int FIELD_LOCALITY = 4;
+	private static final int FIELD_ENTRY_DATE = 5;
+	private static final int FIELD_BIRTH_DATE = 6;
+	private static final int FIELD_SEX = 7;
+	private static final int FIELD_CATEGORY = 8;
+	private static final int FIELD_DISTRIBUTION_POST = 9;
+	private static final String COMMA= ",";
+
+
+	// Needed for ListFindsActivity to display a row in the list.
 	// The following two arrays go together to form a <DB value, UI View> pair
 	// except for the first DB value, which is just a filler.
 	//	 GUID commented out so that in the list of finds the ID is no longer displayed
@@ -315,117 +354,17 @@ public class AcdiVocaDbHelper {
 		R.id.distributionSpinner
 	};
 
-	public static final String[] message_row_data = { 
-		FINDS_ID,
-		FINDS_DOSSIER, 
-		MESSAGE_TEXT
-	};
-
-	public static final int[] message_row_views = {
-		R.id.row_id,		    
-		R.id.dossierText,
-		R.id.messageText 
-	};
-
-	/*
-	 * Finds table creation sql statement. 
-	 */
-	private static final String CREATE_FINDS_TABLE = "CREATE TABLE IF NOT EXISTS "
-		+ FINDS_TABLE  
-		+ " (" + FINDS_ID + " integer primary key autoincrement, "
-		+ FINDS_PROJECT_ID + " integer DEFAULT 0, "
-		+ FINDS_DOSSIER + " text, "
-		+ FINDS_TYPE + " integer DEFAULT 0, " // New or Update record
-		+ FINDS_STATUS + " integer DEFAULT " + FINDS_STATUS_NEW + ", "
-		+ FINDS_MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_UNSENT + ", "
-		+ FINDS_MESSAGE_TEXT + " text, "
- 		+ FINDS_NAME + " text, "
-		+ FINDS_FIRSTNAME + " text, "
-		+ FINDS_LASTNAME + " text, "
-		+ FINDS_ADDRESS + " text, "
-		+ FINDS_DOB + " date, "
-		+ FINDS_SEX + " text, "
-		+ FINDS_AGE + " text, "
-		+ FINDS_HOUSEHOLD_SIZE + " text, "
-		+ FINDS_BENEFICIARY_CATEGORY + " text, "
-		+ FINDS_HEALTH_CENTER + " text, "
-		+ FINDS_DISTRIBUTION_POST + " text, "
-		+ FINDS_Q_MOTHER_LEADER + " boolean, "
-		+ FINDS_Q_VISIT_MOTHER_LEADER + " boolean, "
-		+ FINDS_Q_PARTICIPATING_AGRI + " boolean, "
-		+ FINDS_IS_FARMER + " boolean, "
-		+ FINDS_IS_MUSO + " boolean, "
-		+ FINDS_IS_RANCHER + " boolean, "
-		+ FINDS_IS_STOREOWN + " boolean, "
-		+ FINDS_IS_FISHER + " boolean, "
-		+ FINDS_IS_OTHER + " boolean, "
-		+ FINDS_LAND_AMOUNT+ " integer DEFAULT 0, "
-		+ FINDS_HAVE_VEGE+ " boolean, "
-		+ FINDS_HAVE_TUBER+ " boolean, "
-		+ FINDS_HAVE_CEREAL+ " boolean, "
-		+ FINDS_HAVE_TREE+ " boolean, "
-		+ FINDS_SEED_AMOUNT+ " integer DEFAULT 0, "
-		+ FINDS_UNIT + " text, "
-		+ FINDS_HAVE_HOUE+ " boolean, "
-		+ FINDS_HAVE_PIOCHE+ " boolean, "
-		+ FINDS_HAVE_BROUETTE+ " boolean, "
-		+ FINDS_HAVE_MACHETTE+ " boolean, "
-		+ FINDS_HAVE_SERPETTE+ " boolean, "
-		+ FINDS_HAVE_PELLE+ " boolean, "
-		+ FINDS_HAVE_BARREAMINES+ " boolean, "
-		+ FINDS_RELATIVE_1 + " text, "
-		+ FINDS_RELATIVE_2 + " text, "
-		+ FINDS_Q_PRESENT + " boolean, "
-		+ FINDS_Q_TRANSFER + " boolean, "
-		+ FINDS_Q_MODIFICATION + " boolean, " 
-		+ FINDS_MONTHS_REMAINING + " integer DEFAULT 0, "
-		+ FINDS_NAME_AGRI_PARTICIPANT + " text "
-		+ ");";
-
-//	private static final String CREATE_COMMUNE_TABLE = "CREATE TABLE IF NOT EXISTS "
-//		+ COMMUNE_TABLE + "(" + COMMUNE_ID + " integer primary key autoincrement, "
-//		+ COMMUNE_NAME + " text, "
-//		+ COMMUNE_ABBR + " text, "
-//		+ ")";
+//	public static final String[] message_row_data = { 
+//		FINDS_ID,
+//		FINDS_DOSSIER, 
+//		MESSAGE_TEXT
+//	};
 //
-//	private static final String CREATE_COMMUNE_SECTION_TABLE = "CREATE TABLE IF NOT EXISTS "
-//		+ COMMUNE_SECTION_TABLE + "(" + COMMUNE_SECTION_ID + " integer primary key autoincrement, "
-//		+ COMMUNE_SECTION_NAME + " text, "
-//		+ COMMUNE_SECTION_ABBR + " text, "
-//		+ COMMUNE_SECTION_COMMUNE_ID + " references " + COMMUNE_TABLE + "(" + COMMUNE_ID + ") "
-//		+ ")";
-	/*
-	 * Keeps track of create, update, and delete actions on Finds.
-	 */
-	private static final String CREATE_FINDS_HISTORY_TABLE = 
-		"CREATE TABLE IF NOT EXISTS " 
-		+ FINDS_HISTORY_TABLE + "("
-		+ HISTORY_ID + " integer primary key autoincrement,"
-		+ FINDS_TIME + " timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-		//		+ FINDS_PROJECT_ID + " integer DEFAULT 0,"
-		+ FINDS_GUID + " varchar(50) NOT NULL,"
-		//		+ FINDS_ACTION + " varchar(20) NOT NULL"
-		+ ")";
-	/*
-	 * Keeps track of sync actions between client (phone) and serve
-	 */
-	private static final String TIMESTAMP_FIND_UPDATE = 
-		"UPDATE " + FINDS_TABLE + " SET " 
-		+ FINDS_MODIFY_TIME + " = " 
-		+ " datetime('now') ";
-
-	// Fields for reading the beneficiaries.txt file
-	private static final int FIELD_DOSSIER = 0;
-	private static final int FIELD_LASTNAME = 1;
-	private static final int FIELD_FIRSTNAME = 2;
-	private static final int FIELD_SECTION = 3;
-	private static final int FIELD_LOCALITY = 4;
-	private static final int FIELD_ENTRY_DATE = 5;
-	private static final int FIELD_BIRTH_DATE = 6;
-	private static final int FIELD_SEX = 7;
-	private static final int FIELD_CATEGORY = 8;
-	private static final int FIELD_DISTRIBUTION_POST = 9;
-	private static final String COMMA= ",";
+//	public static final int[] message_row_views = {
+//		R.id.row_id,		    
+//		R.id.dossierText,
+//		R.id.messageText 
+//	};
 
 
 	private static Context mContext;   // The Activity
@@ -816,6 +755,7 @@ public class AcdiVocaDbHelper {
 			int msg_id = -1;
 			int beneficiary_id = -1;
 			int beneficiary_status = -1;
+			int message_status = -1;
 			String columns[] = null;
 			
 			// For debugging
@@ -829,7 +769,8 @@ public class AcdiVocaDbHelper {
 			while (!c.isAfterLast()) {
 				beneficiary_id = c.getInt(c.getColumnIndex(FINDS_ID));
 				beneficiary_status = c.getInt(c.getColumnIndex(FINDS_STATUS));
-				statusStr = MESSAGE_STATUS_STRINGS[beneficiary_status];
+				message_status = c.getInt(c.getColumnIndex(FINDS_MESSAGE_STATUS));
+				statusStr = MESSAGE_STATUS_STRINGS[message_status];
 
 				columns = c.getColumnNames();
 				rawMessage = "";
@@ -847,9 +788,15 @@ public class AcdiVocaDbHelper {
 
 				// Now abbreviate the message
 				smsMessage = abbreviateBeneficiaryStringForSms(rawMessage);
+				smsMessage = AttributeManager.encodeBinaryFields(smsMessage, 
+						AttributeManager.isAFields, 
+						AttributeManager.ABBREV_ISA);
+				smsMessage = AttributeManager.encodeBinaryFields(smsMessage, 
+						AttributeManager.hasAFields,
+						AttributeManager.ABBREV_HASA);
 
 				// Add a header (length and status) to message
-				msgHeader = "Id:" + msg_id + " Status= " + statusStr;
+				msgHeader = "MsgId:" + msg_id + ", Len:" + smsMessage.length() +  ", " + statusStr ;
 
 				acdiVocaMsgs.add(new AcdiVocaMessage(msg_id, 
 						beneficiary_id, 
@@ -891,7 +838,7 @@ public class AcdiVocaDbHelper {
 				String smsMessage = c.getString(c.getColumnIndex(MESSAGE_TEXT));
 				String statusStr = MESSAGE_STATUS_STRINGS[msg_status];
 
-				String msgHeader = "Id:" + msg_id + " Status= " + statusStr;
+				String msgHeader = "Id:" + msg_id + " Stat:" + statusStr + " Len:" + smsMessage.length();
 				acdiVocaMsgs.add (new AcdiVocaMessage(msg_id, beneficiary_id, msg_status,
 						"", smsMessage, msgHeader));
 				c.moveToNext();
@@ -939,6 +886,7 @@ public class AcdiVocaDbHelper {
 					&& !val.equals("null")
 					) {
 				abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
+				//abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
 				if (!abbrev.equals(""))
 					message += abbrev + ",";
 			}

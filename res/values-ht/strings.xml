@@ -32,7 +32,7 @@
     <string name="sent_messages">Liste les messages envoyés</string>
     <string name="pending_messages">Liste les messages en attente</string>
     <string name="acknowledged_messages">Liste les reconnu messages</string>    
-    <string name="no_messages">Pas de messages à afficher</string>
+    <string name="no_messages">Pas de messages pour voir</string>
             
     <!-- add.xml --> 
     <string name="general_info">Enfomasyon Jeneral</string>
