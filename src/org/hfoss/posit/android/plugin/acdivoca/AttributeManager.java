@@ -427,11 +427,13 @@ public class AttributeManager {
 		abbreviations.put(FINDS_MALNOURISHED, ABBREV_MALNOURISHED);
 		abbreviations.put(FINDS_MALNOURISHED_HA, ABBREV_MALNOURISHED);	
 		
+		//  Server needs abbrev --> long for these Enums
+		abbreviations.put(ABBREV_EXPECTING, FINDS_EXPECTING);
+		abbreviations.put(ABBREV_NURSING, FINDS_NURSING);
+		abbreviations.put(ABBREV_PREVENTION, FINDS_PREVENTION);
+		abbreviations.put(ABBREV_MALNOURISHED, FINDS_MALNOURISHED);
+		
 		//  Not sure whether these are needed on server side?
-//		abbreviations.put("E", "EXPECTING");
-//		abbreviations.put("N", "NURSING");
-//		abbreviations.put("P", "PREVENTION");
-//		abbreviations.put("MA", "MALNOURISHED");
 //		abbreviations.put("F", "FEMALE");
 //		abbreviations.put("M", "MALE");
 //		abbreviations.put("E", "EXPECTING");
