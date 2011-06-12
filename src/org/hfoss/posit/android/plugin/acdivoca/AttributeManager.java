@@ -47,7 +47,8 @@ public class AttributeManager {
 	
 	public static final String ATTR_VAL_SEPARATOR = "=";
 	public static final String PAIRS_SEPARATOR = ",";
-	
+	public static final String LIST_SEPARATOR = "/";  // Don't use '|'
+
 	public static final String OUTER_DELIM = PAIRS_SEPARATOR;
 	public static final String INNER_DELIM = ATTR_VAL_SEPARATOR;
 	
@@ -730,10 +731,12 @@ public class AttributeManager {
 		// TODO Auto-generated method stub
 		System.out.println("Hello Attribute Manager");
 		AttributeManager am = AttributeManager.getInstance(); // new AttributeManager();
-		System.out.print(am.mapToLong(false, "f"));
+		//System.out.print(am.mapToLong(false, "f"));
 		//am.testAllAttributes();
 		//System.out.println("Str= " + am.abbreviations.get("M"));
-		
+		String ids[] = "1/2".split("/");
+		for (int k = 0; k < ids.length; k++)
+			System.out.println(ids[k]);
 	}
 
 }

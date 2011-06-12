@@ -543,6 +543,7 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	public boolean updateMessageStatus(AcdiVocaMessage acdiVocaMsg, int status) {
+		Log.i(TAG, "Updating Message " + acdiVocaMsg.getMessageId() + " to status = " + status);
 		long row_id;
 		int msg_id = acdiVocaMsg.getMessageId();
 		String query = "";
@@ -562,6 +563,8 @@ public class AcdiVocaDbHelper {
 				+ " WHERE " + MESSAGE_ID + " = " + row_id; 
 				
 				mDb.execSQL(query);
+				Log.i(TAG, "Inserted NEW message, id= " + row_id);  
+
 			}
 		}  else {
 			row_id = msg_id;
@@ -581,6 +584,7 @@ public class AcdiVocaDbHelper {
 				+ " WHERE " + FINDS_ID + " = " + beneficiary_id;
 
 				mDb.execSQL(query);
+				Log.i(TAG, "Marking message SENT id= " + row_id);  
 
 			} else if (status == MESSAGE_STATUS_PENDING) {	
 				
@@ -589,6 +593,7 @@ public class AcdiVocaDbHelper {
 				+ " WHERE " + FINDS_ID + " = " + beneficiary_id;
 
 				mDb.execSQL(query);
+				Log.i(TAG, "Marking message PENDING id= " + row_id);  
 				
 			} 	else if (status == MESSAGE_STATUS_ACK) {
 				
@@ -604,11 +609,13 @@ public class AcdiVocaDbHelper {
 				+ " WHERE " + FINDS_ID + " = " + beneficiary_id;
 				
 				mDb.execSQL(query);
+				Log.i(TAG, "Marking message ACK id= " + row_id);  
+
 			}
 		}
 		
 		mDb.close();
-		Log.i(TAG, "Inserted or updated message # " + row_id + " + in Message table");  
+		//Log.i(TAG, "Inserted or updated message # " + row_id + " + in Message table");  
 
 		return row_id != -1;
 	}

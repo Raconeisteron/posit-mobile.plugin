@@ -28,6 +28,9 @@ public class AcdiVocaMessage {
 	public static final String TAG = "AcdiVocaMessage";
 	
 	public static final String ACDI_VOCA_PREFIX = "AV";
+	public static final String ACK = "ACK";
+	public static final String IDS = "IDS";
+
 	
 	private int messageId = -1;       // row Id of message in our Db
 	private int msgStatus = -1;
