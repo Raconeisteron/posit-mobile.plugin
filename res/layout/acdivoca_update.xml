@@ -98,7 +98,7 @@
 				android:layout_height="wrap_content" 
 				android:orientation="horizontal"
 				android:id="@+id/sexRadio">
-				<RadioButton android:checked="true" 
+				<RadioButton android:checked="false" 
 					android:layout_marginLeft="20px" 
 					android:id="@+id/femaleRadio"
 					android:text="@string/Female" />

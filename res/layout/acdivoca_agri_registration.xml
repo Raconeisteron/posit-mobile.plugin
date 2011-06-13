@@ -293,6 +293,7 @@
 				android:layout_height="fill_parent" android:layout_gravity="center" 
 				android:paddingTop="10dp" >
 				<Button android:text="@string/add_save" android:id="@+id/saveToDbButton"
+					android:enabled="false"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 

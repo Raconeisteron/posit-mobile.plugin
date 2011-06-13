@@ -26,7 +26,7 @@
     <string name="address">Street Address</string>	
 	
     <string name="sex">Sex</string>
-    <string name="dob">Date of Birth or Age</string>
+    <string name="dob">Date of Birth</string>
     <string name="dob_age">Age</string>
     <string name="dob_age_hint">Age (if no DOB)</string>
     <string name="Male">Male</string>
