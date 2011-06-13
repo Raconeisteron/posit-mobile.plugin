@@ -662,10 +662,25 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			data.put(AcdiVocaDbHelper.FINDS_PROJECT_ID, 0);
 			if (mAction.equals(Intent.ACTION_EDIT)) {
 				result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
+				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_acdivoca);
+				if(agri.isChecked()){
+					Intent intent = new Intent(this, AcdiVocaNewAgriActivity.class);
+					intent.setAction(Intent.ACTION_INSERT);
+					startActivityForResult(intent, 0);
+					Toast.makeText(this, "Please fill the form for the person who is in agricultural program.", Toast.LENGTH_LONG);
+				}
 				Log.i(TAG, "Update to Db is " + result);
 			} else {
 				data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New MCHN");
 				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
+				//if radioAgri is checked, make intent
+				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_acdivoca);
+				if(agri.isChecked()){
+					Intent intent = new Intent(this, AcdiVocaNewAgriActivity.class);
+					intent.setAction(Intent.ACTION_INSERT);
+					Toast.makeText(this, "Please fill the form for the person who is in agricultural program.", Toast.LENGTH_LONG);
+					startActivityForResult(intent, 0);
+				}
 				Log.i(TAG, "Save to Db is " + result);
 			}
 			if (result){
@@ -807,8 +822,8 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		if(selected != null){
 			String item = (String) spinner.getItemAtPosition(k);
 			while (k < spinner.getCount() && !selected.equals(item)) {
-				item = (String) spinner.getItemAtPosition(k);
 				++k;
+				item = (String) spinner.getItemAtPosition(k);				
 			}
 			if (k < spinner.getCount())
 				spinner.setSelection(k);

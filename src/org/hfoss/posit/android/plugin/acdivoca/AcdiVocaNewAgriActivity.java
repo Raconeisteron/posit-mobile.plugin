@@ -66,6 +66,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 	private String mAction = "";
 	private int mFindId = 0;
 	private AcdiVocaDbHelper mDbHelper;
+	private Button mSaveButton;
 	
 	
 	/** Called when the activity is first created. */
@@ -75,7 +76,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		 Log.i(TAG, "onCreate");
 
 		// Create DB helper
-		mDbHelper = new AcdiVocaDbHelper(this);
+//		mDbHelper = new AcdiVocaDbHelper(this);
 		isProbablyEdited = false;
 	}
 
@@ -150,7 +151,8 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		Log.i(TAG, "Before edited = " + isProbablyEdited);
 		setContentView(R.layout.acdivoca_agri_registration);  // Should be done after locale configuration
 
-		((Button)findViewById(R.id.saveToDbButton)).setOnClickListener(this);
+		mSaveButton = ((Button)findViewById(R.id.saveToDbButton));
+		mSaveButton.setOnClickListener(this);
 		((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
 		
 		// Listen for clicks on radio buttons
@@ -205,6 +207,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		if (mAction.equals(Intent.ACTION_EDIT)) {
 			doEditAction();
 			isProbablyEdited = false; // In EDIT mode, initialize after filling in data
+			mSaveButton.setEnabled(false);
 		}
 		 Log.i(TAG, "After edited = " + isProbablyEdited);
 	}
@@ -592,9 +595,10 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		// If a RadioButton was clicked, mark the form as edited.
 		//Toast.makeText(this, "Clicked on a " + v.getClass().toString(), Toast.LENGTH_SHORT).show();
 		try {
-			if (v.getClass().equals(Class.forName("android.widget.RadioButton"))) {
+			if (v.getClass().equals(Class.forName("android.widget.CheckBox"))) {
 					//Toast.makeText(this, "RadioClicked", Toast.LENGTH_SHORT).show();
 					isProbablyEdited = true;
+					mSaveButton.setEnabled(true);
 			}
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -602,9 +606,10 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		}
 
 		int id = v.getId();
-		if (id == R.id.datepicker) 
+		if (id == R.id.datepicker) {
 			isProbablyEdited = true;
-	
+			mSaveButton.setEnabled(true);	
+		}
 		// TODO:  Edit this case
 		if(v.getId()==R.id.saveToDbButton) {
 			boolean result = false;
@@ -682,6 +687,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 			int dayOfMonth) {
 		Log.i(TAG, "onDateChanged");
 		isProbablyEdited = true;
+		mSaveButton.setEnabled(true);	
 	}
 
 	//  The remaining methods are part of unused interfaces inherited from the super class.
@@ -698,6 +704,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 	public void afterTextChanged(Editable arg0) {
 		Log.i(TAG, "afterTextChanged " + arg0.toString());
 		isProbablyEdited = true;
+		mSaveButton.setEnabled(true);	
 		// TODO Auto-generated method stub
 		
 	}

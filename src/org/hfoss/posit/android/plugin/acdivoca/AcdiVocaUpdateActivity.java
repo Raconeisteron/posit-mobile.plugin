@@ -163,8 +163,8 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
                 
                 ((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
                 
-            }
-        }
+            
+        
 
 //        ((Button)findViewById(R.id.saveToDbButton)).setOnClickListener(this);
 //        ((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
@@ -193,13 +193,16 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //         ((Spinner)findViewById(R.id.healthcenterSpinner)).setOnItemSelectedListener(this);
 //         ((Spinner)findViewById(R.id.distributionSpinner)).setOnItemSelectedListener(this);
 //
-//        final Intent intent = getIntent();
-//        mAction = intent.getAction();
-//        if (mAction.equals(Intent.ACTION_EDIT)) {
-//            doEditAction();
-//            isProbablyEdited = false; // In EDIT mode, initialize after filling in data
-//        }
-//         Log.i(TAG, "After edited = " + isProbablyEdited);
+        final Intent intent = getIntent();
+        mAction = intent.getAction();
+        Log.i(TAG, "mAction = " + mAction);
+        if (mAction.equals(Intent.ACTION_EDIT)) {
+            doEditAction();
+            isProbablyEdited = false; // In EDIT mode, initialize after filling in data
+        }
+         Log.i(TAG, "After edited = " + isProbablyEdited);
+    }
+}
     }
     
     
@@ -226,16 +229,52 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
      * we retrieve the Find's data from the DB and display it in a TextView. The
      * Find's location and time stamp are not updated.
      */
+//    private void doEditAction() {
+//        Log.i(TAG, "doEditAction");
+//
+//        mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
+//        Log.i(TAG,"Find id = " + mFindId);
+//
+//        ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
+//        displayContentInView(values);                        
+//    }
+
+    
+    /**
+     * Allows editing of editable data for existing finds.  For existing finds, 
+     * we retrieve the Find's data from the DB and display it in a TextView. The
+     * Find's location and time stamp are not updated.
+     * 
+     * 
+     */    
+    
+    
     private void doEditAction() {
         Log.i(TAG, "doEditAction");
-
-        mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
-        Log.i(TAG,"Find id = " + mFindId);
-
-        ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
+        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+        ContentValues values = db.fetchBeneficiaryByDossier(beneficiaryId, null);
+        
+        Log.i(TAG, "################  Value of FindsID " + values.getAsString(AcdiVocaDbHelper.FINDS_ID));
+//        mFindId = (int) getIntent().getLongExtra(values.getAsString(AcdiVocaDbHelper.FINDS_ID), 0);   
+        mFindId = values.getAsInteger(AcdiVocaDbHelper.FINDS_ID);   
+//        mFindId = Integer.parseInt(values.getAsString(AcdiVocaDbHelper.FINDS_ID));
+ 
+        Log.i(TAG, "################  If the id is 0 something is wrong: " + mFindId);
+//        Log.i(TAG,"FINDS_ID = " + AcdiVocaDbHelper.FINDS_ID);
+//        mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); //Getting default from here  
+//        Integer.parseInt(db.AcdiVocaDbHelper.FINDS_ID);
+//        mFindId = ben;
+//        mFindId = Integer.parseInt(AcdiVocaDbHelper.FINDS_ID.substring(AcdiVocaDbHelper.FINDS_ID.indexOf(","))); //WARNING: USED TO BE LONG CAST INTO INT ,AcdiVocaDbHelper.FINDS_ID.lastIndexOf(" ")
+//        Log.i(TAG,"Find id = " + mFindId);
+//        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//        Log.i(TAG, db.fetchFindDataById(mFindId, null).toString()); //Need correct ID.
+//        ContentValues values = db.fetchFindDataById(mFindId, null);
+        
+//        ContentValues values = (AcdiVocaFindDataManager.getInstance()).fetchFindDataById(this, mFindId, null);
+        Log.i(TAG,"ContentValues has become");
+        Log.i(TAG,values.toString());
         displayContentInView(values);                        
     }
-
 
     /**
      * Retrieves values from the View fields and stores them as <key,value> pairs in a ContentValues.
@@ -403,11 +442,11 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         
         // Chris - 6/9/11 - Filling the form            
         
-        RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
+        RadioButton sexRB = (RadioButton)findViewById(R.id.maleRadio);
         Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
         if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_MALE.toString()))
             sexRB.setChecked(true);
-        sexRB = (RadioButton)findViewById(R.id.maleRadio);
+        sexRB = (RadioButton)findViewById(R.id.femaleRadio);
         if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_FEMALE.toString())){
             sexRB.setChecked(true);
         }
@@ -524,14 +563,16 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         
         if(v.getId()==R.id.update_to_db_button) {
             boolean result = false;
-            Toast.makeText(this, "SIMULATION: Saving update to DB", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "SIMULATION: Saving update to DB", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Saving update to DB", Toast.LENGTH_SHORT).show();
 
             ContentValues data = this.retrieveContentFromView(); 
             Log.i(TAG, "Retrieved = " + data.toString());
 //Lines below originally commented out            
             
-            Log.i(TAG,"View Content: " + data.toString());
+//            Log.i(TAG,"View Content: " + data.toString());
             data.put(AcdiVocaDbHelper.FINDS_PROJECT_ID, 0);
+            Log.i(TAG, "################################ /n mAction = " + mAction);
             if (mAction.equals(Intent.ACTION_EDIT)) {
                 result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
                 Log.i(TAG, "Update to Db is " + result);
@@ -548,10 +589,10 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
             
             
 //Testing with burnt toast            
-            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
-            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
-            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
-            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
+//            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
+//            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
+//            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
+//            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
             }
             
             else 

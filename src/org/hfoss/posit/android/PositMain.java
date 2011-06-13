@@ -319,6 +319,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				break;
 
 			case R.id.extraButton:
+				intent.setAction(Intent.ACTION_EDIT);
 				intent.setClass(this, FindActivityProvider.getExtraActivityClass());
 				startActivity(intent);
 				break;	
