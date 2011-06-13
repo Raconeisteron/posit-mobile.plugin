@@ -33,6 +33,8 @@
     <string name="pending_messages">Liste les messages en attente</string>
     <string name="acknowledged_messages">Liste les reconnu messages</string>    
     <string name="no_messages">Pas de messages pour voir</string>
+    <string name="delete_messages">Supprimer les messages répertoriés</string>
+     <string name="confirm_delete_messages">Etes-vous sûr de vouloir supprimer ces messages?</string>
             
     <!-- add.xml --> 
     <string name="general_info">Enfomasyon Jeneral</string>

@@ -278,7 +278,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		Log.i(TAG, "Length - 16 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
 	
 		if (!isValidPhoneString(phoneNumber)) {
-			Toast.makeText(context, "SMS Failed\nCheck phone number.", Toast.LENGTH_LONG).show();
+//			Toast.makeText(context, "SMS Failed\nCheck phone number.", Toast.LENGTH_LONG).show();
 			return false;			
 		}
 		// This can go in a single method, send it
@@ -287,7 +287,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			try {
 				SmsManager sms = SmsManager.getDefault();
 //				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
-				Toast.makeText(context, "SMS Sent!\n"+message + " to " + phoneNumber, Toast.LENGTH_LONG).show();
+//				Toast.makeText(context, "SMS Sent!\n"+message + " to " + phoneNumber, Toast.LENGTH_LONG).show();
 				Log.i(TAG,"SMS Sent: " + message);
 				return true;
 			}catch(Exception e) {
@@ -304,23 +304,6 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		//msg = ACDI_VOCA_PREFIX + "=" + id + "," + rawMessage;
 		return msg;
 	}
-	
-	
-// Deprecated -- To be Deleted	
-//	public static String formatSmsMessage(ContentValues values) {
-//		String message = 
-//		"m" + AttributeManager.ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_TYPE) + AttributeManager.PAIRS_SEPARATOR
-//		    +  "f" + AttributeManager.ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_FIRSTNAME) + AttributeManager.PAIRS_SEPARATOR
-//			+  "l" + AttributeManager.ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_LASTNAME) + AttributeManager.PAIRS_SEPARATOR
-//			+ "b" + AttributeManager.ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_DOB)  + AttributeManager.PAIRS_SEPARATOR
-//			+ "s" + AttributeManager.ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.FINDS_SEX) + AttributeManager.PAIRS_SEPARATOR
-//			+ "a" + AttributeManager.ATTR_VAL_SEPARATOR  + values.get(AcdiVocaDbHelper.FINDS_ADDRESS) + AttributeManager.PAIRS_SEPARATOR
-//			+ "c" + AttributeManager.ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY) + AttributeManager.PAIRS_SEPARATOR
-//			+ "n" + AttributeManager.ATTR_VAL_SEPARATOR + values.get(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
-//		
-//		return message;
-//		
-//	}
 	
 	
 	class SmsContentObserver extends ContentObserver {
