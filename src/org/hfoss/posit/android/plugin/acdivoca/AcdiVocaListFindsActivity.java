@@ -245,7 +245,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
 		Log.i(TAG, "Prepare Menus, N messages = " + mNMessagesDisplayed);
         MenuItem menuItem = menu.findItem(R.id.sync_messages);
 		if (mNMessagesDisplayed > 0 && 
@@ -255,8 +254,14 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	        menuItem.setEnabled(true);		
 		} else {
 	        menuItem.setEnabled(false);		
-
 		}
+		menuItem = menu.findItem(R.id.delete_messages_menu);
+		if (mMessageFilter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED
+				&& mNMessagesDisplayed > 0) {
+			menuItem.setEnabled(true);
+		} else {
+			menuItem.setEnabled(false);
+		}			
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -285,8 +290,12 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 			mNMessagesDisplayed = 0;
 			fillData(null);
 			break;
-			//break;
+			
+		case R.id.delete_messages_menu:
+			showDialog(CONFIRM_DELETE_DIALOG);
+			break;				
 		}
+				
 		return true;
 	}
 
@@ -295,6 +304,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	 */
 	private void sendMessages() {
 		int nMsgs = mAdapter.getCount();
+		int nSent = 0;
 		int k = 0;
 		while (k < nMsgs) {
 			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
@@ -306,13 +316,37 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 			if (AcdiVocaSmsManager.sendMessage(this, beneficiary_id, acdiVocaMsg, null)) {
 				Log.i(TAG, "Message Sent--should update as SENT");
 				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
+				++nSent;
 			} else {
 				Log.i(TAG, "Message Not Sent -- should update as PENDING");
 				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			}
 			++k;
 		}
+		Toast.makeText(this, "Sent " + nSent + " messages.", Toast.LENGTH_SHORT).show();
+
 	}
+	
+	/**
+	 * Helper method to delete SMS messages. 
+	 */
+	private void deleteMessages() {
+		int nMsgs = mAdapter.getCount();
+		int nDels = 0;
+		int k = 0;
+		while (k < nMsgs) {
+			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
+			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+			Log.i(TAG, "To Delete: " + acdiVocaMsg.getSmsMessage());
+			
+			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+			if (db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_DEL))
+				++nDels;
+			++k;
+		}
+		Toast.makeText(this, "Deleted " + nDels + " messages.", Toast.LENGTH_SHORT).show();
+	}
+	
 
 	/**                                                                                                                                                                                       
 	 * Retrieves the Beneficiary Id from the Message string.                                                                                                                                  
@@ -382,14 +416,12 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		} else 
 			return;
 				
-//		if (acdiVocaMsgs == null) {
 		if (acdiVocaMsgs.size() == 0) {
 			mNMessagesDisplayed = 0;
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
-			//setContentView(R.layout.acdivoca_list_messsages);
 			acdiVocaMsgs.add(new AcdiVocaMessage(-1,-1,-1,"",getString(R.string.no_messages),""));
-
-		} else {
+		}
+		else {
 			mNMessagesDisplayed = acdiVocaMsgs.size();
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
 	        Log.i(TAG, "Fetched " + acdiVocaMsgs.size() + " messages");
@@ -457,18 +489,16 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		case CONFIRM_DELETE_DIALOG:
 			return new AlertDialog.Builder(this)
 			.setIcon(R.drawable.alert_dialog_icon)
-			.setTitle(R.string.alert_dialog)
+			.setTitle(R.string.confirm_delete_messages)
 			.setPositiveButton(R.string.alert_dialog_ok, 
 					new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
-					// User clicked OK so do some stuff 
-					if(PositDbHelper.getInstance().deleteAllFinds()){
-						Toast.makeText(AcdiVocaListFindsActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
-						finish();
-					} else {
-						Toast.makeText(AcdiVocaListFindsActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
-						dialog.cancel();
-					}
+					if (mMessageListDisplayed) {
+						deleteMessages();
+						mMessageFilter = -1;
+						fillData(null);
+					} 
+					dialog.cancel();  
 				}
 			}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
@@ -521,22 +551,21 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
                 if (msg != null) {
                         TextView tt = (TextView) v.findViewById(R.id.message_header);
                         TextView bt = (TextView) v.findViewById(R.id.message_body);
-                        if (items.size() > 1) {
-                        	if (tt != null) {
+                        
+                		String s = ((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getSmsMessage();
+                 		if (s.equals(getString(R.string.no_messages))) {
+                 			bt.setTextColor(Color.RED);
+                 			bt.setTextSize(24);
+                 			bt.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getSmsMessage());
+                 		} else {  // This case handles a real message
+                           	if (tt != null) {
                         		tt.setTextColor(Color.RED);
                         		tt.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getMsgHeader());                            
                         	}
                         	if(bt != null){
-                        		bt.setText("SMS: " + ((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getSmsMessage());
-                        	}
-                        } else {
-                           	if(bt != null){
-                           		bt.setTextColor(Color.RED);
-                           		bt.setTextSize(24);
                         		bt.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getSmsMessage());
-                        	}
-                       	
-                        }
+                        	}		
+                 		}
                 }
                 return v;
         }

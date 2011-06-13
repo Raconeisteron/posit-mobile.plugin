@@ -87,6 +87,8 @@
     <string name="pending_messages">List pending messages</string>
     <string name="acknowledged_messages">List acknowledged messages</string>
     <string name="no_messages">No messages to display</string>
+    <string name="delete_messages">Delete listed messages</string>
+    <string name="confirm_delete_messages">Are you sure you want to delete these messages?</string>
     
    
         <!-- Add and List Menu -->

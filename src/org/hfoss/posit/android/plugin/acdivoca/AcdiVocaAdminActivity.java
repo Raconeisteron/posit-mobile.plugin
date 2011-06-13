@@ -175,7 +175,8 @@ public class AcdiVocaAdminActivity extends Activity  {
 		
 		items = loadBeneficiaryData();
 		long nImports = db.addUpdateBeneficiaries(items, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
-		Log.i(TAG, "Imported " + nImports + " Beneficiaries");		
+		Log.i(TAG, "Imported " + nImports + " Beneficiaries");	
+//		Toast.makeText(this, "Imported " +  + nImports + " Beneficiaries", Toast.LENGTH_SHORT);
 	}
 	
 	/**
