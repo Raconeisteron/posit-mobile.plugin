@@ -711,7 +711,7 @@ public class AcdiVocaDbHelper {
 	 * @param order_by
 	 * @return
 	 */
-	private Cursor lookupBeneficiaryRecords(int filter, String order_by) {
+	private Cursor lookupBeneficiaryRecords(int filter, String order_by, String distrCtr) {
 		Cursor c = null;
 		if (filter == SearchFilterActivity.RESULT_SELECT_NEW)
 			c = mDb.query(FINDS_TABLE, null, 
@@ -723,7 +723,10 @@ public class AcdiVocaDbHelper {
 		else if (filter == SearchFilterActivity.RESULT_SELECT_UPDATE)
 			c = mDb.query(FINDS_TABLE, null, 
 					FINDS_STATUS + "=" + FINDS_STATUS_UPDATE 
-					+ " AND " + FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT, 
+					+ " AND " + 
+					FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT
+					+ " AND " +
+					FINDS_DISTRIBUTION_POST + "=" + "'" + distrCtr + "'",
 					null, null, null, order_by);
 		return c;
 	}
@@ -737,8 +740,8 @@ public class AcdiVocaDbHelper {
 	 * @param order_by
 	 * @return
 	 */
-	public ArrayList<AcdiVocaMessage> createMessagesForBeneficiaries(int filter, String order_by) {
-		Cursor c = lookupBeneficiaryRecords(filter, order_by);
+	public ArrayList<AcdiVocaMessage> createMessagesForBeneficiaries(int filter, String order_by, String distrCtr) {
+		Cursor c = lookupBeneficiaryRecords(filter, order_by, distrCtr);
 		Log.i(TAG,"createMessagesForBeneficiaries " +  " count=" + c.getCount() + " filter= " + filter);
 
 		// Construct the messages and return as a String array
