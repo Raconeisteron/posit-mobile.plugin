@@ -47,7 +47,7 @@ public class AttributeManager {
 	
 	public static final String ATTR_VAL_SEPARATOR = "=";
 	public static final String PAIRS_SEPARATOR = ",";
-	public static final String LIST_SEPARATOR = "/";  // Don't use '|'
+	public static final String LIST_SEPARATOR = "&"; // Don't use '/' and don't use '|'
 
 	public static final String OUTER_DELIM = PAIRS_SEPARATOR;
 	public static final String INNER_DELIM = ATTR_VAL_SEPARATOR;
