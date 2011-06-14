@@ -405,9 +405,16 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = null;
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		String distrKey = this.getResources().getString(R.string.distribution_point);
+		String distributionCtr = sharedPrefs.getString(distrKey, "");
+		Log.i(TAG, distrKey +"="+ distributionCtr);
+		
+		//dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
+		
 		if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
 				|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {  // Second arg is order by
-			acdiVocaMsgs = db.createMessagesForBeneficiaries(filter, null);
+			acdiVocaMsgs = db.createMessagesForBeneficiaries(filter, null, distributionCtr);
 		} else if (filter == SearchFilterActivity.RESULT_SELECT_ALL 
 				|| filter == SearchFilterActivity.RESULT_SELECT_PENDING
 				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
