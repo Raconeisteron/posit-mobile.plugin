@@ -847,7 +847,8 @@ public class AcdiVocaDbHelper {
 				String smsMessage = c.getString(c.getColumnIndex(MESSAGE_TEXT));
 				String statusStr = MESSAGE_STATUS_STRINGS[msg_status];
 
-				String msgHeader = "Id:" + msg_id + " Stat:" + statusStr + " Len:" + smsMessage.length();
+				String msgHeader = "Id:" + msg_id + " Stat:" + statusStr + " Len:" + smsMessage.length()
+					+ " Bid = " + beneficiary_id;
 				acdiVocaMsgs.add (new AcdiVocaMessage(msg_id, beneficiary_id, msg_status,
 						"", smsMessage, msgHeader));
 				c.moveToNext();
