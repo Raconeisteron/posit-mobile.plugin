@@ -821,7 +821,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		int k = 0;
 		if(selected != null){
 			String item = (String) spinner.getItemAtPosition(k);
-			while (k < spinner.getCount() && !selected.equals(item)) {
+			while (k < spinner.getCount()-1 && !selected.equals(item)) {
 				++k;
 				item = (String) spinner.getItemAtPosition(k);				
 			}
