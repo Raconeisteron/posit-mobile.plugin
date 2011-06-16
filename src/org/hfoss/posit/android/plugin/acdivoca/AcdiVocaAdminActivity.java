@@ -201,7 +201,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 			//while (line != null && k < 1000)  {
 			while (line != null)  {
 				//Log.i(TAG, line);
-				if (line.charAt(0) != '*')  {
+				if (line.length() > 0 && line.charAt(0) != '*')  {
 					data[k] = line;
 					k++;
 				}
@@ -209,6 +209,9 @@ public class AcdiVocaAdminActivity extends Activity  {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StringIndexOutOfBoundsException e) {
+			Log.e(TAG, "Bad line?  " + line);
 			e.printStackTrace();
 		}
 		String[] dossiers = new String[k];  // Create the actual size of array

@@ -422,8 +422,10 @@ public class AcdiVocaDbHelper {
 			long rowId = db.insert(USER_TABLE, null, values);
 			//mDb.close();
 			Log.i(TAG, "addUser " + username + " at rowId=" + rowId);
+			c.close();
 			return true;
 		}	
+		c.close();
 		return false;
 	}
 
