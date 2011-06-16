@@ -424,9 +424,9 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
         String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
         int yr=0, mon=0, day=0;
-        day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
-        yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
-        mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
+		day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
+		yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
+		mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
         
         Log.i(TAG, yr + "/" + mon + "/" + day);
 //        mon = mon + 1;  // Months are number 0..11
@@ -452,18 +452,37 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         }
         
         RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_EXPECTING.toString()))
-            motherRB.setChecked(true);
-        motherRB = (RadioButton)findViewById(R.id.nursingRadio);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_NURSING.toString()))
-            motherRB.setChecked(true);
-        RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_MALNOURISHED.toString()))
-            infantRB.setChecked(true);
-        infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_PREVENTION.toString()))
-            infantRB.setChecked(true);
-
+        String cat = contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY);
+        if (cat != null){
+        	if (cat.equals(AcdiVocaDbHelper.FINDS_EXPECTING.toString()))
+        		motherRB.setChecked(true);
+        	else
+        		motherRB.setChecked(false);
+        	motherRB = (RadioButton)findViewById(R.id.nursingRadio);
+        	if (cat.equals(AcdiVocaDbHelper.FINDS_NURSING.toString()))
+        		motherRB.setChecked(true);
+        	else
+        		motherRB.setChecked(false);
+        	RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
+        	if (cat.equals(AcdiVocaDbHelper.FINDS_MALNOURISHED.toString()))
+        		infantRB.setChecked(true);
+        	else
+        		motherRB.setChecked(false);
+        	infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
+        	if (cat.equals(AcdiVocaDbHelper.FINDS_PREVENTION.toString()))
+        		infantRB.setChecked(true);
+        	else
+        		motherRB.setChecked(false);
+        }
+        else{
+        	motherRB.setChecked(false);
+        	motherRB = (RadioButton)findViewById(R.id.nursingRadio);
+        	motherRB.setChecked(false);
+        	motherRB = (RadioButton)findViewById(R.id.malnourishedRadio);
+        	motherRB.setChecked(false);
+        	motherRB = (RadioButton)findViewById(R.id.inpreventionRadio);
+        	motherRB.setChecked(false);
+        }
         
         RadioButton presentRB = (RadioButton) findViewById(R.id.radio_present_yes);
         
