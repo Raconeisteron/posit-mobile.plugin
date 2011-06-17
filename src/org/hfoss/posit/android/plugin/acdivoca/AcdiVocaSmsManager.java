@@ -144,9 +144,9 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	 * 
 	 * We are interested in AcdiVoca ACK messages, which are:
 	 * 
-	 * AV=ACK,IDS=id1|id2|id3|...|idN,...,
+	 * AV=ACK,IDS=id1|id2|id3|...|idN,..., 
 	 * 
-	 * The list of ids represent beneficiary row_ids (which were sent in the original
+	 * The list of ids represent beneficiary ids (i.e., row_ids, which were sent in the original
 	 * message to the server.  These messages should be marked acknowledged.
 
 	 * @param msg
@@ -194,18 +194,18 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 						else {
 							
 							// Construct an SmsMessage and update the Db
-							int msgId = (int)t.nval;
-							Log.i(TAG, "ACKing: " + msgId);
+							int beneficiaryId = (int)t.nval;
+							Log.i(TAG, "ACKing, beneficiary_id: " + beneficiaryId);
 							AcdiVocaMessage avMsg = new AcdiVocaMessage(
-									msgId,
-									-1,      // Beneficiary Id, unknown
+									-1,  // Message Id is unknown -- Modem sends back Beneficiary Id
+									beneficiaryId,  // Beneficiary Id
 									AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
 									attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
 									"",   // SmsMessage N/A
 									""    // Header  N/A
 							);
 							db = new AcdiVocaDbHelper(mContext);
-							db.updateMessageStatus(avMsg,AcdiVocaDbHelper.MESSAGE_STATUS_ACK);
+							db.recordAcknowledgedMessage(avMsg);
 						}
 						token = t.nextToken();
 					}
@@ -260,8 +260,11 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		if (phoneNumber==null)
 			phoneNumber = PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
 
-		String message = acdiVocaMessage.ACDI_VOCA_PREFIX + AttributeManager.ATTR_VAL_SEPARATOR +
-			+ acdiVocaMessage.getBeneficiaryId() +   AttributeManager.PAIRS_SEPARATOR
+		String message = acdiVocaMessage.ACDI_VOCA_PREFIX 
+			+ AttributeManager.ATTR_VAL_SEPARATOR 
+			//+ acdiVocaMessage.getMessageId()   NOTE: Msgid = -1 at this point, not in Db
+			+ acdiVocaMessage.getBeneficiaryId() 
+			+ AttributeManager.PAIRS_SEPARATOR
 			+ acdiVocaMessage.getSmsMessage();
 		
 		PendingIntent sentIntent = PendingIntent.getBroadcast(context, 0,new Intent(SENT), 0);
@@ -286,8 +289,9 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		if (length[0] == 1) {  
 			try {
 				SmsManager sms = SmsManager.getDefault();
-				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
+//				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
 //				Toast.makeText(context, "SMS Sent!\n"+message + " to " + phoneNumber, Toast.LENGTH_LONG).show();
+				Log.i(TAG, "SMS Sent!\n"+message + " to " + phoneNumber);
 				Log.i(TAG,"SMS Sent: " + message);
 				return true;
 			}catch(Exception e) {

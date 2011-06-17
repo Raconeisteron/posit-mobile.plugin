@@ -166,7 +166,7 @@ public class AcdiVocaDbHelper {
 	public static final int FINDS_STATUS_UPDATE = 1;   // Update, imported from TBS, with Dossier ID
 	public static final String[] FIND_STATUS_STRINGS = {"New", "Update"};  // For display purpose
 
-	public static final String FINDS_MESSAGE_STATUS = MESSAGE_STATUS;
+	public static final String FINDS_MESSAGE_ID = MESSAGE_STATUS;
 //	public static final String FINDS_MESSAGE_TEXT = MESSAGE_TEXT;
 
 	public static final String FINDS_FIRSTNAME = AttributeManager.FINDS_FIRSTNAME;
@@ -265,7 +265,7 @@ public class AcdiVocaDbHelper {
 		+ FINDS_TYPE + " integer DEFAULT 0, "                             // MCHN or Agri                 
 		+ FINDS_STATUS + " integer DEFAULT " + FINDS_STATUS_NEW + ", "    // New or Update record
 //		+ FINDS_MESSAGE + " integer DEFAULT " + MESSAGE_STATUS_UNSENT ,"                  // Reference to Message table Id
-		+ FINDS_MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_UNSENT + ", "
+		+ FINDS_MESSAGE_ID + " integer DEFAULT " + 0 + ", "
 //		+ FINDS_MESSAGE_TEXT + " text, "
  		+ FINDS_NAME + " text, "
 		+ FINDS_FIRSTNAME + " text, "
@@ -541,6 +541,42 @@ public class AcdiVocaDbHelper {
 		return yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
 	}
 
+	
+	/**
+	 * Record and incoming ACK from the modem. The modem sends back the beneficiary
+	 * id for the message.  This method looks up the message id and updates the
+	 * message table. 
+	 * @param acdiVocaMsg
+	 * @return
+	 */
+	public boolean recordAcknowledgedMessage(AcdiVocaMessage acdiVocaMsg) {
+		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+		Log.i(TAG, "Recording ACK, bene_id = " + acdiVocaMsg.getBeneficiaryId());
+
+		// Look up the beneficiary record and extract the message id
+		Cursor c = null;
+		c = mDb.query(FINDS_TABLE, null, 
+				FINDS_ID + " = " + beneficiary_id, 
+					null, null, null, null);
+		
+		int msg_id = -1;
+		if (c.getCount() != 0) {
+			Log.i(TAG, "Found beneficiary, id = " + beneficiary_id);
+			c.moveToFirst();
+			msg_id = c.getInt(c.getColumnIndex(FINDS_MESSAGE_ID));  // We should change the name of this.
+		} else {
+			Log.i(TAG, "Unable to find beneficiary, id = " + beneficiary_id);
+		}
+		c.close();
+		acdiVocaMsg.setMessageId(msg_id);
+		if (msg_id != -1) {
+			return updateMessageStatus(acdiVocaMsg, MESSAGE_STATUS_ACK);
+		} else {
+			Log.i(TAG, "Unable to find id for beneficiary id = " + beneficiary_id);
+			return false;
+		}
+	}
+	
 	/**
 	 * Updates the message status in the message table.
 	 * @param message the SMS message
@@ -548,7 +584,8 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	public boolean updateMessageStatus(AcdiVocaMessage acdiVocaMsg, int status) {
-		Log.i(TAG, "Updating Message " + acdiVocaMsg.getMessageId() + " to status = " + status);
+		Log.i(TAG, "Updating, msg_id " + acdiVocaMsg.getMessageId() + 
+				" bene_id = " + acdiVocaMsg.getBeneficiaryId() + " to status = " + status);
 		boolean result = false;
 		long row_id;
 		int rows = 0;
@@ -561,17 +598,19 @@ public class AcdiVocaDbHelper {
 		args.put(MESSAGE_STATUS, status);
 		
 		if (msg_id == -1) {  
-			// Create a new message
+			// Create a new message in the message table
 			args.put(MESSAGE_TEXT, acdiVocaMsg.getSmsMessage());
 			row_id = mDb.insert(MESSAGE_TABLE, null, args);
 
 			if (row_id != -1) {
 				result = true;
-				Log.i(TAG, "Inserted NEW message, id= " + row_id); 
+				Log.i(TAG, "Inserted NEW message, id= " + row_id + " bene_id=" + beneficiary_id); 
 				
 				// Update the FINDS table to point to the message
+				// NOTE:  We should change the name of FINDS_MESSAGE_STATUS to
+				// FINDS_MESSAGE_ID
 				args = new ContentValues();
-				args.put(FINDS_MESSAGE_STATUS, row_id);
+				args.put(FINDS_MESSAGE_ID, row_id);
 				rows = mDb.update(FINDS_TABLE, 
 						args, 
 						FINDS_ID + " = " + beneficiary_id,
@@ -719,14 +758,14 @@ public class AcdiVocaDbHelper {
 			c = mDb.query(FINDS_TABLE, null, 
 					FINDS_STATUS + " = " + FINDS_STATUS_NEW  
 					+ " AND " 
-					+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT,
+					+ FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT,
 					null, null, null, order_by);
 		
 		else if (filter == SearchFilterActivity.RESULT_SELECT_UPDATE)
 			c = mDb.query(FINDS_TABLE, null, 
 					FINDS_STATUS + "=" + FINDS_STATUS_UPDATE 
 					+ " AND " + 
-					FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT
+					FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT
 					+ " AND " +
 					FINDS_DISTRIBUTION_POST + "=" + "'" + distrCtr + "'",
 					null, null, null, order_by);
@@ -750,7 +789,7 @@ public class AcdiVocaDbHelper {
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
 		if (c.getCount() != 0) {
 			
-			Log.i(TAG, "Columns=" + c.getColumnNames().toString());
+			//Log.i(TAG, "Columns=" + c.getColumnNames().toString());
 			//acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
 			c.moveToFirst();
 			int k = 0;
@@ -773,7 +812,7 @@ public class AcdiVocaDbHelper {
 			while (!c.isAfterLast()) {
 				beneficiary_id = c.getInt(c.getColumnIndex(FINDS_ID));
 				beneficiary_status = c.getInt(c.getColumnIndex(FINDS_STATUS));
-				message_status = c.getInt(c.getColumnIndex(FINDS_MESSAGE_STATUS));
+				message_status = c.getInt(c.getColumnIndex(FINDS_MESSAGE_ID));
 				statusStr = MESSAGE_STATUS_STRINGS[message_status];
 
 				columns = c.getColumnNames();
@@ -800,7 +839,8 @@ public class AcdiVocaDbHelper {
 						AttributeManager.ABBREV_HASA);
 
 				// Add a header (length and status) to message
-				msgHeader = "MsgId:" + msg_id + ", Len:" + smsMessage.length() +  ", " + statusStr ;
+				msgHeader = "MsgId:" + msg_id + ", Len:" + smsMessage.length() +  ", " + statusStr 
+				+ " Bid = " + beneficiary_id;
 
 				acdiVocaMsgs.add(new AcdiVocaMessage(msg_id, 
 						beneficiary_id, 
@@ -849,7 +889,7 @@ public class AcdiVocaDbHelper {
 				String smsMessage = c.getString(c.getColumnIndex(MESSAGE_TEXT));
 				String statusStr = MESSAGE_STATUS_STRINGS[msg_status];
 
-				String msgHeader = "Id:" + msg_id + " Stat:" + statusStr + " Len:" + smsMessage.length()
+				String msgHeader = "MsgId:" + msg_id + " Stat:" + statusStr + " Len:" + smsMessage.length()
 					+ " Bid = " + beneficiary_id;
 				acdiVocaMsgs.add (new AcdiVocaMessage(msg_id, beneficiary_id, msg_status,
 						"", smsMessage, msgHeader));

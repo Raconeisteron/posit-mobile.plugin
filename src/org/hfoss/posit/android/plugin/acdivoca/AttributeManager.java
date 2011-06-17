@@ -604,7 +604,7 @@ public class AttributeManager {
 	 * @return a String of the form "h1" representing that health center
 	 */
 	public static String getMapping(String val) {
-		System.out.println("val = " + val);
+		//System.out.println("val = " + val);
 		String result = abbreviations.get(val);
 		if (result != null) {
 				return result;
@@ -622,7 +622,7 @@ public class AttributeManager {
 		while (it.hasNext()) { 
 			String s = it.next();
 			
-			System.out.println(s +  " = " + abbreviations.get(s));
+			//.println(s +  " = " + abbreviations.get(s));
 		}
 	}
 
@@ -670,8 +670,8 @@ public class AttributeManager {
 		result += newAttr + ATTR_VAL_SEPARATOR + sum;	
 		
 		// To test the encoding, print out the decoding
-		System.out.println(TAG +  "Decoded sum = " + decodeBinaryFieldsInt(sum, attributes));
-		System.out.println(TAG +  "Result= " + result);
+		//System.out.println(TAG +  "Decoded sum = " + decodeBinaryFieldsInt(sum, attributes));
+		//System.out.println(TAG +  "Result= " + result);
 
 		return result;
 	}
@@ -703,7 +703,7 @@ public class AttributeManager {
 				result += attributes[k] + ATTR_VAL_SEPARATOR + "1" + PAIRS_SEPARATOR;
 			}
 		}
-		System.out.println(TAG + "Result = " + result);
+		//System.out.println(TAG + "Result = " + result);
 		return result;	
 	}
 	
