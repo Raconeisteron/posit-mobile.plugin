@@ -2,10 +2,6 @@ package org.hfoss.posit.android.api;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -15,15 +11,8 @@ import javax.xml.xpath.XPathFactory;
 import org.hfoss.posit.android.R;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xmlpull.v1.XmlPullParser;
-
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.res.XmlResourceParser;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class FindPluginManager {

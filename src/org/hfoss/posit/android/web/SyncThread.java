@@ -159,6 +159,7 @@ public class SyncThread extends Thread {
 	 * the server. 
 	 * 
 	 */
+	@Override
 	public void run() {
 		boolean success = false;
 
@@ -383,7 +384,7 @@ public class SyncThread extends Thread {
 				Log.i(TAG, "image=" + images.get(j).toString());
 				HashMap<String, String> data_entry = images.get(j); // Get the image
 				try {
-					String fullData = (String) data_entry.get("data_full");
+					String fullData = data_entry.get("data_full");
 					
 					findDataEntiresList.add(FindPluginManager.getInstance().getFindDataManager().saveBase64StringAsUri(fullData, mContext));
 				} catch (Exception e) {

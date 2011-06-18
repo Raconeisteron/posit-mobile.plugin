@@ -41,8 +41,6 @@ import java.util.ListIterator;
 import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.provider.PositDbHelper;
 
-import android.content.BroadcastReceiver;
-
 import android.R;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -70,7 +68,6 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * A collection of utility functions that may not be worth moving to their own spaces
@@ -208,7 +205,7 @@ public class Utils {
  */
 	public static boolean isNetworkAvailable(Context context)
 	{
-		conManage = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
+		conManage = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (conManage == null) {
            Log.w(TAG, "couldn't get connectivity manager");
         } else {

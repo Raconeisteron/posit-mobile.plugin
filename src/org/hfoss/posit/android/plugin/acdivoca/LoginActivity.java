@@ -22,47 +22,20 @@
  */
 package org.hfoss.posit.android.plugin.acdivoca;
 
-import java.util.Calendar;
-import java.util.Locale;
-
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.R.id;
-import org.hfoss.posit.android.R.layout;
-import org.hfoss.posit.android.api.FindActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.PendingIntent;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.telephony.gsm.SmsManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.DatePicker.OnDateChangedListener;
 
 /**
  * Handles Login for ACDI/VOCA application.
@@ -79,6 +52,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	private UserType userType;
 	
 	/** Called when the activity is first created. */
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		 Log.i(TAG, "onCreate");

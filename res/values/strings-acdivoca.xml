@@ -23,7 +23,7 @@
     <string name="firstname">First Name</string>
     <string name="commune">Commune</string>
     <string name="commune_section">Communal section</string>
-    <string name="address">Street Address</string>	
+    <string name="address">Locality</string>	
 	
     <string name="sex">Sex</string>
     <string name="dob">Date of Birth</string>
@@ -45,22 +45,26 @@
     
     <!--   MCHN Strings -->
     <string name="relatives_section">Beneficiary relatives</string>
-    <string name="responsible_if_child">Responsible party (if child)</string>
-    <string name="responsible_if_mother">Responsible party (if mother)</string>
+    <string name="responsible_if_child">Alternate collector (if child)</string>
+    <string name="responsible_if_mother">Alternate collector (if mother)</string>
     <string name="father_if_child">Father (if child)</string>
     <string name="husband_if_mother">Husband (if mother)</string>
     
-    <string name="health_center">Health Center</string>
+    <string name="health_center">Health Center, Dispensary, or Fixed Point</string>
     <string name="distribution_post">Distribution Post</string>
-
-
+	<string name="status_change">Status Change Type</string>
+    
     <string name="mchn_questions">Questions</string>
     <string name="mother_leader">Are you a mother leader?</string>
-    <string name="visit_mother_leader">Do you visit a mother leader?</string>
+    <string name="visit_mother_leader">Have you received a visit from a mother leader?</string>
     <string name="participating_acdivoca">Is someone in your family participating in ACDI/VOCA Agriculture program?</string>
+    <string name="participating_acdivoca_same">Are you receiving aid from ACDI/VOCA Agriculture Program?</string>
     <string name="give_name">If so, give name</string>
     <string name="Yes">Yes</string>
     <string name="No">No</string>
+    <string name="participating_bene">Is someone in your family participating in ACDI/VOCA Beneficiary program?</string>
+    <string name="participating_bene_same">Are you participating in ACDI/VOCA Beneficiary Program?</string>
+    
     
    
     <!--  Update View -->
@@ -75,6 +79,9 @@
     <string name="beneficiary_present">Was the beneficiary present?</string>
     <string name="transfer_required">Should this beneficiary be transferred to a new category?</string>
     <string name="modifications_needed">Are modifications needed in the beneficiary\'s record?</string>
+    
+    <!-- This is a new question for a button to replace the last two questions - 6/17/11 -->
+    <string name="change_in_status">Is there a change in the beneficiary\'s status?</string>
     
     <!--  list_finds.xml -->
     <string name="noFinds">No beneficiaries</string>
@@ -118,12 +125,13 @@
  	
  	
  	<!-- New string constants for agriculture registration form -->
-	<string name="amount_of_land">Amount of Land</string>
+	<string name="amount_of_land">Amount of Land (Carreau)</string>
 	<string name="Ex:1over16"></string>
     <string name="seed_group">Seed Types</string>
     <string name="unit_of_measurement">Unit of Measurement</string>
     <string name="quantity_of_seeds">Quantity of Seeds</string>
     <string name="tools">Tools</string>
+    <string name="partners">Are you working with other partners?</string>
  	
     
     

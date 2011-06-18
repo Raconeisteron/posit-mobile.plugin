@@ -46,6 +46,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -163,7 +164,14 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
                 
                 ((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
                 
-            
+// New Listeners - 6/17/11
+                
+                ((RadioButton)findViewById(R.id.radio_present_yes)).setOnClickListener(this);
+                ((RadioButton)findViewById(R.id.radio_present_no)).setOnClickListener(this);
+                ((RadioButton)findViewById(R.id.radio_change_in_status_yes)).setOnClickListener(this);
+                ((RadioButton)findViewById(R.id.radio_change_in_status_no)).setOnClickListener(this);
+                ((Spinner)findViewById(R.id.statuschangeSpinner)).setOnItemSelectedListener(this);
+                
         
 
 //        ((Button)findViewById(R.id.saveToDbButton)).setOnClickListener(this);
@@ -377,24 +385,45 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         if (presentRB.isChecked()) 
             present = AcdiVocaDbHelper.FINDS_FALSE;
         result.put(AcdiVocaDbHelper.FINDS_Q_PRESENT, present); 
+
+// New button - 6/17/11        
         
-        RadioButton transferRB = (RadioButton)findViewById(R.id.radio_transfer_yes);
-        String transfer = "";
-        if (transferRB.isChecked()) 
-            transfer = AcdiVocaDbHelper.FINDS_TRUE;
-        transferRB = (RadioButton)findViewById(R.id.radio_transfer_no);
-        if (transferRB.isChecked()) 
-            transfer = AcdiVocaDbHelper.FINDS_FALSE;
-        result.put(AcdiVocaDbHelper.FINDS_Q_TRANSFER, transfer); 
+        RadioButton changeRB = (RadioButton)findViewById(R.id.radio_change_in_status_yes);
+        String change = "";
+        if (changeRB.isChecked()) 
+            change = AcdiVocaDbHelper.FINDS_TRUE;
+        changeRB = (RadioButton)findViewById(R.id.radio_change_in_status_no);
+        if (changeRB.isChecked()) 
+            change = AcdiVocaDbHelper.FINDS_FALSE;
+        result.put(AcdiVocaDbHelper.FINDS_Q_CHANGE, change); 
         
-        RadioButton modRB = (RadioButton)findViewById(R.id.radio_modifications_yes);
-        String mod = "";
-        if (modRB.isChecked()) 
-            mod = AcdiVocaDbHelper.FINDS_TRUE;
-        modRB = (RadioButton)findViewById(R.id.radio_modifications_no);
-        if (modRB.isChecked()) 
-            mod = AcdiVocaDbHelper.FINDS_FALSE;
-        result.put(AcdiVocaDbHelper.FINDS_Q_MODIFICATION, mod); 
+		String spinnerStr = "";
+		Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
+		if (spinner != null) {
+			spinnerStr = (String) spinner.getSelectedItem();
+			result.put(AcdiVocaDbHelper.FINDS_CHANGE_TYPE, spinnerStr);
+		}
+        
+
+//    	Old buttons - not in use - 6/17/11         
+        
+//        RadioButton transferRB = (RadioButton)findViewById(R.id.radio_transfer_yes);
+//        String transfer = "";
+//        if (transferRB.isChecked()) 
+//            transfer = AcdiVocaDbHelper.FINDS_TRUE;
+//        transferRB = (RadioButton)findViewById(R.id.radio_transfer_no);
+//        if (transferRB.isChecked()) 
+//            transfer = AcdiVocaDbHelper.FINDS_FALSE;
+//        result.put(AcdiVocaDbHelper.FINDS_Q_TRANSFER, transfer); 
+//        
+//        RadioButton modRB = (RadioButton)findViewById(R.id.radio_modifications_yes);
+//        String mod = "";
+//        if (modRB.isChecked()) 
+//            mod = AcdiVocaDbHelper.FINDS_TRUE;
+//        modRB = (RadioButton)findViewById(R.id.radio_modifications_no);
+//        if (modRB.isChecked()) 
+//            mod = AcdiVocaDbHelper.FINDS_FALSE;
+//        result.put(AcdiVocaDbHelper.FINDS_Q_MODIFICATION, mod); 
         
         return result;
     }
@@ -494,24 +523,57 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
             presentRB.setChecked(true);
         }
+ 
+    //  New button - 6/17/11          
         
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT) != null){
-        RadioButton transferRB = (RadioButton) findViewById(R.id.radio_transfer_yes);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_TRANSFER).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
-            transferRB.setChecked(true);
-        transferRB = (RadioButton) findViewById(R.id.radio_transfer_no);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_TRANSFER).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
-            transferRB.setChecked(true);
-        }
         
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT) != null){
-        RadioButton modificationRB = (RadioButton) findViewById(R.id.radio_modifications_yes);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MODIFICATION).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
-            modificationRB.setChecked(true);
-        modificationRB = (RadioButton) findViewById(R.id.radio_modifications_no);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MODIFICATION).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
-            modificationRB.setChecked(true);
+        Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
+		AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
+        RadioButton changeRB = (RadioButton) findViewById(R.id.radio_change_in_status_yes);
+        
+		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE) != null){
+        
+        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_TRUE.toString())){
+			findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
+			findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);
+            changeRB.setChecked(true);
         }
+        changeRB = (RadioButton) findViewById(R.id.radio_change_in_status_no);
+        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_FALSE.toString())){
+			findViewById(R.id.statuschange).setVisibility(View.GONE);
+			findViewById(R.id.statuschangeSpinner).setVisibility(View.GONE);
+            changeRB.setChecked(true);
+        }
+        }
+		
+		//Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);		
+		
+//		Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
+//		AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
+//		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_FALSE.toString())){
+//			findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
+//			findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);
+//		}
+        
+    //  Old buttons - not in use - 6/17/11         
+        
+//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_TRANSFER) != null){
+//      RadioButton transferRB = (RadioButton) findViewById(R.id.radio_transfer_yes);
+//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_TRANSFER).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
+//          transferRB.setChecked(true);
+//      transferRB = (RadioButton) findViewById(R.id.radio_transfer_no);
+//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_TRANSFER).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
+//          transferRB.setChecked(true);
+//      }
+//      
+//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MODIFICATION) != null){
+//      RadioButton modificationRB = (RadioButton) findViewById(R.id.radio_modifications_yes);
+//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MODIFICATION).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
+//          modificationRB.setChecked(true);
+//      modificationRB = (RadioButton) findViewById(R.id.radio_modifications_no);
+//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MODIFICATION).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
+//          modificationRB.setChecked(true);
+//      }
 //        
 //        Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
 //        String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
@@ -578,6 +640,18 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 //            findViewById(R.id.husbandIfMotherEdit).setVisibility(View.INVISIBLE);            
 //            //Toast.makeText(AcdiVocaFindActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
 //        } 
+        
+//New code for the spinner - 9/17/11        
+        
+        if (id == R.id.radio_change_in_status_yes){
+        	findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
+			findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);	
+        }
+        
+        if (id == R.id.radio_change_in_status_no){
+        	findViewById(R.id.statuschange).setVisibility(View.GONE);
+			findViewById(R.id.statuschangeSpinner).setVisibility(View.GONE);	
+        }
         
         
         if(v.getId()==R.id.update_to_db_button) {
@@ -725,4 +799,3 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 
     }
 }
-

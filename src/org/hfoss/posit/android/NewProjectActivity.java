@@ -45,6 +45,7 @@ public class NewProjectActivity extends Activity implements OnClickListener{
 	private Button mCreateProject;
 	private static final String TAG = "NewProjectActivity";
 	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.new_project);

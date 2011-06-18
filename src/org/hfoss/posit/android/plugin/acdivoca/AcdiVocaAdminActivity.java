@@ -26,11 +26,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Locale;
-
-import org.hfoss.posit.android.AboutActivity;
 import org.hfoss.posit.android.Log;
-import org.hfoss.posit.android.PositMain;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.SettingsActivity;
@@ -40,15 +36,12 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -221,6 +214,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 	}
 	
 	class ImportThreadHandler extends Handler {
+		@Override
 		public void handleMessage(Message msg) {
 			if (msg.what == DONE) {
 				mProgressDialog.dismiss();
@@ -237,6 +231,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 			mContext = context;
 		}
 	
+		@Override
 		public void run() {
 			importBeneficiaryDataToDb();
 			mHandler.sendEmptyMessage(AcdiVocaAdminActivity.DONE);

@@ -171,6 +171,7 @@ public class AttributeManager {
 	public static final String ABBREV_HAVE_TREE = "tr";
 	public static final String ABBREV_HAVE_VEG = "ve";
 	public static final String ABBREV_HAVE_TUBER = "tu";
+	public static final String ABBREV_HAVE_COFFEE = "co";
 	
 	// This pair of constants is used to encode/decode Y/N
 	// questions regarding plant, seeds, and tools.
@@ -235,6 +236,11 @@ public class AttributeManager {
 	public static final String FINDS_Q_MOTHER_LEADER = "mother_leader";
 	public static final String FINDS_Q_VISIT_MOTHER_LEADER = "visit_mother_leader";
 	public static final String FINDS_Q_PARTICIPATING_AGRI = "pariticipating_agri";
+	public static final String FINDS_Q_PARTICIPATEING_AGRI_SAME = "same_person_pariticipating_agri";
+	public static final String FINDS_Q_PARTICIPATING_BENE = "pariticipating_bene";
+	public static final String FINDS_Q_PARTICIPATEING_BENE_SAME = "same_person_pariticipating_bene";
+	
+
 	public static final String FINDS_NAME_AGRI_PARTICIPANT = "name_agri_paricipant";
 	public static final String FINDS_LAND_AMOUNT = "amount_of_land";
 	public static final String FINDS_RELATIVE_1 = "relative_1";
@@ -248,21 +254,29 @@ public class AttributeManager {
 	public static final String FINDS_IS_RANCHER = "is_rancher";
 	public static final String FINDS_IS_STOREOWN = "is_store_owner";
 	public static final String FINDS_IS_OTHER = "is_other";
+	public static final String FINDS_IS_ARTISAN = "is_artisan";
 	
-	
-	public static final String FINDS_HAVE_BARREAMINES = "have_barreamines";
-	public static final String FINDS_HAVE_BROUETTE = "have_brouette";
+	public static final String FINDS_HAVE_BARREAMINES = "have_crowbar";
+	public static final String FINDS_HAVE_BROUETTE = "have_wheelbarrow";
 	public static final String FINDS_HAVE_CEREAL = "have_cereal";
-	public static final String FINDS_HAVE_HOUE = "have_houe";
-	public static final String FINDS_HAVE_MACHETTE = "have_machette";
-	public static final String FINDS_HAVE_PELLE = "have_pelle";
-	public static final String FINDS_HAVE_PIOCHE = "have_pioche";
-	public static final String FINDS_HAVE_SERPETTE = "have_serpette";
+	public static final String FINDS_HAVE_HOUE = "have_hoe";
+	public static final String FINDS_HAVE_MACHETTE = "have_machete";
+	public static final String FINDS_HAVE_PELLE = "have_shovel";
+	public static final String FINDS_HAVE_PIOCHE = "have_pick";
+	public static final String FINDS_HAVE_SERPETTE = "have_pruning_knife";
 	public static final String FINDS_HAVE_TREE = "have_tree";
 	public static final String FINDS_HAVE_TUBER = "have_tuber";
 	public static final String FINDS_HAVE_VEGE = "have_vege";
+	public static final String FINDS_HAVE_COFFEE = "have_coffee";
 
 	
+	
+	public static final String FINDS_PARTNER_FAO = "partner_fao";
+	public static final String FINDS_PARTNER_SAVE = "partner_save";
+	public static final String FINDS_PARTNER_CROSE = "partner_crose";
+	public static final String FINDS_PARTNER_PLAN = "partner_plan";
+	public static final String FINDS_PARTNER_MARDNR = "partner_mardnr";
+	public static final String FINDS_PARTNER_OTHER = "partner_other";
 	
 //  These don't seem to be necessary any more, but keep as commented out
 //	public static final String ABBREV_AGRICULTURE_1 = "a1";
@@ -521,11 +535,11 @@ public class AttributeManager {
 		abbreviations.put("Dispensaire de Bleck/ Mar Mirande",   "d26" );
 		
 //		<string-array name="health_center_names"> 
-		abbreviations.put("Centre de santŽ une", "h1" );
-		abbreviations.put("Centre de santŽ deux", "h2"  );
-		abbreviations.put("Centre de santŽ trois", "h3" );
-		abbreviations.put("Centre de santŽ quatre", "h4" );
-		abbreviations.put("Centre de santŽ cinq", "h4" );
+		abbreviations.put("Centre de santï¿½ une", "h1" );
+		abbreviations.put("Centre de santï¿½ deux", "h2"  );
+		abbreviations.put("Centre de santï¿½ trois", "h3" );
+		abbreviations.put("Centre de santï¿½ quatre", "h4" );
+		abbreviations.put("Centre de santï¿½ cinq", "h4" );
 		
 	}
 	

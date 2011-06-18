@@ -26,12 +26,7 @@ import java.util.ArrayList;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.Utils;
-import org.hfoss.posit.android.api.FindActivityProvider;
-import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.ListFindsActivity;
-import org.hfoss.posit.android.provider.PositDbHelper;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -45,7 +40,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,7 +48,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
