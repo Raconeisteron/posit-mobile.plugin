@@ -552,15 +552,15 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			}
 		}
 		
-		value = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI);
-		aRadioButton = (RadioButton)findViewById(R.id.radio_yes_acdivoca);
-		Log.i(TAG, "acdiAgri=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI));
+		value = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI_SAME);
+		aRadioButton = (RadioButton)findViewById(R.id.radio_yes_same);
+		Log.i(TAG, "acdiAgri=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI_SAME));
 		if (value != null) {
 			if (value.equals(AcdiVocaDbHelper.FINDS_YES))
 				aRadioButton.setChecked(true);
 			else 
 				aRadioButton.setChecked(false);
-			aRadioButton  = (RadioButton)findViewById(R.id.radio_no_acdivoca);
+			aRadioButton  = (RadioButton)findViewById(R.id.radio_no_same);
 			if (value.equals(AcdiVocaDbHelper.FINDS_NO)){
 				aRadioButton.setChecked(true);
 			} else {
