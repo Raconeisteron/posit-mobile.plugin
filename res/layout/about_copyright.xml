@@ -58,6 +58,7 @@
 			android:textColor="#ffffff" 
 			android:text="@string/httpLink"
 			android:layout_marginBottom="3dp" />
+<!-- 
 		<TextView 
 			android:id="@+id/developmentTeamLabel"
 			android:layout_width="wrap_content" 
@@ -66,6 +67,7 @@
 			android:textColor="#ffffff" 
 			android:text="@string/devTeamLabel"
 			android:layout_marginBottom="3dp" />
+ 			
 		<TextView 
 			android:id="@+id/developmentTeamText"
 			android:layout_width="wrap_content" 
@@ -114,5 +116,6 @@
 			android:textColor="#ffffff"
 			android:text="@string/devTeamText6"
 			android:layout_centerHorizontal="true" />
+-->			
 	</LinearLayout>
 </LinearLayout>
