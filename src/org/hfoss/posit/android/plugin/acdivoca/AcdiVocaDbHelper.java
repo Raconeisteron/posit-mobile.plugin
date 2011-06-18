@@ -546,8 +546,10 @@ public class AcdiVocaDbHelper {
 			values.put(AcdiVocaDbHelper.FINDS_ADDRESS, fields[FIELD_LOCALITY]);
 			String adjustedDate = adjustDateForDatePicker(fields[FIELD_BIRTH_DATE]);
 			values.put(AcdiVocaDbHelper.FINDS_DOB, adjustedDate);
-			values.put(AcdiVocaDbHelper.FINDS_SEX, fields[FIELD_SEX]);         
-			values.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, fields[FIELD_CATEGORY]);
+			String adjustedSex = adjustSexData(fields[FIELD_SEX]);
+			values.put(AcdiVocaDbHelper.FINDS_SEX, adjustedSex);  
+			String adjustedCategory = adjustCategoryData(fields[FIELD_CATEGORY]);
+			values.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, adjustedCategory);
 			values.put(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST, fields[FIELD_DISTRIBUTION_POST]);
 
 			long rowId = mDb.insert(FINDS_TABLE, null, values);
@@ -561,6 +563,39 @@ public class AcdiVocaDbHelper {
 		return count;
 	}
 
+	/**
+	 * Beneficiaries.txt represents categories in Haitian.  We represent them in 
+	 * English.
+	 * @param date
+	 * @return
+	 */
+	private String adjustCategoryData(String category) {
+		if (category.equals(AttributeManager.FINDS_MALNOURISHED_HA))
+			return AttributeManager.FINDS_MALNOURISHED;
+		else if (category.equals(AttributeManager.FINDS_EXPECTING_HA))
+			return AttributeManager.FINDS_EXPECTING;
+		else if (category.equals(AttributeManager.FINDS_NURSING_HA))
+			return AttributeManager.FINDS_NURSING;		
+		else if (category.equals(AttributeManager.FINDS_PREVENTION_HA))
+			return AttributeManager.FINDS_PREVENTION;	
+		else return category;
+	}
+	
+	/**
+	 * Beneficiaries.txt represents sex as 'M' or 'F'.  We represent them as
+	 * 'FEMALE' or 'MALE'
+	 * @param date
+	 * @return
+	 */
+	private String adjustSexData(String sex) {
+		if (sex.equals(AttributeManager.ABBREV_FEMALE))
+			return AttributeManager.FINDS_FEMALE;
+		else if (sex.equals(AttributeManager.ABBREV_MALE))
+			return AttributeManager.FINDS_MALE;
+		else return sex;
+	}
+	
+	
 	/**
 	 * The Android date picker stores dates as 0..11.
 	 * @param date
