@@ -56,17 +56,31 @@
 			<TextView android:text="@string/health_center" android:textColor="#ff0000"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
+				android:visibility="gone"
 				android:layout_height="wrap_content" />
 			<Spinner android:id="@+id/healthcenterSpinner" 
+				android:visibility="gone"
 				android:layout_marginLeft="20px" android:layout_marginRight="30px"
 				android:entries="@+array/health_center_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
-
-			<TextView android:text="@string/distribution_post" android:textColor="#ff0000"
+			
+			<TextView android:text="@string/commune_section" android:textColor="#ff0000"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
+			<Spinner android:id="@+id/commune_sectionSpinner" 
+				android:layout_marginLeft="20px" android:layout_marginRight="30px"
+				android:entries="@+array/commune_section_names"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
+			
+			
+			<TextView android:text="@string/distribution_post" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:visibility="gone"
+				android:layout_height="wrap_content" />
 			<Spinner android:id="@+id/distributionSpinner" 
+				android:visibility="gone"
 				android:layout_marginLeft="20px" android:layout_marginRight="30px"
 				android:entries="@+array/distribution_centers"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
@@ -136,12 +150,28 @@
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
+			</LinearLayout>
+			
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			<CheckBox android:id ="@+id/artisanCheckBox"
+			 android:text="Artisan"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
 			<CheckBox android:id ="@+id/otherCheckBox"
 			 android:text="Other"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			</LinearLayout>
+			
+			
+			
+			
+			
 			
 			
 			<TextView android:text="@string/Number_of_people_in_home"
@@ -161,7 +191,7 @@
 				android:layout_height="wrap_content" />	
 			<EditText android:id="@+id/amount_of_land"
 				android:hint="@string/Ex:1over16"
-				android:numeric="integer"   
+				android:numeric="decimal"   
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="20px" android:layout_marginRight="30px" />
 
@@ -202,6 +232,12 @@
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
+			
+			<CheckBox android:id ="@+id/coffeeCheckBox"
+			 android:text="Coffee"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
 			</LinearLayout>
 			
 			<TextView android:text="@string/quantity_of_seeds" android:textColor="#ff0000"
@@ -239,17 +275,17 @@
 			
 			
 			<CheckBox android:id="@+id/houeCheckBox"
-			 android:text="Houe"
+			 android:text="Hoe"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/piocheCheckBox"
-			 android:text="Pioche"
+			 android:text="Pick"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/brouetteCheckBox"
-			 android:text="Brouette"
+			 android:text="Wheelbarrow"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -259,17 +295,17 @@
 				android:layout_height="fill_parent" android:layout_gravity="left" 
 				android:paddingTop="10dp" >
 			<CheckBox android:id ="@+id/machetteCheckBox"
-			 android:text="Machette"
+			 android:text="Machete"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id ="@+id/serpetteCheckBox"
-			 android:text="Serpette"
+			 android:text="Pruning knife"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id ="@+id/pelleCheckBox"
-			 android:text="Pelle"
+			 android:text="Shovel"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -283,10 +319,109 @@
 			
 			
 			<CheckBox android:id="@+id/barreAMinesCheckBox"
-			 android:text="Barre a Mines"
+			 android:text="Crowbar"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"/>
+			 
+
+			 
 		 </LinearLayout>
+		 
+		 
+		 <TextView android:text="@string/partners" android:textColor="#ff0000"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+				
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			
+			
+			<CheckBox android:id="@+id/faoCheckBox"
+			 android:text="FAO"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id="@+id/saveCheckBox"
+			 android:text="SAVE"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id="@+id/croseCheckBox"
+			 android:text="CROSE"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			</LinearLayout>
+		 
+		 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:orientation="horizontal" android:layout_width="wrap_content"
+				android:layout_height="fill_parent" android:layout_gravity="left" 
+				android:paddingTop="10dp" >
+			
+			
+			<CheckBox android:id="@+id/planCheckBox"
+			 android:text="PLAN"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id="@+id/mardnrCheckBox"
+			 android:text="MARDNR"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			<CheckBox android:id="@+id/otherPartnerCheckBox"
+			 android:text="Other"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			</LinearLayout>
+		 
+		 
+		 
+			<TextView android:id="@+id/participating_bene_same"
+				android:text="@string/participating_bene_same" 
+				android:layout_marginLeft="15px" 
+				android:textColor="#ffffff"
+				android:visibility="visible"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
+				
+			<RadioGroup android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal"
+				android:id="@+id/radio_same_bene">
+				<RadioButton android:checked="false" 
+					android:layout_marginLeft="30px" 
+					android:id="@+id/radio_yes_bene_same"
+					android:text="@string/Yes" />
+				<RadioButton android:checked="false" 
+					android:layout_marginLeft="30px" 
+					android:id="@+id/radio_no_bene_same"
+					android:text="@string/No" />
+			</RadioGroup>		
+			
+			
+			<TextView android:id="@+id/participating_bene"
+				android:text="@string/participating_bene"
+				android:layout_marginLeft="15px" 
+				android:textColor="#ffffff"
+				android:visibility="visible"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
+				
+			<RadioGroup android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal"
+				android:visibility="visible"
+				android:id="@+id/radio_participating_bene">
+				<RadioButton android:checked="false" 
+					android:layout_marginLeft="30px" 
+					android:id="@+id/radio_yes_bene"
+					android:text="@string/Yes" />
+				<RadioButton android:checked="false" 
+					android:layout_marginLeft="30px" 
+					android:id="@+id/radio_no_bene"
+					android:text="@string/No" />
+			</RadioGroup>
 				
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="horizontal" android:layout_width="wrap_content"

@@ -22,21 +22,15 @@
 package org.hfoss.posit.android;
 
 
-import java.util.Locale;
-
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaNewAgriActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
-import org.hfoss.posit.android.provider.PositDbHelper;
-
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -46,9 +40,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -60,9 +51,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 /**

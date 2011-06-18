@@ -152,6 +152,7 @@ public class SyncActivity extends Activity {
 		 * more refined SyncThread would be able to resume syncing if it loses
 		 * the network connection in the middle.
 		 */
+		@Override
 		public void handleMessage(Message msg) {
 			Log.i(TAG, "Message = " + msg);
 			switch (msg.what) {

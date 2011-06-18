@@ -128,12 +128,14 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 		finish();
 	}
 	
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == NEW_PROJECT)
 			showProjects();
 	}
 
+	@Override
 	public void onListItemClick(ListView lv, View v, int position, long idFull){
 		mClickedPosition = position;
 		String projectId = (String) projectList.get(mClickedPosition).get("id");
@@ -181,6 +183,7 @@ public class ShowProjectsActivity extends ListActivity implements OnClickListene
 	 * Confirms with the user that they have changed their project and automatically syncs with the server
 	 * to get all the project finds
 	 */
+	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_PROJECT_CHANGE:

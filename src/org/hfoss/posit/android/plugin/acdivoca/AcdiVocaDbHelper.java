@@ -27,17 +27,13 @@ package org.hfoss.posit.android.plugin.acdivoca;
 import java.util.ArrayList;
 import java.sql.Date;
 import java.sql.Time;
-import java.util.List;
-
 import org.hfoss.posit.android.R;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -185,7 +181,12 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_Q_MOTHER_LEADER = AttributeManager.FINDS_Q_MOTHER_LEADER; // "mother_leader";
 	public static final String FINDS_Q_VISIT_MOTHER_LEADER = AttributeManager.FINDS_Q_VISIT_MOTHER_LEADER; // "visit_mother_leader";
 	public static final String FINDS_Q_PARTICIPATING_AGRI = AttributeManager.FINDS_Q_PARTICIPATING_AGRI; // "pariticipating_agri";
+	public static final String FINDS_Q_PARTICIPATING_AGRI_SAME = AttributeManager.FINDS_Q_PARTICIPATEING_AGRI_SAME; // "pariticipating_agri";
+	public static final String FINDS_Q_PARTICIPATING_BENE = AttributeManager.FINDS_Q_PARTICIPATING_BENE; // "pariticipating_agri";
+	public static final String FINDS_Q_PARTICIPATING_BENE_SAME = AttributeManager.FINDS_Q_PARTICIPATEING_BENE_SAME; // "pariticipating_agri";
+	
 	public static final String FINDS_NAME_AGRI_PARTICIPANT = AttributeManager.FINDS_NAME_AGRI_PARTICIPANT; // "name_agri_paricipant";
+
 	
 	public static final String FINDS_GUID = "guid";    // Globally unique ID
 
@@ -200,6 +201,7 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_IS_STOREOWN = AttributeManager.FINDS_IS_STOREOWN; //  "is_store_owner";
 	public static final String FINDS_IS_FISHER = AttributeManager.FINDS_IS_FISHER;  // "is_fisher";
 	public static final String FINDS_IS_OTHER = AttributeManager.FINDS_IS_OTHER;  // "is_other";
+	public static final String FINDS_IS_ARTISAN = AttributeManager.FINDS_IS_ARTISAN; // "is_artisan";
 	
 	public static final String FINDS_HAVE_VEGE = AttributeManager.FINDS_HAVE_VEGE; //  "have_vege";
 	public static final String FINDS_HAVE_CEREAL = AttributeManager.FINDS_HAVE_CEREAL;  //  "have_cereal";
@@ -213,7 +215,17 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_HAVE_PELLE = AttributeManager.FINDS_HAVE_PELLE;  // "have_pelle";
 	public static final String FINDS_HAVE_BARREAMINES = AttributeManager.FINDS_HAVE_BARREAMINES; // "have_barreamines";
 	public static final String FINDS_RELATIVE_1 = AttributeManager.FINDS_RELATIVE_1;  // "relative_1";
-	public static final String FINDS_RELATIVE_2 = AttributeManager.FINDS_RELATIVE_2;  // "relative_2";
+//	public static final String FINDS_RELATIVE_2 = AttributeManager.FINDS_RELATIVE_2;  // "relative_2";
+	public static final String FINDS_HAVE_COFFEE = AttributeManager.FINDS_HAVE_COFFEE; //  "have_vege";
+
+	public static final String FINDS_PARTNER_FAO = AttributeManager.FINDS_PARTNER_FAO;// "partner_fao";
+	public static final String FINDS_PARTNER_SAVE = AttributeManager.FINDS_PARTNER_SAVE;// "partner_save";
+	public static final String FINDS_PARTNER_CROSE = AttributeManager.FINDS_PARTNER_CROSE;// "partner_crose";
+	public static final String FINDS_PARTNER_PLAN = AttributeManager.FINDS_PARTNER_PLAN;// "partner_plan";
+	public static final String FINDS_PARTNER_MARDNR = AttributeManager.FINDS_PARTNER_MARDNR;// "partner_mardnr";
+	public static final String FINDS_PARTNER_OTHER = AttributeManager.FINDS_PARTNER_OTHER;// "partner_other";
+	
+	
 
 	public static final String FINDS_MALNOURISHED = AttributeManager.FINDS_MALNOURISHED;  // "MALNOURISHED";
 	public static final String FINDS_PREVENTION = AttributeManager.FINDS_PREVENTION;     // "PREVENTION";
@@ -226,12 +238,15 @@ public class AcdiVocaDbHelper {
     public static final String FINDS_NO = AttributeManager.FINDS_NO;            // "NO";
     public static final String FINDS_TRUE = "TRUE";
     public static final String FINDS_FALSE = "FALSE";
+    public static final String FINDS_COMMUNE_SECTION = AttributeManager.LONG_COMMUNE_SECTION;
     
     
 	public static final String FINDS_Q_PRESENT = "Present";
 	public static final String FINDS_Q_TRANSFER = "Transfer";
 	public static final String FINDS_Q_MODIFICATION = "Modifications";
 	public static final String FINDS_MONTHS_REMAINING = "MonthsRemaining";
+	public static final String FINDS_Q_CHANGE = "ChangeInStatus";   // Added to incorperated changes to beneficiary type
+	public static final String FINDS_CHANGE_TYPE = "ChangeType";
 	
 	public static final String FINDS_DESCRIPTION = "description";
 	public static final String FINDS_LATITUDE = "latitude";
@@ -281,17 +296,29 @@ public class AcdiVocaDbHelper {
 		+ FINDS_Q_MOTHER_LEADER + " boolean, "
 		+ FINDS_Q_VISIT_MOTHER_LEADER + " boolean, "
 		+ FINDS_Q_PARTICIPATING_AGRI + " boolean, "
+		+ FINDS_Q_PARTICIPATING_AGRI_SAME + " boolean, "
+		+ FINDS_Q_PARTICIPATING_BENE + " boolean, "
+		+ FINDS_Q_PARTICIPATING_BENE_SAME + " boolean, "
 		+ FINDS_IS_FARMER + " boolean, "
 		+ FINDS_IS_MUSO + " boolean, "
 		+ FINDS_IS_RANCHER + " boolean, "
 		+ FINDS_IS_STOREOWN + " boolean, "
 		+ FINDS_IS_FISHER + " boolean, "
 		+ FINDS_IS_OTHER + " boolean, "
+		+ FINDS_IS_ARTISAN + " boolean, "
 		+ FINDS_LAND_AMOUNT+ " integer DEFAULT 0, "
 		+ FINDS_HAVE_VEGE+ " boolean, "
 		+ FINDS_HAVE_TUBER+ " boolean, "
 		+ FINDS_HAVE_CEREAL+ " boolean, "
 		+ FINDS_HAVE_TREE+ " boolean, "
+		+ FINDS_HAVE_COFFEE + " boolean, "
+		+ FINDS_PARTNER_FAO + " boolean, "
+		+ FINDS_PARTNER_SAVE + " boolean, "
+		+ FINDS_PARTNER_CROSE + " boolean, "
+		+ FINDS_PARTNER_PLAN + " boolean, "
+		+ FINDS_PARTNER_MARDNR + " boolean, "
+		+ FINDS_PARTNER_OTHER + " boolean, "		
+		+ FINDS_COMMUNE_SECTION + " text, "
 //		+ FINDS_SEED_AMOUNT+ " integer DEFAULT 0, "
 //		+ FINDS_UNIT + " text, "
 		+ FINDS_HAVE_HOUE+ " boolean, "
@@ -301,11 +328,14 @@ public class AcdiVocaDbHelper {
 		+ FINDS_HAVE_SERPETTE+ " boolean, "
 		+ FINDS_HAVE_PELLE+ " boolean, "
 		+ FINDS_HAVE_BARREAMINES+ " boolean, "
+
 		+ FINDS_RELATIVE_1 + " text, "
-		+ FINDS_RELATIVE_2 + " text, "
+//		+ FINDS_RELATIVE_2 + " text, "
+		+ FINDS_Q_CHANGE + " boolean, "
+		+ FINDS_CHANGE_TYPE + " text, "
 		+ FINDS_Q_PRESENT + " boolean, "
-		+ FINDS_Q_TRANSFER + " boolean, "
-		+ FINDS_Q_MODIFICATION + " boolean, " 
+//		+ FINDS_Q_TRANSFER + " boolean, "
+//		+ FINDS_Q_MODIFICATION + " boolean, " 
 		+ FINDS_MONTHS_REMAINING + " integer DEFAULT 0, "
 		+ FINDS_NAME_AGRI_PARTICIPANT + " text "
 		+ ");";

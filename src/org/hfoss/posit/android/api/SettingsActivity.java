@@ -84,6 +84,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 			this.activityName = activityName;
 		}
 		
+		@Override
 		public String toString() {
 			return prefName + "," + activityName;
 		}
@@ -117,6 +118,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 			return preferencesList;
 		}
 
+		@Override
 		public String toString() {
 			return preferencesXmlFile + " table=" + preferencesList.toString();
 		}
@@ -212,13 +214,13 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 			// For each preference that starts an Activity set its Listener
 			ArrayList<PluginSetting> settings = pluginXmlList.get(k).getPreferencesList();
 			for (int j = 0; j < settings.size(); j++) {
-				this.findPreference((CharSequence) settings.get(j).prefName).setOnPreferenceClickListener((OnPreferenceClickListener) this);
+				this.findPreference(settings.get(j).prefName).setOnPreferenceClickListener(this);
 			}
 		}
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		sp.registerOnSharedPreferenceChangeListener(this);
 		
-		this.findPreference("testpositpref").setOnPreferenceClickListener((OnPreferenceClickListener) this);
+		this.findPreference("testpositpref").setOnPreferenceClickListener(this);
 	}
 	
 

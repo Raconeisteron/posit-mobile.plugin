@@ -43,7 +43,6 @@ import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import android.widget.Toast;
 
 public class AcdiVocaSmsManager extends BroadcastReceiver {
 	
@@ -72,7 +71,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	
 	public static AcdiVocaSmsManager getInstance(Activity activity){
 		mInstance = new AcdiVocaSmsManager();
-		mInstance.initInstance(activity);
+		AcdiVocaSmsManager.initInstance(activity);
 		return mInstance;
 	}
 	
@@ -187,8 +186,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 
 					//  While not end-of-file, get the next token and extract number
 					int token =  t.nextToken();
-					while (token != t.TT_EOF) {
-						if (token != t.TT_NUMBER )  {
+					while (token != StreamTokenizer.TT_EOF) {
+						if (token != StreamTokenizer.TT_NUMBER )  {
 							//Log.i(TAG, "Integer parser skipping token = " + token); // Skip nonnumerics
 						}
 						else {
@@ -260,7 +259,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		if (phoneNumber==null)
 			phoneNumber = PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
 
-		String message = acdiVocaMessage.ACDI_VOCA_PREFIX 
+		String message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
 			+ AttributeManager.ATTR_VAL_SEPARATOR 
 			//+ acdiVocaMessage.getMessageId()   NOTE: Msgid = -1 at this point, not in Db
 			+ acdiVocaMessage.getBeneficiaryId() 

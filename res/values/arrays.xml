@@ -121,4 +121,12 @@
 	<item>Point Fixe d\'Amazone (CDF)</item>
 	</string-array>
 	
+	<!-- 	Change in status reasons list -->
+	<string-array name="status_change_options">
+	<item>Transfer to new category</item>
+	<item>Deceased</item>
+	<item>Fraud</item>
+	<item>Completed program</item>
+	</string-array>
+	
 </resources>

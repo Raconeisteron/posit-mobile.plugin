@@ -41,8 +41,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
@@ -93,6 +91,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 	private static final int VIEW_REGISTER = 2;
 
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG,"Registration Activity");
@@ -159,6 +158,7 @@ public class RegisterActivity extends Activity implements OnClickListener {
 	}
 	
 	
+	@Override
 	public void onResume(){
 		super.onResume();
 	}
