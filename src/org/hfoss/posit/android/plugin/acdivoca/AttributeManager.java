@@ -130,6 +130,7 @@ public class AttributeManager {
 	public static final String ABBREV_IS_MOTHERLEADER = "ml";
 	public static final String ABBREV_VISIT_MOTHERLEADER = "mv";
 	public static final String ABBREV_IS_AGRI = "ag";
+	public static final String ABBREV_RELATIVE_AGRI = "ar";
 	public static final String ABBREV_LAND_AMT = "la";
 	
 	public static final String ABBREV_NUMBER_IN_HOME = "n";     
@@ -246,6 +247,7 @@ public class AttributeManager {
 	public static final String FINDS_TYPE =  "type";
 	public static final String FINDS_STATUS =  "status";
 	public static final String MESSAGE_TEXT =  "message";
+	public static final String FINDS_MESSAGE_ID = "message_id";
 	public static final String FINDS_MESSAGE_STATUS =  "message_status";
 	public static final String FINDS_FIRSTNAME =  "firstname";
 	public static final String FINDS_LASTNAME =  "lastname";
@@ -264,9 +266,9 @@ public class AttributeManager {
 	public static final String FINDS_Q_MOTHER_LEADER = "mother_leader";
 	public static final String FINDS_Q_VISIT_MOTHER_LEADER = "visit_mother_leader";
 	public static final String FINDS_Q_PARTICIPATING_AGRI = "pariticipating_agri";
-	public static final String FINDS_Q_PARTICIPATEING_AGRI_SAME = "same_person_pariticipating_agri";
+	public static final String FINDS_Q_RELATIVE_AGRI = "same_person_pariticipating_agri";
 	public static final String FINDS_Q_PARTICIPATING_BENE = "pariticipating_bene";
-	public static final String FINDS_Q_PARTICIPATEING_BENE_SAME = "same_person_pariticipating_bene";
+	public static final String FINDS_Q_RELATIVE_BENE = "same_person_pariticipating_bene";
 	
 
 	public static final String FINDS_NAME_AGRI_PARTICIPANT = "name_agri_paricipant";
@@ -511,6 +513,7 @@ public class AttributeManager {
 		abbreviations.put(FINDS_Q_MOTHER_LEADER, ABBREV_IS_MOTHERLEADER);
 		abbreviations.put(FINDS_Q_VISIT_MOTHER_LEADER, ABBREV_VISIT_MOTHERLEADER);
 		abbreviations.put(FINDS_Q_PARTICIPATING_AGRI, ABBREV_IS_AGRI);
+		abbreviations.put(FINDS_Q_RELATIVE_AGRI, ABBREV_RELATIVE_AGRI);
 		abbreviations.put(FINDS_LAND_AMOUNT, ABBREV_LAND_AMT);
 		abbreviations.put(FINDS_RELATIVE_1, "r1");
 		abbreviations.put(FINDS_RELATIVE_2, "r2");
@@ -632,10 +635,28 @@ public class AttributeManager {
 	 * @return  a string of the form a1=v1,a2=b2, ..., aN=vN
 	 */
 	public static String convertAttrValPairToAbbrev(String attr, String val) {
-		String attrAbbrev = getMapping(attr);
-		String valAbbrev = getMapping(val);
+		String attrAbbrev = attr;
+		attrAbbrev =	getMapping(attr);
+		String valAbbrev = val;
+		if ( !isUnmappedValue(attr) )
+			valAbbrev = getMapping(val);
 		
 		return attrAbbrev + ATTR_VAL_SEPARATOR + valAbbrev;
+	}
+	
+	/**
+	 * Helper method to exclude some values from being mapped -- e.g., names,
+	 * locations.
+	 * @param attr
+	 * @return
+	 */
+	private static boolean isUnmappedValue (String attr) {
+		if (attr.equals(FINDS_FIRSTNAME)
+				|| attr.equals(FINDS_LASTNAME)
+				|| attr.equals(FINDS_ADDRESS))
+			return true;
+		
+		return false;
 	}
 	
 //	/**

@@ -251,28 +251,7 @@ Removed redundant elements -->
 			</RadioGroup>					
 			
 			
-			<TextView android:id="@+id/participating_acdivoca_same"
-				android:text="@string/participating_acdivoca_same" 
-				android:layout_marginLeft="15px" 
-				android:textColor="#ffffff"
-				android:visibility="visible"
-				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
-				
-			<RadioGroup android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:id="@+id/radio_same_acdivoca">
-				<RadioButton android:checked="false" 
-					android:layout_marginLeft="30px" 
-					android:id="@+id/radio_yes_same"
-					android:text="@string/Yes" />
-				<RadioButton android:checked="false" 
-					android:layout_marginLeft="30px" 
-					android:id="@+id/radio_no_same"
-					android:text="@string/No" />
-			</RadioGroup>		
-			
-			
-			<TextView android:id="@+id/participating_acdivoca"
+			<TextView android:id="@+id/participating_acdivoca" 
 				android:text="@string/participating_acdivoca"
 				android:layout_marginLeft="15px" 
 				android:textColor="#ffffff"
@@ -281,7 +260,6 @@ Removed redundant elements -->
 				
 			<RadioGroup android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:visibility="visible"
 				android:id="@+id/radio_participating_acdivoca">
 				<RadioButton android:checked="false" 
 					android:layout_marginLeft="30px" 
@@ -290,6 +268,28 @@ Removed redundant elements -->
 				<RadioButton android:checked="false" 
 					android:layout_marginLeft="30px" 
 					android:id="@+id/radio_no_acdivoca"
+					android:text="@string/No" />
+			</RadioGroup>		
+			
+			
+			<TextView android:id="@+id/relative_participating_acdivoca"
+				android:text="@string/relative_participating_acdivoca"
+				android:layout_marginLeft="15px" 
+				android:textColor="#ffffff"
+				android:visibility="visible"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
+				
+			<RadioGroup android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:orientation="horizontal"
+				android:visibility="visible"
+				android:id="@+id/radio_relative_acdivoca">
+				<RadioButton android:checked="false" 
+					android:layout_marginLeft="30px" 
+					android:id="@+id/radio_yes_relative_acdivoca"
+					android:text="@string/Yes" />
+				<RadioButton android:checked="false" 
+					android:layout_marginLeft="30px" 
+					android:id="@+id/radio_no_relative_acdivoca"
 					android:text="@string/No" />
 			</RadioGroup>							
 
