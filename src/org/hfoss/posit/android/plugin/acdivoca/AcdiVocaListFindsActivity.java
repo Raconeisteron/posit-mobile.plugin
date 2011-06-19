@@ -413,7 +413,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
 				|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
 			acdiVocaMsgs = db.fetchSmsMessages(filter, null); 
-		} else 
+		} else if (filter == SearchFilterActivity.RESULT_BULK_UPDATE) {
+			acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
+		} else
 			return;
 				
 		if (acdiVocaMsgs.size() == 0) {

@@ -44,6 +44,7 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 	public static final int RESULT_SELECT_ALL = 2;
 	public static final int RESULT_SELECT_NEW = 3;
 	public static final int RESULT_SELECT_UPDATE = 4;
+	public static final int RESULT_BULK_UPDATE = 8;
 	public static final int RESULT_SELECT_PENDING = 5;
 	public static final int RESULT_SELECT_SENT = 6;
 	public static final int RESULT_SELECT_ACKNOWLEDGED = 7;
@@ -82,6 +83,7 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 		 ((RadioButton)findViewById(R.id.all_messages)).setOnClickListener(this);
 		 ((RadioButton)findViewById(R.id.new_messages)).setOnClickListener(this);
 		 ((RadioButton)findViewById(R.id.update_messages)).setOnClickListener(this);
+		 ((RadioButton)findViewById(R.id.update_bulk_messages)).setOnClickListener(this);
 		 ((RadioButton)findViewById(R.id.pending_messages)).setOnClickListener(this);
 		 ((RadioButton)findViewById(R.id.sent_messages)).setOnClickListener(this);
 		 ((RadioButton)findViewById(R.id.acknowledged_messages)).setOnClickListener(this);
@@ -130,6 +132,9 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 		rb = (RadioButton)findViewById(R.id.update_messages);
 		if (rb.isChecked())
 			result = RESULT_SELECT_UPDATE;
+		rb = (RadioButton)findViewById(R.id.update_bulk_messages);
+		if (rb.isChecked())
+			result = RESULT_BULK_UPDATE;		
 		rb = (RadioButton)findViewById(R.id.sent_messages);
 		if (rb.isChecked())
 			result = RESULT_SELECT_SENT;

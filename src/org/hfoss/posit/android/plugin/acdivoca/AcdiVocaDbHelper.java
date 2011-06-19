@@ -236,17 +236,17 @@ public class AcdiVocaDbHelper {
     public static final String FINDS_FEMALE = AttributeManager.FINDS_FEMALE;        // "FEMALE";
     public static final String FINDS_YES = AttributeManager.FINDS_YES;           // "YES";
     public static final String FINDS_NO = AttributeManager.FINDS_NO;            // "NO";
-    public static final String FINDS_TRUE = "TRUE";
-    public static final String FINDS_FALSE = "FALSE";
+    public static final String FINDS_TRUE = AttributeManager.FINDS_TRUE;       // "TRUE";
+    public static final String FINDS_FALSE = AttributeManager.FINDS_FALSE;      // "FALSE";
     public static final String FINDS_COMMUNE_SECTION = AttributeManager.LONG_COMMUNE_SECTION;
     
     
-	public static final String FINDS_Q_PRESENT = "Present";
-	public static final String FINDS_Q_TRANSFER = "Transfer";
-	public static final String FINDS_Q_MODIFICATION = "Modifications";
+	public static final String FINDS_Q_PRESENT = AttributeManager.FINDS_Q_PRESENT;   // "Present";
+	public static final String FINDS_Q_TRANSFER = AttributeManager.FINDS_Q_TRANSFER;   //"Transfer";
+	public static final String FINDS_Q_MODIFICATION = AttributeManager.FINDS_Q_MODIFICATIONS;  // "Modifications";
 	public static final String FINDS_MONTHS_REMAINING = "MonthsRemaining";
-	public static final String FINDS_Q_CHANGE = "ChangeInStatus";   // Added to incorperated changes to beneficiary type
-	public static final String FINDS_CHANGE_TYPE = "ChangeType";
+	public static final String FINDS_Q_CHANGE = AttributeManager.FINDS_Q_CHANGE;   //"ChangeInStatus";   // Added to incorporated changes to beneficiary type
+	public static final String FINDS_CHANGE_TYPE = AttributeManager.FINDS_CHANGE_TYPE;   //"ChangeType";
 	
 	public static final String FINDS_DESCRIPTION = "description";
 	public static final String FINDS_LATITUDE = "latitude";
@@ -642,6 +642,97 @@ public class AcdiVocaDbHelper {
 		}
 	}
 	
+
+//	/**
+//	 * Updates the message status in the message table.
+//	 * @param message the SMS message
+//	 * @param status the new status
+//	 * @return
+//	 */
+//	public boolean updateMessageStatus(AcdiVocaMessage acdiVocaMsg, int status) {
+//		Log.i(TAG, "Updating, msg_id " + acdiVocaMsg.getMessageId() + 
+//				" bene_id = " + acdiVocaMsg.getBeneficiaryId() + " to status = " + status);
+//		boolean result = false;
+//		long row_id;
+//		int rows = 0;
+//		int msg_id = acdiVocaMsg.getMessageId();
+//		String query = "";
+//		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+//		
+////		ContentValues args = new ContentValues();
+////		args.put(this.MESSAGE_BENEFICIARY_ID, beneficiary_id);
+////		args.put(MESSAGE_STATUS, status);
+//		
+//		if (msg_id == -1) {  // Newly created message
+//			
+//			// Create a new message in the message table
+//			
+//			row_id = createNewMessageTableEntry(acdiVocaMsg, beneficiary_id, status);
+//			
+////			ContentValues args = new ContentValues();
+////			args.put(this.MESSAGE_BENEFICIARY_ID, beneficiary_id);
+////			args.put(MESSAGE_STATUS, status);
+////			
+////			args.put(MESSAGE_TEXT, acdiVocaMsg.getSmsMessage());
+////			row_id = mDb.insert(MESSAGE_TABLE, null, args);
+//
+//			if (row_id != -1) {
+//				result = true;
+//				Log.i(TAG, "Inserted NEW message, id= " + row_id + " bene_id=" + beneficiary_id); 
+//				
+//				// Update the FINDS table to point to the message
+//				ContentValues args = new ContentValues();
+//				args.put(FINDS_MESSAGE_ID, row_id);
+//				result = updateFind(beneficiary_id, args);
+//											
+////				rows = mDb.update(FINDS_TABLE, 
+////						args, 
+////						FINDS_ID + " = " + beneficiary_id,
+////						null); 
+//				
+////				if (rows == 0) {
+//				if (result == false) {
+//					Log.i(TAG, "Unable to update FINDS Table for message, id= " + row_id); 
+//				} else {
+//					Log.i(TAG, "Updated FINDS Table for message, id= " + row_id); 
+//					
+//					// Update the message table with the new message
+//					rows = updateMessageTable(acdiVocaMsg, beneficiary_id, row_id, status);					
+//				}
+//			} else {
+//				result = false;
+//				Log.i(TAG, "Unable to insert NEW message, id= " + row_id);  
+//			}
+//		}  else {  
+//
+//			rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);
+////			 // Update existing message
+////			String now = new Date(System.currentTimeMillis()).toString()
+////					+ " " + new Time(System.currentTimeMillis()).toString();
+////			Log.i(TAG, "Time now = " + now);
+////
+////			if (status == MESSAGE_STATUS_SENT) {
+////				args.put(MESSAGE_SENT_AT, now );
+////			} else if (status == MESSAGE_STATUS_ACK) 
+////				args.put(MESSAGE_ACK_AT, now );
+////
+////			rows = mDb.update(MESSAGE_TABLE, 
+////					args, 
+////					MESSAGE_ID + " = " + msg_id,
+////					null); 
+//			if (rows == 0) {
+//				result = false;
+//				Log.i(TAG, "Unable to update message id= " + msg_id);  
+//			} else {
+//				result = true;
+//				Log.i(TAG, "Update message id= " + msg_id);  
+//			}
+//		}
+//		mDb.close();
+//		return result;
+//	}	
+	
+	
 	/**
 	 * Updates the message status in the message table.
 	 * @param message the SMS message
@@ -657,55 +748,45 @@ public class AcdiVocaDbHelper {
 		int msg_id = acdiVocaMsg.getMessageId();
 		String query = "";
 		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
-		
-		ContentValues args = new ContentValues();
-		args.put(this.MESSAGE_BENEFICIARY_ID, beneficiary_id);
-		args.put(MESSAGE_STATUS, status);
-		
-		if (msg_id == -1) {  
+
+		if (msg_id == -1) {  // Newly created message
+			
 			// Create a new message in the message table
-			args.put(MESSAGE_TEXT, acdiVocaMsg.getSmsMessage());
-			row_id = mDb.insert(MESSAGE_TABLE, null, args);
+			
+			row_id = createNewMessageTableEntry(acdiVocaMsg, beneficiary_id, status);
 
 			if (row_id != -1) {
 				result = true;
 				Log.i(TAG, "Inserted NEW message, id= " + row_id + " bene_id=" + beneficiary_id); 
 				
 				// Update the FINDS table to point to the message
-				// NOTE:  We should change the name of FINDS_MESSAGE_STATUS to
-				// FINDS_MESSAGE_ID
-				args = new ContentValues();
+				ContentValues args = new ContentValues();
 				args.put(FINDS_MESSAGE_ID, row_id);
+											
 				rows = mDb.update(FINDS_TABLE, 
 						args, 
 						FINDS_ID + " = " + beneficiary_id,
 						null); 
+				
 				if (rows == 0) {
 					result = false;
 					Log.i(TAG, "Unable to update FINDS Table for message, id= " + row_id); 
 				} else {
 					result = true;
 					Log.i(TAG, "Updated FINDS Table for message, id= " + row_id); 
+					
+					// Update the message table with the new message
+					rows = updateMessageTable(acdiVocaMsg, beneficiary_id, row_id, status);					
 				}
 			} else {
 				result = false;
 				Log.i(TAG, "Unable to insert NEW message, id= " + row_id);  
 			}
 		}  else {  
-
 			 // Update existing message
-			String now = new Date(System.currentTimeMillis()).toString()
-					+ " " + new Time(System.currentTimeMillis()).toString();
 
-			if (status == MESSAGE_STATUS_SENT) {
-				args.put(MESSAGE_SENT_AT, now );
-			} else if (status == MESSAGE_STATUS_ACK) 
-				args.put(MESSAGE_ACK_AT, now );
+			rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);
 
-			rows = mDb.update(MESSAGE_TABLE, 
-					args, 
-					MESSAGE_ID + " = " + msg_id,
-					null); 
 			if (rows == 0) {
 				result = false;
 				Log.i(TAG, "Unable to update message id= " + msg_id);  
@@ -716,6 +797,47 @@ public class AcdiVocaDbHelper {
 		}
 		mDb.close();
 		return result;
+	}
+	
+	/**
+	 * Helper method to create a new entry in the message table
+	 * @return
+	 */
+	private long createNewMessageTableEntry(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, int status) {
+		// Create a new message in the message table
+		ContentValues args = new ContentValues();
+		args.put(MESSAGE_BENEFICIARY_ID, beneficiary_id);
+		args.put(MESSAGE_STATUS, status);
+		
+		args.put(MESSAGE_TEXT, acdiVocaMsg.getSmsMessage());
+		long row_id = mDb.insert(MESSAGE_TABLE, null, args);
+
+		return row_id;
+	}
+	
+	/**
+	 * Helper method to update the message table. 
+	 * @return
+	 */
+	private int updateMessageTable(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, long msg_id, int status ) {
+		ContentValues args = new ContentValues();
+		args.put(this.MESSAGE_BENEFICIARY_ID, beneficiary_id);
+		args.put(MESSAGE_STATUS, status);
+		
+		String now = new Date(System.currentTimeMillis()).toString()
+		+ " " + new Time(System.currentTimeMillis()).toString();
+		Log.i(TAG, "Time now = " + now);
+
+		if (status == MESSAGE_STATUS_SENT) {
+			args.put(MESSAGE_SENT_AT, now );
+		} else if (status == MESSAGE_STATUS_ACK) 
+			args.put(MESSAGE_ACK_AT, now );
+
+		int rows = mDb.update(MESSAGE_TABLE, 
+				args, 
+				MESSAGE_ID + " = " + msg_id,
+				null); 
+		return rows;
 	}
 	
 	/**
@@ -812,7 +934,11 @@ public class AcdiVocaDbHelper {
 		
 	/**
 	 * Helper method performs the query and returns the Cursor. Data are
-	 * pulled from the FINDS_TABLE.
+	 * pulled from the FINDS_TABLE.  This method is called by createMessages()
+	 * retrieve those beneficiaries for whom SMS messages will be sent.  For
+	 * NEW beneficiaries all beneficiaries whose messages are UNSENT are returned.
+	 * For UPDATE beneficiaries only those for whom  there's a change in STATUS
+	 * are returned.
 	 * @param filter
 	 * @param order_by
 	 * @return
@@ -826,13 +952,16 @@ public class AcdiVocaDbHelper {
 					+ FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT,
 					null, null, null, order_by);
 		
+		// Select all UPDATE Beneficiaries whose status has changed
 		else if (filter == SearchFilterActivity.RESULT_SELECT_UPDATE)
 			c = mDb.query(FINDS_TABLE, null, 
 					FINDS_STATUS + "=" + FINDS_STATUS_UPDATE 
 					+ " AND " + 
 					FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT
 					+ " AND " +
-					FINDS_DISTRIBUTION_POST + "=" + "'" + distrCtr + "'",
+					FINDS_DISTRIBUTION_POST + "=" + "'" + distrCtr + "'" 
+					+ " AND " + 
+					FINDS_Q_CHANGE + "=" +  "'" + FINDS_TRUE + "'",
 					null, null, null, order_by);
 		return c;
 	}
@@ -867,9 +996,9 @@ public class AcdiVocaDbHelper {
 			String columns[] = null;
 			
 			// For debugging
-//			columns = c.getColumnNames();   // The Db columns represent the attribute names
-//			for (int j = 0; j < columns.length; j++) 
-//				Log.i(TAG, columns[j] + "=" + c.getString(c.getColumnIndex(columns[j])));
+			columns = c.getColumnNames();   // The Db columns represent the attribute names
+			for (int j = 0; j < columns.length; j++) 
+				Log.i(TAG, columns[j] + "=" + c.getString(c.getColumnIndex(columns[j])));
 			
 			String rawMessage = "";
 			String statusStr = "";
@@ -896,12 +1025,14 @@ public class AcdiVocaDbHelper {
 
 				// Now abbreviate the message
 				smsMessage = abbreviateBeneficiaryStringForSms(rawMessage);
-				smsMessage = AttributeManager.encodeBinaryFields(smsMessage, 
-						AttributeManager.isAFields, 
-						AttributeManager.ABBREV_ISA);
-				smsMessage = AttributeManager.encodeBinaryFields(smsMessage, 
-						AttributeManager.hasAFields,
-						AttributeManager.ABBREV_HASA);
+				if (beneficiary_status == FINDS_STATUS_NEW)  {
+					smsMessage = AttributeManager.encodeBinaryFields(smsMessage, 
+							AttributeManager.isAFields, 
+							AttributeManager.ABBREV_ISA);
+					smsMessage = AttributeManager.encodeBinaryFields(smsMessage, 
+							AttributeManager.hasAFields,
+							AttributeManager.ABBREV_HASA);
+				}
 
 				// Add a header (length and status) to message
 				msgHeader = "MsgId:" + msg_id + ", Len:" + smsMessage.length() +  ", " + statusStr 
@@ -917,6 +1048,53 @@ public class AcdiVocaDbHelper {
 		}
 		mDb.close();
 		c.close();
+		return acdiVocaMsgs;		
+	}
+
+	public ArrayList<AcdiVocaMessage> createBulkUpdateMessages(String distrCtr) {
+		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
+;
+		Cursor c = mDb.query(FINDS_TABLE, null, 
+				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
+//				+ " AND " 
+//				+ FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT
+				+ " AND " 
+				+ FINDS_DISTRIBUTION_POST + " = " + "'" + distrCtr  + "'"
+//				+ " AND " 
+//				+ FINDS_Q_CHANGE + "=" +  "'" + FINDS_TRUE + "'"
+				+ " AND " 
+				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_TRUE + "'"
+				,
+				null, null, null, null);
+
+		Log.i(TAG,"fetchBulkUpdateMessages " +  " count=" + c.getCount() + " distrPost " + distrCtr);
+		
+		if (c.getCount() != 0) {
+			
+			String msgList = "";
+			c.moveToFirst();
+			
+			int k = 0;
+
+			while (!c.isAfterLast()) {
+				
+//				// For debugging
+				String[] columns = c.getColumnNames();   // The Db columns represent the attribute names
+				for (int j = 0; j < columns.length; j++) 
+					Log.i(TAG, columns[j] + "=" + c.getString(c.getColumnIndex(columns[j])));
+				
+				String dossier_no = c.getString(c.getColumnIndex(FINDS_DOSSIER));
+				msgList += dossier_no + AttributeManager.LIST_SEPARATOR;
+
+				c.moveToNext();
+				++k;
+			}
+			acdiVocaMsgs.add (new AcdiVocaMessage(0, -1, MESSAGE_STATUS_UNSENT,
+					"", msgList, "Bulk Message"));
+		}
+		mDb.close();
+		c.close();
+		
 		return acdiVocaMsgs;		
 	}
 

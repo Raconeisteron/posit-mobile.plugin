@@ -89,6 +89,7 @@
     <string name="search_filter_select_button">Select</string>
     <string name="new_messages">Create messages for new beneficiaries</string>
     <string name="update_messages">Create messages for beneficiary updates</string>
+    <string name="bulk_messages">Create messages for bulk update</string>
     <string name="all_messages">List all existing messages</string>
     <string name="sent_messages">List sent messages</string>
     <string name="pending_messages">List pending messages</string>
