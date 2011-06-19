@@ -5,6 +5,7 @@
 			<EditTextPreference 
 				android:numeric="integer"
 				android:title="@string/SMS_phone"
+				android:summary = "@string/SMS_phone"
 				android:key="@string/smsPhoneKey"  />
 
 			<ListPreference android:key="@string/localeKey"

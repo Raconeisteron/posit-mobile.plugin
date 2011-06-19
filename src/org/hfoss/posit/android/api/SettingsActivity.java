@@ -24,6 +24,9 @@ package org.hfoss.posit.android.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import android.content.Context;
@@ -145,7 +148,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	} 
 	
 	/**
-	 * Utility method parses an XML preferences file pulling out domain-specfic attributes
+	 * Utility method parses an XML preferences file pulling out domain-specific attributes
 	 * that associate a Preference key with an Activity.
 	 * @param context this Activity
 	 * @param prefsXmlFileName  the name of the XML file
@@ -217,10 +220,26 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 				this.findPreference(settings.get(j).prefName).setOnPreferenceClickListener(this);
 			}
 		}
+		// Register this activity as a preference change listener
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		sp.registerOnSharedPreferenceChangeListener(this);
 		
-		this.findPreference("testpositpref").setOnPreferenceClickListener(this);
+		// Initialize the summary strings
+		Map<String,?> prefs = sp.getAll();
+		Iterator it = prefs.keySet().iterator();
+		while (it.hasNext()) {
+			String key = (String) it.next();
+			Preference p =  findPreference(key);
+			String value = sp.getString(key, null);
+			if (p!= null && value != null) 
+				p.setSummary(value);
+		}
+		
+		for (int k = 0; k < prefs.size(); k++) {
+
+		}
+		
+		//this.findPreference("testpositpref").setOnPreferenceClickListener(this);
 	}
 	
 
@@ -251,46 +270,19 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		return false;
 	}
 	
-	/*
+	/**
+	 * Adjusts the summary string when a shared preference is changed
 	 * (non-Javadoc)
-	 * Note:  Not sure if this method is still necessary
 	 * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
 	 */
 	 public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-		 Log.i(TAG, "onSharedPreferenceChanged");
-//
-//		 if (key.equals("SERVER_ADDRESS")){
-//			 Log.i(TAG, "Server1 = " + server);
-//			 String tempServer = sp.getString("SERVER_ADDRESS", "");
-//
-//			 Log.i(TAG, "Server2 = " + tempServer);
-//			 if (!server.equals(tempServer)) {
-//
-//				 if (server != null) {
-//					 serverAddress.setSummary(server); 
-//				 }
-//				 Editor edit = sp.edit();
-//				 edit.putString("PROJECT_NAME", "");
-//				 edit.putString("AUTHKEY", "");
-//				 edit.putInt("PROJECT_ID", 0);
-//				 edit.commit();
-//				 finish();
-//			 }
-//			 else {
-//				Toast.makeText(this, "'" + server + "' is already the current server.", Toast.LENGTH_SHORT).show();
-//			 }
-//
-//		 }
-//		 else if (key.equals("PROJECT_NAME")){
-//				String projectName = sp.getString("PROJECT_NAME", "");
-//				if (projectName != null) 
-//					project.setSummary(projectName); 
-//		 }
-//		 else if (key.equals("EMAIL")){
-//				String email = sp.getString("EMAIL", "");
-//				if (email != null) 
-//					user.setSummary(email); 
-//		 }
+		 Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
+				 " value = " + sp.getString(key, ""));
+		 Log.i(TAG, "Preferences= " + sp.getAll().toString());
+		 Preference p =  this.findPreference(key);
+		 String value = sp.getString(key, null);
+		 if (p != null && value != null)
+			 p.setSummary(value);
 	 }
 
 }
