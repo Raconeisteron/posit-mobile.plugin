@@ -123,7 +123,7 @@ public class AttributeManager {
 	public static final String ABBREV_LAST = "l";      
 	public static final String ABBREV_COMMUNE = "cm";
 	public static final String ABBREV_COMMUNE_SECTION = "cs";
-	public static final String ABBREV_LOCALITY = "a";    
+	public static final String ABBREV_LOCALITY = "ad";    
 	public static final String ABBREV_DOB = "b";        
 	public static final String ABBREV_SEX = "g";         
 	public static final String ABBREV_CATEGORY = "c";
@@ -148,6 +148,16 @@ public class AttributeManager {
 	public static final String ABBREV_IS_RANCHER = "ra";
 	public static final String ABBREV_IS_STOREOWNER = "st";
 	public static final String ABBREV_IS_OTHER = "ot";
+	
+	// For Update Messages
+	public static final String ABBREV_Q_CHANGE = "cq";   // Added to incorporated changes to beneficiary type
+	public static final String ABBREV_CHANGE_TYPE = "ch";
+	public static final String ABBREV_Q_PRESENT = "pr";
+	public static final String ABBREV_Q_TRANSFER = "tr";
+	public static final String ABBREV_Q_MODIFICATIONS = "ms";	
+	public static final String ABBREV_Q_DECEASED = "dc";
+	public static final String ABBREV_Q_FRAUD = "fr";
+	public static final String ABBREV_Q_COMPLETED_PROGRAM = "cp";
 	
 	// This array of abbreviations is used to encode
 	//  multiple fields of Y/N data -- such as 'is the 
@@ -195,16 +205,34 @@ public class AttributeManager {
 	public static final String FINDS_MALE = "MALE";
 	public static final String FINDS_NO = "NO"; 
 	public static final String FINDS_YES = "YES";
+	
+	public static final String FINDS_TRUE = "TRUE";
+	public static final String FINDS_FALSE = "FALSE";
 
 	public static final String FINDS_MALNOURISHED_HA = "Enfant Mal";
 	public static final String FINDS_EXPECTING_HA = "Femme Enceinte";
 	public static final String FINDS_NURSING_HA = "Femme Allaitante";
 	public static final String FINDS_PREVENTION_HA = "Enfant Prevention";
 	
+	public static final String FINDS_Q_CHANGE = "ChangeInStatus";   // Added to incorporated changes to beneficiary type
+	public static final String FINDS_CHANGE_TYPE = "ChangeType";
+	public static final String FINDS_Q_PRESENT = "Present";
+	public static final String FINDS_Q_TRANSFER = "Transfer";
+	public static final String FINDS_Q_MODIFICATIONS = "Modifications";
+	
+	public static final String FINDS_Q_TRANSFER_NEW_CATEGORY = "Transfer to new category";
+	public static final String FINDS_Q_DECEASED = "Deceased";
+	public static final String FINDS_Q_FRAUD = "Fraud";
+	public static final String FINDS_Q_COMPLETED_PROGRAM = "Completed program";
+	
+	
 	public static final String ABBREV_FEMALE= "F";
 	public static final String ABBREV_MALE= "M";
 	public static final String ABBREV_YES= "Y";
 	public static final String ABBREV_NO= "N";
+	
+	public static final String ABBREV_TRUE = "T";
+	public static final String ABBREV_FALSE = "F";
 	
 	
 	// ---------------- LONG COLUMNS NAMES FROM PHONE"S DB------
@@ -432,6 +460,9 @@ public class AttributeManager {
 		abbreviations.put(FINDS_MALE,ABBREV_MALE);
 		abbreviations.put(FINDS_NO, ABBREV_NO);
 		abbreviations.put(FINDS_YES, ABBREV_YES);
+		
+		abbreviations.put(FINDS_TRUE, ABBREV_TRUE);
+		abbreviations.put(FINDS_FALSE, ABBREV_FALSE);
 
 		abbreviations.put(FINDS_EXPECTING, ABBREV_EXPECTING);
 		abbreviations.put(FINDS_EXPECTING_HA, ABBREV_EXPECTING);
@@ -501,7 +532,18 @@ public class AttributeManager {
 		abbreviations.put(FINDS_HAVE_TREE, ABBREV_HAVE_TREE);
 		abbreviations.put(FINDS_HAVE_TUBER, ABBREV_HAVE_TUBER);
 		abbreviations.put(FINDS_HAVE_VEGE, ABBREV_HAVE_VEG);
-	
+		
+		// These are for beneficiary update messages
+		abbreviations.put(FINDS_Q_CHANGE, ABBREV_Q_CHANGE);  
+		abbreviations.put(FINDS_CHANGE_TYPE, ABBREV_CHANGE_TYPE);  
+		abbreviations.put(FINDS_Q_PRESENT, ABBREV_Q_PRESENT);
+		abbreviations.put(FINDS_Q_TRANSFER, ABBREV_Q_TRANSFER);
+		abbreviations.put(FINDS_Q_MODIFICATIONS, ABBREV_Q_MODIFICATIONS);
+		abbreviations.put(FINDS_Q_TRANSFER_NEW_CATEGORY, ABBREV_Q_TRANSFER);
+		abbreviations.put(FINDS_Q_DECEASED, ABBREV_Q_DECEASED);
+		abbreviations.put(FINDS_Q_FRAUD, ABBREV_Q_FRAUD);
+		abbreviations.put(FINDS_Q_COMPLETED_PROGRAM, ABBREV_Q_COMPLETED_PROGRAM); 
+
 		
 		// ---------- ACDIV/VOCA DATA -----------------
 		// There should be mappings for all fixed data
