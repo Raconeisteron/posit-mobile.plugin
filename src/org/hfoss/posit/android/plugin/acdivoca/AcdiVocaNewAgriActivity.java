@@ -298,7 +298,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		if (beneRB != null && beneRB.isChecked()) {
 			bene = AcdiVocaDbHelper.FINDS_NO;
 		}
-		result.put(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE_SAME, bene); 
+		result.put(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE, bene); 
 		
 		bene = "";
 		beneRB = (RadioButton)findViewById(R.id.radio_yes_bene);
@@ -612,10 +612,10 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 			beneRB.setChecked(true);
 		
 		beneRB = (RadioButton)findViewById(R.id.radio_yes_bene_same);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE_SAME).equals(AcdiVocaDbHelper.FINDS_YES))
+		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE).equals(AcdiVocaDbHelper.FINDS_YES))
 			beneRB.setChecked(true);
 		beneRB = (RadioButton)findViewById(R.id.radio_no_bene_same);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE_SAME).equals(AcdiVocaDbHelper.FINDS_NO))
+		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE).equals(AcdiVocaDbHelper.FINDS_NO))
 			beneRB.setChecked(true);
 
 		// HANDLE CHECKBOX NEEDS TO FIND A BETTER WAY

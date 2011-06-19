@@ -57,8 +57,8 @@
     <string name="mchn_questions">Questions</string>
     <string name="mother_leader">Are you a mother leader?</string>
     <string name="visit_mother_leader">Have you received a visit from a mother leader?</string>
-    <string name="participating_acdivoca">Is someone in your family participating in ACDI/VOCA Agriculture program?</string>
-    <string name="participating_acdivoca_same">Are you receiving aid from ACDI/VOCA Agriculture Program?</string>
+    <string name="relative_participating_acdivoca">Is someone in your family participating in ACDI/VOCA Agriculture program?</string>
+    <string name="participating_acdivoca">Are you receiving aid from ACDI/VOCA Agriculture Program?</string>
     <string name="give_name">If so, give name</string>
     <string name="Yes">Yes</string>
     <string name="No">No</string>

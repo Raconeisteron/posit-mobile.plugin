@@ -162,8 +162,9 @@ public class AcdiVocaDbHelper {
 	public static final int FINDS_STATUS_UPDATE = 1;   // Update, imported from TBS, with Dossier ID
 	public static final String[] FIND_STATUS_STRINGS = {"New", "Update"};  // For display purpose
 
-	public static final String FINDS_MESSAGE_ID = MESSAGE_STATUS;
-//	public static final String FINDS_MESSAGE_TEXT = MESSAGE_TEXT;
+//	public static final String FINDS_MESSAGE_ID = MESSAGE_STATUS;
+	public static final String FINDS_MESSAGE_ID = AttributeManager.FINDS_MESSAGE_ID;
+	public static final String FINDS_MESSAGE_STATUS = MESSAGE_STATUS;
 
 	public static final String FINDS_FIRSTNAME = AttributeManager.FINDS_FIRSTNAME;
 	public static final String FINDS_LASTNAME = AttributeManager.FINDS_LASTNAME;
@@ -181,9 +182,9 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_Q_MOTHER_LEADER = AttributeManager.FINDS_Q_MOTHER_LEADER; // "mother_leader";
 	public static final String FINDS_Q_VISIT_MOTHER_LEADER = AttributeManager.FINDS_Q_VISIT_MOTHER_LEADER; // "visit_mother_leader";
 	public static final String FINDS_Q_PARTICIPATING_AGRI = AttributeManager.FINDS_Q_PARTICIPATING_AGRI; // "pariticipating_agri";
-	public static final String FINDS_Q_PARTICIPATING_AGRI_SAME = AttributeManager.FINDS_Q_PARTICIPATEING_AGRI_SAME; // "pariticipating_agri";
+	public static final String FINDS_Q_RELATIVE_AGRI = AttributeManager.FINDS_Q_RELATIVE_AGRI; // "pariticipating_agri";
 	public static final String FINDS_Q_PARTICIPATING_BENE = AttributeManager.FINDS_Q_PARTICIPATING_BENE; // "pariticipating_agri";
-	public static final String FINDS_Q_PARTICIPATING_BENE_SAME = AttributeManager.FINDS_Q_PARTICIPATEING_BENE_SAME; // "pariticipating_agri";
+	public static final String FINDS_Q_RELATIVE_BENE = AttributeManager.FINDS_Q_RELATIVE_BENE; // "pariticipating_agri";
 	
 	public static final String FINDS_NAME_AGRI_PARTICIPANT = AttributeManager.FINDS_NAME_AGRI_PARTICIPANT; // "name_agri_paricipant";
 
@@ -281,6 +282,7 @@ public class AcdiVocaDbHelper {
 		+ FINDS_STATUS + " integer DEFAULT " + FINDS_STATUS_NEW + ", "    // New or Update record
 //		+ FINDS_MESSAGE + " integer DEFAULT " + MESSAGE_STATUS_UNSENT ,"                  // Reference to Message table Id
 		+ FINDS_MESSAGE_ID + " integer DEFAULT " + 0 + ", "
+		+ FINDS_MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_UNSENT + " ,"
 //		+ FINDS_MESSAGE_TEXT + " text, "
  		+ FINDS_NAME + " text, "
 		+ FINDS_FIRSTNAME + " text, "
@@ -296,9 +298,9 @@ public class AcdiVocaDbHelper {
 		+ FINDS_Q_MOTHER_LEADER + " boolean, "
 		+ FINDS_Q_VISIT_MOTHER_LEADER + " boolean, "
 		+ FINDS_Q_PARTICIPATING_AGRI + " boolean, "
-		+ FINDS_Q_PARTICIPATING_AGRI_SAME + " boolean, "
+		+ FINDS_Q_RELATIVE_AGRI + " boolean, "
 		+ FINDS_Q_PARTICIPATING_BENE + " boolean, "
-		+ FINDS_Q_PARTICIPATING_BENE_SAME + " boolean, "
+		+ FINDS_Q_RELATIVE_BENE + " boolean, "
 		+ FINDS_IS_FARMER + " boolean, "
 		+ FINDS_IS_MUSO + " boolean, "
 		+ FINDS_IS_RANCHER + " boolean, "
@@ -333,7 +335,7 @@ public class AcdiVocaDbHelper {
 //		+ FINDS_RELATIVE_2 + " text, "
 		+ FINDS_Q_CHANGE + " boolean, "
 		+ FINDS_CHANGE_TYPE + " text, "
-		+ FINDS_Q_PRESENT + " boolean, "
+		+ FINDS_Q_PRESENT + " boolean DEFAULT FALSE ,"
 //		+ FINDS_Q_TRANSFER + " boolean, "
 //		+ FINDS_Q_MODIFICATION + " boolean, " 
 		+ FINDS_MONTHS_REMAINING + " integer DEFAULT 0, "
@@ -762,6 +764,7 @@ public class AcdiVocaDbHelper {
 				// Update the FINDS table to point to the message
 				ContentValues args = new ContentValues();
 				args.put(FINDS_MESSAGE_ID, row_id);
+				args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
 											
 				rows = mDb.update(FINDS_TABLE, 
 						args, 
@@ -949,19 +952,21 @@ public class AcdiVocaDbHelper {
 			c = mDb.query(FINDS_TABLE, null, 
 					FINDS_STATUS + " = " + FINDS_STATUS_NEW  
 					+ " AND " 
-					+ FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT,
+//					+ FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT,
+					+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT,
 					null, null, null, order_by);
 		
 		// Select all UPDATE Beneficiaries whose status has changed
 		else if (filter == SearchFilterActivity.RESULT_SELECT_UPDATE)
 			c = mDb.query(FINDS_TABLE, null, 
 					FINDS_STATUS + "=" + FINDS_STATUS_UPDATE 
-					+ " AND " + 
-					FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT
-					+ " AND " +
-					FINDS_DISTRIBUTION_POST + "=" + "'" + distrCtr + "'" 
-					+ " AND " + 
-					FINDS_Q_CHANGE + "=" +  "'" + FINDS_TRUE + "'",
+					+ " AND " 
+					+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT
+//					+ FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT
+					+ " AND " 
+					+ FINDS_DISTRIBUTION_POST + "=" + "'" + distrCtr + "'" 
+					+ " AND "  
+					+ FINDS_Q_CHANGE + "=" +  "'" + FINDS_TRUE + "'",
 					null, null, null, order_by);
 		return c;
 	}
@@ -1056,14 +1061,14 @@ public class AcdiVocaDbHelper {
 ;
 		Cursor c = mDb.query(FINDS_TABLE, null, 
 				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
-//				+ " AND " 
-//				+ FINDS_MESSAGE_ID + " = " + MESSAGE_STATUS_UNSENT
+				+ " AND " 
+				+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT
 				+ " AND " 
 				+ FINDS_DISTRIBUTION_POST + " = " + "'" + distrCtr  + "'"
 //				+ " AND " 
 //				+ FINDS_Q_CHANGE + "=" +  "'" + FINDS_TRUE + "'"
 				+ " AND " 
-				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_TRUE + "'"
+				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_FALSE + "'"
 				,
 				null, null, null, null);
 
