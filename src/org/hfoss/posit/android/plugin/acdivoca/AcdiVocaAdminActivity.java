@@ -192,8 +192,8 @@ public class AcdiVocaAdminActivity extends Activity  {
 		
 		// List files on sdcard
 //	    File file[] = Environment.getExternalStorageDirectory().listFiles(); 
-	    for (int i = 0; i < file.length; i++)
-	    	Log.i(TAG, file[i].getAbsolutePath());  
+//	    for (int i = 0; i < file.length; i++)
+//	    	Log.i(TAG, file[i].getAbsolutePath());  
 		
 		items = loadBeneficiaryData(mDistrCtr);
 		

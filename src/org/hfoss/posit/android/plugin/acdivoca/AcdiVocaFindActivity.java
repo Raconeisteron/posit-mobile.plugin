@@ -423,18 +423,6 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		eText = (EditText)findViewById(R.id.inhomeEdit);
 		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
 		
-		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
-		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
-		Log.i(TAG,"display DOB = " + date);
-		int yr=0, mon=0, day=0;
-		day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
-		yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
-		mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
-		Log.i(TAG, yr + "/" + mon + "/" + day);
-//		mon = mon + 1;  // Months are number 0..11
-//		day = day - 1;
-
-		
 		RadioButton beneRB1 = (RadioButton)findViewById(R.id.malnourishedRadio);
 		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_MALNOURISHED.toString())){
 			beneRB1.setChecked(true);
@@ -497,7 +485,19 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
 //		Log.i(TAG,"display DOB = " + date);
         
-        
+		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
+		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+		Log.i(TAG,"display DOB = " + date);
+		int yr=0, mon=0, day=0;
+		day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
+		yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
+		mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
+		Log.i(TAG, yr + "/" + mon + "/" + day);
+//		mon = mon - 1;  // Months are number 0..11
+//		day = day - 1;
+
+		
+       
 		try {
 	        if (date != null) {
 	            Log.i(TAG,"display DOB = " + date);
