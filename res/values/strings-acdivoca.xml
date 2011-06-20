@@ -1,0 +1,139 @@
+<resources>
+	
+	<!--  Acdi Voca Strings -->
+	
+	<string name="admin_menu">Admin</string>
+	<string name="admin_welcome">Admin Functions\nChoose from the Menu</string>
+	<string name="load_beneficiary_data">Import Beneficiary Data</string>
+	<string name="distribution_point">Distribution Point</string>
+	<string name="password_alert_message">Your username or password is incorrect.</string>
+	
+	<!--  Button Labels -->
+	
+	<string name="list_beneficiary_label">List\nBeneficiary</string>
+	<string name="add_beneficiary_label">New\nBeneficiary</string>
+	<string name="update_beneficiary_label">Update\nBeneficiary</string>
+	<string name="new_agri_beneficiary_label">New\nAgriculture</string>
+	
+	<string name="general_info">General Information</string>
+	<string name="mchn_info">MCHN Information</string>
+ 	<string name="save_info">Save the registration</string>
+    <string name="name_section">Name and Address</string>
+    <string name="lastname">Last Name</string>
+    <string name="firstname">First Name</string>
+    <string name="commune">Commune</string>
+    <string name="commune_section">Communal section</string>
+    <string name="address">Locality</string>	
+	
+    <string name="sex">Sex</string>
+    <string name="dob">Date of Birth</string>
+    <string name="dob_age">Age</string>
+    <string name="dob_age_hint">Age (if no DOB)</string>
+    <string name="Male">Male</string>
+    <string name="Female">Female</string>	
+    
+    <string name="Number_of_people_in_home">Number of people in home</string>
+    <string name="Beneficiary_Category">Beneficiary Category</string>
+    <string name="Infant_Category">Infant Category</string>
+    <string name="Malnourished">Malnourished</string>
+    <string name="In_Prevention">In Prevention</string>
+    <string name="Mother_Category">Mother Category</string>
+    <string name="Expecting">Expecting</string>
+    <string name="Nursing">Nursing</string>
+    <string name="add_save">Save to Db</string>
+    <string name="add_send">Send SMS</string>
+    
+    <!--   MCHN Strings -->
+    <string name="relatives_section">Beneficiary relatives</string>
+    <string name="responsible_if_child">Alternate collector (if child)</string>
+    <string name="responsible_if_mother">Alternate collector (if mother)</string>
+    <string name="father_if_child">Father (if child)</string>
+    <string name="husband_if_mother">Husband (if mother)</string>
+    
+    <string name="health_center">Health Center, Dispensary, or Fixed Point</string>
+    <string name="distribution_post">Distribution Post</string>
+	<string name="status_change">Status Change Type</string>
+    
+    <string name="mchn_questions">Questions</string>
+    <string name="mother_leader">Are you a mother leader?</string>
+    <string name="visit_mother_leader">Have you received a visit from a mother leader?</string>
+    <string name="relative_participating_acdivoca">Is someone in your family participating in ACDI/VOCA Agriculture program?</string>
+    <string name="participating_acdivoca">Are you receiving aid from ACDI/VOCA Agriculture Program?</string>
+    <string name="give_name">If so, give name</string>
+    <string name="Yes">Yes</string>
+    <string name="No">No</string>
+    <string name="participating_bene">Is someone in your family participating in ACDI/VOCA Beneficiary program?</string>
+    <string name="participating_bene_same">Are you participating in ACDI/VOCA Beneficiary Program?</string>
+    
+    
+   
+    <!--  Update View -->
+    <string name="beneficiary">Beneficiary Information</string>
+    <string name="dossier_label">Enter dossier number and look up!</string>
+    <string name="dossier_hint">Id #</string>
+    <string name="lookup_button">Lookup beneficiary</string>
+    <string name="months_left_in_program">Months remaining in program</string>
+    <string name="save_update">Record the Update</string>
+    <string name="save_button">Record the Update</string>
+    <string name="update_questions">Update Questions</string>
+    <string name="beneficiary_present">Was the beneficiary present?</string>
+    <string name="transfer_required">Should this beneficiary be transferred to a new category?</string>
+    <string name="modifications_needed">Are modifications needed in the beneficiary\'s record?</string>
+    
+    <!-- This is a new question for a button to replace the last two questions - 6/17/11 -->
+    <string name="change_in_status">Is there a change in the beneficiary\'s status?</string>
+    
+    <!--  list_finds.xml -->
+    <string name="noFinds">No beneficiaries</string>
+    <string name="pick_criterion_prompt">Select a search filter.</string>
+    <string name="search_filter_select_button">Select</string>
+    <string name="new_messages">Create messages for new beneficiaries</string>
+    <string name="update_messages">Create messages for beneficiary updates</string>
+    <string name="bulk_messages">Create messages for bulk update</string>
+    <string name="all_messages">List all existing messages</string>
+    <string name="sent_messages">List sent messages</string>
+    <string name="pending_messages">List pending messages</string>
+    <string name="acknowledged_messages">List acknowledged messages</string>
+    <string name="no_messages">No messages to display</string>
+    <string name="delete_messages">Delete listed messages</string>
+    <string name="confirm_delete_messages">Are you sure you want to delete these messages?</string>
+    
+   
+        <!-- Add and List Menu -->
+    <string name="refresh">Clear</string>
+    <string name="delete_find">Delete</string> 
+    <string name="list_messages">List SMS Messages</string>
+    <string name="sync_messages">Send SMS Messages</string>
+  
+    <!-- ACDI/VOCA Settings and Preferences -->
+    <string name="acdivocaprefs">ACDI/VOCA Preferences</string>
+    <string name="SMS_phone">SMS Phone Target</string>
+    <string name="smsPhoneKey">smsPhone</string>
+    <string name="localeKey">locale</string>
+    <string name="locale">Locale</string>
+    <string name="localePref">locale</string>
+    
+    <!-- Alert Dialogs -->
+    <string name="acdivoca_exit_findactivity">Are you sure you want to exit? Data may be lost.</string>
+ 	<string name="acdivoca_cancel">Cancel</string>
+ 	
+ 	<!--  Login View -->
+ 	<string name="login_prompt">Login, please.</string>
+ 	<string name="username_hint">Username</string>
+ 	<string name="password_hint">Password</string>
+ 	<string name="login_button">Login</string>
+ 	<string name="cancel_login_button">Cancel</string>
+ 	
+ 	
+ 	<!-- New string constants for agriculture registration form -->
+	<string name="amount_of_land">Amount of Land (Carreau)</string>
+	<string name="Ex:1over16"></string>
+    <string name="seed_group">Seed Types</string>
+    <string name="unit_of_measurement">Unit of Measurement</string>
+    <string name="quantity_of_seeds">Quantity of Seeds</string>
+    <string name="tools">Tools</string>
+    <string name="partners">Are you working with other partners?</string>
+ 	
+    
+    
+</resources>
