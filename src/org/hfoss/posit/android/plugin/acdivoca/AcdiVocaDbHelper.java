@@ -547,6 +547,7 @@ public class AcdiVocaDbHelper {
 			//				values.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, fields[FIELD_SECTION]);
 			values.put(AcdiVocaDbHelper.FINDS_ADDRESS, fields[FIELD_LOCALITY]);
 			String adjustedDate = adjustDateForDatePicker(fields[FIELD_BIRTH_DATE]);
+			Log.i(TAG, "adjusted date = " + adjustedDate);
 			values.put(AcdiVocaDbHelper.FINDS_DOB, adjustedDate);
 			String adjustedSex = adjustSexData(fields[FIELD_SEX]);
 			values.put(AcdiVocaDbHelper.FINDS_SEX, adjustedSex);  
