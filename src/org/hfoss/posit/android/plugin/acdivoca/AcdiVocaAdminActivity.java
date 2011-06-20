@@ -23,6 +23,8 @@
 package org.hfoss.posit.android.plugin.acdivoca;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,6 +39,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
@@ -56,6 +59,9 @@ public class AcdiVocaAdminActivity extends Activity  {
 
 	public static String TAG = "AdminActivity";
 	public static final int MAX_BENEFICIARIES = 20000;  // Max readable
+	
+	public static final String DEFAULT_DIRECTORY = "acdivoca";
+	public static final String DEFAULT_BENEFICIARY_FILE = "BeneficiaryMasterList.txt";
 	public static final String COMMA= ",";
 	public static final int DONE = 0;
 
@@ -165,6 +171,15 @@ public class AcdiVocaAdminActivity extends Activity  {
 	private void importBeneficiaryDataToDb() {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		ContentValues values = new ContentValues();
+	
+		// Read all the file names on the SD Card
+		File directory = new File(Environment.getExternalStorageDirectory() + "/" + DEFAULT_DIRECTORY);
+		File file[] = directory.listFiles();
+		
+		// List files on sdcard
+//	    File file[] = Environment.getExternalStorageDirectory().listFiles(); 
+	    for (int i = 0; i < file.length; i++)
+	    	Log.i(TAG, file[i].getAbsolutePath());  
 		
 		items = loadBeneficiaryData();
 		long nImports = db.addUpdateBeneficiaries(items, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
@@ -182,12 +197,17 @@ public class AcdiVocaAdminActivity extends Activity  {
 	private String[] loadBeneficiaryData() {
 		String[] data = null;
 		
+		File file = new File(Environment.getExternalStorageDirectory() 
+				+ "/" + DEFAULT_DIRECTORY + "/" 
+				+ DEFAULT_BENEFICIARY_FILE);
+
 		BufferedReader br = null;
 		String line = null;
 		int k = 0;
 		
 		try {
-			InputStream iStream = this.getAssets().open("beneficiaries.txt");
+			//InputStream iStream = this.getAssets().open("beneficiaries.txt");
+			FileInputStream iStream = new FileInputStream(file);
 			br = new BufferedReader(new InputStreamReader(iStream));
 			data = new String[MAX_BENEFICIARIES];
 			line = br.readLine();

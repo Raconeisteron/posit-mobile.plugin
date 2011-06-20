@@ -457,12 +457,17 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 		yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
 		mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
         
-        Log.i(TAG, yr + "/" + mon + "/" + day);
+//        Log.i(TAG, yr + "/" + mon + "/" + day);
 //        mon = mon + 1;  // Months are number 0..11
-//        day = day - 1;
+
+		try {
         if (date != null) {
             Log.i(TAG,"display DOB = " + date);
             dp.init(yr, mon, day, this);
+        }
+        } catch (IllegalArgumentException e) {
+        	Log.e(TAG, "Illegal Argument, probably month == 12 in " + date);
+        	e.printStackTrace();
         }
 
         eText = (EditText)findViewById(R.id.monthsInProgramEdit);
