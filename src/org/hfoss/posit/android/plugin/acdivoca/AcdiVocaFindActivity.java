@@ -496,10 +496,23 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
 //		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
 //		Log.i(TAG,"display DOB = " + date);
-		if (date != null) {
-			Log.i(TAG,"display DOB = " + date);
-			dp.init(yr, mon, day, this);
-		}
+        
+        
+		try {
+	        if (date != null) {
+	            Log.i(TAG,"display DOB = " + date);
+	            dp.init(yr, mon, day, this);
+	        }
+	        } catch (IllegalArgumentException e) {
+	        	Log.e(TAG, "Illegal Argument, probably month == 12 in " + date);
+	        	e.printStackTrace();
+	        }
+
+        
+//		if (date != null) {
+//			Log.i(TAG,"display DOB = " + date);
+//			dp.init(yr, mon, day, this);
+//		}
 //		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
 //				Integer.parseInt(date.substring(0,date.indexOf("/"))),
 //				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),

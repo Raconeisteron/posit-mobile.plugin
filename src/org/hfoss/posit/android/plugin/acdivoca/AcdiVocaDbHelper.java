@@ -604,8 +604,15 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	private String adjustDateForDatePicker(String date) {
-		String[] yrmonday = date.split("/");
-		return yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
+		try {
+			String[] yrmonday = date.split("/");
+			return yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
+		} catch (Exception e) {
+			Log.i(TAG, "Bad date = " + date + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			return date;
+		}
 	}
 
 	
