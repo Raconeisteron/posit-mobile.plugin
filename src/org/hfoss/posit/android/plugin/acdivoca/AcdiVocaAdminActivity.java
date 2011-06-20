@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindActivityProvider;
+import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
 
 import android.app.Activity;
@@ -38,10 +39,12 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -61,7 +64,8 @@ public class AcdiVocaAdminActivity extends Activity  {
 	public static final int MAX_BENEFICIARIES = 20000;  // Max readable
 	
 	public static final String DEFAULT_DIRECTORY = "acdivoca";
-	public static final String DEFAULT_BENEFICIARY_FILE = "BeneficiaryMasterList.txt";
+	public static final String DEFAULT_BENEFICIARY_FILE = "Beneficiare.csv";
+	public static final String DEFAULT_LIVELIHOOD_FILE = "Livelihood.csv";
 	public static final String COMMA= ",";
 	public static final int DONE = 0;
 
@@ -70,6 +74,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 	private ArrayAdapter<String> adapter;
 	private String items[] = new String[100];
 	private ProgressDialog mProgressDialog;
+	private String mDistrCtr;
 
 
 	@Override
@@ -145,6 +150,16 @@ public class AcdiVocaAdminActivity extends Activity  {
 				//Toast.makeText(this, "Thank you", Toast.LENGTH_LONG).show();
 				//findViewById(R.id.fileload_progressbar).setVisibility(View.VISIBLE);
 				
+				// Get this phone's Distribution Center
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+				mDistrCtr = prefs.getString(this.getResources().getString(R.string.distribution_point), null);
+				
+				if (mDistrCtr == null) {
+					Log.i(TAG, "Aborting loadBeneficiaryData, No distribution post selected");
+					Toast.makeText(this, "No distribution post selected", Toast.LENGTH_SHORT);
+					break;
+				}
+				
 				mProgressDialog = ProgressDialog.show(this, "Loading data",
 						"Please wait.", true, true);
 				
@@ -168,8 +183,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 	/**
 	 * Reads data from a text file into the Db.
 	 */
-	private void importBeneficiaryDataToDb() {
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+	private void importBeneficiaryDataToDb() {		
 		ContentValues values = new ContentValues();
 	
 		// Read all the file names on the SD Card
@@ -181,7 +195,9 @@ public class AcdiVocaAdminActivity extends Activity  {
 	    for (int i = 0; i < file.length; i++)
 	    	Log.i(TAG, file[i].getAbsolutePath());  
 		
-		items = loadBeneficiaryData();
+		items = loadBeneficiaryData(mDistrCtr);
+		
+		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		long nImports = db.addUpdateBeneficiaries(items, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
 		Log.i(TAG, "Imported " + nImports + " Beneficiaries");	
 //		Toast.makeText(this, "Imported " +  + nImports + " Beneficiaries", Toast.LENGTH_SHORT);
@@ -194,7 +210,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 	 * @return  Returns an array of Strings, each of which represents
 	 * a Beneficiary record.
 	 */
-	private String[] loadBeneficiaryData() {
+	private String[] loadBeneficiaryData(String distrCtr) {
 		String[] data = null;
 		
 		File file = new File(Environment.getExternalStorageDirectory() 
@@ -215,8 +231,10 @@ public class AcdiVocaAdminActivity extends Activity  {
 			while (line != null)  {
 				//Log.i(TAG, line);
 				if (line.length() > 0 && line.charAt(0) != '*')  {
-					data[k] = line;
-					k++;
+					if (line.contains(distrCtr)) {
+						data[k] = line;
+						k++;
+					}
 				}
 				line = br.readLine();
 			}
