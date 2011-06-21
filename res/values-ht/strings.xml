@@ -14,6 +14,7 @@
 	<string name="add_beneficiary_label">Nouveau\nBenefisyè</string>
 	<string name="update_beneficiary_label">Mete ajou\nBenefisyè</string>
 	<string name="new_agri_beneficiary_label">Nouveau\nAgricole</string>
+	<string name="update_beneficiary_edit_label">Modifier</string>
 	
 	
     <string name="appHeader">Mobil Enskripsyon Sistèm</string>

@@ -320,6 +320,7 @@ Removed redundant elements -->
 					android:visibility="gone"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
+									
 			</LinearLayout>
 
 </LinearLayout>
