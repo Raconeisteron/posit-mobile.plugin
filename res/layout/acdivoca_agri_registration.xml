@@ -82,7 +82,7 @@
 			<Spinner android:id="@+id/distributionSpinner" 
 				android:visibility="gone"
 				android:layout_marginLeft="20px" android:layout_marginRight="30px"
-				android:entries="@+array/distribution_centers"
+				android:entries="@+array/distribution_point_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
 
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

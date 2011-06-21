@@ -297,4 +297,9 @@
 	<string name="search_finds">Search Finds</string>
 	<string name="toggle_tracks">Toggle Tracks</string>
 	<string name="center_finds">Center Finds</string>   
+	
+	<!--  Admin -->
+	<string name="admin_directions">For Admin functions, choose an option from the menu.</string>
+	<string name="admin_login">Admin Login</string>
+	
 </resources>

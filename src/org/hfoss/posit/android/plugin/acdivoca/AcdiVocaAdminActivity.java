@@ -131,6 +131,9 @@ public class AcdiVocaAdminActivity extends Activity  {
 				intent.setClass(this, loginActivity);
 				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.SUPER.ordinal());
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
+				
+				Toast.makeText(this, "Admin Login for Import Beneficiary Data.", Toast.LENGTH_LONG).show();
+				
 			}
 			
 			
