@@ -168,7 +168,7 @@ Removed redundant elements -->
 				
 			<Spinner android:id="@+id/distributionSpinner" 
 				android:layout_marginLeft="30px" android:layout_marginRight="30px"
-				android:entries="@+array/distribution_centers"
+				android:entries="@+array/distribution_point_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
 
 			<TextView android:text="@string/relatives_section" android:id="@+id/relatives"

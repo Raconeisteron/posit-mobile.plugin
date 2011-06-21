@@ -265,13 +265,13 @@ public class AttributeManager {
 	
 	public static final String FINDS_Q_MOTHER_LEADER = "mother_leader";
 	public static final String FINDS_Q_VISIT_MOTHER_LEADER = "visit_mother_leader";
-	public static final String FINDS_Q_PARTICIPATING_AGRI = "pariticipating_agri";
-	public static final String FINDS_Q_RELATIVE_AGRI = "same_person_pariticipating_agri";
-	public static final String FINDS_Q_PARTICIPATING_BENE = "pariticipating_bene";
-	public static final String FINDS_Q_RELATIVE_BENE = "same_person_pariticipating_bene";
+	public static final String FINDS_Q_PARTICIPATING_AGRI = "participating_agri";
+	public static final String FINDS_Q_RELATIVE_AGRI = "same_person_participating_agri";
+	public static final String FINDS_Q_PARTICIPATING_BENE = "participating_bene";
+	public static final String FINDS_Q_RELATIVE_BENE = "same_person_participating_bene";
 	
 
-	public static final String FINDS_NAME_AGRI_PARTICIPANT = "name_agri_paricipant";
+	public static final String FINDS_NAME_AGRI_PARTICIPANT = "name_agri_participant";
 	public static final String FINDS_LAND_AMOUNT = "amount_of_land";
 	public static final String FINDS_RELATIVE_1 = "relative_1";
 	public static final String FINDS_RELATIVE_2 = "relative_2";

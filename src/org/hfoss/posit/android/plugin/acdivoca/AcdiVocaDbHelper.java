@@ -607,7 +607,24 @@ public class AcdiVocaDbHelper {
 	private String adjustDateForDatePicker(String date) {
 		try {
 			String[] yrmonday = date.split("/");
-			return yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
+			date =  yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
+		} catch (Exception e) {
+			Log.i(TAG, "Bad date = " + date + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			return date;
+		}
+	}
+	
+	/**
+	 * This function changes the date format from 0...11 to 1..12 format for the SMS Reader.
+	 * @param date
+	 * @return
+	 */
+	private String adjustDateForSmsReader(String date) {
+		try { 
+			String[] yrmonday = date.split("/");
+			date =  yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) + 1) + "/" + yrmonday[2];	
 		} catch (Exception e) {
 			Log.i(TAG, "Bad date = " + date + " " + e.getMessage());
 			e.printStackTrace();
@@ -1204,7 +1221,10 @@ public class AcdiVocaDbHelper {
 					//&& !attr.equals(FINDS_MESSAGE_TEXT) 
 					&& !val.equals("null")
 					) {
-				abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
+				if(attr.equals(FINDS_DOB))
+					abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, adjustDateForSmsReader(val));	
+				else
+					abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
 				//abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
 				if (!abbrev.equals(""))
 					message += abbrev + ",";
