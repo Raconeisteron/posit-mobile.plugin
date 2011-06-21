@@ -607,7 +607,24 @@ public class AcdiVocaDbHelper {
 	private String adjustDateForDatePicker(String date) {
 		try {
 			String[] yrmonday = date.split("/");
-			return yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
+			date =  yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
+		} catch (Exception e) {
+			Log.i(TAG, "Bad date = " + date + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			return date;
+		}
+	}
+	
+	/**
+	 * This function changes the date format from 0...11 to 1..12 format for the SMS Reader.
+	 * @param date
+	 * @return
+	 */
+	private String adjustDateForSmsReader(String date) {
+		try { 
+			String[] yrmonday = date.split("/");
+			date =  yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) + 1) + "/" + yrmonday[2];	
 		} catch (Exception e) {
 			Log.i(TAG, "Bad date = " + date + " " + e.getMessage());
 			e.printStackTrace();
@@ -1084,7 +1101,7 @@ public class AcdiVocaDbHelper {
 		
 		if (c.getCount() != 0) {
 			
-			String msgList = "";
+			String smsMessage = "";
 			c.moveToFirst();
 			
 			int k = 0;
@@ -1097,13 +1114,24 @@ public class AcdiVocaDbHelper {
 					Log.i(TAG, columns[j] + "=" + c.getString(c.getColumnIndex(columns[j])));
 				
 				String dossier_no = c.getString(c.getColumnIndex(FINDS_DOSSIER));
-				msgList += dossier_no + AttributeManager.LIST_SEPARATOR;
+				smsMessage += dossier_no + AttributeManager.LIST_SEPARATOR;
 
+				if (smsMessage.length() > 120) {
+					// Add a header (length and status) to message
+					String msgHeader = "MsgId: bulk, Len:" + smsMessage.length();
+
+					acdiVocaMsgs.add(new AcdiVocaMessage(-1, 
+							-1, 
+							MESSAGE_STATUS_UNSENT,
+							"", smsMessage, msgHeader));
+					smsMessage = "";
+					
+				}				
 				c.moveToNext();
 				++k;
 			}
 			acdiVocaMsgs.add (new AcdiVocaMessage(0, -1, MESSAGE_STATUS_UNSENT,
-					"", msgList, "Bulk Message"));
+					"", smsMessage, "Bulk Message"));
 		}
 		mDb.close();
 		c.close();
@@ -1193,7 +1221,10 @@ public class AcdiVocaDbHelper {
 					//&& !attr.equals(FINDS_MESSAGE_TEXT) 
 					&& !val.equals("null")
 					) {
-				abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
+				if(attr.equals(FINDS_DOB))
+					abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, adjustDateForSmsReader(val));	
+				else
+					abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
 				//abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
 				if (!abbrev.equals(""))
 					message += abbrev + ",";

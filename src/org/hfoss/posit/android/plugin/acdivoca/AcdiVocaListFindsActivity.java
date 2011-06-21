@@ -244,7 +244,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		if (mNMessagesDisplayed > 0 && 
 				(mMessageFilter == SearchFilterActivity.RESULT_SELECT_NEW 
 						|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_PENDING
-						|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_UPDATE))  {
+						|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_UPDATE
+						|| mMessageFilter == SearchFilterActivity.RESULT_BULK_UPDATE))  {
 	        menuItem.setEnabled(true);		
 		} else {
 	        menuItem.setEnabled(false);		

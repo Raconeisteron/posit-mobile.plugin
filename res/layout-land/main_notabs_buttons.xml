@@ -7,15 +7,6 @@
 		xmlns:android="http://schemas.android.com/apk/res/android">
 		
 		<TextView
-			android:id="@+id/website"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textSize="18sp"
-			android:textColor="#ffffff"
-			android:text="http://www.posit-project.org"
-			android:autoLink="web"
-			android:layout_marginBottom="10dp"/>
-		<TextView
 			android:id="@+id/version"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -29,7 +20,7 @@
     			android:layout_height="fill_parent"
     			android:layout_gravity="center">
 
-				<Button 
+		 		<Button 
 					android:id="@+id/listFindButton" 
 					android:layout_width="wrap_content" 
 					android:layout_height="wrap_content" 
@@ -54,6 +45,18 @@
 					android:layout_height="wrap_content" 
 					android:visibility="visible"
 					android:text="New\nAgriculture"/>	
+			
+			
+		<TextView
+			android:id="@+id/website"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:textSize="18sp"
+			android:textColor="#ffffff"
+			android:text="\n         Powered by POSIT\n(http://www.posit-project.org)"
+			android:autoLink="web"
+			android:layout_marginBottom="10dp"/>
 										
 		</LinearLayout>
 

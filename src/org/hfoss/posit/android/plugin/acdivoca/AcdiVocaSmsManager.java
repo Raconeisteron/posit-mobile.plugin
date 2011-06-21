@@ -288,7 +288,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		if (length[0] == 1) {  
 			try {
 				SmsManager sms = SmsManager.getDefault();
-//				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
+				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
 //				Toast.makeText(context, "SMS Sent!\n"+message + " to " + phoneNumber, Toast.LENGTH_LONG).show();
 				Log.i(TAG, "SMS Sent!\n"+message + " to " + phoneNumber);
 				Log.i(TAG,"SMS Sent: " + message);

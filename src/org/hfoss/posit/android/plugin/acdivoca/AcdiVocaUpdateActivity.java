@@ -70,18 +70,16 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     private String mAction = "";
     private int mFindId = 0;
     private AcdiVocaDbHelper mDbHelper;
+    private ContentValues mContentValues;
+    private boolean inEditableMode = false;
     
     
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-         Log.i(TAG, "onCreate");
-
-        // Create DB helper
-//        mDbHelper = new AcdiVocaDbHelper(this);
-        isProbablyEdited = false;
-        
+    	super.onCreate(savedInstanceState);
+    	Log.i(TAG, "onCreate");
+    	isProbablyEdited = false;
     }
 
     /**
@@ -89,10 +87,10 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-         Log.i(TAG, "onCreateOptionsMenu");
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.acdivoca_menu_add, menu);
-        return true;
+    	Log.i(TAG, "onCreateOptionsMenu");
+    	MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.acdivoca_menu_add, menu);
+    	return true;
     }
 
     /**
@@ -116,104 +114,153 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
      */
     @Override
     protected void onResume() {
-        super.onResume();
-        Log.i(TAG, "onResume beneficiary id = " + beneficiaryId);
-        
-        AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+    	super.onResume();
+    	Log.i(TAG, "onResume beneficiary id = " + beneficiaryId);
 
-        Log.i(TAG, "Before edited = " + isProbablyEdited);
-        
-        if (beneficiaryId == "unknown") {
-            Intent lookupIntent = new Intent();
-            lookupIntent.setClass(this, AcdiVocaLookupActivity.class);
-            this.startActivityForResult(lookupIntent, ACTION_ID);
-        } else {
-            
-            AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-            ContentValues values = db.fetchBeneficiaryByDossier(beneficiaryId, null);
-            if (values == null) {
-                Toast.makeText(this, "ERROR: No beneficiary with ID = " + beneficiaryId, Toast.LENGTH_SHORT).show();
-            } else {
-                setContentView(R.layout.acdivoca_update);  // Should be done after locale configuration
-                displayContentInView(values);
+    	AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
-                TextView tv = ((TextView) findViewById(R.id.dossier_label));
-                tv.setText("Beneficiary Dossier: " + beneficiaryId);
-                
-                 // Listen for text changes in edit texts and set the isEdited flag
-                ((EditText)findViewById(R.id.firstnameEdit)).addTextChangedListener(this);
-                ((EditText)findViewById(R.id.lastnameEdit)).addTextChangedListener(this);
-                ((EditText)findViewById(R.id.monthsInProgramEdit)).addTextChangedListener(this);
-                
-                 // Initialize the DatePicker and listen for changes
-                 Calendar calendar = Calendar.getInstance();
-                 
-                 ((DatePicker)findViewById(R.id.datepicker)).init(
-                         calendar.get(Calendar.YEAR),
-                         calendar.get(Calendar.MONTH), 
-                         calendar.get(Calendar.DAY_OF_MONTH), this);
-                
-                // Listen for clicks on radio buttons
-                ((RadioButton)findViewById(R.id.femaleRadio)).setOnClickListener(this);
-                ((RadioButton)findViewById(R.id.maleRadio)).setOnClickListener(this);
-                ((RadioButton)findViewById(R.id.malnourishedRadio)).setOnClickListener(this);
-                ((RadioButton)findViewById(R.id.inpreventionRadio)).setOnClickListener(this);
-                ((RadioButton)findViewById(R.id.expectingRadio)).setOnClickListener(this);
-                ((RadioButton)findViewById(R.id.nursingRadio)).setOnClickListener(this);
-                
-                
-                ((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
-                
-// New Listeners - 6/17/11
-                
-                ((RadioButton)findViewById(R.id.radio_present_yes)).setOnClickListener(this);
-                ((RadioButton)findViewById(R.id.radio_present_no)).setOnClickListener(this);
-                ((RadioButton)findViewById(R.id.radio_change_in_status_yes)).setOnClickListener(this);
-                ((RadioButton)findViewById(R.id.radio_change_in_status_no)).setOnClickListener(this);
-                ((Spinner)findViewById(R.id.statuschangeSpinner)).setOnItemSelectedListener(this);
-                
-        
+    	Log.i(TAG, "Before edited = " + isProbablyEdited);
 
-//        ((Button)findViewById(R.id.saveToDbButton)).setOnClickListener(this);
-//        ((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
-//        
+    	if (beneficiaryId == "unknown") {
+    		Intent lookupIntent = new Intent();
+    		lookupIntent.setClass(this, AcdiVocaLookupActivity.class);
+    		this.startActivityForResult(lookupIntent, ACTION_ID);
+    	} else {
 
-//         ((RadioButton)findViewById(R.id.radio_motherleader_yes)).setOnClickListener(this);
-//         ((RadioButton)findViewById(R.id.radio_motherleader_no)).setOnClickListener(this);
-//         ((RadioButton)findViewById(R.id.radio_visit_yes)).setOnClickListener(this);
-//         ((RadioButton)findViewById(R.id.radio_visit_no)).setOnClickListener(this);
-//         ((RadioButton)findViewById(R.id.radio_yes_acdivoca)).setOnClickListener(this);
-//         ((RadioButton)findViewById(R.id.radio_no_acdivoca)).setOnClickListener(this);
-//
-//         ((EditText)findViewById(R.id.addressEdit)).addTextChangedListener(this);
-//         ((EditText)findViewById(R.id.ageEdit)).addTextChangedListener(this);
-//         ((EditText)findViewById(R.id.inhomeEdit)).addTextChangedListener(this);
-//         ((EditText)findViewById(R.id.responsibleIfChildEdit)).addTextChangedListener(this);
-//         ((EditText)findViewById(R.id.fatherIfChildEdit)).addTextChangedListener(this);
-//         ((EditText)findViewById(R.id.responsibleIfMotherEdit)).addTextChangedListener(this);
-//         ((EditText)findViewById(R.id.husbandIfMotherEdit)).addTextChangedListener(this);
-//         ((EditText)findViewById(R.id.give_name)).addTextChangedListener(this);
-//         
-//         
-//         // These don't work
-//         ((Spinner)findViewById(R.id.commune_sectionSpinner)).setOnItemSelectedListener(this);
-//         ((Spinner)findViewById(R.id.communeSpinner)).setOnItemSelectedListener(this);
-//         ((Spinner)findViewById(R.id.healthcenterSpinner)).setOnItemSelectedListener(this);
-//         ((Spinner)findViewById(R.id.distributionSpinner)).setOnItemSelectedListener(this);
-//
-        final Intent intent = getIntent();
-        mAction = intent.getAction();
-        Log.i(TAG, "mAction = " + mAction);
-        if (mAction.equals(Intent.ACTION_EDIT)) {
-            doEditAction();
-            isProbablyEdited = false; // In EDIT mode, initialize after filling in data
-        }
-         Log.i(TAG, "After edited = " + isProbablyEdited);
-    }
-}
+    		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+    		mContentValues = db.fetchBeneficiaryByDossier(beneficiaryId, null);
+    		if (mContentValues == null) {
+    			Toast.makeText(this, "ERROR: No beneficiary with ID = " + beneficiaryId, Toast.LENGTH_SHORT).show();
+    		} else {
+    			setContentView(R.layout.acdivoca_update_noedit);  // Should be done after locale configuration
+    			((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
+    			((Button)findViewById(R.id.update_edit_button)).setOnClickListener(this);
+
+    			displayContentUneditable(mContentValues);
+    		}
+    	}
     }
     
+    /**
+     * Displays the content as uneditable labels -- default view.
+     * @param values
+     */
+    private void displayContentUneditable(ContentValues values) {
+    	TextView tv = ((TextView) findViewById(R.id.dossier_label));
+    	tv.setText("Beneficiary Dossier: " + beneficiaryId);
+    	tv = ((TextView) findViewById(R.id.firstnameLabel));
+    	tv.setText(getString(R.string.firstname) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+    	tv = ((TextView) findViewById(R.id.lastnameLabel));
+    	tv.setText(getString(R.string.lastname) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));  	
+    	tv = ((TextView) findViewById(R.id.dobLabel));
+    	tv.setText(getString(R.string.dob) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_DOB));  
+    	tv = ((TextView) findViewById(R.id.sexLabel));
+    	tv.setText(getString(R.string.sex) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_SEX));  	
+    	tv = ((TextView) findViewById(R.id.categoryLabel));
+    	tv.setText(getString(R.string.Beneficiary_Category) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY)); 
+    	
+    	displayUpdateQuestions(values);
+    }
     
+    /**
+     * The update questions are displayed regardless of whether the form is
+     * in editable or uneditable mode.
+     * @param contentValues
+     */
+    private void displayUpdateQuestions(ContentValues contentValues) {
+    	RadioButton presentRB = (RadioButton) findViewById(R.id.radio_present_yes);
+
+    	if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT) != null){
+
+    		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
+    			presentRB.setChecked(true);
+    		presentRB = (RadioButton) findViewById(R.id.radio_present_no);
+    		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
+    			presentRB.setChecked(true);
+    	}
+
+    	//  New button - 6/17/11          
+
+
+    	Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
+    	AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
+    	RadioButton changeRB = (RadioButton) findViewById(R.id.radio_change_in_status_yes);
+
+    	if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE) != null){
+
+    		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_TRUE.toString())){
+    			findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
+    			findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);
+    			changeRB.setChecked(true);
+    		}
+    		changeRB = (RadioButton) findViewById(R.id.radio_change_in_status_no);
+    		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_FALSE.toString())){
+    			findViewById(R.id.statuschange).setVisibility(View.GONE);
+    			findViewById(R.id.statuschangeSpinner).setVisibility(View.GONE);
+    			changeRB.setChecked(true);
+    		}
+    	}
+
+    }
+    
+    /**
+     * Called when the "edit" button is clicked to change the view to 
+     * an editable view. 
+     */
+    private void setUpEditableView() {
+    	setContentView(R.layout.acdivoca_update);  // Should be done after locale configuration
+    	displayContentInView(mContentValues);    	
+    	((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
+    	((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
+
+    	TextView tv = ((TextView) findViewById(R.id.dossier_label));
+    	tv.setText("Beneficiary Dossier: " + beneficiaryId);
+
+    	// Listen for text changes in edit texts and set the isEdited flag
+    	((EditText)findViewById(R.id.firstnameEdit)).addTextChangedListener(this);
+    	((EditText)findViewById(R.id.lastnameEdit)).addTextChangedListener(this);
+    	((EditText)findViewById(R.id.monthsInProgramEdit)).addTextChangedListener(this);
+
+    	// Initialize the DatePicker and listen for changes
+    	Calendar calendar = Calendar.getInstance();
+
+    	((DatePicker)findViewById(R.id.datepicker)).init(
+    			calendar.get(Calendar.YEAR),
+    			calendar.get(Calendar.MONTH), 
+    			calendar.get(Calendar.DAY_OF_MONTH), this);
+
+    	// Listen for clicks on radio buttons
+    	((RadioButton)findViewById(R.id.femaleRadio)).setOnClickListener(this);
+    	((RadioButton)findViewById(R.id.maleRadio)).setOnClickListener(this);
+    	((RadioButton)findViewById(R.id.malnourishedRadio)).setOnClickListener(this);
+    	((RadioButton)findViewById(R.id.inpreventionRadio)).setOnClickListener(this);
+    	((RadioButton)findViewById(R.id.expectingRadio)).setOnClickListener(this);
+    	((RadioButton)findViewById(R.id.nursingRadio)).setOnClickListener(this);
+
+    	////New Listeners - 6/17/11
+    	//      
+    	((RadioButton)findViewById(R.id.radio_present_yes)).setOnClickListener(this);
+    	((RadioButton)findViewById(R.id.radio_present_no)).setOnClickListener(this);
+    	((RadioButton)findViewById(R.id.radio_change_in_status_yes)).setOnClickListener(this);
+    	((RadioButton)findViewById(R.id.radio_change_in_status_no)).setOnClickListener(this);
+    	((Spinner)findViewById(R.id.statuschangeSpinner)).setOnItemSelectedListener(this);
+    	
+    	final Intent intent = getIntent();
+    	mAction = intent.getAction();
+    	Log.i(TAG, "mAction = " + mAction);
+    	if (mAction.equals(Intent.ACTION_EDIT)) {
+    		doEditAction();
+    		isProbablyEdited = false; // In EDIT mode, initialize after filling in data
+    	}
+
+    }
+
+
     /**
      * Returns the result of the Lookup Activity, which gets the beneficiary Id.
      */
@@ -232,31 +279,12 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         }   
     }
     
-    /**
-     * Allows editing of editable data for existing finds.  For existing finds, 
-     * we retrieve the Find's data from the DB and display it in a TextView. The
-     * Find's location and time stamp are not updated.
-     */
-//    private void doEditAction() {
-//        Log.i(TAG, "doEditAction");
-//
-//        mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
-//        Log.i(TAG,"Find id = " + mFindId);
-//
-//        ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
-//        displayContentInView(values);                        
-//    }
-
     
     /**
      * Allows editing of editable data for existing finds.  For existing finds, 
      * we retrieve the Find's data from the DB and display it in a TextView. The
      * Find's location and time stamp are not updated.
-     * 
-     * 
      */    
-    
-    
     private void doEditAction() {
         Log.i(TAG, "doEditAction");
         AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
@@ -291,141 +319,87 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
      * @return The ContentValues hash table.
      */
     private ContentValues retrieveContentFromView() {
-        Log.i(TAG, "retrieveContentFromView");
-        ContentValues result = new ContentValues();
+    	Log.i(TAG, "retrieveContentFromView");
+    	ContentValues result = new ContentValues();
 
-        EditText eText = (EditText) findViewById(R.id.lastnameEdit);
-        String value = eText.getText().toString();
-        result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
-        Log.i(TAG, "retrieve LAST NAME = " + value);
-        
-        eText = (EditText)findViewById(R.id.firstnameEdit);
-        value = eText.getText().toString();
-        result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
-        
-        eText = (EditText)findViewById(R.id.monthsInProgramEdit);
-        value = eText.getText().toString();
-        result.put(AcdiVocaDbHelper.FINDS_MONTHS_REMAINING, value);
-        
-//        
-//        eText = (EditText)findViewById(R.id.ageEdit);
-//        value = eText.getText().toString();
-//        result.put(AcdiVocaDbHelper.FINDS_AGE, value);
-        
-        //value = mMonth + "/" + mDay + "/" + mYear;
-        DatePicker picker = ((DatePicker)findViewById(R.id.datepicker));
-        value = picker.getYear() + "/" + picker.getMonth() + "/" + picker.getDayOfMonth();
-        Log.i(TAG, "Date = " + value);
-        result.put(AcdiVocaDbHelper.FINDS_DOB, value);
+    	if (inEditableMode) {
+    		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
 
-//        value = ((DatePicker)findViewById(R.id.datepicker)).getMonth() + "/" +
-//            ((DatePicker)findViewById(R.id.datepicker)).getDayOfMonth() + "/" +
-//            ((DatePicker)findViewById(R.id.datepicker)).getYear();
-        //Log.i(TAG, "retrieve DOB=" + value);
 
-        RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
-        String sex = "";
-        if (sexRB.isChecked()) 
-            sex = AcdiVocaDbHelper.FINDS_FEMALE;
-        sexRB = (RadioButton)findViewById(R.id.maleRadio);
-        if (sexRB.isChecked()) 
-            sex = AcdiVocaDbHelper.FINDS_MALE;
-        result.put(AcdiVocaDbHelper.FINDS_SEX, sex);     
-        
-//        
-//        eText = (EditText)findViewById(R.id.addressEdit);
-//        value = eText.getText().toString();
-//        result.put(AcdiVocaDbHelper.FINDS_ADDRESS, value);
-//        
-//        eText = (EditText)findViewById(R.id.inhomeEdit);
-//        value = eText.getText().toString();
-//        result.put(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE,value);
-//        
-//        Spinner communeSpinner = (Spinner)findViewById(R.id.communeSpinner);
-//        value = (String)communeSpinner.getSelectedItem();
-//        result.put(AcdiVocaDbHelper.COMMUNE_NAME, value);
-//        
-//        communeSpinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-//        value = (String)communeSpinner.getSelectedItem();
-//        result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, value);
-//        
+    		String value = eText.getText().toString();
+    		result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
+    		Log.i(TAG, "retrieve LAST NAME = " + value);
 
-        // Set the Beneficiary's category (4 exclusive radio buttons)
-        String category = "";
-        RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
-        if (rb.isChecked()) 
-            category = AcdiVocaDbHelper.FINDS_MALNOURISHED;
-        rb = (RadioButton)findViewById(R.id.inpreventionRadio);
-        if (rb.isChecked())
-            category = AcdiVocaDbHelper.FINDS_PREVENTION;
+    		eText = (EditText)findViewById(R.id.firstnameEdit);
+    		value = eText.getText().toString();
+    		result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
 
-        rb = (RadioButton)findViewById(R.id.expectingRadio);
-        if (rb.isChecked()) 
-            category = AcdiVocaDbHelper.FINDS_EXPECTING;
-        rb = (RadioButton)findViewById(R.id.nursingRadio);
-        if (rb.isChecked())
-            category = AcdiVocaDbHelper.FINDS_NURSING;
-        result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, category);
+    		eText = (EditText)findViewById(R.id.monthsInProgramEdit);
+    		value = eText.getText().toString();
+    		result.put(AcdiVocaDbHelper.FINDS_MONTHS_REMAINING, value);
 
-//        
-//        Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
-//        String commune = (String) spinner.getSelectedItem();
-//        result.put(AcdiVocaDbHelper.COMMUNE_NAME, commune);
-//        
-//        spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-//        String communeSection = (String) spinner.getSelectedItem();
-//        result.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, communeSection);    
-        
-        
-        RadioButton presentRB = (RadioButton)findViewById(R.id.radio_present_yes);
-        String present = "";
-        if (presentRB.isChecked()) 
-            present = AcdiVocaDbHelper.FINDS_TRUE;
-        presentRB = (RadioButton)findViewById(R.id.radio_present_no);
-        if (presentRB.isChecked()) 
-            present = AcdiVocaDbHelper.FINDS_FALSE;
-        result.put(AcdiVocaDbHelper.FINDS_Q_PRESENT, present); 
+    		//value = mMonth + "/" + mDay + "/" + mYear;
+    		DatePicker picker = ((DatePicker)findViewById(R.id.datepicker));
+    		value = picker.getYear() + "/" + picker.getMonth() + "/" + picker.getDayOfMonth();
+    		Log.i(TAG, "Date = " + value);
+    		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
 
-// New button - 6/17/11        
-        
-        RadioButton changeRB = (RadioButton)findViewById(R.id.radio_change_in_status_yes);
-        String change = "";
-        if (changeRB.isChecked()) 
-            change = AcdiVocaDbHelper.FINDS_TRUE;
-        changeRB = (RadioButton)findViewById(R.id.radio_change_in_status_no);
-        if (changeRB.isChecked()) 
-            change = AcdiVocaDbHelper.FINDS_FALSE;
-        result.put(AcdiVocaDbHelper.FINDS_Q_CHANGE, change); 
-        
-		String spinnerStr = "";
-		Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
-		if (spinner != null) {
-			spinnerStr = (String) spinner.getSelectedItem();
-			result.put(AcdiVocaDbHelper.FINDS_CHANGE_TYPE, spinnerStr);
-		}
-        
+    		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
+    		String sex = "";
+    		if (sexRB.isChecked()) 
+    			sex = AcdiVocaDbHelper.FINDS_FEMALE;
+    		sexRB = (RadioButton)findViewById(R.id.maleRadio);
+    		if (sexRB.isChecked()) 
+    			sex = AcdiVocaDbHelper.FINDS_MALE;
+    		result.put(AcdiVocaDbHelper.FINDS_SEX, sex);     
 
-//    	Old buttons - not in use - 6/17/11         
-        
-//        RadioButton transferRB = (RadioButton)findViewById(R.id.radio_transfer_yes);
-//        String transfer = "";
-//        if (transferRB.isChecked()) 
-//            transfer = AcdiVocaDbHelper.FINDS_TRUE;
-//        transferRB = (RadioButton)findViewById(R.id.radio_transfer_no);
-//        if (transferRB.isChecked()) 
-//            transfer = AcdiVocaDbHelper.FINDS_FALSE;
-//        result.put(AcdiVocaDbHelper.FINDS_Q_TRANSFER, transfer); 
-//        
-//        RadioButton modRB = (RadioButton)findViewById(R.id.radio_modifications_yes);
-//        String mod = "";
-//        if (modRB.isChecked()) 
-//            mod = AcdiVocaDbHelper.FINDS_TRUE;
-//        modRB = (RadioButton)findViewById(R.id.radio_modifications_no);
-//        if (modRB.isChecked()) 
-//            mod = AcdiVocaDbHelper.FINDS_FALSE;
-//        result.put(AcdiVocaDbHelper.FINDS_Q_MODIFICATION, mod); 
-        
-        return result;
+    		// Set the Beneficiary's category (4 exclusive radio buttons)
+    		String category = "";
+    		RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
+    		if (rb.isChecked()) 
+    			category = AcdiVocaDbHelper.FINDS_MALNOURISHED;
+    		rb = (RadioButton)findViewById(R.id.inpreventionRadio);
+    		if (rb.isChecked())
+    			category = AcdiVocaDbHelper.FINDS_PREVENTION;
+
+    		rb = (RadioButton)findViewById(R.id.expectingRadio);
+    		if (rb.isChecked()) 
+    			category = AcdiVocaDbHelper.FINDS_EXPECTING;
+    		rb = (RadioButton)findViewById(R.id.nursingRadio);
+    		if (rb.isChecked())
+    			category = AcdiVocaDbHelper.FINDS_NURSING;
+    		result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, category);   
+
+    	}
+
+    	RadioButton presentRB = (RadioButton)findViewById(R.id.radio_present_yes);
+    	String present = "";
+    	if (presentRB.isChecked()) 
+    		present = AcdiVocaDbHelper.FINDS_TRUE;
+    	presentRB = (RadioButton)findViewById(R.id.radio_present_no);
+    	if (presentRB.isChecked()) 
+    		present = AcdiVocaDbHelper.FINDS_FALSE;
+    	result.put(AcdiVocaDbHelper.FINDS_Q_PRESENT, present); 
+
+    	// New button - 6/17/11        
+
+    	RadioButton changeRB = (RadioButton)findViewById(R.id.radio_change_in_status_yes);
+    	String change = "";
+    	if (changeRB.isChecked()) 
+    		change = AcdiVocaDbHelper.FINDS_TRUE;
+    	changeRB = (RadioButton)findViewById(R.id.radio_change_in_status_no);
+    	if (changeRB.isChecked()) 
+    		change = AcdiVocaDbHelper.FINDS_FALSE;
+    	result.put(AcdiVocaDbHelper.FINDS_Q_CHANGE, change); 
+
+    	String spinnerStr = "";
+    	Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
+    	if (spinner != null) {
+    		spinnerStr = (String) spinner.getSelectedItem();
+    		result.put(AcdiVocaDbHelper.FINDS_CHANGE_TYPE, spinnerStr);
+    	}
+
+    	return result;
     }
 
     /**
@@ -518,93 +492,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         	motherRB.setChecked(false);
         }
         
-        RadioButton presentRB = (RadioButton) findViewById(R.id.radio_present_yes);
-        
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT) != null){
-        
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
-            presentRB.setChecked(true);
-        presentRB = (RadioButton) findViewById(R.id.radio_present_no);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
-            presentRB.setChecked(true);
-        }
- 
-    //  New button - 6/17/11          
-        
-        
-        Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
-		AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
-        RadioButton changeRB = (RadioButton) findViewById(R.id.radio_change_in_status_yes);
-        
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE) != null){
-        
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_TRUE.toString())){
-			findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
-			findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);
-            changeRB.setChecked(true);
-        }
-        changeRB = (RadioButton) findViewById(R.id.radio_change_in_status_no);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_FALSE.toString())){
-			findViewById(R.id.statuschange).setVisibility(View.GONE);
-			findViewById(R.id.statuschangeSpinner).setVisibility(View.GONE);
-            changeRB.setChecked(true);
-        }
-        }
-		
-		//Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);		
-		
-//		Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
-//		AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
-//		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_FALSE.toString())){
-//			findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
-//			findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);
-//		}
-        
-    //  Old buttons - not in use - 6/17/11         
-        
-//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_TRANSFER) != null){
-//      RadioButton transferRB = (RadioButton) findViewById(R.id.radio_transfer_yes);
-//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_TRANSFER).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
-//          transferRB.setChecked(true);
-//      transferRB = (RadioButton) findViewById(R.id.radio_transfer_no);
-//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_TRANSFER).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
-//          transferRB.setChecked(true);
-//      }
-//      
-//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MODIFICATION) != null){
-//      RadioButton modificationRB = (RadioButton) findViewById(R.id.radio_modifications_yes);
-//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MODIFICATION).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
-//          modificationRB.setChecked(true);
-//      modificationRB = (RadioButton) findViewById(R.id.radio_modifications_no);
-//      if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MODIFICATION).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
-//          modificationRB.setChecked(true);
-//      }
-//        
-//        Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
-//        String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
-//        int k = 0;
-//        String item = (String) spinner.getItemAtPosition(k);
-//        while (k < spinner.getCount() && !selected.equals(item)) {
-//            ++k;
-//            item = (String) spinner.getItemAtPosition(k);
-//        }
-//        spinner.setSelection(k);
-//
-//        spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-//        selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_SECTION_NAME);
-//        k = 0;
-//        item = (String) spinner.getItemAtPosition(k);
-//        while (k < spinner.getCount() && !selected.equals(item)) {
-//            ++k;
-//            item = (String) spinner.getItemAtPosition(k);
-//        }
-//        spinner.setSelection(k);
-        
-        
-        
-            
-        
-        
+        displayUpdateQuestions(contentValues);
     }
 
     /**
@@ -628,24 +516,6 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         if (id == R.id.datepicker) 
             isProbablyEdited = true;
         
-//        if (id == R.id.expectingRadio || id == R.id.nursingRadio) {
-//            RadioButton rb = (RadioButton) v;
-//            findViewById(R.id.mchm).setVisibility(View.VISIBLE);
-//            findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.VISIBLE);
-//            findViewById(R.id.husbandIfMotherEdit).setVisibility(View.VISIBLE);
-//            findViewById(R.id.responsibleIfChildEdit).setVisibility(View.INVISIBLE);
-//            findViewById(R.id.fatherIfChildEdit).setVisibility(View.INVISIBLE);            
-//            //Toast.makeText(AcdiVocaFindActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
-//        } else if (id == R.id.malnourishedRadio || id == R.id.inpreventionRadio) {
-//            RadioButton rb = (RadioButton) v;
-//            findViewById(R.id.mchm).setVisibility(View.VISIBLE);
-//            findViewById(R.id.responsibleIfChildEdit).setVisibility(View.VISIBLE);
-//            findViewById(R.id.fatherIfChildEdit).setVisibility(View.VISIBLE);
-//            findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.INVISIBLE);
-//            findViewById(R.id.husbandIfMotherEdit).setVisibility(View.INVISIBLE);            
-//            //Toast.makeText(AcdiVocaFindActivity.this, rb.getText(), Toast.LENGTH_SHORT).show();
-//        } 
-        
 //New code for the spinner - 9/17/11        
         
         if (id == R.id.radio_change_in_status_yes){
@@ -658,6 +528,10 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 			findViewById(R.id.statuschangeSpinner).setVisibility(View.GONE);	
         }
         
+        if (v.getId() == R.id.update_edit_button) {
+        	inEditableMode = true;
+        	setUpEditableView();
+        }
         
         if(v.getId()==R.id.update_to_db_button) {
             boolean result = false;
@@ -666,6 +540,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
 
             ContentValues data = this.retrieveContentFromView(); 
             Log.i(TAG, "Retrieved = " + data.toString());
+            
 //Lines below originally commented out            
             
 //            Log.i(TAG,"View Content: " + data.toString());
