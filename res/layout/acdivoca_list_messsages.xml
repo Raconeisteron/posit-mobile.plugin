@@ -17,4 +17,6 @@
     android:layout_gravity="center"
     android:textSize="24dp"
     android:text="@string/no_messages"/>
+
+    
 </LinearLayout>
