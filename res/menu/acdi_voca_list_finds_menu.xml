@@ -22,9 +22,12 @@
 		android:id="@+id/map_finds_menu_item"
 		android:icon="@android:drawable/ic_menu_mapmode">
 	</item>
+	
+			android:icon="@drawable/ic_menu_list"
+	
 -->	
 	<item
-		android:icon="@drawable/list"
+		android:icon="@drawable/ic_menu_refresh" 
 		android:title="@string/list_messages"
 		android:id="@+id/list_messages" >
 	</item>

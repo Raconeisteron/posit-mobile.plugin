@@ -9,7 +9,10 @@
 		android:title="@string/load_beneficiary_data"
 		android:icon="@drawable/about">
 	</item>
-<!--   		
+<!--  
+
+		android:icon="@drawable/ic_menu_import">
+ 		
 	<item 
 		android:id="@+id/admin_menu_item" 
 		android:title="@string/admin_menu"
