@@ -50,11 +50,14 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 	public static final int RESULT_SELECT_ACKNOWLEDGED = 7;
 	public static final String[] MESSAGE_STATUS_STRINGS = {"","","","NEW", "UPDATE", "PENDING", "SENT","ACKNOWLEDGED"};
 	
+	private String mUserMode;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		 Log.i(TAG, "onCreate");		
+		 Log.i(TAG, "onCreate");	
+		 mUserMode = (String) this.getIntent().getExtras().getString("user_mode");
 	}
 
 
@@ -80,13 +83,24 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 		((Button)findViewById(R.id.cancel_select_filter_button)).setOnClickListener(this);
 
 		// Listen for clicks on radio buttons
-		 ((RadioButton)findViewById(R.id.all_messages)).setOnClickListener(this);
 		 ((RadioButton)findViewById(R.id.new_messages)).setOnClickListener(this);
 		 ((RadioButton)findViewById(R.id.update_messages)).setOnClickListener(this);
 		 ((RadioButton)findViewById(R.id.update_bulk_messages)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.pending_messages)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.sent_messages)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.acknowledged_messages)).setOnClickListener(this);
+		 
+		 if (!mUserMode.equals("USER")) {
+			 ((RadioButton)findViewById(R.id.pending_messages)).setOnClickListener(this);
+			 ((RadioButton)findViewById(R.id.sent_messages)).setOnClickListener(this);
+			 ((RadioButton)findViewById(R.id.acknowledged_messages)).setOnClickListener(this);
+			 ((RadioButton)findViewById(R.id.all_messages)).setOnClickListener(this);
+		 }
+		 else {
+			 ((RadioButton)findViewById(R.id.pending_messages)).setVisibility(View.INVISIBLE);
+			 ((RadioButton)findViewById(R.id.sent_messages)).setVisibility(View.INVISIBLE);
+			 ((RadioButton)findViewById(R.id.acknowledged_messages)).setVisibility(View.INVISIBLE);
+			 ((RadioButton)findViewById(R.id.all_messages)).setVisibility(View.INVISIBLE);
+
+		 }
+
 	}
 
 	/**
