@@ -190,10 +190,8 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	 */
 	private void doEditAction() {
 		Log.i(TAG, "doEditAction");
-
 		mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
 		Log.i(TAG,"Find id = " + mFindId);
-
 		ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
 		displayContentInView(values);						
 	}
@@ -417,6 +415,8 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	 */
 	private void displayContentInView(ContentValues contentValues) {
 		Log.i(TAG, "displayContentInView");
+		
+		if (contentValues != null){
 		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
 		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
 
@@ -445,7 +445,10 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //			findViewById(R.id.husbandIfMotherEdit).setVisibility(View.INVISIBLE);
 		}
 		RadioButton beneRB2 = (RadioButton)findViewById(R.id.inpreventionRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_PREVENTION.toString())){
+
+		String val = contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY);
+		
+		if (val.equals(AcdiVocaDbHelper.FINDS_PREVENTION.toString())){
 			beneRB2.setChecked(true);
 			findViewById(R.id.relatives).setVisibility(View.VISIBLE);		
 			findViewById(R.id.mchm).setVisibility(View.VISIBLE);
@@ -455,7 +458,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //			findViewById(R.id.husbandIfMotherEdit).setVisibility(View.INVISIBLE);
 		}
 		RadioButton beneRB3 = (RadioButton)findViewById(R.id.expectingRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_EXPECTING.toString())){
+		if (val.equals(AcdiVocaDbHelper.FINDS_EXPECTING.toString())){
 			beneRB3.setChecked(true);
 			findViewById(R.id.relatives).setVisibility(View.VISIBLE);		
 			findViewById(R.id.mchm).setVisibility(View.VISIBLE);
@@ -465,7 +468,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //			findViewById(R.id.husbandIfMotherEdit).setVisibility(View.VISIBLE);
 		}
 		RadioButton beneRB4 = (RadioButton)findViewById(R.id.nursingRadio);
-		if(contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_NURSING.toString())){
+		if(val.equals(AcdiVocaDbHelper.FINDS_NURSING.toString())){
 			beneRB4.setChecked(true);
 			findViewById(R.id.relatives).setVisibility(View.VISIBLE);		
 			findViewById(R.id.mchm).setVisibility(View.VISIBLE);
@@ -529,15 +532,6 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
 //				(OnDateChangedListener) this);
 
-		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
-		Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_FEMALE))
-			sexRB.setChecked(true);
-		sexRB = (RadioButton)findViewById(R.id.maleRadio);
-		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_MALE))
-			sexRB.setChecked(true);
-
-		
 		RadioButton aRadioButton = (RadioButton)findViewById(R.id.radio_motherleader_yes);
 		Log.i(TAG, "motherLeader=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER));
 
@@ -662,11 +656,11 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //			spinner.setSelection(k);
 //		}
 		
+		}
 		
-		
-		
+		}
 
-	}
+	
 
 	/**
 	 * Required as part of OnClickListener interface. Handles button clicks.
@@ -690,6 +684,16 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		if (id == R.id.datepicker) {
 			isProbablyEdited = true;
 			mSaveButton.setEnabled(true);	
+		}
+		
+		if (id == R.id.radio_no_acdivoca){
+			findViewById(R.id.relative_participating_acdivoca).setVisibility(View.VISIBLE);
+			findViewById(R.id.radio_relative_acdivoca).setVisibility(View.VISIBLE);
+		}
+		
+		if (id == R.id.radio_yes_acdivoca){
+			findViewById(R.id.relative_participating_acdivoca).setVisibility(View.GONE);
+			findViewById(R.id.radio_relative_acdivoca).setVisibility(View.GONE);
 		}
 		
 		if (id == R.id.expectingRadio || id == R.id.nursingRadio) {
@@ -723,19 +727,25 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			data.put(AcdiVocaDbHelper.FINDS_PROJECT_ID, 0);
 			if (mAction.equals(Intent.ACTION_EDIT)) {
 				result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
-				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_acdivoca);
-				RadioButton same = (RadioButton)findViewById(R.id.radio_yes_relative_acdivoca);
+				RadioButton same = (RadioButton)findViewById(R.id.radio_yes_acdivoca);
+				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_relative_acdivoca);
 				if(same.isChecked()){
 					Intent intent = new Intent(this, AcdiVocaNewAgriActivity.class);
 					intent.setAction(Intent.ACTION_INSERT);
-					intent.putExtra(AcdiVocaDbHelper.FINDS_ID, mFindId);
+			        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+			        Log.i(TAG,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+					intent.putExtra(AcdiVocaDbHelper.FINDS_FIRSTNAME, data.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_LASTNAME, data.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_ADDRESS, data.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_SEX, data.getAsString(AcdiVocaDbHelper.FINDS_SEX));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE, data.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_DOB, data.getAsString(AcdiVocaDbHelper.FINDS_DOB));
 					startActivityForResult(intent, 0);
-					Toast.makeText(this, "Please fill the form for the person who is in agricultural program.", Toast.LENGTH_LONG);
 				}
 				if(agri.isChecked()){
 					Intent intent = new Intent(this, AcdiVocaNewAgriActivity.class);
 					intent.setAction(Intent.ACTION_INSERT);
-					Toast.makeText(this, "Please fill the form for the person who is in agricultural program.", Toast.LENGTH_LONG);
+					intent.putExtra(AcdiVocaDbHelper.FINDS_ID, (long)id); // Added to go into insert with extras. So that we can hide the last question.
 					startActivityForResult(intent, 0);
 				}
 				Log.i(TAG, "Update to Db is " + result);
@@ -743,21 +753,25 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New MCHN");
 				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
 				//if radioAgri is checked, make intent
-				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_acdivoca);
-				RadioButton relative = (RadioButton)findViewById(R.id.radio_yes_relative_acdivoca);
-				if(relative.isChecked()){
+				RadioButton same = (RadioButton)findViewById(R.id.radio_yes_acdivoca);
+				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_relative_acdivoca);
+				if(same.isChecked()){
 					Intent intent = new Intent(this, AcdiVocaNewAgriActivity.class);
 					intent.setAction(Intent.ACTION_INSERT);
-					Log.i(TAG,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-					Log.i(TAG,"id is : "+0);
-					intent.putExtra(AcdiVocaDbHelper.FINDS_ID, 0);
+			        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+			        Log.i(TAG,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+					intent.putExtra(AcdiVocaDbHelper.FINDS_FIRSTNAME, data.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_LASTNAME, data.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_ADDRESS, data.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_SEX, data.getAsString(AcdiVocaDbHelper.FINDS_SEX));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE, data.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
+					intent.putExtra(AcdiVocaDbHelper.FINDS_DOB, data.getAsString(AcdiVocaDbHelper.FINDS_DOB));
 					startActivityForResult(intent, 0);
-					Toast.makeText(this, "Please fill the form for the person who is in agricultural program.", Toast.LENGTH_LONG);
 				}
 				if(agri.isChecked()){
 					Intent intent = new Intent(this, AcdiVocaNewAgriActivity.class);
 					intent.setAction(Intent.ACTION_INSERT);
-					Toast.makeText(this, "Please fill the form for the person who is in agricultural program.", Toast.LENGTH_LONG);
+					intent.putExtra(AcdiVocaDbHelper.FINDS_ID, (long)id); // Added to go into insert with extras. So that we can hide the last question.
 					startActivityForResult(intent, 0);
 				}
 				Log.i(TAG, "Save to Db is " + result);

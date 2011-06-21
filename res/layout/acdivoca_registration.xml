@@ -276,12 +276,12 @@ Removed redundant elements -->
 				android:text="@string/relative_participating_acdivoca"
 				android:layout_marginLeft="15px" 
 				android:textColor="#ffffff"
-				android:visibility="visible"
+				android:visibility="gone"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
 				
 			<RadioGroup android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:visibility="visible"
+				android:visibility="gone"
 				android:id="@+id/radio_relative_acdivoca">
 				<RadioButton android:checked="false" 
 					android:layout_marginLeft="30px" 
