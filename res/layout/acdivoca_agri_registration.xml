@@ -406,12 +406,12 @@
 				android:text="@string/participating_bene"
 				android:layout_marginLeft="15px" 
 				android:textColor="#ffffff"
-				android:visibility="visible"
+				android:visibility="gone"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
 				
 			<RadioGroup android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:visibility="visible"
+				android:visibility="gone"
 				android:id="@+id/radio_participating_bene">
 				<RadioButton android:checked="false" 
 					android:layout_marginLeft="30px" 
