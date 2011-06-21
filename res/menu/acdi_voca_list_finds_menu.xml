@@ -23,11 +23,10 @@
 		android:icon="@android:drawable/ic_menu_mapmode">
 	</item>
 	
-			android:icon="@drawable/ic_menu_list"
 	
 -->	
 	<item
-		android:icon="@drawable/ic_menu_refresh" 
+		android:icon="@drawable/ic_menu_list"
 		android:title="@string/list_messages"
 		android:id="@+id/list_messages" >
 	</item>
