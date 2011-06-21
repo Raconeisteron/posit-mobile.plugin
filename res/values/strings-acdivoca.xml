@@ -11,6 +11,7 @@
 	<!--  Button Labels -->
 	
 	<string name="list_beneficiary_label">List\nBeneficiary</string>
+	<string name="send_sms_label">Send\nSMS Messages</string>
 	<string name="add_beneficiary_label">New\nBeneficiary</string>
 	<string name="update_beneficiary_label">Update\nBeneficiary</string>
 	<string name="new_agri_beneficiary_label">New\nAgriculture</string>
@@ -87,16 +88,16 @@
     
     <!--  list_finds.xml -->
     <string name="noFinds">No beneficiaries</string>
-    <string name="pick_criterion_prompt">Select a search filter.</string>
+    <string name="pick_criterion_prompt">Create messages to send.</string>
     <string name="search_filter_select_button">Select</string>
-    <string name="new_messages">Create messages for new beneficiaries</string>
-    <string name="update_messages">Create messages for beneficiary updates</string>
-    <string name="bulk_messages">Create messages for bulk update</string>
+    <string name="new_messages">Messages for new beneficiaries</string>
+    <string name="update_messages">Messages for updated beneficiaries</string>
+    <string name="bulk_messages">Messages for distribution absentees</string>
     <string name="all_messages">List all existing messages</string>
     <string name="sent_messages">List sent messages</string>
     <string name="pending_messages">List pending messages</string>
     <string name="acknowledged_messages">List acknowledged messages</string>
-    <string name="no_messages">No messages to display</string>
+    <string name="no_messages">No messages to send. Use the menu to create messages.</string>
     <string name="delete_messages">Delete listed messages</string>
     <string name="confirm_delete_messages">Are you sure you want to delete these messages?</string>
     
@@ -104,7 +105,7 @@
         <!-- Add and List Menu -->
     <string name="refresh">Clear</string>
     <string name="delete_find">Delete</string> 
-    <string name="list_messages">List SMS Messages</string>
+    <string name="list_messages">Create SMS Messages</string>
     <string name="sync_messages">Send SMS Messages</string>
   
     <!-- ACDI/VOCA Settings and Preferences -->

@@ -52,6 +52,10 @@
 			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden"
 			/>
+		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSendSmsActivity" 
+			android:launchMode="singleTop"
+			android:configChanges="orientation|keyboardHidden"
+			/>
 		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity" 
 			android:configChanges="orientation|keyboardHidden"
 			android:launchMode="singleTop" />

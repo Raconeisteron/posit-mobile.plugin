@@ -11,6 +11,7 @@
 	
 	<!--  Button Labels -->
 	<string name="list_beneficiary_label">Lis\nBenefisyè</string>
+	<string name="send_sms_label">Envoyez\ndes messages SMS</string>
 	<string name="add_beneficiary_label">Nouveau\nBenefisyè</string>
 	<string name="update_beneficiary_label">Mete ajou\nBenefisyè</string>
 	<string name="new_agri_beneficiary_label">Nouveau\nAgricole</string>
@@ -25,16 +26,16 @@
     <!--  list_finds.xml -->
     <string name="noFinds">No benefisyè</string>
     <string name="delete_finds">Removez</string>
-    <string name="pick_criterion_prompt">Sélectionnez un filtre de recherche.</string>
+    <string name="pick_criterion_prompt">Créer des messages à envoyer.</string>
     <string name="search_filter_select_button">Sélectionnez</string>
-    <string name="new_messages">Créer des messages pour les nouveaux bénéficiaires</string>
-    <string name="update_messages">Créer des messages de mises à jour des bénéficiaires</string>
-    <string name="bulk_messages">Créer des messages de mises à jour en vrac</string>
+    <string name="new_messages">Messages pour les nouveaux bénéficiaires</string>
+    <string name="update_messages">Messages pour les bénéficiaires mis à jour</string>
+    <string name="bulk_messages">Messages pour les absents de distribution</string>
     <string name="all_messages">Liste tous les messages</string>
     <string name="sent_messages">Liste les messages envoyés</string>
     <string name="pending_messages">Liste les messages en attente</string>
     <string name="acknowledged_messages">Liste les reconnu messages</string>    
-    <string name="no_messages">Pas de messages pour voir</string>
+    <string name="no_messages">Pas de messages à envoyer. Utilisez le menu pour créer des messages.</string>
     <string name="delete_messages">Supprimer les messages répertoriés</string>
      <string name="confirm_delete_messages">Etes-vous sûr de vouloir supprimer ces messages?</string>
             
@@ -86,7 +87,7 @@
 	
 	<!--  Menus -->
     <string name="settings">Anviwònman</string> 
-    <string name="list_messages">Liste messages SMS</string>
+    <string name="list_messages">Créer messages SMS</string>
     <string name="sync_messages">Envoyer messages SMS</string>
     
     <!-- Add Menu -->
