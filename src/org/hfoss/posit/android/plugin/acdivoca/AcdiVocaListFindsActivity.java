@@ -274,6 +274,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		case R.id.list_messages:
 			intent = new Intent();
 			intent.setClass(this, SearchFilterActivity.class);
+            intent.putExtra("user_mode", "ADMIN");
 			this.startActivityForResult(intent, SearchFilterActivity.ACTION_SELECT);
 			break;
 			

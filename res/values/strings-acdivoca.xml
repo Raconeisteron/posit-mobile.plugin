@@ -92,7 +92,7 @@
     <string name="search_filter_select_button">Select</string>
     <string name="new_messages">Messages for new beneficiaries</string>
     <string name="update_messages">Messages for updated beneficiaries</string>
-    <string name="bulk_messages">Messages for distribution absentees</string>
+    <string name="bulk_messages">Distribution attendance report</string>
     <string name="all_messages">List all existing messages</string>
     <string name="sent_messages">List sent messages</string>
     <string name="pending_messages">List pending messages</string>
