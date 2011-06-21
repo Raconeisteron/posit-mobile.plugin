@@ -120,12 +120,15 @@ public class AcdiVocaAdminActivity extends Activity  {
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		Intent intent = new Intent();
 		switch (item.getItemId()) {
 		case R.id.settings_menu_item:
 			startActivity(new Intent(this, SettingsActivity.class));
 			break;
+		case R.id.admin_list_beneficiaries:
+			startActivity(new Intent(this, AcdiVocaListFindsActivity.class));
+			break;
 		case R.id.load_beneficiary_data:
-			Intent intent = new Intent();
 			Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
 			if (loginActivity != null) {
 				intent.setClass(this, loginActivity);
