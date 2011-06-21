@@ -1084,7 +1084,7 @@ public class AcdiVocaDbHelper {
 		
 		if (c.getCount() != 0) {
 			
-			String msgList = "";
+			String smsMessage = "";
 			c.moveToFirst();
 			
 			int k = 0;
@@ -1097,13 +1097,24 @@ public class AcdiVocaDbHelper {
 					Log.i(TAG, columns[j] + "=" + c.getString(c.getColumnIndex(columns[j])));
 				
 				String dossier_no = c.getString(c.getColumnIndex(FINDS_DOSSIER));
-				msgList += dossier_no + AttributeManager.LIST_SEPARATOR;
+				smsMessage += dossier_no + AttributeManager.LIST_SEPARATOR;
 
+				if (smsMessage.length() > 120) {
+					// Add a header (length and status) to message
+					String msgHeader = "MsgId: bulk, Len:" + smsMessage.length();
+
+					acdiVocaMsgs.add(new AcdiVocaMessage(-1, 
+							-1, 
+							MESSAGE_STATUS_UNSENT,
+							"", smsMessage, msgHeader));
+					smsMessage = "";
+					
+				}				
 				c.moveToNext();
 				++k;
 			}
 			acdiVocaMsgs.add (new AcdiVocaMessage(0, -1, MESSAGE_STATUS_UNSENT,
-					"", msgList, "Bulk Message"));
+					"", smsMessage, "Bulk Message"));
 		}
 		mDb.close();
 		c.close();
