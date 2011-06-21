@@ -10,161 +10,63 @@
             android:layout_width="fill_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:scrollbars="vertical|horizontal">
                 
-            <TextView android:id="@+id/dossier_label"
-                android:text="@string/dossier_label"
+             <TextView android:id="@+id/dossier_heading"
+                android:text="Beneficiary Information"
                 android:textColor="#ff0000"
                 android:layout_width="fill_parent"
                 android:textSize="20dp"
                 android:layout_height="wrap_content" />        
+ 
+            <TextView android:id="@+id/dossier_label"
+                android:text="Dossier Number: "
+                android:layout_width="fill_parent"
+                android:textSize="14dp"
+                android:layout_marginLeft="20px" 
+                android:layout_height="wrap_content" />        
        
-            <EditText android:id="@+id/firstnameEdit"
-                android:hint="@string/firstname"
+            <TextView android:id="@+id/firstnameLabel"
+                android:text="@string/firstname"
+                android:textSize="14dp"
                 android:inputType="textCapSentences"
                 android:layout_width="fill_parent" android:layout_height="wrap_content"
                 android:layout_marginLeft="20px" android:layout_marginRight="30px" />
 
-            <EditText android:id="@+id/lastnameEdit"
-                android:hint="@string/lastname"
+            <TextView android:id="@+id/lastnameLabel"
+                android:text="@string/lastname"
+                android:textSize="14dp"
                 android:layout_width="fill_parent" android:layout_marginRight="30px"
                 android:layout_marginLeft="20px"
                 android:inputType="textCapSentences"
                 android:layout_height="wrap_content" />
 
-            <TextView android:text="@string/dob"
-                android:textColor="#ff0000"
-                android:layout_marginLeft="10px"
+            <TextView android:id="@+id/dobLabel"
+            	android:text="@string/dob"
+                android:textSize="14dp"
+                android:layout_marginLeft="20px"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
             
-            <DatePicker android:id="@+id/datepicker"
-                android:layout_width="wrap_content"
-                android:endYear="2020"
-                android:startYear="1900"
-                android:layout_marginLeft="20px" android:layout_marginRight="30px"
-                android:layout_height="wrap_content">
-            </DatePicker>
-            <TextView android:text="@string/sex" android:textColor="#ff0000"
+            <TextView android:id="@+id/sexLabel"
+            	android:text="@string/sex"
+                android:textSize="14dp"
+                android:layout_marginLeft="20px"
                 android:layout_width="fill_parent"
-                android:layout_marginLeft="10px"
                 android:layout_height="wrap_content" />
-                
-            <RadioGroup android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/sexRadio">
-                <RadioButton android:checked="false"
-                    android:layout_marginLeft="20px"
-                    android:id="@+id/femaleRadio"
-                    android:text="@string/Female" />
-                <RadioButton android:checked="false" 
-                	android:id="@+id/maleRadio"
-                    android:text="@string/Male" />
-            </RadioGroup>       
 
-            <TextView android:text="@string/Beneficiary_Category"
-                android:textColor="#ff0000"
-                android:layout_marginLeft="10px"
+            <TextView android:id="@+id/categoryLabel"
+            	android:text="@string/Beneficiary_Category"
+                android:textSize="14dp"
+                android:layout_marginLeft="20px"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
                 
-            <RadioGroup android:layout_width="fill_parent"
-            	android:enabled="false"
-                android:layout_height="wrap_content" android:orientation="vertical"
-                android:id="@+id/infantcategoryRadio">
-                
-                <RadioButton android:checked="false"
-                    android:id="@+id/malnourishedRadio"
-                    android:layout_marginLeft="20px"
-                    android:text="@string/Malnourished" />
-                <RadioButton android:checked="false"
-                    android:layout_marginLeft="20px"
-                    android:id="@+id/inpreventionRadio"
-                    android:text="@string/In_Prevention" />
-
-                <RadioButton android:checked="false"
-                    android:id="@+id/expectingRadio"
-                    android:layout_marginLeft="20px"
-                    android:text="@string/Expecting" />
-                <RadioButton android:checked="false"                     
-                    android:layout_marginLeft="20px"
-                    android:id="@+id/nursingRadio"
-                    android:text="@string/Nursing" />    
-            </RadioGroup>
             
-            <TextView android:text="@string/months_left_in_program"
-                android:textColor="#ff0000"
-                android:layout_marginLeft="10px"
+            <TextView android:id="@+id/monthsInProgramLabel" 
+            	android:text="@string/months_left_in_program"
+                android:textSize="14dp"
+                android:layout_marginLeft="20px"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />        
-            <EditText android:id="@+id/monthsInProgramEdit" android:layout_width="wrap_content"
-                android:numeric="integer"
-                android:layout_marginLeft="30px"
-                android:layout_height="wrap_content" android:paddingLeft="20px"
-                android:minWidth ="48dp"/>
-<!--      
-            
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical" android:layout_width="wrap_content"
-                android:layout_height="fill_parent" android:layout_gravity="center"
-                android:paddingTop="24dp" >
-
-            <TextView android:id="@+id/mchm"
-                android:text="@string/mchn_info" android:textColor="#ff0000"
-                android:visibility="visible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:textSize="20dp" />
-                
-            <TextView android:text="@string/health_center" android:textColor="#ffffff"
-                android:layout_width="fill_parent"
-                android:layout_marginLeft="10px"
-                android:layout_height="wrap_content" />
-            <Spinner android:id="@+id/healthcenterSpinner"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px"
-                android:entries="@+array/health_center_names"
-                android:layout_width="fill_parent" android:layout_height="wrap_content" />                
-
-            <TextView android:text="@string/distribution_post" android:textColor="#ffffff"
-                android:layout_width="fill_parent"
-                android:layout_marginLeft="10px"
-                android:layout_height="wrap_content" />
-            <Spinner android:id="@+id/distributionSpinner"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px"
-                android:entries="@+array/distribution_names"
-                android:layout_width="fill_parent" android:layout_height="wrap_content" />                
-
-            <TextView android:text="@string/relatives_section" android:textColor="#ff0000"
-                android:layout_width="fill_parent"
-                android:layout_marginLeft="10px"
-                android:layout_height="wrap_content" />
-                                
-            <EditText android:id="@+id/responsibleIfChildEdit"
-                android:hint="@string/responsible_if_child"
-                android:inputType="textCapSentences"
-                android:visibility="invisible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px" />
-
-            <EditText android:id="@+id/fatherIfChildEdit"
-                android:hint="@string/father_if_child"
-                android:inputType="textCapSentences"
-                android:visibility="invisible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px" />
-                
-            <EditText android:id="@+id/responsibleIfMotherEdit"
-                android:hint="@string/responsible_if_mother"
-                android:inputType="textCapSentences"
-                android:visibility="invisible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px" />
-
-            <EditText android:id="@+id/husbandIfMotherEdit"
-                android:hint="@string/husband_if_mother"
-                android:inputType="textCapSentences"
-                android:visibility="invisible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px" />    
--->
 
             <TextView android:text="@string/update_questions"
                 android:layout_marginLeft="0px"
@@ -191,7 +93,6 @@
                     android:text="@string/No" />
             </RadioGroup>    
 
-<!-- Commented out the unused buttons and made a new button for the new status information - 6/17/11 -->
 
             <TextView android:id="@+id/change_in_status"
                 android:text="@string/change_in_status" android:textColor="#ffffff"

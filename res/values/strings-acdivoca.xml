@@ -14,6 +14,8 @@
 	<string name="add_beneficiary_label">New\nBeneficiary</string>
 	<string name="update_beneficiary_label">Update\nBeneficiary</string>
 	<string name="new_agri_beneficiary_label">New\nAgriculture</string>
+	<string name="update_beneficiary_edit_label">Edit</string>
+
 	
 	<string name="general_info">General Information</string>
 	<string name="mchn_info">MCHN Information</string>

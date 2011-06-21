@@ -25,12 +25,16 @@ package org.hfoss.posit.android.plugin.acdivoca;
 import java.util.Calendar;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindActivity;
+import org.hfoss.posit.android.api.FindActivityProvider;
+import org.hfoss.posit.android.api.SettingsActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
@@ -96,8 +100,14 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Log.i(TAG, "onMenuItemSelected");
+		switch (item.getItemId()) {
+		case R.id.settings_menu_item:
+			startActivity(new Intent(this, SettingsActivity.class));
+			break;
+		}
 		return true;
 	}
+
 
 	@Override
 	protected void onPause() {
@@ -116,7 +126,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		setContentView(R.layout.acdivoca_registration);  // Should be done after locale configuration
-
+		
 		mSaveButton = ((Button)findViewById(R.id.saveToDbButton));
 		mSaveButton.setOnClickListener(this);
 		((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
@@ -169,6 +179,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			isProbablyEdited = false; // In EDIT mode, initialize after filling in data
 			mSaveButton.setEnabled(false);
 		}
+		
 	}
 	
 	

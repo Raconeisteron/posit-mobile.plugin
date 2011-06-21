@@ -25,6 +25,7 @@ package org.hfoss.posit.android.plugin.acdivoca;
 import java.util.Calendar;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindActivity;
+import org.hfoss.posit.android.api.SettingsActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -81,7 +82,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 	}
 
 	/**
-	 * Inflates the Apps menus from a resource file.
+	 * Inflates the App's menus from a resource file.
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -97,6 +98,11 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Log.i(TAG, "onMenuItemSelected");
+		switch (item.getItemId()) {
+		case R.id.settings_menu_item:
+			startActivity(new Intent(this, SettingsActivity.class));
+			break;
+		}
 		return true;
 	}
 
