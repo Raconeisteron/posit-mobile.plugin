@@ -214,7 +214,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 			Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
 			if (loginActivity != null) {
 				intent.setClass(this, loginActivity);
-				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.SUPER.ordinal());
+				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
 				Toast.makeText(this, "Admin Login for Import Beneficiary Data.", Toast.LENGTH_LONG).show();	

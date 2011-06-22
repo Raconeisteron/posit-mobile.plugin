@@ -3,6 +3,8 @@
 	<!--  Acdi Voca Strings -->
 	
 	<!--  Admin Menu Stuff -->
+	<string name="default_phone">8608748128</string>
+	<string name="default_preference_string">default_null_value</string>
 	<string name="admin_menu">Admin</string>
 	<string name="admin_welcome">Admin Functions\nChoose from the Menu</string>
 	<string name="load_beneficiary_data">Import Beneficiary Data</string>

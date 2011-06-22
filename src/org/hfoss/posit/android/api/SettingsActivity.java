@@ -28,6 +28,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
+import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import android.content.Context;
@@ -66,6 +69,20 @@ import android.util.Log;
  */
 public class SettingsActivity extends PreferenceActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 	private static final String TAG = "API Settings";
+	
+	private static SettingsActivity mInstance;
+	
+	
+	public static SettingsActivity getInstance(Context context, String prefsXmlFileName){
+		mInstance = new SettingsActivity();
+		mInstance.init(context,prefsXmlFileName);
+		//assert(mInstance != null);
+		return mInstance;
+	}
+
+	public static void init(Context context, String prefsXmlFileName) {
+		
+	}
 	
 	/**
 	 * Associates preferences with activities.
@@ -226,8 +243,24 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		sp.registerOnSharedPreferenceChangeListener(this);
 		
+		controlSettingsVisibility(sp);
+		
+		//this.findPreference("testpositpref").setOnPreferenceClickListener(this);
+	}
+	
+
+	/**
+	 * Set visibility OFF for menus that the normal user is not supposed
+	 * to control.
+	 * @param sp
+	 */
+	private void controlSettingsVisibility (SharedPreferences sp) {
 		// NOTE: This seems to throw an exception for non-string preference values.
-			// Initialize the summary strings
+		// Initialize the summary strings
+		
+		int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
+		Log.i(TAG, "Control settings, UserTypeKey = " + userTypeOrdinal);
+
 		Map<String,?> prefs = sp.getAll();
 		Iterator it = prefs.keySet().iterator();
 		while (it.hasNext()) {
@@ -235,19 +268,25 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 				String key = (String) it.next();
 				Preference p =  findPreference(key);
 				String value = sp.getString(key, null);
-				if (p!= null && value != null) 
+				if (p!= null && value != null) {
 					p.setSummary(value);
+					if (userTypeOrdinal == UserType.USER.ordinal() 
+							&& (key.equals(getString(R.string.smsPhoneKey))
+							|| key.equals(getString(R.string.distribution_point))
+							|| key.equals(getString(R.string.distribution_event_key)))) {
+						p.setEnabled(false);
+						Log.i(TAG, "Disabling setting for key = " + key);
+					}
+				}
 			} catch (ClassCastException e) {
 				Log.e(TAG, "Initialize summary strings ClassCastException");
 				Log.e(TAG, e.getStackTrace().toString());
 				continue;
 			}
 		}
-		
-		//this.findPreference("testpositpref").setOnPreferenceClickListener(this);
 	}
 	
-
+	
 	public boolean onPreferenceClick(Preference preference) {
 		Log.i(TAG, "API onPreferenceClick " + preference.toString());
 
@@ -280,21 +319,47 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	 * (non-Javadoc)
 	 * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
 	 */
-	 public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-		 Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
-				 " value = " + sp.getString(key, ""));
-		 Log.i(TAG, "Preferences= " + sp.getAll().toString());
-		 Preference p =  this.findPreference(key);
-		 String value = sp.getString(key, null);
-		 if (p != null && value != null)
-			 p.setSummary(value);
-		 
-		 if (key.equals(getString(R.string.distribution_point)) && value != null) {
-			 Editor ed = sp.edit();
-			 ed.putString(getString(R.string.distribution_event_key), 
-					 getString(R.string.import_beneficiary_file));
-			 ed.commit();
-		 }
-	 }
+	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
+		Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
+				" value = " + sp.getString(key, ""));
+		Log.i(TAG, "Preferences= " + sp.getAll().toString());
+		Preference p =  this.findPreference(key);
+		String value = sp.getString(key, null);
+		if (p != null && value != null)
+			p.setSummary(value);
 
+		if (key.equals(getString(R.string.distribution_point)) && value != null) {
+			Editor ed = sp.edit();
+			ed.putString(getString(R.string.distribution_event_key), 
+					getString(R.string.import_beneficiary_file));
+			ed.commit();
+		}
+	}
+	
+	public void disablePreferences(Context context, int userTypeOrdinal) {
+		Log.i(TAG, "Finding " + findPreference("smsPhone"));
+		
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+		Map<String,?> prefs = sp.getAll();
+		Iterator it = prefs.keySet().iterator();
+		while (it.hasNext()) {
+			try {
+				String aKey = (String) it.next();
+				Log.i(TAG,"Preference = " + aKey);
+				//if (aKey.equals(context.getString(R.string.smsPhoneKey))) {
+				if (aKey.equals("smsPhone")) {
+					Preference p1 =  findPreference("smsPhone");
+					if (p1 != null) {
+						Log.i(TAG,"Preference disabled = " + p1.getKey());
+						p1.setEnabled(false);
+					}
+				}
+
+			} catch (ClassCastException e) {
+				Log.e(TAG, "Initialize summary strings ClassCastException");
+				Log.e(TAG, e.getStackTrace().toString());
+				continue;
+			}
+		}
+	}
 }
