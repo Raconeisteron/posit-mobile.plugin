@@ -8,7 +8,8 @@
 		
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical" android:layout_width="wrap_content"
-		android:layout_height="fill_parent" android:layout_gravity="center">
+		android:layout_height="fill_parent" 
+		android:layout_gravity="center">
 
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:orientation="horizontal" android:layout_width="wrap_content"
@@ -35,14 +36,24 @@
 
 	</LinearLayout>
 	
-	<TextView android:id="@+id/website" android:layout_width="wrap_content"
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="fill_parent"
+   	 	android:layout_height="fill_parent">
+
+ 	<TextView android:id="@+id/website" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:layout_gravity="center"
-		android:textSize="18sp" android:textColor="#ffffff"
-		android:text="\n         Powered by POSIT\n(http://www.posit-project.org)"
+		android:textSize="12sp" android:textColor="#ffffff"
+		android:text="Powered by POSIT"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
 		android:autoLink="web" android:layout_marginBottom="10dp" />
-	<TextView android:id="@+id/version" android:layout_width="wrap_content"
-		android:layout_height="wrap_content" android:textSize="18sp"
-		android:textColor="#ffffff" android:layout_marginBottom="10dp" />
+
+	</RelativeLayout>
+
+	
+<!-- 	<TextView android:id="@+id/version" android:layout_width="wrap_content" -->
+<!-- 		android:layout_height="wrap_content" android:textSize="18sp" -->
+<!-- 		android:textColor="#ffffff" android:layout_marginBottom="10dp" /> -->
 
 	</LinearLayout>
 	

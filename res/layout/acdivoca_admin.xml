@@ -16,7 +16,7 @@
 		android:src="@drawable/acdivoca_logo"/>
 
 	<TextView android:text="@string/admin_welcome"
-		android:textColor="#ff0000" android:layout_width="wrap_content"
+		android:layout_width="wrap_content"
 		android:layout_gravity="center" android:textSize="20dp"
 		android:layout_height="wrap_content" />
 		
@@ -26,7 +26,7 @@
 		android:textSize="14dp"
 		android:layout_marginLeft="20px"
 		android:visibility="visible"
-		android:textColor="#ff0000" android:layout_width="wrap_content"
+		android:layout_width="wrap_content"
 		android:layout_gravity="center" 
 		android:layout_height="wrap_content" />
 		
