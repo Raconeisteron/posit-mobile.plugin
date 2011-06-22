@@ -129,4 +129,23 @@
 	<item>Completed program</item>
 	</string-array>
 	
+	<!--    Arrays for managing distribution events -->
+	<!--  Same array used for attributes and values -->
+	<string-array name="distribution_event_stages">
+	<item>@string/select_distr_point</item>
+	<item>@string/import_beneficiary_file</item>
+	<item>@string/start_distribution_event</item>
+	<item>@string/stop_distribution_event</item>
+	<item>@string/send_distribution_report</item>
+	</string-array>
+
+	<integer-array name="distribution_event_values">
+	<item>0</item>
+	<item>1</item>
+	<item>2</item>
+	<item>3</item>
+	<item>4</item>
+	</integer-array>	
+
+	
 </resources>

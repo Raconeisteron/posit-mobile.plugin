@@ -21,6 +21,12 @@
 				android:entries="@array/distribution_point_names"
 				android:entryValues="@array/distribution_point_names"
 				android:summary="@string/distribution_point" />
+
+			<ListPreference android:key="@string/distribution_event_key" 
+				android:title="@string/distribution_event_stage"
+				android:entries="@array/distribution_event_stages"
+				android:entryValues="@array/distribution_event_stages"
+				android:summary="@string/distribution_event_stage" />
 			
 		</PreferenceScreen>
 	</PreferenceCategory>

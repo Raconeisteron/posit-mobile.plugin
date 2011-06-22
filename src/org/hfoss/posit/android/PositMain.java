@@ -92,10 +92,10 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		Log.i(TAG, "Preferences= " + mSharedPrefs.getAll().toString());
 
 		// If this is a new install, we need to set up the Server
-		if (mSharedPrefs.getString("SERVER_ADDRESS", "").equals("")) {
-			mSpEditor.putString("SERVER_ADDRESS", getString(R.string.defaultServer));
-			mSpEditor.commit();
-		}
+//		if (mSharedPrefs.getString("SERVER_ADDRESS", "").equals("")) {
+//			mSpEditor.putString("SERVER_ADDRESS", getString(R.string.defaultServer));
+//			mSpEditor.commit();
+//		}
 
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		

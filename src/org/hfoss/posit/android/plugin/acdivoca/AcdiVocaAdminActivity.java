@@ -28,6 +28,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindActivityProvider;
@@ -40,6 +43,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -48,7 +52,10 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -72,14 +79,14 @@ public class AcdiVocaAdminActivity extends Activity  {
 
 
 	private ArrayAdapter<String> adapter;
-	private String items[] = new String[100];
+	private String mBeneficiaries[] = null;
 	private ProgressDialog mProgressDialog;
 	private String mDistrCtr;
 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		Log.i(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
 		
 
@@ -112,7 +119,64 @@ public class AcdiVocaAdminActivity extends Activity  {
 		inflater.inflate(R.menu.acdi_voca_admin_menu, menu);
 		return true;
 	}
+
 	
+	/**
+	 * The Admin menu needs to be carefully prepared to control the management
+	 * of distribution events through the various stages:  select distribution point,
+	 * import beneficiary data, start, stop, send distribution report.  
+	 * Here's where the various values are set:
+	 * 
+	 * 1) Select distribution point -- selected in settings.
+	 * 2) Import beneficiary file -- set in SettingsActivity
+	 * 3) Start -- set in onMenuItemSelected
+	 * 4) Stop -- set in onMenuItemSelected
+	 * 5) Send report -- set in SendSms
+	 */
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		String distrEventStage = prefs.getString(getString(R.string.distribution_event_key), "");
+		String distrPoint = prefs.getString(getString(R.string.distribution_point), "");
+		
+		Log.i(TAG, "onPrepareMenuOptions, distrPoint ="  + distrPoint 
+				+ " distribution stage = " + distrEventStage);
+
+		MenuItem item = null;
+		for (int k = 0; k < menu.size(); k++) {
+			item = menu.getItem(k);
+			switch (item.getItemId()) {
+			case R.id.load_beneficiary_data:
+				if (distrEventStage.equals(getString(R.string.import_beneficiary_file))) 
+					item.setEnabled(true);
+				else 
+					item.setEnabled(false);
+				break;
+			case R.id.start_stop_distribution:
+				SubMenu sub = item.getSubMenu();
+				if (distrEventStage.equals(getString(R.string.start_distribution_event))) {
+					item.setEnabled(true);
+					sub.getItem(0).setEnabled(true);
+					sub.getItem(1).setEnabled(false);
+				} else if (distrEventStage.equals(getString(R.string.stop_distribution_event))) {
+					item.setEnabled(true);
+					sub.getItem(0).setEnabled(false);
+					sub.getItem(1).setEnabled(true);		
+				} else {
+					item.setEnabled(false);
+				}
+				break;
+			case R.id.send_distribution_report:
+				if (distrEventStage.equals(getString(R.string.send_distribution_report))) 
+					item.setEnabled(true);
+				else 
+					item.setEnabled(false);
+				break;
+			}
+		}
+		return super.onPrepareOptionsMenu(menu);
+	}
+
 	/**
 	 * Manages the selection of menu items.
 	 * 
@@ -120,7 +184,9 @@ public class AcdiVocaAdminActivity extends Activity  {
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		Log.i(TAG, "Menu Item = " + item.getTitle());
 		Intent intent = new Intent();
+
 		switch (item.getItemId()) {
 		case R.id.settings_menu_item:
 			startActivity(new Intent(this, SettingsActivity.class));
@@ -128,6 +194,10 @@ public class AcdiVocaAdminActivity extends Activity  {
 		case R.id.admin_list_beneficiaries:
 			startActivity(new Intent(this, AcdiVocaListFindsActivity.class));
 			break;
+//		case R.id.manage_distribution:
+//			TextView tv = (TextView) findViewById(R.id.manage_event_text_view);
+//			tv.setVisibility(View.VISIBLE);
+//			break;
 		case R.id.load_beneficiary_data:
 			Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
 			if (loginActivity != null) {
@@ -135,16 +205,93 @@ public class AcdiVocaAdminActivity extends Activity  {
 				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.SUPER.ordinal());
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
-				Toast.makeText(this, "Admin Login for Import Beneficiary Data.", Toast.LENGTH_LONG).show();
-				
+				Toast.makeText(this, "Admin Login for Import Beneficiary Data.", Toast.LENGTH_LONG).show();	
 			}
+			break;
+		case R.id.start_distribution:
+			Log.i(TAG, "Start distribution event");
+			item.setEnabled(false);
+			setDistributionEventStage( this.getString(R.string.stop_distribution_event));		
+			break;
+		case R.id.stop_distribution:
+			Log.i(TAG, "Start distribution event");
+			item.setEnabled(false);
+			setDistributionEventStage( this.getString(R.string.send_distribution_report));		
+			break;
 			
-			
-			//startActivity(new Intent(this, AboutActivity.class));
+		case R.id.send_distribution_report:
+			sendDistributionReport();
+			setDistributionEventStage( this.getString(R.string.select_distr_point));		
 			break;
 		}
-		
 		return true;
+	}
+	
+	/**
+	 * Utility method to send messages.
+	 * @param acdiVocaMsgs an ArrayList of messages.
+	 */
+	private void sendMessages(ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
+		Log.i(TAG, "Sending N messages = " + acdiVocaMsgs.size());
+		AcdiVocaMessage acdiVocaMsg = null;
+		Iterator<AcdiVocaMessage> it = acdiVocaMsgs.iterator();
+		int nSent = 0;
+		
+		while (it.hasNext()) {
+			acdiVocaMsg = it.next();
+			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+			Log.i(TAG, "Raw Message: " + acdiVocaMsg.getRawMessage());
+			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
+			
+			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+			if (AcdiVocaSmsManager.sendMessage(this, beneficiary_id, acdiVocaMsg, null)) {
+				Log.i(TAG, "Message Sent--should update as SENT");
+				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
+				++nSent;
+			} else {
+				Log.i(TAG, "Message Not Sent -- should update as PENDING");
+				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+			}
+		}
+		Toast.makeText(this, "Sent " + nSent + " messages.", Toast.LENGTH_SHORT).show();
+	}
+	
+	/**
+	 * Sends both update messages and bulk messages.
+	 */
+	private void sendDistributionReport() {
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		String distrKey = this.getResources().getString(R.string.distribution_point);
+		String distributionCtr = sharedPrefs.getString(distrKey, "");
+		Log.i(TAG, distrKey +"="+ distributionCtr);
+
+		// First send update reports -- i.e., those present with changes.
+		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+		ArrayList<AcdiVocaMessage> acdiVocaMsgs = 
+			db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_UPDATE, null, distributionCtr);
+		sendMessages(acdiVocaMsgs);
+		
+		// Now send bulk absences list
+		db = new AcdiVocaDbHelper(this);
+		acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
+		sendMessages(acdiVocaMsgs);
+	}
+	
+	/**
+	 * Helper method to set the stage for distribution events.
+	 * @param distrEventStage
+	 */
+	private void setDistributionEventStage(String distrEventStage) {
+		SharedPreferences prefs = null;
+		Editor editor = null;
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		//distrEventStage = prefs.getString(getString(R.string.distribution_event_key), "");
+
+		editor = prefs.edit();
+		editor.putString(getString(R.string.distribution_event_key), distrEventStage);
+		editor.commit();
+		distrEventStage = prefs.getString(getString(R.string.distribution_event_key), "");
+		Log.i(TAG, "Distribution stage = " + distrEventStage);					
 	}
 	
 	@Override
@@ -170,10 +317,8 @@ public class AcdiVocaAdminActivity extends Activity  {
 						"Please wait.", true, true);
 				
 				ImportDataThread thread = new ImportDataThread(this, new ImportThreadHandler());
-				thread.start();
+				thread.start();				
 				
-				
-				//findViewById(R.id.fileload_progressbar).setVisibility(View.INVISIBLE);
 				break;
 			} else {
 				Toast.makeText(this, "Sorry. Incorrect username or password.", Toast.LENGTH_LONG).show();
@@ -201,11 +346,19 @@ public class AcdiVocaAdminActivity extends Activity  {
 //	    for (int i = 0; i < file.length; i++)
 //	    	Log.i(TAG, file[i].getAbsolutePath());  
 		
-		items = loadBeneficiaryData(mDistrCtr);
+		mBeneficiaries = loadBeneficiaryData(mDistrCtr);
 		
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		long nImports = db.addUpdateBeneficiaries(items, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
+		int rows = db.clearBeneficiaryTable();
+		Log.i(TAG, "Deleted rows = " + rows);
+		db = new AcdiVocaDbHelper(this);
+		
+		long nImports = db.addUpdateBeneficiaries(mBeneficiaries, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
 		Log.i(TAG, "Imported " + nImports + " Beneficiaries");	
+		
+		// Move to the next stage of the distribution event process
+		setDistributionEventStage( this.getString(R.string.start_distribution_event));		
+
 //		Toast.makeText(this, "Imported " +  + nImports + " Beneficiaries", Toast.LENGTH_SHORT);
 	}
 	
@@ -266,6 +419,12 @@ public class AcdiVocaAdminActivity extends Activity  {
 		}
 	}
 	
+	
+	/**
+	 * Thread to handle import of data from external file. 
+	 * @author rmorelli
+	 *
+	 */
 	class ImportDataThread extends Thread {
 		private Context mContext;
 		private Handler mHandler;

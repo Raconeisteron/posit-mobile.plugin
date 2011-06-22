@@ -137,6 +137,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     			((Button)findViewById(R.id.update_edit_button)).setOnClickListener(this);
 
     			displayContentUneditable(mContentValues);
+    			mFindId = mContentValues.getAsInteger(AcdiVocaDbHelper.FINDS_ID);
     		}
     	}
     }
@@ -173,39 +174,44 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
      * @param contentValues
      */
     private void displayUpdateQuestions(ContentValues contentValues) {
-    	RadioButton presentRB = (RadioButton) findViewById(R.id.radio_present_yes);
+    	((RadioButton) findViewById(R.id.radio_present_yes)).setOnClickListener(this);
+    	((RadioButton) findViewById(R.id.radio_present_no)).setOnClickListener(this);
+    	((RadioButton) findViewById(R.id.radio_change_in_status_yes)).setOnClickListener(this);
+    	((RadioButton) findViewById(R.id.radio_change_in_status_no)).setOnClickListener(this);
 
-    	if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT) != null){
-
+    	RadioButton aRb = (RadioButton) findViewById(R.id.radio_present_yes);
+  
+    	if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT) != null) {
     		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
-    			presentRB.setChecked(true);
-    		presentRB = (RadioButton) findViewById(R.id.radio_present_no);
+    			aRb.setChecked(true);
+    		aRb = (RadioButton) findViewById(R.id.radio_present_no);
     		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
-    			presentRB.setChecked(true);
+    			aRb.setChecked(true);
     	}
 
     	//  New button - 6/17/11          
 
-
     	Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
     	AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
-    	RadioButton changeRB = (RadioButton) findViewById(R.id.radio_change_in_status_yes);
 
+    	aRb = (RadioButton) findViewById(R.id.radio_change_in_status_yes);
+    	
     	if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE) != null){
 
     		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_TRUE.toString())){
     			findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
     			findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);
-    			changeRB.setChecked(true);
+    			aRb.setChecked(true);
     		}
-    		changeRB = (RadioButton) findViewById(R.id.radio_change_in_status_no);
+    		
+    		aRb = (RadioButton) findViewById(R.id.radio_change_in_status_no);
+    		
     		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE).equals(AcdiVocaDbHelper.FINDS_FALSE.toString())){
     			findViewById(R.id.statuschange).setVisibility(View.GONE);
     			findViewById(R.id.statuschangeSpinner).setVisibility(View.GONE);
-    			changeRB.setChecked(true);
+    			aRb.setChecked(true);
     		}
     	}
-
     }
     
     /**
@@ -499,80 +505,58 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
      * Required as part of OnClickListener interface. Handles button clicks.
      */
     public void onClick(View v) {
-        Log.i(TAG, "onClick");
-        // If a RadioButton was clicked, mark the form as edited.
-        //Toast.makeText(this, "Clicked on a " + v.getClass().toString(), Toast.LENGTH_SHORT).show();
-        try {
-            if (v.getClass().equals(Class.forName("android.widget.RadioButton"))) {
-                    //Toast.makeText(this, "RadioClicked", Toast.LENGTH_SHORT).show();
-                    isProbablyEdited = true;
-            }
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    	Log.i(TAG, "onClick");
+    	// If a RadioButton was clicked, mark the form as edited.
+    	//Toast.makeText(this, "Clicked on a " + v.getClass().toString(), Toast.LENGTH_SHORT).show();
+    	try {
+    		if (v.getClass().equals(Class.forName("android.widget.RadioButton"))) {
+    			//Toast.makeText(this, "RadioClicked", Toast.LENGTH_SHORT).show();
+    			isProbablyEdited = true;
+    		}
+    	} catch (ClassNotFoundException e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
 
-        int id = v.getId();
-        if (id == R.id.datepicker) 
-            isProbablyEdited = true;
-        
-//New code for the spinner - 9/17/11        
-        
-        if (id == R.id.radio_change_in_status_yes){
-        	findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
-			findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);	
-        }
-        
-        if (id == R.id.radio_change_in_status_no){
-        	findViewById(R.id.statuschange).setVisibility(View.GONE);
-			findViewById(R.id.statuschangeSpinner).setVisibility(View.GONE);	
-        }
-        
-        if (v.getId() == R.id.update_edit_button) {
-        	inEditableMode = true;
-        	setUpEditableView();
-        }
-        
-        if(v.getId()==R.id.update_to_db_button) {
-            boolean result = false;
-//            Toast.makeText(this, "SIMULATION: Saving update to DB", Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, "Saving update to DB", Toast.LENGTH_SHORT).show();
+    	int id = v.getId();
+    	if (id == R.id.datepicker) 
+    		isProbablyEdited = true;
 
-            ContentValues data = this.retrieveContentFromView(); 
-            Log.i(TAG, "Retrieved = " + data.toString());
-            
-//Lines below originally commented out            
-            
-//            Log.i(TAG,"View Content: " + data.toString());
-            data.put(AcdiVocaDbHelper.FINDS_PROJECT_ID, 0);
-            Log.i(TAG, "################################ /n mAction = " + mAction);
-            if (mAction.equals(Intent.ACTION_EDIT)) {
-                result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
-                Log.i(TAG, "Update to Db is " + result);
-            } else {
-                result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
-                Log.i(TAG, "Save to Db is " + result);
-            }
-            
-//Lines above originally commented out                
-            
-            if (result){
-                Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_SHORT).show();
-            
-            
-            
-//Testing with burnt toast            
-//            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
-//            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
-//            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
-//            Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_LONG).show();    
-            }
-            
-            else 
-                Toast.makeText(this, "Db error", Toast.LENGTH_SHORT).show();
+    	//New code for the spinner - 9/17/11        
 
-            finish();
-        }
+    	if (id == R.id.radio_change_in_status_yes){
+    		findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
+    		findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);	
+    	}
+
+    	if (id == R.id.radio_change_in_status_no){
+    		findViewById(R.id.statuschange).setVisibility(View.GONE);
+    		findViewById(R.id.statuschangeSpinner).setVisibility(View.GONE);	
+    	}
+
+    	if (v.getId() == R.id.update_edit_button) {
+    		inEditableMode = true;
+    		setUpEditableView();
+    	}
+
+    	if(v.getId()==R.id.update_to_db_button) {
+    		boolean result = false;
+    		//           Toast.makeText(this, "Saving update to DB", Toast.LENGTH_SHORT).show();
+
+    		ContentValues data = this.retrieveContentFromView(); 
+    		Log.i(TAG, "Retrieved = " + data.toString());
+
+    		result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
+    		Log.i(TAG, "Update to Db is " + result);
+    		if (result){
+    			Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_SHORT).show();
+    		}
+
+    		else 
+    			Toast.makeText(this, "Db error", Toast.LENGTH_SHORT).show();
+
+    		finish();
+    	}
     }
 
     
