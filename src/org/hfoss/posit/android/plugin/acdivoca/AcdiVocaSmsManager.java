@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -43,6 +44,7 @@ import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import android.widget.Toast;
 
 public class AcdiVocaSmsManager extends BroadcastReceiver {
 	
@@ -246,6 +248,42 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		return true;
 	}
 	
+	
+	
+	/**
+	 * Utility method to send messages.
+	 * @param acdiVocaMsgs an ArrayList of messages.
+	 */
+	public static void sendMessages(Context context, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
+		Log.i(TAG, "Sending N messages = " + acdiVocaMsgs.size());
+		AcdiVocaMessage acdiVocaMsg = null;
+		Iterator<AcdiVocaMessage> it = acdiVocaMsgs.iterator();
+		int nSent = 0;
+		
+		while (it.hasNext()) {
+			acdiVocaMsg = it.next();
+			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+			Log.i(TAG, "Raw Message: " + acdiVocaMsg.getRawMessage());
+			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
+			
+			AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
+            int msgId = (int)db.createNewMessageTableEntry(acdiVocaMsg,beneficiary_id,AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT);
+            acdiVocaMsg.setMessageId(msgId);
+
+			if (AcdiVocaSmsManager.sendMessage(context, beneficiary_id, acdiVocaMsg, null)) {
+				Log.i(TAG, "Message Sent--should update as SENT");
+				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
+				++nSent;
+			} else {
+				Log.i(TAG, "Message Not Sent -- should update as PENDING");
+				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+			}
+		}
+		Toast.makeText(context, "Sent " + nSent + " messages.", Toast.LENGTH_SHORT).show();
+	}
+	
+	
+	
 	/**
 	 * Adds the ACDI/VOCA Prefix and sends the message, returning false if an error occurs.
 	 * @param context
@@ -259,12 +297,22 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		if (phoneNumber==null)
 			phoneNumber = PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
 
-		String message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
+		
+		String message = null;
+		if (beneficiary_id != -1) {
+			message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
 			+ AttributeManager.ATTR_VAL_SEPARATOR 
-			//+ acdiVocaMessage.getMessageId()   NOTE: Msgid = -1 at this point, not in Db
-			+ acdiVocaMessage.getBeneficiaryId() 
+			+ acdiVocaMessage.getBeneficiaryId() // For normal messages we the beneficiary's row id, 1...N
 			+ AttributeManager.PAIRS_SEPARATOR
 			+ acdiVocaMessage.getSmsMessage();
+		} else {
+			message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
+			+ AttributeManager.ATTR_VAL_SEPARATOR 
+			+ acdiVocaMessage.getMessageId() * -1   // For Bulk messages we use minus the message id (e.g., -123)
+			+ AttributeManager.PAIRS_SEPARATOR
+			+ acdiVocaMessage.getSmsMessage();
+
+		}
 		
 		PendingIntent sentIntent = PendingIntent.getBroadcast(context, 0,new Intent(SENT), 0);
 		PendingIntent deliveryIntent = PendingIntent.getBroadcast(context, 0,new Intent(DELIVERED), 0);
