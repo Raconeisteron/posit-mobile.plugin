@@ -136,20 +136,14 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	 * places in the Android, including in onCreate() and onRestart(). 
 	 */
 	private void startPOSIT() {
-		// If the phone has no valid AUTH_KEY, it has to be registered with a server 
 
-//		mAuthKey = mSharedPrefs.getString("AUTHKEY", "");
-//		if (mAuthKey.equals("") || mAuthKey.equals(null)) {
-//			Intent i = new Intent(this, RegisterActivity.class);
-//			startActivityForResult(i, REGISTRATION_ACTIVITY);
-//			
-//		} else {    // Otherwise display the PositMain View
 			setContentView(R.layout.main);
 			
 			// Change visibility of buttons based on UserType
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 			int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
-			Log.i(TAG, "POSIT Start, UserTypeKey = " + userTypeOrdinal);
+			String distrStage = sp.getString(getString(R.string.distribution_event_key), "");
+			Log.i(TAG, "POSIT Start, distrStage = " + distrStage);
 			
 			
 			if (FindPluginManager.mMainIcon != null) {
@@ -166,6 +160,12 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				addFindButton.setText(resid);
 				if (addFindButton != null)
 					addFindButton.setOnClickListener(this);
+				
+				if (distrStage.equals(getString(R.string.start_distribution_event))) {
+					addFindButton.setVisibility(View.GONE);
+				} else {
+					addFindButton.setVisibility(View.VISIBLE);
+				}
 			}
 
 			if (FindPluginManager.mListButtonLabel != null) {
@@ -176,6 +176,12 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					listFindButton.setText(resid);
 					listFindButton.setOnClickListener(this);
 				}
+				
+				if (distrStage.equals(getString(R.string.start_distribution_event))) {
+					listFindButton.setVisibility(View.GONE);
+				} else {
+					listFindButton.setVisibility(View.VISIBLE);
+				}
 			}
 			
 			if (FindPluginManager.mExtraButtonLabel != null) {
@@ -185,11 +191,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					extraButton.setOnClickListener(this);
 					extraButton.setText(resid);
 					extraButton.setVisibility(View.VISIBLE);
-//					if (userTypeOrdinal == UserType.SUPER.ordinal() || userTypeOrdinal == UserType.ADMIN.ordinal()) {
-//						extraButton.setVisibility(View.VISIBLE);
-//					} else {
-//						extraButton.setVisibility(View.GONE);
-//					}
 				}
 			}
 
@@ -201,19 +202,14 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					extraButton.setVisibility(View.VISIBLE);
 					extraButton.setOnClickListener(this);
 				}
+				
+				if (distrStage.equals(getString(R.string.start_distribution_event))) {
+					extraButton.setVisibility(View.GONE);
+				} else {
+					extraButton.setVisibility(View.VISIBLE);
+				}
 			}
 			
-			//((Button)findViewById(R.id.extraButton2)).setOnClickListener(this);
-			
-			//final TextView version = (TextView) findViewById(R.id.version);
-			//try {
-			//	version.setText(getPackageManager().getPackageInfo("org.hfoss.posit.android", 0).versionName);
-			//} catch(NameNotFoundException nnfe) {
-				//shouldn't happen
-			//	Log.w(TAG, nnfe.toString(), nnfe);
-			//	version.setVisibility(View.INVISIBLE);
-			//}
-//		}
 	}
 
 	// Lifecycle methods just generate Log entries to help debug and understand flow
