@@ -49,7 +49,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -208,9 +207,15 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
         Intent intent = null;
  		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_MCHN){
  			intent = new Intent(this, AcdiVocaFindActivity.class);
+ 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_MCHN);
  		}
  		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
- 			intent = new Intent(this, AcdiVocaNewAgriActivity.class);
+ 			intent = new Intent(this, AcdiVocaFindActivity.class);
+ 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_AGRI);
+ 		}
+ 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
+ 			intent = new Intent(this, AcdiVocaFindActivity.class);
+ 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
  		}
  		
  		intent.setAction(Intent.ACTION_EDIT);
