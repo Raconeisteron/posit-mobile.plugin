@@ -27,6 +27,7 @@ import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
@@ -342,6 +343,14 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
+		Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
+		if (userTypeOrdinal != UserType.SUPER.ordinal() && userTypeOrdinal != UserType.ADMIN.ordinal()) {
+			menu.getItem(1).setVisible(false);
+		} else {
+			menu.getItem(1).setVisible(true);
+		}
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -352,6 +361,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		Log.i(TAG, "onMenuItemSelected " + item.toString());
 		switch (item.getItemId()) {
 		case R.id.settings_menu_item:
 			startActivity(new Intent(this, SettingsActivity.class));
