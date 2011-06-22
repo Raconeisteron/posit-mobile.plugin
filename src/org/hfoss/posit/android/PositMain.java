@@ -87,6 +87,11 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		super.onCreate(savedInstanceState);
 		Log.i(TAG,"Creating");
 
+		// initialize plugins
+		FindPluginManager.initInstance(this);
+		AcdiVocaSmsManager.initInstance(this);
+		AttributeManager.init();
+
 		// A newly installed POSIT should have no shared prefs
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mSpEditor = mSharedPrefs.edit();
@@ -100,10 +105,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
-		// initialize plugins
-		FindPluginManager.initInstance(this);
-		AcdiVocaSmsManager.initInstance(this);
-		AttributeManager.init();
 		
 		// Run login activity, if necessary
 		
@@ -144,6 +145,12 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 //		} else {    // Otherwise display the PositMain View
 			setContentView(R.layout.main);
 			
+			// Change visibility of buttons based on UserType
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+			int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
+			Log.i(TAG, "POSIT Start, UserTypeKey = " + userTypeOrdinal);
+			
+			
 			if (FindPluginManager.mMainIcon != null) {
 				final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
 				int resID = getResources().getIdentifier(FindPluginManager.mMainIcon, "drawable", "org.hfoss.posit.android");
@@ -164,8 +171,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 //				final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
 				final Button listFindButton = (Button) findViewById(R.id.listFindButton);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mListButtonLabel, "string", "org.hfoss.posit.android");
-				listFindButton.setText(resid);
 				if (listFindButton != null) {
+					listFindButton.setText(resid);
 					listFindButton.setOnClickListener(this);
 				}
 			}
@@ -173,19 +180,24 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			if (FindPluginManager.mExtraButtonLabel != null) {
 				final Button extraButton = (Button) findViewById(R.id.extraButton);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel, "string", "org.hfoss.posit.android");
-				extraButton.setText(resid);
-				extraButton.setVisibility(View.VISIBLE);
 				if (extraButton != null) {
 					extraButton.setOnClickListener(this);
+					extraButton.setText(resid);
+					extraButton.setVisibility(View.VISIBLE);
+//					if (userTypeOrdinal == UserType.SUPER.ordinal() || userTypeOrdinal == UserType.ADMIN.ordinal()) {
+//						extraButton.setVisibility(View.VISIBLE);
+//					} else {
+//						extraButton.setVisibility(View.GONE);
+//					}
 				}
 			}
 
 			if (FindPluginManager.mExtraButtonLabel2 != null) {
 				final Button extraButton = (Button) findViewById(R.id.extraButton2);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel2, "string", "org.hfoss.posit.android");
-				extraButton.setText(resid);
-				extraButton.setVisibility(View.VISIBLE);
 				if (extraButton != null) {
+					extraButton.setText(resid);
+					extraButton.setVisibility(View.VISIBLE);
 					extraButton.setOnClickListener(this);
 				}
 			}

@@ -3,12 +3,14 @@
 
 		<PreferenceScreen android:title="@string/acdivocaprefs">
 			<EditTextPreference 
-				android:numeric="integer"
+				android:key="@string/smsPhoneKey"  
 				android:title="@string/SMS_phone"
-				android:summary = "@string/SMS_phone"
-				android:key="@string/smsPhoneKey"  />
+				android:summary = "@string/SMS_phone" 
+				android:shouldDisableView="true"
+				android:defaultValue = "@string/default_phone"/>
 
-			<ListPreference android:key="@string/localeKey"
+			<ListPreference 
+				android:key="@string/localeKey"
 				android:title="@string/locale" 
 				android:persistent="true"
 				android:defaultValue="English" 
@@ -16,16 +18,22 @@
 				android:entries="@array/locales" 
 				android:entryValues="@array/locale_values" />
 				
-			<ListPreference android:key="@string/distribution_point" 
+			<ListPreference 
+				android:key="@string/distribution_point" 
 				android:title="@string/distribution_point"
 				android:entries="@array/distribution_point_names"
 				android:entryValues="@array/distribution_point_names"
+				android:defaultValue = "@string/default_preference_string"
+				android:shouldDisableView="true"
 				android:summary="@string/distribution_point" />
 
-			<ListPreference android:key="@string/distribution_event_key" 
+			<ListPreference 
+				android:key="@string/distribution_event_key" 
 				android:title="@string/distribution_event_stage"
 				android:entries="@array/distribution_event_stages"
 				android:entryValues="@array/distribution_event_stages"
+				android:defaultValue = "@string/default_preference_string"
+				android:shouldDisableView="true"
 				android:summary="@string/distribution_event_stage" />
 			
 		</PreferenceScreen>

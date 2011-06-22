@@ -22,7 +22,14 @@
  */
 package org.hfoss.posit.android.plugin.acdivoca;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.FindPluginManager;
+import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 
 import android.app.Activity;
@@ -33,6 +40,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -122,6 +130,11 @@ public class LoginActivity extends Activity implements OnClickListener {
 				editor.commit();
 				Log.i(TAG, "User Type Key = "  +  sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY,-1));
 				
+				SettingsActivity settings = 
+					SettingsActivity.getInstance(this, FindPluginManager.mPreferences);
+				settings.disablePreferences(this, userTypeOrdinal);
+				
+
 				finish();
 			} else {
 				showDialog(INVALID_LOGIN);
