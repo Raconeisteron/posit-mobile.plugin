@@ -32,6 +32,7 @@ import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -313,6 +314,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			case R.id.addFindButton:
 				intent.setClass(this, FindActivityProvider.getFindActivityClass());
 				intent.setAction(Intent.ACTION_INSERT);
+				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
 				startActivity(intent);
 				break;
 			case R.id.listFindButton:
@@ -328,7 +330,9 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 
 			case R.id.extraButton2:
 				intent.setAction(Intent.ACTION_INSERT);
-				intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
+				intent.setClass(this, FindActivityProvider.getFindActivityClass());
+				//intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
+				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
 				startActivity(intent);
 				break;			
 			}

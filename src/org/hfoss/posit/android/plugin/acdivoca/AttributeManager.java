@@ -235,7 +235,8 @@ public class AttributeManager {
 	public static final String ABBREV_TRUE = "T";
 	public static final String ABBREV_FALSE = "F";
 	
-	
+	public static final String FINDS_RELATIVE_AGRI = "relative_having_agrAid";
+	public static final String FINDS_RELATIVE_BENE = "relative_having_beneAid";
 	// ---------------- LONG COLUMNS NAMES FROM PHONE"S DB------
 	// Mobile side column names used in the phone's Db. Mostly 
 	//  used by DbHelper to construct the SMS messages. A raw

@@ -1,3 +1,4 @@
+
 <resources>
 	
 	<!--  Acdi Voca Strings -->
@@ -111,6 +112,37 @@
     <!-- This is a new question for a button to replace the last two questions - 6/17/11 -->
     <string name="change_in_status">Is there a change in the beneficiary\'s status?</string>
     
+    
+    
+    <!--     Toast messages - 6/21/11 -->
+    <string name="toast_save_update">Saving update to DB</string>
+    <string name="toast_find_saved">Find saved to Db </string>
+    <string name="toast_saved_db">Saved to Db</string>
+    <string name="toast_saved">Saved to Db</string>
+    <string name="toast_error_db">Error on save to Db</string>
+    <string name="toast_db_error">Db error</string>
+    <string name="toast_db_error2">Db error</string>
+    <string name="toast_Backkey_isEdited">Backkey isEdited=</string>
+    <string name="toast_no_beneficiary">ERROR: No beneficiary with ID = </string>
+    <string name="toast_beneficiary_id">Beneficiary Id = </string>
+    <string name="toast_sorry_empty">Sorry, there are no beneficiaries in the Db.</string>
+    <string name="toast_id">Id= </string>
+    <string name="toast_admin_beneficiary_data">Import Admin Beneficiary Data:</string>
+    <string name="toast_distribution_post">No distribution post selected</string>
+    <string name="toast_incorrect">Sorry. Incorrect username or password.</string>
+    <string name="toast_superuser">Sorry you must be SUPER USER to do this.</string>
+    <string name="toast_fillform_agricultural">Please fill the form for the person who is in agricultural program.</string>
+    <string name="toast_sent">Sent </string>
+    <string name="toast_messages"> messages.</string>
+    <string name="toast_deleted">Deleted </string>
+     
+    
+    
+<!--     LookupActivity - 6/21/11 --> 
+    <string name="no_beneficiaries_found">No beneficiaries found</string> 
+    
+    
+    
     <!--  list_finds.xml -->
     <string name="noFinds">No beneficiaries</string>
     <string name="pick_criterion_prompt">Create messages to send.</string>
@@ -162,6 +194,59 @@
     <string name="tools">Tools</string>
     <string name="partners">Are you working with other partners?</string>
  	
+    <!-- New agri strings - 6/21/11 -->
+     <string name="farmer">Farmer</string>
+     <string name="muso">MUSO</string>
+     <string name="cattle_rancher">Cattle Rancher</string>     
+     <string name="store_owner">Store Owner</string>
+       <string name="fisherman">Fisherman</string>
+       <string name="artisan">Artisan</string>  
+       <string name="other">Other</string>
+       <string name="vegetables">Vegetables</string>
+       <string name="cereal">Cereal</string>
+       <string name="tuber">Tubers</string>  
+       <string name="tree">Tree</string>       
+       <string name="coffee">Coffee</string>     
+       <string name="hoe">Hoe</string>         
+       <string name="pick">Pick</string>         
+       <string name="wheelbarrow">Wheelbarrow</string>  
+       <string name="machete">Machete</string>                
+    <string name="pruning_knife">Pruning Knife</string>                    
+       <string name="shovel">Shovel</string>         
+       <string name="crowbar">Crowbar</string>
+       <string name="fao">FAO</string>
+       <string name="xmlsave">SAVE</string>
+       <string name="crose">CROSE</string>
+       <string name="plan">PLAN</string>
+       <string name="mardnr">MARDNR</string>
+       <string name="other2">Other</string>       
+       
+    <!-- New update strings - 6/21/11 -->
+       <string name="beneficiary_information">Beneficiary Information</string> 
+    <string name="dossier_number">Dossier Number: </string> 
+    
+    
+    <string name="toast_project_name">Please enter a name for your project</string>
+    <string name="toast_thankyou">Thank you</string>
+    <string name="toast_network_problem">There\'s a problem. To register you must be on a network.</string>
+    <string name="toast_fields">Please fill in all the fields</string>
+    <string name="toast_addresses">Please enter a valid address</string>
+    <string name="toast_email">Please enter a valid email address</string>
+    <string name="toast_password_match">Your passwords do not match</string>
+    <string name="toast_error">Error: </string>
+    <string name="toast_regerror">Registration Error</string>
+    <string name="toast_key">Failed to get authentication key from server.</string>
+    <string name="toast_loginfail">Login failed: </string>
+    <string name="toast_loginsuccess">Successfully logged in.</string>
+    <string name="toast_regfail">Registration Failed: </string>
+    <string name="toast_curproject">\' is already the current project.</string>
+    <string name="toast_sync_success">Sync completed successfully.</string>
+    <string name="toast_sync_fail">Sync failed.</string>
+    <string name="toast_sync_exit">Sync Exiting: No network available</string>
+    <string name="toast_project_dne">Project does not exist. Please choose another project.</string>
+                  
+ 
+  
     
     
 </resources>

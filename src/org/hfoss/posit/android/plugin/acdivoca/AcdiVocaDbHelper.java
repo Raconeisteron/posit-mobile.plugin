@@ -171,7 +171,8 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_TYPE = AttributeManager.FINDS_TYPE;    
 	public static final int FINDS_TYPE_MCHN = 0;
 	public static final int FINDS_TYPE_AGRI = 1;
-	public static final String[] FIND_TYPE_STRINGS = {"MCHN", "AGRI"};  // For display purpose
+	public static final int FINDS_TYPE_BOTH = 2;
+	public static final String[] FIND_TYPE_STRINGS = {"MCHN", "AGRI", "BOTH"};  // For display purpose
 
 	public static final String FINDS_STATUS = AttributeManager.FINDS_STATUS;
 	public static final int FINDS_STATUS_NEW = 0;      // New registration, no Dossier ID
