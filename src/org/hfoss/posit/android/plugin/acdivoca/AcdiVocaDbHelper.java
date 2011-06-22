@@ -695,7 +695,7 @@ public class AcdiVocaDbHelper {
 	 * @param acdiVocaMsg
 	 * @return
 	 */
-	private int updateBeneficiaryTableForBuldIds(AcdiVocaMessage acdiVocaMsg, long msgId, int status) {
+	private int updateBeneficiaryTableForBulkIds(AcdiVocaMessage acdiVocaMsg, long msgId, int status) {
 		String msg = acdiVocaMsg.getSmsMessage();
 		Log.i(TAG, "updateBeneTable, sms " + msg);
 		int rows = 0;
@@ -731,57 +731,85 @@ public class AcdiVocaDbHelper {
 		String query = "";
 		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
 
-		if (msg_id == -1) {  // Newly created message
-			
-			// Create a new message in the message table
-			
-			row_id = createNewMessageTableEntry(acdiVocaMsg, beneficiary_id, status);
+		//		if (msg_id == -1) {  // Newly created message
+		//			
+		//			// Create a new message in the message table
+		//			
+		//			row_id = createNewMessageTableEntry(acdiVocaMsg, beneficiary_id, status);
+		//
+		//			if (row_id != -1) {
+		//				result = true;
+		//				Log.i(TAG, "Inserted NEW message, id= " + row_id + " bene_id=" + beneficiary_id); 
+		//								
+		//				// Update the FINDS table to point to the message
+		//				ContentValues args = new ContentValues();
+		//				args.put(FINDS_MESSAGE_ID, row_id);
+		//				args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
+		//											
+		//				rows = mDb.update(FINDS_TABLE, 
+		//						args, 
+		//						FINDS_ID + " = " + beneficiary_id,
+		//						null); 
+		//				
+		//				if (rows == 0) {
+		//					result = false;
+		//					Log.i(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
+		//					
+		//					rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, row_id, status);
+		//					Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
+		//					
+		//				} else {
+		//					result = true;
+		//					Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
+		//					
+		//					// Update the message table with the new message
+		//					rows = updateMessageTable(acdiVocaMsg, beneficiary_id, row_id, status);					
+		//				}
+		//			} else {
+		//				result = false;
+		//				Log.i(TAG, "Unable to insert NEW message, id= " + row_id);  
+		//			}
+		//		}  else {  
+		// Update existing message
 
-			if (row_id != -1) {
-				result = true;
-				Log.i(TAG, "Inserted NEW message, id= " + row_id + " bene_id=" + beneficiary_id); 
-								
-				// Update the FINDS table to point to the message
-				ContentValues args = new ContentValues();
-				args.put(FINDS_MESSAGE_ID, row_id);
-				args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
-											
-				rows = mDb.update(FINDS_TABLE, 
-						args, 
-						FINDS_ID + " = " + beneficiary_id,
-						null); 
-				
-				if (rows == 0) {
-					result = false;
-					Log.i(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
-					
-					rows = updateBeneficiaryTableForBuldIds(acdiVocaMsg, row_id, status);
-					Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
-					
-				} else {
-					result = true;
-					Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
-					
-					// Update the message table with the new message
-					rows = updateMessageTable(acdiVocaMsg, beneficiary_id, row_id, status);					
-				}
-			} else {
-				result = false;
-				Log.i(TAG, "Unable to insert NEW message, id= " + row_id);  
-			}
-		}  else {  
-			 // Update existing message
+		rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);
 
-			rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);
-
-			if (rows == 0) {
-				result = false;
-				Log.i(TAG, "Unable to update message id= " + msg_id);  
-			} else {
-				result = true;
-				Log.i(TAG, "Update message id= " + msg_id);  
-			}
+		if (rows == 0) {
+			result = false;
+			Log.i(TAG, "Unable to update message id= " + msg_id);  
+		} else {
+			result = true;
+			Log.i(TAG, "Update message id= " + msg_id);  
 		}
+
+		// Update FINDS TABLE
+		ContentValues args = new ContentValues();
+		args.put(FINDS_MESSAGE_ID, msg_id);
+		args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
+													
+		rows = mDb.update(FINDS_TABLE, 
+				args, 
+				FINDS_ID + " = " + beneficiary_id,
+				null); 
+
+		if (rows == 0) {
+			result = false;
+			Log.i(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
+
+			rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, msg_id, status);
+			Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
+
+		} else {
+			result = true;
+			Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
+
+			// Update the message table with the new message
+			rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);					
+		}
+
+
+
+		//		}
 		mDb.close();
 		return result;
 	}
@@ -790,7 +818,10 @@ public class AcdiVocaDbHelper {
 	 * Helper method to create a new entry in the message table
 	 * @return
 	 */
-	private long createNewMessageTableEntry(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, int status) {
+	public long createNewMessageTableEntry(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, int status) {
+		Log.i(TAG, "createNewMessage for beneficiary = " + beneficiary_id + " status= " + status);
+		boolean result = false;
+		
 		// Create a new message in the message table
 		ContentValues args = new ContentValues();
 		args.put(MESSAGE_BENEFICIARY_ID, beneficiary_id);
@@ -798,6 +829,41 @@ public class AcdiVocaDbHelper {
 		
 		args.put(MESSAGE_TEXT, acdiVocaMsg.getSmsMessage());
 		long row_id = mDb.insert(MESSAGE_TABLE, null, args);
+		
+		if (row_id != -1) {
+			result = true;
+			Log.i(TAG, "Inserted NEW message, id= " + row_id + " bene_id=" + beneficiary_id); 
+							
+			// Update the FINDS table to point to the message
+			args = new ContentValues();
+			args.put(FINDS_MESSAGE_ID, row_id);
+			args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
+										
+			int rows = mDb.update(FINDS_TABLE, 
+					args, 
+					FINDS_ID + " = " + beneficiary_id,
+					null); 
+			
+			if (rows == 0) {
+				result = false;
+				Log.i(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
+				
+				rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, row_id, status);
+				Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
+				
+			} else {
+				result = true;
+				Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
+				
+				// Update the message table with the new message
+				rows = updateMessageTable(acdiVocaMsg, beneficiary_id, row_id, status);					
+			}
+		} else {
+			result = false;
+			Log.i(TAG, "Unable to insert NEW message, id= " + row_id);  
+		}
+
+		
 
 		return row_id;
 	}
@@ -994,7 +1060,8 @@ public class AcdiVocaDbHelper {
 				beneficiary_id = c.getInt(c.getColumnIndex(FINDS_ID));
 				beneficiary_status = c.getInt(c.getColumnIndex(FINDS_STATUS));
 				message_status = c.getInt(c.getColumnIndex(FINDS_MESSAGE_ID));
-				statusStr = MESSAGE_STATUS_STRINGS[message_status];
+				//Log.i(TAG, "message_status = " )
+				//statusStr = MESSAGE_STATUS_STRINGS[message_status];
 
 				columns = c.getColumnNames();
 				rawMessage = "";

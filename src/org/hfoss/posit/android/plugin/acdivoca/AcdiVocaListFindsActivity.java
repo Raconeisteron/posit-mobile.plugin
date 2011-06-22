@@ -302,25 +302,27 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		int nMsgs = mAdapter.getCount();
 		int nSent = 0;
 		int k = 0;
+		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
 		while (k < nMsgs) {
 			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
-			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
-			Log.i(TAG, "Raw Message: " + acdiVocaMsg.getRawMessage());
-			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
-			
-			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-			if (AcdiVocaSmsManager.sendMessage(this, beneficiary_id, acdiVocaMsg, null)) {
-				Log.i(TAG, "Message Sent--should update as SENT");
-				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
-				++nSent;
-			} else {
-				Log.i(TAG, "Message Not Sent -- should update as PENDING");
-				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			}
+			acdiVocaMsgs.add(acdiVocaMsg);
+//			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+//			Log.i(TAG, "Raw Message: " + acdiVocaMsg.getRawMessage());
+//			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
+//			
+//			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//			if (AcdiVocaSmsManager.sendMessage(this, beneficiary_id, acdiVocaMsg, null)) {
+//				Log.i(TAG, "Message Sent--should update as SENT");
+//				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
+//				++nSent;
+//			} else {
+//				Log.i(TAG, "Message Not Sent -- should update as PENDING");
+//				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+//			}
 			++k;
 		}
-		Toast.makeText(this, "Sent " + nSent + " messages.", Toast.LENGTH_SHORT).show();
-
+		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
+		//Toast.makeText(this, "Sent " + nSent + " messages", Toast.LENGTH_SHORT).show();
 	}
 	
 	/**

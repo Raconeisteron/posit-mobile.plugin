@@ -239,34 +239,6 @@ public class AcdiVocaAdminActivity extends Activity  {
 		return true;
 	}
 	
-	/**
-	 * Utility method to send messages.
-	 * @param acdiVocaMsgs an ArrayList of messages.
-	 */
-	private void sendMessages(ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
-		Log.i(TAG, "Sending N messages = " + acdiVocaMsgs.size());
-		AcdiVocaMessage acdiVocaMsg = null;
-		Iterator<AcdiVocaMessage> it = acdiVocaMsgs.iterator();
-		int nSent = 0;
-		
-		while (it.hasNext()) {
-			acdiVocaMsg = it.next();
-			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
-			Log.i(TAG, "Raw Message: " + acdiVocaMsg.getRawMessage());
-			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
-			
-			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-			if (AcdiVocaSmsManager.sendMessage(this, beneficiary_id, acdiVocaMsg, null)) {
-				Log.i(TAG, "Message Sent--should update as SENT");
-				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
-				++nSent;
-			} else {
-				Log.i(TAG, "Message Not Sent -- should update as PENDING");
-				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			}
-		}
-		Toast.makeText(this, "Sent " + nSent + " messages.", Toast.LENGTH_SHORT).show();
-	}
 	
 	/**
 	 * Sends both update messages and bulk messages.
@@ -281,12 +253,12 @@ public class AcdiVocaAdminActivity extends Activity  {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = 
 			db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_UPDATE, null, distributionCtr);
-		sendMessages(acdiVocaMsgs);
+		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
 		
 		// Now send bulk absences list
 		db = new AcdiVocaDbHelper(this);
 		acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
-		sendMessages(acdiVocaMsgs);
+		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
 	}
 	
 	/**
