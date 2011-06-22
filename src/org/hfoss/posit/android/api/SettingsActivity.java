@@ -226,19 +226,22 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		sp.registerOnSharedPreferenceChangeListener(this);
 		
-		// Initialize the summary strings
+		// NOTE: This seems to throw an exception for non-string preference values.
+			// Initialize the summary strings
 		Map<String,?> prefs = sp.getAll();
 		Iterator it = prefs.keySet().iterator();
 		while (it.hasNext()) {
-			String key = (String) it.next();
-			Preference p =  findPreference(key);
-			String value = sp.getString(key, null);
-			if (p!= null && value != null) 
-				p.setSummary(value);
-		}
-		
-		for (int k = 0; k < prefs.size(); k++) {
-
+			try {
+				String key = (String) it.next();
+				Preference p =  findPreference(key);
+				String value = sp.getString(key, null);
+				if (p!= null && value != null) 
+					p.setSummary(value);
+			} catch (ClassCastException e) {
+				Log.e(TAG, "Initialize summary strings ClassCastException");
+				Log.e(TAG, e.getStackTrace().toString());
+				continue;
+			}
 		}
 		
 		//this.findPreference("testpositpref").setOnPreferenceClickListener(this);

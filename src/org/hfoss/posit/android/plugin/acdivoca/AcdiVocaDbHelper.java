@@ -50,7 +50,7 @@ public class AcdiVocaDbHelper {
 	private static final boolean DBG = false;
 	private static final String DATABASE_NAME ="posit";
 	public static final int DATABASE_VERSION = 2;
-	public enum UserType {SUPER, OWNER, USER};
+	public enum UserType {SUPER, ADMIN, OWNER, USER};
 
 	/**
 	 * Private helper class for managing Db operations.
@@ -76,13 +76,24 @@ public class AcdiVocaDbHelper {
 
 			ContentValues values = new ContentValues();
 
-			values.put(USER_USERNAME, SUPERUSER_NAME);
-			values.put(USER_PASSWORD, SUPERUSER_PASSWORD);
-			addUser(db, values, UserType.SUPER);
+			values.put(USER_USERNAME, SUPER_USER_NAME);
+			values.put(USER_PASSWORD, SUPER_USER_PASSWORD);
+			values.put(USER_TYPE_STRING, UserType.SUPER.ordinal());
+			if (!addUser(db, values, UserType.SUPER))
+				Log.e(TAG, "Error adding user = " + SUPER_USER_NAME);
+
+			values.put(USER_USERNAME, ADMIN_USER_NAME);
+			values.put(USER_PASSWORD, ADMIN_USER_PASSWORD);
+			values.put(USER_TYPE_STRING, UserType.ADMIN.ordinal());
+			if (!addUser(db, values, UserType.ADMIN)) 
+				Log.e(TAG, "Error adding user = " + ADMIN_USER_NAME);
+
 			values.put(USER_USERNAME, USER_DEFAULT_NAME);
 			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD);
+			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
+			if (addUser(db, values, UserType.USER)) 
+				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
 
-			addUser(db, values, UserType.USER);	
 		}
 
 		/**
@@ -107,14 +118,19 @@ public class AcdiVocaDbHelper {
 	public static final String USER_PASSWORD = "password";
 	public static final String USER_DEFAULT_NAME = "b";      // For testing purposes
 	public static final String USER_DEFAULT_PASSWORD = "b";
-	public static final String SUPERUSER_NAME = "r";
-	public static final String SUPERUSER_PASSWORD = "a";
+	public static final String ADMIN_USER_NAME = "r";
+	public static final String ADMIN_USER_PASSWORD = "a";
+	public static final String SUPER_USER_NAME = "s";
+	public static final String SUPER_USER_PASSWORD = "a";	
 	public static final String USER_TYPE_STRING = "UserType";
+	public static final String USER_TYPE_KEY= "UserLoginType";
+
 
 	private static final String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS "
 		+ USER_TABLE + "(" + USER_ID + " integer primary key autoincrement, "
 		+ USER_USERNAME + " text, "
-		+ USER_PASSWORD + " text "
+		+ USER_PASSWORD + " text, "
+		+ USER_TYPE_STRING + " integer "
 		+ ")";
 
 	public static final String MESSAGE_TABLE = "sms_message_log";
@@ -426,9 +442,7 @@ public class AcdiVocaDbHelper {
 	 * @return true if the insertion succeeds and false otherwise
 	 */
 	public boolean addUser(ContentValues values, UserType userType) {
-		//		mDb = getWritableDatabase();
 		boolean result = addUser(mDb, values, userType);
-		//		mDb.close();
 		return result;
 	}
 
@@ -447,7 +461,6 @@ public class AcdiVocaDbHelper {
 		String[] columns = null; //{ USER_PASSWORD };
 		Cursor c = db.query(USER_TABLE, columns, 
 				USER_USERNAME + "="+ "'" + username + "'" ,
-				//+ " and " + USER_PASSWORD + "=" + "'" + password + "'" , 
 				null, null, null, null);
 		//Log.i(TAG, "Cursor size = " + c.getCount());
 		if (c.getCount() == 0) {
@@ -469,28 +482,35 @@ public class AcdiVocaDbHelper {
 	 * @param userType is an enum that defines whether this is a regular or super user.
 	 * @return
 	 */
-	public boolean authenicateUser(String username, String password, UserType userType) {
-		if (userType.equals(UserType.SUPER)) {
-			if (!username.equals(SUPERUSER_NAME) ||  !password.equals(SUPERUSER_PASSWORD)) {
-				Toast.makeText(mContext,"Sorry you must be SUPER USER to do this.", Toast.LENGTH_SHORT);
-				return false;
+	//public boolean authenicateUser(String username, String password, UserType userType) {
+	public int authenicateUser(String username, String password, UserType userType) {
+		if (userType.equals(UserType.ADMIN)) {
+			if (!username.equals(ADMIN_USER_NAME) ||  !password.equals(ADMIN_USER_PASSWORD)) {
+				Log.i(TAG, "Sorry you must be ADMIN USER to do this.");
+				Toast.makeText(mContext,"Sorry you must be ADMIN USER to do this.", Toast.LENGTH_SHORT);
+				return -1;
 			}
-		}
-		//		mDb = getReadableDatabase();  // Either open or create the DB    	
-		String[] columns = { USER_PASSWORD };
-		Cursor c = mDb.query(USER_TABLE, columns, 
+		} else if (userType.equals(UserType.SUPER)) {
+			if (!username.equals(SUPER_USER_NAME) ||  !password.equals(SUPER_USER_PASSWORD)) {
+				Log.i(TAG, "Sorry you must be SUPER USER to do this.");
+				Toast.makeText(mContext,"Sorry you must be SUPER USER to do this.", Toast.LENGTH_SHORT);
+				return -1;
+			}
+		} 
+		
+//		String[] columns = { USER_PASSWORD, USER_TYPE_STRING };
+		Cursor c = mDb.query(USER_TABLE, null, 
 				USER_USERNAME + "="+ "'" + username + "'" + 
 				" and " + USER_PASSWORD + "=" + "'" + password + "'" , null, null, null, null);
 		c.moveToFirst();
 		Log.i(TAG, "Cursor size = " + c.getCount());
-		boolean result;
+		
+		int result;
 		if (c.isAfterLast()) 
-			result =  false;
-		else 
-			result = true;
-		ContentValues values = null;
-		if (c.getCount() != 0)
-			values = this.getContentValuesFromRow(c);
+			result =  -1;
+		else {
+			result = c.getInt(c.getColumnIndex(USER_TYPE_STRING));
+		}
 		c.close();
 		mDb.close();
 		//dumpUsers();

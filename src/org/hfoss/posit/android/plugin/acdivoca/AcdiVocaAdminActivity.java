@@ -36,6 +36,7 @@ import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -138,9 +139,20 @@ public class AcdiVocaAdminActivity extends Activity  {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String distrEventStage = prefs.getString(getString(R.string.distribution_event_key), "");
 		String distrPoint = prefs.getString(getString(R.string.distribution_point), "");
+	
+		int userTypeOrdinal = prefs.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
+		Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
+		if (userTypeOrdinal != UserType.SUPER.ordinal()) {
+			menu.getItem(1).setVisible(false);
+		} else {
+			menu.getItem(1).setVisible(true);
+		}
+
 		
 		Log.i(TAG, "onPrepareMenuOptions, distrPoint ="  + distrPoint 
 				+ " distribution stage = " + distrEventStage);
+		
+		
 
 		MenuItem item = null;
 		for (int k = 0; k < menu.size(); k++) {

@@ -30,7 +30,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,6 +53,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	private static final int CONFIRM_EXIT = 0;
 	
 	private UserType userType;
+	private int mUserTypeOrdinal;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -62,12 +66,14 @@ public class LoginActivity extends Activity implements OnClickListener {
 			if (extras == null) {
 				return;
 			}
-			int userTypeInt = extras.getInt(AcdiVocaDbHelper.USER_TYPE_STRING);
-			if (userTypeInt == UserType.USER.ordinal()) {
+			mUserTypeOrdinal = extras.getInt(AcdiVocaDbHelper.USER_TYPE_STRING);
+			if (mUserTypeOrdinal == UserType.USER.ordinal()) {
 				userType = UserType.USER;
-			} else if (userTypeInt == UserType.SUPER.ordinal()) {
+			} else if (mUserTypeOrdinal == UserType.SUPER.ordinal()) {
 				userType = UserType.SUPER;
-			}		
+			} else if (mUserTypeOrdinal == UserType.ADMIN.ordinal()) {
+				userType = UserType.ADMIN;
+			}
 	}
 
 
@@ -105,8 +111,17 @@ public class LoginActivity extends Activity implements OnClickListener {
 			String username = etext.getText().toString();
 			etext = ((EditText)findViewById(R.id.passwordEdit));
 			String password = etext.getText().toString();
-			if (authenticateUser(username, password)) {
+			int userTypeOrdinal = authenticateUser(username, password);
+			if (userTypeOrdinal != -1) {
 				setResult(RESULT_OK,returnIntent);
+				
+				// Remember what type of user this is -- for controlling menus, etc.
+				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+				Editor editor = sp.edit();
+				editor.putInt(AcdiVocaDbHelper.USER_TYPE_KEY, userTypeOrdinal);
+				editor.commit();
+				Log.i(TAG, "User Type Key = "  +  sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY,-1));
+				
 				finish();
 			} else {
 				showDialog(INVALID_LOGIN);
@@ -142,7 +157,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		}
 	}
 	
-	private boolean authenticateUser(String username, String password) {
+	private int authenticateUser(String username, String password) {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		return db.authenicateUser(username, password, userType);
 	}
