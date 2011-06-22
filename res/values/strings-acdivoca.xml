@@ -2,11 +2,34 @@
 	
 	<!--  Acdi Voca Strings -->
 	
+	<!--  Admin Menu Stuff -->
 	<string name="admin_menu">Admin</string>
 	<string name="admin_welcome">Admin Functions\nChoose from the Menu</string>
 	<string name="load_beneficiary_data">Import Beneficiary Data</string>
+	<string name="manage_distribution">Manage Distribution Event</string>
 	<string name="distribution_point">Distribution Point</string>
 	<string name="password_alert_message">Your username or password is incorrect.</string>
+	<string name="start_stop_distribution">Start/stop distribution</string>
+	<string name="start_distribution">Start distribution</string>
+	<string name="stop_distribution">Stop distribution</string>
+	<string name="send_distribution_report">Send distribution report</string>
+
+	<string name="distribution_event_key">distr_event_stage</string>
+	<string name="distribution_event_stage">Distribution Event Stage</string>
+	<string name="select_distr_point">Select distribution point</string>
+	<string name="import_beneficiary_file">Import beneficiary file</string>
+	<string name="start_distribution_event">Start distribution event</string>
+	<string name="stop_distribution_event">Stop distribution event</string>
+	
+	
+	<string name="manage_event_directions">
+	\n\nSteps for managing a distribution event.
+	\n\n\t1) Select the distribution point (Settings).
+	\n\t2) Import the master file. (Menu)
+	\n\t3) Start distribution event. (Menu)
+	\n\t4) Stop distribution event. (Menu)
+	\n\t5) Send distribution report. (Menu)
+	</string>
 	
 	<!--  Button Labels -->
 	

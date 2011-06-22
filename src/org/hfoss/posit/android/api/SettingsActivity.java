@@ -27,11 +27,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.hfoss.posit.android.R;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
@@ -283,6 +285,13 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		 String value = sp.getString(key, null);
 		 if (p != null && value != null)
 			 p.setSummary(value);
+		 
+		 if (key.equals(getString(R.string.distribution_point)) && value != null) {
+			 Editor ed = sp.edit();
+			 ed.putString(getString(R.string.distribution_event_key), 
+					 getString(R.string.import_beneficiary_file));
+			 ed.commit();
+		 }
 	 }
 
 }

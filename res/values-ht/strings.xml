@@ -5,9 +5,23 @@
 	
 	<string name="admin_menu">Admin</string>
 	<string name="admin_welcome">Admin Fonctions\nUtiliser le menu</string>
-	<string name="load_beneficiary_data">Import Beneficiary Data</string>
+	<string name="load_beneficiary_data">Données bénéficiaire importation</string>
+	<string name="manage_distribution">Gérez l\'événement de distribution</string>
 	<string name="distribution_point">Point de distribution</string>
 	<string name="password_alert_message">Votre nom d\'utilisateur ou mot de passe est incorrect.</string>
+	<string name="start_stop_distribution">Démarrer / arrêter la distribution</string>
+	<string name="start_distribution">Démarrer distribution</string>
+	<string name="stop_distribution">Stop distribution</string>
+	<string name="send_distribution_report">Envoyer un rapport de distribution</string>
+	<string name="import_beneficiary_file">Importer le fichier des bénéficiaires</string>
+
+	<string name="manage_event_directions">
+		\n\nÉtapes à suivre pour gérer un événement de distribution.
+		\n\n\t1) Sélectionner le point de distribution (Paramètres).
+		\n\t2) Importer le fichier maître. (Menu)
+		\n\t3) Lancez l\'événement de la distribution. (Menu)
+		\n\t4) Arrêter l\'événement de la distribution. (Menu)
+		\n\t5) Envoyer le rapport de la distribution. (Menu)	</string>
 	
 	<!--  Button Labels -->
 	<string name="list_beneficiary_label">Lis\nBenefisyè</string>
