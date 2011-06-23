@@ -39,9 +39,12 @@ import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -49,7 +52,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -75,9 +80,13 @@ public class AcdiVocaAdminActivity extends Activity  {
 	public static final String DEFAULT_BENEFICIARY_FILE = "Beneficiare.csv";
 	public static final String DEFAULT_LIVELIHOOD_FILE = "Livelihood.csv";
 	public static final String COMMA= ",";
+	public static final String IO_EXC = "Oops! Can't find ";
+	public static final String STRING_EXC = "String Exception";
 	public static final int DONE = 0;
+	public static final int ERROR = -1;
 
-
+	public static final int IO_EXCEPTION = 1;
+	public static final int STRING_EXCEPTION = 2;
 
 	private ArrayAdapter<String> adapter;
 	private String mBeneficiaries[] = null;
@@ -253,14 +262,17 @@ public class AcdiVocaAdminActivity extends Activity  {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = 
 			db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_UPDATE, null, distributionCtr);
-		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
-		mgr.sendMessages(this, acdiVocaMsgs);
+
+//		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+//		mgr.sendMessages(this, acdiVocaMsgs);
 //		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
 		
 		// Now send bulk absences list
 		db = new AcdiVocaDbHelper(this);
-		acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
-//		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+		acdiVocaMsgs.addAll(db.createBulkUpdateMessages(distributionCtr));
+//		acdiVocaMsgs.addAll() = db.createBulkUpdateMessages(distributionCtr);
+
+		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
 		mgr.sendMessages(this, acdiVocaMsgs);
 		//AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
 	}
@@ -322,7 +334,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 	/**
 	 * Reads data from a text file into the Db.
 	 */
-	private void importBeneficiaryDataToDb() {		
+	private int importBeneficiaryDataToDb() {		
 		ContentValues values = new ContentValues();
 	
 		// Read all the file names on the SD Card
@@ -335,6 +347,12 @@ public class AcdiVocaAdminActivity extends Activity  {
 //	    	Log.i(TAG, file[i].getAbsolutePath());  
 		
 		mBeneficiaries = loadBeneficiaryData(mDistrCtr);
+		if (mBeneficiaries.length == 1) {
+			if (Integer.parseInt(mBeneficiaries[0]) == IO_EXCEPTION)
+				return IO_EXCEPTION;
+			else if (Integer.parseInt(mBeneficiaries[0]) == STRING_EXCEPTION)
+				return STRING_EXCEPTION;
+		}
 		
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		int rows = db.clearBeneficiaryTable();
@@ -346,7 +364,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 		
 		// Move to the next stage of the distribution event process
 		setDistributionEventStage( this.getString(R.string.start_distribution_event));		
-
+		return DONE;
 	}
 	
 	/**
@@ -385,11 +403,16 @@ public class AcdiVocaAdminActivity extends Activity  {
 				line = br.readLine();
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			Log.e(TAG, "IO Exception,  file =   " + file);
 			e.printStackTrace();
+			String[] error = {"" + IO_EXCEPTION};
+			return error;
 		} catch (StringIndexOutOfBoundsException e) {
 			Log.e(TAG, "Bad line?  " + line);
+//			showDialog(STRING_EXCEPTION);
 			e.printStackTrace();
+			String[] error = {"" + STRING_EXCEPTION};
+			return error;
 		}
 		String[] dossiers = new String[k];  // Create the actual size of array
 		for (int i= 0; i < k; i++)
@@ -397,11 +420,53 @@ public class AcdiVocaAdminActivity extends Activity  {
 		return dossiers;
 	}
 	
+	/**
+	 * Creates a dialog to confirm that the user wants to exit POSIT.
+	 */
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case IO_EXCEPTION:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(IO_EXC + DEFAULT_BENEFICIARY_FILE)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// User clicked OK so do some stuff
+							finish();
+						}
+					}).create();
+		case STRING_EXCEPTION:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(STRING_EXC)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// User clicked OK so do some stuff
+							finish();
+						}
+					}).create();
+
+		default:
+			return null;
+		}
+	}
+
 	class ImportThreadHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 			if (msg.what == DONE) {
 				mProgressDialog.dismiss();
+			}
+			else if (msg.what == IO_EXCEPTION) {
+				mProgressDialog.dismiss();
+				showDialog(IO_EXCEPTION);
+			}
+			else if (msg.what == STRING_EXCEPTION) {
+				mProgressDialog.dismiss();
+				showDialog(STRING_EXCEPTION);
 			}
 		}
 	}
@@ -421,8 +486,15 @@ public class AcdiVocaAdminActivity extends Activity  {
 	
 		@Override
 		public void run() {
-			importBeneficiaryDataToDb();
-			mHandler.sendEmptyMessage(AcdiVocaAdminActivity.DONE);
+			int result = 0;
+			
+			result = importBeneficiaryDataToDb();
+			if (result == DONE)
+				mHandler.sendEmptyMessage(AcdiVocaAdminActivity.DONE);
+			else if (result == IO_EXCEPTION)
+				mHandler.sendEmptyMessage(AcdiVocaAdminActivity.IO_EXCEPTION);
+			else if (result == STRING_EXCEPTION)
+				mHandler.sendEmptyMessage(AcdiVocaAdminActivity.STRING_EXCEPTION);
 		}
 	}
 }
