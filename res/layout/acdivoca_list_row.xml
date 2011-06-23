@@ -18,7 +18,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" 
 			android:singleLine="true"
-			android:textSize="20dp" 
+			android:textSize="12dp" 
 			android:layout_marginLeft="3dp"
 			android:layout_marginTop="2dp"
 			android:layout_toRightOf="@+id/find_image" />
@@ -27,7 +27,7 @@
 			android:layout_height="wrap_content" 
 			android:textColor="#ff0000"
 			android:layout_marginLeft="3dp"
-			android:textSize="13dp"
+			android:textSize="12dp"
 			android:layout_toRightOf="@+id/row_id"  />		
 
 	<LinearLayout 
@@ -58,7 +58,7 @@
 			android:layout_height="wrap_content" 
 			android:textColor="#ff0000"
 			android:layout_marginLeft="3dp"
-			android:textSize="13dp"
+			android:textSize="12dp"
 			android:layout_toRightOf="@+id/lastname_field"  />		
 		
 

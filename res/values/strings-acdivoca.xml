@@ -79,8 +79,8 @@
     <string name="father_if_child">Father (if child)</string>
     <string name="husband_if_mother">Husband (if mother)</string>
     
-    <string name="health_center">Health Center, Dispensary, or Fixed Point</string>
-    <string name="distribution_post">Distribution Post</string>
+    <string name="health_center">Health Center</string>
+    <string name="distribution_post">Health Center, Dispensary, or Fixed Point</string>
 	<string name="status_change">Status Change Type</string>
     
     <string name="mchn_questions">Questions</string>

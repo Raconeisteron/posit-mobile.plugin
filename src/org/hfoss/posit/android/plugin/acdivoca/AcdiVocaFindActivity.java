@@ -1024,7 +1024,6 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			findViewById(R.id.radio_participating_bene).setVisibility(View.GONE);
 			RadioButton rb = (RadioButton)findViewById(R.id.radio_yes_bene);
 			rb.setChecked(false);
-			
 			findViewById(R.id.mchnPart).setVisibility(View.VISIBLE);
 			findViewById(R.id.participating_acdivoca).setVisibility(View.GONE);
 			findViewById(R.id.radio_participating_acdivoca).setVisibility(View.GONE);
@@ -1066,11 +1065,11 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				Log.i(TAG, "Update to Db is " + result);
 			} else {
 				data.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_NEW);
-				if (data.getAsString(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_MCHN))
+				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_MCHN))
 					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New MCHN");
-				if (data.getAsString(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_AGRI))
+				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_AGRI))
 					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New AGRI");
-				if (data.getAsString(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_BOTH))
+				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_BOTH))
 					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New MCHN&AGRI");
 				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
 				//if radioAgri is checked, make intent

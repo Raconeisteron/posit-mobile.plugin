@@ -80,22 +80,22 @@
 
 				<TextView android:text="@string/health_center"
 					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:visibility="gone"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
 				<Spinner android:id="@+id/healthcenterSpinner"
 					android:layout_marginLeft="30px" android:layout_marginRight="30px"
 					android:entries="@+array/distribution_point_names" android:layout_width="fill_parent"
+					android:visibility="gone"
 					android:layout_height="wrap_content" />
 
 				<TextView android:text="@string/distribution_post"
 					android:textColor="#ff0000" android:layout_width="fill_parent"
-					android:visibility="gone"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
 				<Spinner android:id="@+id/distributionSpinner"
 					android:layout_marginLeft="30px" android:layout_marginRight="30px"
 					android:entries="@+array/distribution_point_names"
-					android:visibility="gone"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
 
