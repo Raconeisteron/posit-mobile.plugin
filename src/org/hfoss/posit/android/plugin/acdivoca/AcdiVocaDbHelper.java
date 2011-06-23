@@ -732,9 +732,13 @@ public class AcdiVocaDbHelper {
 		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
 		Log.i(TAG, "Recording ACK, bene_id = " + acdiVocaMsg.getBeneficiaryId());
 
+		boolean result = false;
+		
 		// Beneficiary IDs are negative for  ACKs of Bulk messages.
 		if (beneficiary_id < 0) {
-			return recordAcknowledgedBulkMessage(acdiVocaMsg);
+			result = recordAcknowledgedBulkMessage(acdiVocaMsg);
+			mDb.close();
+			return result;
 		}
 		
 		// Look up the beneficiary record and extract the message id
@@ -752,15 +756,16 @@ public class AcdiVocaDbHelper {
 			Log.i(TAG, "Unable to find beneficiary, id = " + beneficiary_id);
 		}
 		c.close();
-		mDb.close();
 		
 		acdiVocaMsg.setMessageId(msg_id);
 		if (msg_id != -1) {
-			return updateMessageStatus(acdiVocaMsg, MESSAGE_STATUS_ACK);
+			result = updateMessageStatus(acdiVocaMsg, MESSAGE_STATUS_ACK);
 		} else {
 			Log.i(TAG, "Unable to find id for beneficiary id = " + beneficiary_id);
-			return false;
+			result = false;
 		}
+		mDb.close();
+		return result;
 	}
 	
 	/**

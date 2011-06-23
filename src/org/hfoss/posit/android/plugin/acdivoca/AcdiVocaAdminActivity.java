@@ -253,12 +253,16 @@ public class AcdiVocaAdminActivity extends Activity  {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = 
 			db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_UPDATE, null, distributionCtr);
-		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
+		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+		mgr.sendMessages(this, acdiVocaMsgs);
+//		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
 		
 		// Now send bulk absences list
 		db = new AcdiVocaDbHelper(this);
 		acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
-		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
+//		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+		mgr.sendMessages(this, acdiVocaMsgs);
+		//AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
 	}
 	
 	/**
@@ -343,7 +347,6 @@ public class AcdiVocaAdminActivity extends Activity  {
 		// Move to the next stage of the distribution event process
 		setDistributionEventStage( this.getString(R.string.start_distribution_event));		
 
-//		Toast.makeText(this, "Imported " +  + nImports + " Beneficiaries", Toast.LENGTH_SHORT);
 	}
 	
 	/**
@@ -403,10 +406,8 @@ public class AcdiVocaAdminActivity extends Activity  {
 		}
 	}
 	
-	
 	/**
 	 * Thread to handle import of data from external file. 
-	 * @author rmorelli
 	 *
 	 */
 	class ImportDataThread extends Thread {
