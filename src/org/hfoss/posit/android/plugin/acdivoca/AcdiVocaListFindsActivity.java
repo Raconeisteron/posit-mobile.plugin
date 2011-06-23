@@ -340,7 +340,10 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 				int n = acdiVocaMsgs.size();
 				if (n != 0) {
 					Log.i(TAG, "onMenuSelected sending " + n + " new beneficiary messages" );
-					AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
+					AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+					mgr.sendMessages(this, acdiVocaMsgs);
+
+					//AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
 				}
 				//displayMessageList(SearchFilterActivity.RESULT_SELECT_NEW, null);	
 
@@ -374,7 +377,10 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 			acdiVocaMsgs.add(acdiVocaMsg);
 			++k;
 		}
-		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
+		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+		mgr.sendMessages(this, acdiVocaMsgs);
+
+		//AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
 		//Toast.makeText(this, "Sent " + nSent + " messages", Toast.LENGTH_SHORT).show();
 	}
 	

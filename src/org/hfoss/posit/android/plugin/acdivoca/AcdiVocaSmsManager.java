@@ -29,8 +29,12 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity.ImportDataThread;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity.ImportThreadHandler;
+
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -40,6 +44,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
@@ -66,6 +71,10 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	private static Handler mHandler;
 	private static AcdiVocaSmsManager mInstance = null; 
 	private static String acdiVocaPhone = null;
+	
+	private static ProgressDialog mProgressDialog;
+	public static final int DONE = 0;
+
 	
 	public AcdiVocaSmsManager()  {
 	}
@@ -258,14 +267,25 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		return true;
 	}
 	
+	public void sendMessages(Context context, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
+		Log.i(TAG, "sendMessages,  n =" + acdiVocaMsgs.size());
+		
+		mProgressDialog = ProgressDialog.show(context, "Sending messages",
+				"Please wait.", true, true);
+		
+		SendMessagesThread thread = new SendMessagesThread(context, 
+				new SendMessagesThreadHandler(),
+				acdiVocaMsgs);
+		thread.start();	
+	}
 	
 	
 	/**
 	 * Utility method to send messages.
 	 * @param acdiVocaMsgs an ArrayList of messages.
 	 */
-	public static void sendMessages(Context context, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
-		Log.i(TAG, "Sending N messages = " + acdiVocaMsgs.size());
+	private void transmitMessages(Context context, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
+		Log.i(TAG, "Transmitting  messages = " + acdiVocaMsgs.size());
 		AcdiVocaMessage acdiVocaMsg = null;
 		Iterator<AcdiVocaMessage> it = acdiVocaMsgs.iterator();
 		int nSent = 0;
@@ -291,7 +311,6 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			}
 		}
-		Toast.makeText(context, "Sent " + nSent + " messages.", Toast.LENGTH_SHORT).show();
 	}
 	
 	
@@ -366,6 +385,44 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		String msg = "";
 		//msg = ACDI_VOCA_PREFIX + "=" + id + "," + rawMessage;
 		return msg;
+	}
+	
+	
+	/**
+	 * Handler for the SendMessageThread
+	 *
+	 */
+	class SendMessagesThreadHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			Log.i(TAG,"Message received " + msg.what);
+			if (msg.what == DONE) {
+				mProgressDialog.dismiss();
+				mProgressDialog.cancel();
+			}
+		}
+	}
+	
+	/**
+	 * Thread to handle import of data from external file. 
+	 *
+	 */
+	class SendMessagesThread extends Thread {
+		private Context mContext;
+		private Handler mHandler;
+		private ArrayList<AcdiVocaMessage> mAcdiVocaMsgs;
+		
+		public SendMessagesThread(Context context, Handler handler, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
+			mHandler = handler;
+			mContext = context;
+			mAcdiVocaMsgs = acdiVocaMsgs;
+		}
+	
+		@Override
+		public void run() {
+			transmitMessages(mContext, mAcdiVocaMsgs);
+			mHandler.sendEmptyMessage(AcdiVocaSmsManager.DONE);
+		}
 	}
 	
 	
