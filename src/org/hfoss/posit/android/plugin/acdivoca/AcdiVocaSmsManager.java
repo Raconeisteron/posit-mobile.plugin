@@ -49,7 +49,6 @@ import android.widget.Toast;
 public class AcdiVocaSmsManager extends BroadcastReceiver {
 	
 	public static final String TAG = "AcdiVocaSmsManager";
-
 	public static final String SENT = "SMS_SENT";
 	public static final String DELIVERED = "SMS_DELIVERED";
 	
@@ -84,20 +83,11 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
         Uri uri = Uri.parse(url); 
         acdiVocaPhone = 
 			PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
-
+ //  Not used
  //       mContext.getContentResolver().registerContentObserver(uri, 
  //       		true, new AcdiVocaSmsManager().new SmsContentObserver(mHandler));                    
 	}
-	
-//	public static AcdiVocaSmsManager initInstance(Activity activity){
-//		sInstance = new AcdiVocaSmsManager(activity);
-//		return sInstance;
-//	}
-//	
-//	public static AcdiVocaSmsManager getInstance(){
-//		assert(sInstance != null);
-//		return sInstance;
-//	}
+
 
 	/**
 	 * Invoked automatically when a message is received.  Requires Manifest:
@@ -141,23 +131,21 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	}
 
 	/**
-	 * Handles an incoming Sms from AcdiVoca Hdqts. 
+	 * Handles an incoming Sms from AcdiVoca Modem. We are interested in AcdiVoca ACK messages, 
+	 * which are:
 	 * 
-	 * We are interested in AcdiVoca ACK messages, which are:
+	 * AV=ACK,IDS=id1&id2&id3&...&idN,..., 
 	 * 
-	 * AV=ACK,IDS=id1|id2|id3|...|idN,..., 
-	 * 
-	 * The list of ids represent beneficiary ids (i.e., row_ids, which were sent in the original
-	 * message to the server.  These messages should be marked acknowledged.
-
+	 * The list of ids represent either beneficiary ids (i.e., row_ids, which were sent in 
+	 * the original message) for regular messages or they represent message ids for bulk
+	 * beneficiary update messages, in which case the id numbers are negative.  These 
+	 * messages should be marked acknowledged.
 	 * @param msg
 	 */
 	private void handleAcdiVocaIncoming(String msg) {
 		Log.i(TAG, "Processing incoming SMS: " + msg);
 		boolean isAck  = false;
 		String attrvalPairs[] = msg.split(AttributeManager.PAIRS_SEPARATOR);
-
-		AcdiVocaDbHelper db = null;
 
 		// The message has the format AV=ACK,IDS=1/2/3/.../,  so just two pairs
 		for (int k = 0; k < attrvalPairs.length; k++) {
@@ -178,48 +166,70 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			// If this is the list of IDs,  parse the ID numbers and update the Db
 			if (attr.equals(AcdiVocaMessage.IDS) && isAck) {
 				Log.i(TAG, attr + "=" + val);
-
-				// We use a tokenizer with a number parser so we can handle non-numeric 
-				//  data without crashing.  It skips all non-numerics as it reads the stream.
-				StreamTokenizer t = new StreamTokenizer(new StringReader(val));
-				t.resetSyntax( );
-				t.parseNumbers( );
-				try {
-
-					//  While not end-of-file, get the next token and extract number
-					int token =  t.nextToken();
-					while (token != StreamTokenizer.TT_EOF) {
-						if (token != StreamTokenizer.TT_NUMBER )  {
-							//Log.i(TAG, "Integer parser skipping token = " + token); // Skip nonnumerics
-						}
-						else {
-							
-							// Construct an SmsMessage and update the Db
-							int beneficiaryId = (int)t.nval;
-							Log.i(TAG, "ACKing, beneficiary_id: " + beneficiaryId);
-							AcdiVocaMessage avMsg = new AcdiVocaMessage(
-									-1,  // Message Id is unknown -- Modem sends back Beneficiary Id
-									beneficiaryId,  // Beneficiary Id
-									AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
-									attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
-									"",   // SmsMessage N/A
-									""    // Header  N/A
-							);
-							db = new AcdiVocaDbHelper(mContext);
-							db.recordAcknowledgedMessage(avMsg);
-						}
-						token = t.nextToken();
-					}
-				}
-				catch ( IOException e ) {
-					Log.i(TAG,"Number format exception");
-					e.printStackTrace();
-					continue;					
-				}
+				processAckList(attr, val);
 			}
 		}
-
 	}
+	
+	/**
+	 * Helper method to process of list of IDs as tokens.
+	 * @param val
+	 */
+	private void processAckList(String attr, String val) {
+
+		// We use a tokenizer with a number parser so we can handle non-numeric 
+		//  data without crashing.  It skips all non-numerics as it reads the stream.
+		StreamTokenizer t = new StreamTokenizer(new StringReader(val));
+		t.resetSyntax( );
+		t.parseNumbers( );
+		try {
+
+			//  While not end-of-file, get the next token and extract number
+			int token =  t.nextToken();
+			while (token != StreamTokenizer.TT_EOF) {
+				if (token != StreamTokenizer.TT_NUMBER )  {
+					//Log.i(TAG, "Integer parser skipping token = " + token); // Skip nonnumerics
+				}
+				else {
+
+					// Construct an SmsMessage and update the Db
+					int ackId = (int)t.nval;
+					Log.i(TAG, "ACKing, ackId: " + ackId);
+					AcdiVocaMessage avMsg = null;
+					
+					// Message for bulk messages, where IDs < 0 and represent message Ids
+					if (ackId < 0)  {   // Check for bulk 
+						avMsg = new AcdiVocaMessage(
+								ackId * -1,  // For Bulks, the ackId is MsgId
+								-1,  // Beneficiary Id
+								AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
+								attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
+								"",   // SmsMessage N/A
+								""    // Header  N/A
+						);
+					} else {
+						// Message for normal messages, where IDs > 0 and represent beneficiary IDs
+						avMsg = new AcdiVocaMessage(
+								-1,  // Message Id is unknown -- Modem sends back Beneficiary Id
+								ackId,  // For non-acks, ackId is Beneficiary Id
+								AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
+								attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
+								"",   // SmsMessage N/A
+								""    // Header  N/A
+						);
+					}
+					AcdiVocaDbHelper db = new AcdiVocaDbHelper(mContext);
+					db.recordAcknowledgedMessage(avMsg);
+				}
+				token = t.nextToken();
+			}
+		}
+		catch ( IOException e ) {
+			Log.i(TAG,"Number format exception");
+			e.printStackTrace();
+		}
+	}
+		
 	
 	@Override
 	public IBinder peekService(Context myContext, Intent service) {
@@ -272,10 +282,12 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 
 			if (AcdiVocaSmsManager.sendMessage(context, beneficiary_id, acdiVocaMsg, null)) {
 				Log.i(TAG, "Message Sent--should update as SENT");
+				db =  new AcdiVocaDbHelper(context);
 				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
 				++nSent;
 			} else {
 				Log.i(TAG, "Message Not Sent -- should update as PENDING");
+				db =  new AcdiVocaDbHelper(context);
 				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			}
 		}
@@ -357,6 +369,13 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	}
 	
 	
+	/**
+	 * This class could be used to handle incoming SMS messages.  Could
+	 * possibly be used to test whether phone company acknowledged that 
+	 * outgoing messages were received (instead of handling the ACKs
+	 * ourselves).
+	 *
+	 */
 	class SmsContentObserver extends ContentObserver {
 		
 		
