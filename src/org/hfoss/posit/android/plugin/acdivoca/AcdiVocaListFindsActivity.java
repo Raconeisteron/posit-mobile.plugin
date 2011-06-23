@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.Utils;
 import org.hfoss.posit.android.api.ListFindsActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -70,6 +72,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	public static final int FIND_FROM_LIST = 0;
 	public static final String MESSAGE_START_SUBSTRING = "t=";
 	
+	private String mAction;
+	private int mStatusFilter;
+	
 	
 	private int project_id;
     private static final boolean DBG = false;
@@ -84,10 +89,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	private boolean mMessageListDisplayed = false;
 
 	/** 
-	 * Called when the Activity starts and
-	 *  when the user navigates back to ListPhotoFindsActivity
-	 *  from some other app. It creates a
-	 *  DBHelper and calls fillData() to fetch data from the DB.
+	 * Called when the Activity starts.
 	 *  @param savedInstanceState contains the Activity's previously
 	 *   frozen state.  In this case it is unused.
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -95,6 +97,13 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Intent intent = getIntent();
+		mAction = intent.getAction();
+		if (mAction == null) 
+			mAction = "";
+		mStatusFilter = intent.getIntExtra(AcdiVocaDbHelper.FINDS_STATUS, -1);
+		Log.i(TAG,"onCreate(), action = " + mAction);
 
 //		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		project_id = 0; //sp.getInt("PROJECT_ID", 0);
@@ -109,11 +118,16 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+		Log.i(TAG,"onResume()");
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 //		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		project_id = 0; //sp.getInt("PROJECT_ID", 0);
+		
+		
+//		if (mAction.equals(Intent.ACTION_SEND)) {
+//			displayMessageList(mStatusFilter, null);  // Null distribution center = all New finds
+//		} else 
 		if (!mMessageListDisplayed) {
 			fillData(null);
 			NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
@@ -131,20 +145,23 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	protected void onPause(){
 		super.onPause();
 		stopManagingCursor(mCursor);
-		mCursor.close();
+		if (mCursor != null)
+			mCursor.close();
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		mCursor.close();
+		if (mCursor != null)
+			mCursor.close();
 	}
 
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mCursor.close();
+		if (mCursor != null)
+			mCursor.close();
 	}
 
 
@@ -156,8 +173,13 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	private void fillData(String order_by) {
 		String[] columns = AcdiVocaDbHelper.list_row_data;
 		int [] views = AcdiVocaDbHelper.list_row_views;
-	
-		mCursor = AcdiVocaFindDataManager.getInstance().fetchFindsByProjectId(this, project_id, order_by);	
+			
+		if (mAction.equals(Intent.ACTION_SEND)) 
+			mCursor = 
+				AcdiVocaFindDataManager.getInstance().fetchFindsByStatus(this, AcdiVocaDbHelper.FINDS_STATUS_NEW);
+		else
+			mCursor = AcdiVocaFindDataManager.getInstance().fetchFindsByProjectId(this, project_id, order_by);
+		
 		//		Uri allFinds = Uri.parse("content://org.hfoss.provider.POSIT/finds_project/"+PROJECT_ID);
 		//	    mCursor = managedQuery(allFinds, null, null, null, null);
 		if (mCursor.getCount() == 0) { // No finds
@@ -245,23 +267,45 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		Log.i(TAG, "Prepare Menus, N messages = " + mNMessagesDisplayed);
-        MenuItem menuItem = menu.findItem(R.id.sync_messages);
-		if (mNMessagesDisplayed > 0 && 
-				(mMessageFilter == SearchFilterActivity.RESULT_SELECT_NEW 
-						|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_PENDING
-						|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_UPDATE
-						|| mMessageFilter == SearchFilterActivity.RESULT_BULK_UPDATE))  {
-	        menuItem.setEnabled(true);		
+
+		MenuItem listItem = menu.findItem(R.id.list_messages);
+		MenuItem syncItem = menu.findItem(R.id.sync_messages);
+		MenuItem deleteItem = menu.findItem(R.id.delete_messages_menu);
+		deleteItem.setVisible(false);
+
+		// If invoked from main view (rather than Admin menu)
+		if (mAction.equals(Intent.ACTION_SEND)) {
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+			int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
+			Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
+			if (userTypeOrdinal == UserType.USER.ordinal()) {
+				listItem.setVisible(false);
+				syncItem.setVisible(true);
+				syncItem.setEnabled(true);
+			} else {
+				listItem.setVisible(true);
+				listItem.setEnabled(true);
+				syncItem.setVisible(false);
+			}
 		} else {
-	        menuItem.setEnabled(false);		
+
+			if (mNMessagesDisplayed > 0 && 
+					(mMessageFilter == SearchFilterActivity.RESULT_SELECT_NEW 
+							|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_PENDING
+							|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_UPDATE
+							|| mMessageFilter == SearchFilterActivity.RESULT_BULK_UPDATE))  {
+				syncItem.setEnabled(true);		
+			} else {
+				syncItem.setEnabled(false);		
+			}
+			syncItem = menu.findItem(R.id.delete_messages_menu);
+			if (mMessageFilter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED
+					&& mNMessagesDisplayed > 0) {
+				syncItem.setEnabled(true);
+			} else {
+				syncItem.setEnabled(false);
+			}	
 		}
-		menuItem = menu.findItem(R.id.delete_messages_menu);
-		if (mMessageFilter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED
-				&& mNMessagesDisplayed > 0) {
-			menuItem.setEnabled(true);
-		} else {
-			menuItem.setEnabled(false);
-		}			
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -271,8 +315,12 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		        
+		Log.i(TAG, "Menu item selected " + item.getTitle());
 		Intent intent;
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
+		Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
+		
 		switch (item.getItemId()) {	
 		
 		// Start a SearchFilterActivity for result
@@ -283,13 +331,26 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 			this.startActivityForResult(intent, SearchFilterActivity.ACTION_SELECT);
 			break;
 			
-		// This case sends all messages	(if messages are cuurently displayed)
+		// This case sends all messages	(if messages are currently displayed)
 		case R.id.sync_messages:
-			if (this.mMessageListDisplayed) {
-				sendMessages();
+			if (userTypeOrdinal == UserType.USER.ordinal()) {
+				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+				ArrayList<AcdiVocaMessage> acdiVocaMsgs 
+					= db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
+				int n = acdiVocaMsgs.size();
+				if (n != 0) {
+					Log.i(TAG, "onMenuSelected sending " + n + " new beneficiary messages" );
+					AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
+				}
+				//displayMessageList(SearchFilterActivity.RESULT_SELECT_NEW, null);	
+
+			} else {
+				if (this.mMessageListDisplayed) {
+					sendMessages();
+				}
+				mNMessagesDisplayed = 0;
+				fillData(null);
 			}
-			mNMessagesDisplayed = 0;
-			fillData(null);
 			break;
 			
 		case R.id.delete_messages_menu:
@@ -378,7 +439,11 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 			} else {
 				mMessageFilter = resultCode;   
 //				Toast.makeText(this, "Ok " + resultCode, Toast.LENGTH_SHORT).show();
-				displayMessageList(resultCode);	
+				SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+				String distrKey = this.getResources().getString(R.string.distribution_point);
+				String distributionCtr = sharedPrefs.getString(distrKey, "");
+
+				displayMessageList(resultCode, distributionCtr);	
 			} 
 		
 		default:
@@ -390,30 +455,32 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	/**
 	 * Displays SMS messages, filter by status and type.
 	 */
-	private void displayMessageList(int filter) {
+	private void displayMessageList(int filter, String distributionCtr) {
 		Log.i(TAG, "Display messages for filter " + filter);
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = null;
 		
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String distrKey = this.getResources().getString(R.string.distribution_point);
-		String distributionCtr = sharedPrefs.getString(distrKey, "");
-		Log.i(TAG, distrKey +"="+ distributionCtr);
-		
-		//dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
-		
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+//		String distrKey = this.getResources().getString(R.string.distribution_point);
+//		String distributionCtr = sharedPrefs.getString(distrKey, "");
+		Log.i(TAG, "Distribution center = "+ distributionCtr);
+				
+		AcdiVocaDbHelper db = null;   
 		if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
 				|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {  // Second arg is order by
+			db = new AcdiVocaDbHelper(this);
 			acdiVocaMsgs = db.createMessagesForBeneficiaries(filter, null, distributionCtr);
 		} else if (filter == SearchFilterActivity.RESULT_SELECT_ALL 
 				|| filter == SearchFilterActivity.RESULT_SELECT_PENDING
 				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
 				|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
+			db = new AcdiVocaDbHelper(this);
 			acdiVocaMsgs = db.fetchSmsMessages(filter, null); 
 		} else if (filter == SearchFilterActivity.RESULT_BULK_UPDATE) {
+			db = new AcdiVocaDbHelper(this);
 			acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
-		} else
+		} else {
 			return;
+		}
 				
 		if (acdiVocaMsgs.size() == 0) {
 			mNMessagesDisplayed = 0;
@@ -470,10 +537,17 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		TextView tv = null; // = (TextView) view;
 		long findIden = cursor.getLong(cursor.getColumnIndexOrThrow(AcdiVocaDbHelper.FINDS_ID));
 		switch (view.getId()) {
+		case R.id.messageStatusText:
+			tv = (TextView)view;
+			int msgstatus = cursor.getInt(cursor.getColumnIndex(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS));
+			String text = AcdiVocaDbHelper.MESSAGE_STATUS_STRINGS[msgstatus];
+			tv.setText(text);
+			break;
 
 		default:
 			return false;
 		}
+		return true;
 	}
 
 	/**

@@ -1,30 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-   <!-- 
-	<item 
-        android:title="Sort by description" 
-        android:id="@+id/sort_name_menu_item"
-        android:icon="@android:drawable/ic_menu_sort_alphabetically">
-    </item>
-    <item 
-        android:title="Sort by date" 
-        android:id="@+id/sort_date_menu_item"
-        android:icon="@android:drawable/ic_menu_recent_history">
-    </item>
-       
-
-	<item
-		android:icon="@drawable/ic_menu_bluetooth"
-		android:title="@string/bluetooth_sync"
-		android:id="@+id/bluetooth_sync_menu_item">
-	</item>
-	<item 
-		android:title="@string/map" 
-		android:id="@+id/map_finds_menu_item"
-		android:icon="@android:drawable/ic_menu_mapmode">
-	</item>
-	
-	
--->	
 	<item
 		android:icon="@drawable/ic_menu_list"
 		android:title="@string/list_messages"

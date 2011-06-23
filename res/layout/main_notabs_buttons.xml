@@ -43,7 +43,7 @@
  	<TextView android:id="@+id/website" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" android:layout_gravity="center"
 		android:textSize="12sp" android:textColor="#ffffff"
-		android:text="Powered by POSIT"
+		android:text="Powered by HFOSS"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
 		android:autoLink="web" android:layout_marginBottom="10dp" />
