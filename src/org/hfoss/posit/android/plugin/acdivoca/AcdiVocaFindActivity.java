@@ -1,5 +1,4 @@
-/*
- * File: AcdiVocaFindActivity.java
+/* File: AcdiVocaFindActivity.java
  * 
  * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
@@ -251,7 +250,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				String doing = intent.getStringExtra(AttributeManager.FINDS_RELATIVE_AGRI);
 				if (doing != null){
 				if (doing.equals(AcdiVocaDbHelper.FINDS_YES)){
-					
+					findViewById(R.id.agri_rel).setVisibility(View.VISIBLE);
 					findViewById(R.id.participating_bene_same).setVisibility(View.GONE);
 					findViewById(R.id.radio_same_bene).setVisibility(View.GONE);
 				}
@@ -259,6 +258,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				doing = intent.getStringExtra(AttributeManager.FINDS_RELATIVE_BENE);
 				if (doing != null){
 				if (doing.equals(AcdiVocaDbHelper.FINDS_YES)){
+					findViewById(R.id.mchn_rel).setVisibility(View.VISIBLE);
 					findViewById(R.id.participating_acdivoca).setVisibility(View.GONE);
 					findViewById(R.id.radio_participating_acdivoca).setVisibility(View.GONE);
 				}
@@ -342,7 +342,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
 		
 		// ADDING SEX
-		String sex = "undefined";
+		String sex = "";
 		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
 		if (sexRB.isChecked()) 
 			sex = AcdiVocaDbHelper.FINDS_FEMALE;
@@ -361,14 +361,8 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		
 		// ADDING HEALTH CENTER AND DISTRIBUTION POST        
 		String spinnerStr = "";
-		Spinner spinner = (Spinner)findViewById(R.id.healthcenterSpinner);
+		Spinner spinner = (Spinner)findViewById(R.id.distributionSpinner);
 		if (spinner != null) {
-			spinnerStr = (String) spinner.getSelectedItem();
-			result.put(AcdiVocaDbHelper.FINDS_HEALTH_CENTER, spinnerStr);
-		}
-		
-		if (spinner != null) {
-			spinner = (Spinner)findViewById(R.id.distributionSpinner);
 			spinnerStr = (String) spinner.getSelectedItem();
 			result.put(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST, spinnerStr);
 		}
@@ -443,25 +437,25 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		result.put(AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER, visitMotherLeader); 
 		Log.i(TAG, AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER +"="+ visitMotherLeader);
 
-		String acdiAgri = "";		
+		Boolean acdiAgri = false;		
 		RadioButton acdiAgriRB = (RadioButton)findViewById(R.id.radio_yes_acdivoca);
 		if (acdiAgriRB != null && acdiAgriRB.isChecked()) {
-			acdiAgri = AcdiVocaDbHelper.FINDS_YES;
+			acdiAgri = true;
 		}
 		acdiAgriRB = (RadioButton)findViewById(R.id.radio_no_acdivoca);
 		if (acdiAgriRB != null && acdiAgriRB.isChecked()) {
-			acdiAgri = AcdiVocaDbHelper.FINDS_NO;
+			acdiAgri = false;
 		}
 		result.put(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI, acdiAgri);   
 
-		String acdiAgriRelative = "";		
+		Boolean acdiAgriRelative = false;		
 		RadioButton acdiAgriSameRB = (RadioButton)findViewById(R.id.radio_yes_relative_acdivoca);
 		if (acdiAgriSameRB != null && acdiAgriSameRB.isChecked()) {
-			acdiAgriRelative = AcdiVocaDbHelper.FINDS_YES;
+			acdiAgriRelative = true;
 		}
 		acdiAgriSameRB = (RadioButton)findViewById(R.id.radio_no_relative_acdivoca);
 		if (acdiAgriSameRB != null && acdiAgriSameRB.isChecked()) {
-			acdiAgriRelative = AcdiVocaDbHelper.FINDS_NO;
+			acdiAgriRelative = false;
 		}
 		result.put(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI, acdiAgriRelative);
 		
@@ -682,23 +676,23 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		
 		
 		// ADDING AGRI QUESTIONS
-		String bene = "";
+		Boolean bene = false;
 		RadioButton beneRB = (RadioButton)findViewById(R.id.radio_yes_bene_same);
 		if (beneRB != null && beneRB.isChecked()) 
-			bene = AcdiVocaDbHelper.FINDS_YES;
+			bene = true;
 		beneRB = (RadioButton)findViewById(R.id.radio_no_bene_same);
 		if (beneRB != null && beneRB.isChecked()) {
-			bene = AcdiVocaDbHelper.FINDS_NO;
+			bene = false;
 		}
 		result.put(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE, bene); 
 		
-		bene = "";
+		bene = false;
 		beneRB = (RadioButton)findViewById(R.id.radio_yes_bene);
 		if (beneRB != null && beneRB.isChecked()) 
-			bene = AcdiVocaDbHelper.FINDS_YES;
+			bene = true;
 		beneRB = (RadioButton)findViewById(R.id.radio_no_bene);
 		if (beneRB != null && beneRB.isChecked()) {
-			bene = AcdiVocaDbHelper.FINDS_NO;
+			bene = false;
 		}
 		result.put(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE, bene); 
 		
@@ -752,9 +746,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				sexRB.setChecked(true);
 
 			// SPINNERS FOR MCHN
-			Spinner spinner = (Spinner)findViewById(R.id.healthcenterSpinner);
-			spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_HEALTH_CENTER);			
-			spinner = (Spinner)findViewById(R.id.distributionSpinner);
+			Spinner spinner = (Spinner)findViewById(R.id.distributionSpinner);
 			spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
 
 			// NUMBNER OF PEOPLE IN HOME
@@ -809,34 +801,34 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			RadioButton aRadioButton = (RadioButton)findViewById(R.id.radio_motherleader_yes);
 			Log.i(TAG, "motherLeader=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER));
 
-			String value = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER);
+			Integer value = contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER);
 			if (value != null) {
-				if (value.equals(AcdiVocaDbHelper.FINDS_YES))
+				if (value.equals(1))
 					aRadioButton.setChecked(true);
 				else 
 					aRadioButton.setChecked(false);
 
 				aRadioButton = (RadioButton)findViewById(R.id.radio_motherleader_no);
 
-				if (value.equals(AcdiVocaDbHelper.FINDS_NO)){
+				if (value.equals(0)){
 					aRadioButton.setChecked(true);
 				} else {
 					aRadioButton.setChecked(false);
 				}
 			}
 
-			value = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER);
+			value = contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER);
 			aRadioButton = (RadioButton)findViewById(R.id.radio_visit_yes);
 			Log.i(TAG, "motherLeaderVisit=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER));
 			if (value != null) {
-				if (value.equals(AcdiVocaDbHelper.FINDS_YES))
+				if (value.equals(1))
 					aRadioButton.setChecked(true);
 				else 
 					aRadioButton.setChecked(false);
 
 				aRadioButton = (RadioButton)findViewById(R.id.radio_visit_no);
 
-				if (value.equals(AcdiVocaDbHelper.FINDS_NO)){
+				if (value.equals(0)){
 					aRadioButton.setChecked(true);
 				} else {
 					aRadioButton.setChecked(false);
@@ -844,16 +836,16 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				}
 			}
 
-			value = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI);
+			value = contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI);
 			aRadioButton = (RadioButton)findViewById(R.id.radio_yes_acdivoca);
 			Log.i(TAG, "acdiAgri=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI));
 			if (value != null) {
-				if (value.equals(AcdiVocaDbHelper.FINDS_YES))
+				if (value.equals(1))
 					aRadioButton.setChecked(true);
 				else 
 					aRadioButton.setChecked(false);
 				aRadioButton  = (RadioButton)findViewById(R.id.radio_no_acdivoca);
-				if (value.equals(AcdiVocaDbHelper.FINDS_NO)){
+				if (value.equals(0)){
 					aRadioButton.setChecked(true);
 				} else {
 					aRadioButton.setChecked(false);
@@ -862,16 +854,16 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			}
 
 			//added Jun 17
-			value = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI);
+			value = contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI);
 			aRadioButton = (RadioButton)findViewById(R.id.radio_yes_relative_acdivoca);
-			Log.i(TAG, "acdiAgri=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI));
+			Log.i(TAG, "acdiAgri=" + contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI));
 			if (value != null) {
-				if (value.equals(AcdiVocaDbHelper.FINDS_YES))
+				if (value.equals(1))
 					aRadioButton.setChecked(true);
 				else 
 					aRadioButton.setChecked(false);
 				aRadioButton  = (RadioButton)findViewById(R.id.radio_no_relative_acdivoca);
-				if (value.equals(AcdiVocaDbHelper.FINDS_NO)){
+				if (value.equals(0)){
 					aRadioButton.setChecked(true);
 				} else {
 					aRadioButton.setChecked(false);
@@ -1009,6 +1001,9 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			rb.setChecked(false);
 
 			findViewById(R.id.agriPart).setVisibility(View.VISIBLE);
+			findViewById(R.id.commune_sectionSpinner).setFocusable(true);
+			findViewById(R.id.commune_sectionSpinner).setFocusableInTouchMode(true);			
+			findViewById(R.id.commune_sectionSpinner).requestFocus();
 			findViewById(R.id.participating_bene_same).setVisibility(View.GONE);
 			findViewById(R.id.radio_same_bene).setVisibility(View.GONE);
 		}
@@ -1025,6 +1020,9 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			RadioButton rb = (RadioButton)findViewById(R.id.radio_yes_bene);
 			rb.setChecked(false);
 			findViewById(R.id.mchnPart).setVisibility(View.VISIBLE);
+			findViewById(R.id.distributionSpinner).setFocusable(true);
+			findViewById(R.id.distributionSpinner).setFocusableInTouchMode(true);			
+			findViewById(R.id.distributionSpinner).requestFocus();
 			findViewById(R.id.participating_acdivoca).setVisibility(View.GONE);
 			findViewById(R.id.radio_participating_acdivoca).setVisibility(View.GONE);
 		}		
@@ -1065,12 +1063,13 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				Log.i(TAG, "Update to Db is " + result);
 			} else {
 				data.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_NEW);
-				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_MCHN))
-					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New MCHN");
+				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_MCHN)){
+					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BENE_DOSSIER);
+				}
 				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_AGRI))
-					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New AGRI");
+					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
 				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_BOTH))
-					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New MCHN&AGRI");
+					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BOTH_DOSSIER);
 				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
 				//if radioAgri is checked, make intent
 				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_relative_acdivoca);
@@ -1243,4 +1242,5 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		}
 	}
 	
-}
+
+}				

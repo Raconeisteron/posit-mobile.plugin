@@ -10,6 +10,19 @@
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:orientation="vertical" android:scrollbars="vertical|horizontal">
 
+			<TextView android:text="@string/mchn_relative_text"
+				android:id="@+id/mchn_rel"
+				android:textColor="#ff0000" android:layout_width="fill_parent"
+				android:visibility="gone"
+				android:layout_height="wrap_content" android:textSize="20dp" />
+				
+			<TextView android:text="@string/agri_relative_text"
+			android:id="@+id/agri_rel"
+				android:textColor="#ff0000" android:layout_width="fill_parent"
+				android:visibility="gone"
+				android:layout_height="wrap_content" android:textSize="20dp" />
+			
+			
 			<TextView android:text="@string/general_info"
 				android:textColor="#ff0000" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:textSize="20dp" />
@@ -77,6 +90,13 @@
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="vertical" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:id="@+id/mchnPart">
+				
+				
+				<TextView android:text="@string/mchn_title"
+					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:visibility="visible"  android:id="@+id/mchn_title"
+					android:focusable="true"
+					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
 				<TextView android:text="@string/health_center"
 					android:textColor="#ff0000" android:layout_width="fill_parent"
@@ -273,6 +293,14 @@
 				android:orientation="vertical" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:id="@+id/agriPart">
 
+				
+				<TextView android:text="@string/agri_title"
+					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:visibility="visible" android:id="@+id/agri_title"
+					android:focusableInTouchMode="true"
+					android:focusable="true"
+					android:layout_marginLeft="10px" android:layout_height="wrap_content" />	
+				
 				<TextView android:text="@string/commune_section"
 					android:textColor="#ff0000" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
