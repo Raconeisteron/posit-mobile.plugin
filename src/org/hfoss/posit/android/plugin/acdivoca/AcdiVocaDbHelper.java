@@ -386,6 +386,7 @@ public class AcdiVocaDbHelper {
 		FINDS_DOSSIER,  
 		FINDS_LASTNAME,
 		FINDS_FIRSTNAME,
+		FINDS_MESSAGE_STATUS,
 		FINDS_DOB,
 		FINDS_SEX,
 		FINDS_HOUSEHOLD_SIZE,
@@ -399,6 +400,7 @@ public class AcdiVocaDbHelper {
 		R.id.dossierText,
 		R.id.lastname_field, 
 		R.id.firstname_field,
+		R.id.messageStatusText,
 		R.id.datepicker,
 		R.id.femaleRadio,
 		R.id.inhomeEdit,
@@ -948,6 +950,7 @@ public class AcdiVocaDbHelper {
 		}
 		return success;
 	}
+	
 	/** 
 	 * SUSPECT:  PositDbHelper should not return a Cursor -- causes memory leaks: 
 	 * Returns a Cursor with rows for all Finds of a given project.
@@ -958,6 +961,19 @@ public class AcdiVocaDbHelper {
 		Cursor c = mDb.query(FINDS_TABLE,null, 
 				FINDS_PROJECT_ID +"="+project_id, null, null, null, order_by);
 		Log.i(TAG,"fetchFindsByProjectId " + FINDS_PROJECT_ID + "=" + project_id + " count=" + c.getCount());
+		mDb.close();
+		return c;
+	}
+	
+	/** 
+	 * SUSPECT:  PositDbHelper should not return a Cursor -- causes memory leaks: 
+	 * Returns a Cursor with rows for all Finds of a given project.
+	 * @return
+	 */
+	public Cursor fetchFindsByStatus(int status) {
+		Cursor c = mDb.query(FINDS_TABLE,null,
+				FINDS_STATUS + " = " + status, null, null, null, null);
+		Log.i(TAG,"fetchFindsByStatus " + FINDS_STATUS + "=" + status + " count=" + c.getCount());
 		mDb.close();
 		return c;
 	}

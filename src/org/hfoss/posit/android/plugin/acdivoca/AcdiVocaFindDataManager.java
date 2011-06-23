@@ -80,6 +80,21 @@ public class AcdiVocaFindDataManager extends FindDataManager{
 		return dbHelper.fetchFindsByProjectId(project_id, order_by);
 	}
 	
+
+	/**
+	 * Fetches all finds of a given status, probably new finds.
+	 * @param context
+	 * @param project_id
+	 * @param order_by
+	 * @return
+	 */
+	public Cursor fetchFindsByStatus(Context context, int status) {
+		AcdiVocaDbHelper dbHelper = new AcdiVocaDbHelper(context); 
+		return dbHelper.fetchFindsByStatus(status);
+	}
+	
+	
+	
 	/**
 	 * Looks up a pre-existing find by its row id.
 	 * @param context

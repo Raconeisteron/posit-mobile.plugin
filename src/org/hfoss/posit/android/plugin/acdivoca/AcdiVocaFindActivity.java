@@ -1065,6 +1065,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				}
 				Log.i(TAG, "Update to Db is " + result);
 			} else {
+				data.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_NEW);
 				if (data.getAsString(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_MCHN))
 					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New MCHN");
 				if (data.getAsString(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_AGRI))

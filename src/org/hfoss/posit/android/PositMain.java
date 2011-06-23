@@ -28,10 +28,12 @@ import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
+import org.hfoss.posit.android.plugin.acdivoca.SearchFilterActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -152,6 +154,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				mainLogo.setImageResource(resID);
 			}
 			
+			// New Beneficiary button
 			if (FindPluginManager.mAddButtonLabel != null) {
 				//final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 				final Button addFindButton = (Button)findViewById(R.id.addFindButton);
@@ -161,13 +164,16 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				if (addFindButton != null)
 					addFindButton.setOnClickListener(this);
 				
-				if (distrStage.equals(getString(R.string.start_distribution_event))) {
+				// Button is gone user USER user during distribution events
+				if (distrStage.equals(getString(R.string.stop_distribution_event))
+						&& userTypeOrdinal == UserType.USER.ordinal()) {
 					addFindButton.setVisibility(View.GONE);
 				} else {
 					addFindButton.setVisibility(View.VISIBLE);
 				}
 			}
 
+			// List beneficiary -- i.e. send messages
 			if (FindPluginManager.mListButtonLabel != null) {
 //				final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
 				final Button listFindButton = (Button) findViewById(R.id.listFindButton);
@@ -177,13 +183,16 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					listFindButton.setOnClickListener(this);
 				}
 				
-				if (distrStage.equals(getString(R.string.start_distribution_event))) {
+				// Button is gone user USER user during distribution events
+				if (distrStage.equals(getString(R.string.stop_distribution_event))
+						&& userTypeOrdinal == UserType.USER.ordinal()) {
 					listFindButton.setVisibility(View.GONE);
 				} else {
 					listFindButton.setVisibility(View.VISIBLE);
 				}
 			}
 			
+			// Update button -- used during Distribution events
 			if (FindPluginManager.mExtraButtonLabel != null) {
 				final Button extraButton = (Button) findViewById(R.id.extraButton);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel, "string", "org.hfoss.posit.android");
@@ -192,8 +201,19 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					extraButton.setText(resid);
 					extraButton.setVisibility(View.VISIBLE);
 				}
+				
+				// Button is gone user USER and ADMIN users except during distribution events
+				if (!distrStage.equals(getString(R.string.stop_distribution_event))
+						&& (userTypeOrdinal == UserType.USER.ordinal()
+						|| userTypeOrdinal == UserType.ADMIN.ordinal())) {
+					extraButton.setVisibility(View.GONE);
+				} else {
+					extraButton.setVisibility(View.VISIBLE);
+				}
+
 			}
 
+			// New agriculture beneficiary
 			if (FindPluginManager.mExtraButtonLabel2 != null) {
 				final Button extraButton = (Button) findViewById(R.id.extraButton2);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel2, "string", "org.hfoss.posit.android");
@@ -203,7 +223,9 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					extraButton.setOnClickListener(this);
 				}
 				
-				if (distrStage.equals(getString(R.string.start_distribution_event))) {
+				// Button is gone user USER user during distribution events
+				if (distrStage.equals(getString(R.string.stop_distribution_event))
+						&& userTypeOrdinal == UserType.USER.ordinal()) {
 					extraButton.setVisibility(View.GONE);
 				} else {
 					extraButton.setVisibility(View.VISIBLE);
@@ -296,14 +318,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	 * Handles clicks on PositMain's buttons.
 	 */
 	public void onClick(View view) {
-//		// Make sure the user has chosen a project before trying to add finds
-//		SharedPreferences sp = PreferenceManager
-//		.getDefaultSharedPreferences(this);
-//		if (sp.getString("PROJECT_NAME", "").equals("")) {
-//			Toast.makeText(this, "To get started, you must choose a project.", Toast.LENGTH_SHORT).show();
-//			Intent i = new Intent(this, ShowProjectsActivity.class);
-//			startActivity(i);
-//		} else {
+
 			Intent intent = new Intent();
 
 			switch (view.getId()) {
@@ -314,8 +329,14 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				startActivity(intent);
 				break;
 			case R.id.listFindButton:
-				intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
-				startActivity(intent);
+				intent = new Intent();
+				intent.setAction(Intent.ACTION_SEND);
+				intent.putExtra(AcdiVocaDbHelper.FINDS_STATUS, SearchFilterActivity.RESULT_SELECT_NEW);
+				//intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
+				intent.setClass(this, AcdiVocaListFindsActivity.class);
+				startActivity(intent);				
+				//startActivity(new Intent(this, AcdiVocaListFindsActivity.class));
+
 				break;
 
 			case R.id.extraButton:
@@ -332,7 +353,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				startActivity(intent);
 				break;			
 			}
-//		}
 	}
 
 	/**
