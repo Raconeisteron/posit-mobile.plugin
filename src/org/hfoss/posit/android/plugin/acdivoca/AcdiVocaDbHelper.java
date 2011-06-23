@@ -486,7 +486,7 @@ public class AcdiVocaDbHelper {
 	 */
 	//public boolean authenicateUser(String username, String password, UserType userType) {
 	public int authenicateUser(String username, String password, UserType userType) {
-		int result = -1;
+		int result = 0;
 		if (userType.equals(UserType.ADMIN)) {
 			if (!username.equals(ADMIN_USER_NAME) ||  !password.equals(ADMIN_USER_PASSWORD)) {
 				Log.i(TAG, "Sorry you must be ADMIN USER to do this.");
@@ -500,20 +500,21 @@ public class AcdiVocaDbHelper {
 				result = -1;
 			}
 		} 
-		
-//		String[] columns = { USER_PASSWORD, USER_TYPE_STRING };
-		Cursor c = mDb.query(USER_TABLE, null, 
-				USER_USERNAME + "="+ "'" + username + "'" + 
-				" and " + USER_PASSWORD + "=" + "'" + password + "'" , null, null, null, null);
-		c.moveToFirst();
-		Log.i(TAG, "Cursor size = " + c.getCount());
-		
-		if (c.isAfterLast()) 
-			result =  -1;
-		else {
-			result = c.getInt(c.getColumnIndex(USER_TYPE_STRING));
+		if (result != -1) {
+			//		String[] columns = { USER_PASSWORD, USER_TYPE_STRING };
+			Cursor c = mDb.query(USER_TABLE, null, 
+					USER_USERNAME + "="+ "'" + username + "'" + 
+					" and " + USER_PASSWORD + "=" + "'" + password + "'" , null, null, null, null);
+			c.moveToFirst();
+			Log.i(TAG, "Cursor size = " + c.getCount());
+
+			if (c.isAfterLast()) 
+				result =  -1;
+			else {
+				result = c.getInt(c.getColumnIndex(USER_TYPE_STRING));
+			}
+			c.close();
 		}
-		c.close();
 		mDb.close();
 		//dumpUsers();
 		return result;
