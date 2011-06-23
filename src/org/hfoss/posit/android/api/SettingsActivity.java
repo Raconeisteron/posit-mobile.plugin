@@ -320,19 +320,27 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	 * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
 	 */
 	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-		Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
-				" value = " + sp.getString(key, ""));
-		Log.i(TAG, "Preferences= " + sp.getAll().toString());
-		Preference p =  this.findPreference(key);
-		String value = sp.getString(key, null);
-		if (p != null && value != null)
-			p.setSummary(value);
+		try {
+		if (!key.equals(AcdiVocaDbHelper.USER_TYPE_KEY)) {
 
-		if (key.equals(getString(R.string.distribution_point)) && value != null) {
-			Editor ed = sp.edit();
-			ed.putString(getString(R.string.distribution_event_key), 
-					getString(R.string.import_beneficiary_file));
-			ed.commit();
+			Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
+					" value = " + sp.getString(key, ""));
+			Log.i(TAG, "Preferences= " + sp.getAll().toString());
+			Preference p =  this.findPreference(key);
+			String value = sp.getString(key, null);
+			if (p != null && value != null)
+				p.setSummary(value);
+
+			if (key.equals(getString(R.string.distribution_point)) && value != null) {
+				Editor ed = sp.edit();
+				ed.putString(getString(R.string.distribution_event_key), 
+						getString(R.string.import_beneficiary_file));
+				ed.commit();
+			}
+		}
+		} catch (ClassCastException e) {
+			Log.e(TAG, "Class Cast Exception on " + key);
+			e.printStackTrace();
 		}
 	}
 	
