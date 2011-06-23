@@ -73,6 +73,7 @@
     <string name="add_send">Send SMS</string>
     
     <!--   MCHN Strings -->
+    <string name="mchn_title">Provide information for the MCHN registration below.</string>
     <string name="relatives_section">Beneficiary relatives</string>
     <string name="responsible_if_child">Alternate collector (if child)</string>
     <string name="responsible_if_mother">Alternate collector (if mother)</string>
@@ -195,6 +196,9 @@
     <string name="partners">Are you working with other partners?</string>
  	
     <!-- New agri strings - 6/21/11 -->
+    <string name="agri_title">Provide information for the Agriculture registration below.</string>
+     <string name="agri_relative_text">Provide information for your family member in AGRICULTURE Program.</string>
+	 <string name="mchn_relative_text">Provide information for your family member in BENEFICIARY Program.</string>
      <string name="farmer">Farmer</string>
      <string name="muso">MUSO</string>
      <string name="cattle_rancher">Cattle Rancher</string>     

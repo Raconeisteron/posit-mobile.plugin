@@ -194,7 +194,7 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_HOUSEHOLD_SIZE = AttributeManager.FINDS_HOUSEHOLD_SIZE;
 
 	public static final String FINDS_DISTRIBUTION_POST = AttributeManager.FINDS_DISTRIBUTION_POST;
-	public static final String FINDS_HEALTH_CENTER = AttributeManager.FINDS_HEALTH_CENTER;
+//	public static final String FINDS_HEALTH_CENTER = AttributeManager.FINDS_HEALTH_CENTER;
 	public static final String FINDS_Q_MOTHER_LEADER = AttributeManager.FINDS_Q_MOTHER_LEADER; // "mother_leader";
 	public static final String FINDS_Q_VISIT_MOTHER_LEADER = AttributeManager.FINDS_Q_VISIT_MOTHER_LEADER; // "visit_mother_leader";
 	public static final String FINDS_Q_PARTICIPATING_AGRI = AttributeManager.FINDS_Q_PARTICIPATING_AGRI; // "pariticipating_agri";
@@ -309,7 +309,7 @@ public class AcdiVocaDbHelper {
 //		+ FINDS_AGE + " text, "
 		+ FINDS_HOUSEHOLD_SIZE + " text, "
 		+ FINDS_BENEFICIARY_CATEGORY + " text, "
-		+ FINDS_HEALTH_CENTER + " text, "
+//		+ FINDS_HEALTH_CENTER + " text, "
 		+ FINDS_DISTRIBUTION_POST + " text, "
 		+ FINDS_Q_MOTHER_LEADER + " boolean, "
 		+ FINDS_Q_VISIT_MOTHER_LEADER + " boolean, "
@@ -391,7 +391,7 @@ public class AcdiVocaDbHelper {
 		FINDS_SEX,
 		FINDS_HOUSEHOLD_SIZE,
 		FINDS_BENEFICIARY_CATEGORY,
-		FINDS_HEALTH_CENTER,
+//		FINDS_HEALTH_CENTER,
 		FINDS_DISTRIBUTION_POST
 	};
 
@@ -405,7 +405,7 @@ public class AcdiVocaDbHelper {
 		R.id.femaleRadio,
 		R.id.inhomeEdit,
 		R.id.expectingRadio,
-		R.id.healthcenterSpinner,
+//		R.id.healthcenterSpinner,
 		R.id.distributionSpinner
 	};
 
@@ -1121,12 +1121,21 @@ public class AcdiVocaDbHelper {
 
 				// Construct the raw message with full attribute names
 				// For each column (attribute), put an attr=val pair in the string
-
+				String prn = "";
+				for (int i=0; i < columns.length; i++){
+					prn += columns[i]+" , ";
+				}
+				Log.i(TAG,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				Log.i(TAG,prn);
+				String empty= "";
 				for (int j = 0; j < columns.length; j++) {
-					if (!columns[j].equals(MESSAGE_TEXT)) {
+					String val = c.getString(c.getColumnIndex(columns[j]));
+					if (val != null){
+					if ((!columns[j].equals(MESSAGE_TEXT)) && (!val.equals(empty))) {
 						rawMessage += 
 							columns[j] +  "=" +
 							c.getString(c.getColumnIndex(columns[j])) + ",";
+					}
 					}
 				}
 

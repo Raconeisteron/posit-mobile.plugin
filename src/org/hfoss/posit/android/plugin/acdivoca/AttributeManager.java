@@ -26,6 +26,8 @@ package org.hfoss.posit.android.plugin.acdivoca;   // Mobile side package
 import java.util.HashMap;
 import java.util.Iterator;
 
+import android.util.Log;
+
 /**
  * This class manages all attributes and abbreviations
  * on both the client (mobile) and server side.  
@@ -113,11 +115,18 @@ public class AttributeManager {
 	public static final String ABBREV_CREATED_AT = "t1";
 	public static final String ABBREV_SENT_AT = "t2";
 	public static final String ABBREV_ACK_AT = "t3";
+	public static final String ABBREV_MESSAGE_ID = "mi";
 	
 	public static final String ABBREV_STATUS = "s"; 
 	public static final String ABBREV_ID = "id";    
 	public static final String ABBREV_AV = "AV";
 	public static final String ABBREV_TYPE = "t";
+	
+	public static final String ABBREV_BENE_DOSSIER = "0";
+	public static final String ABBREV_AGRI_DOSSIER = "1";
+	public static final String ABBREV_BOTH_DOSSIER = "2";
+	
+	
 	
 	public static final String ABBREV_FIRST = "f";     
 	public static final String ABBREV_LAST = "l";      
@@ -132,6 +141,8 @@ public class AttributeManager {
 	public static final String ABBREV_IS_AGRI = "ag";
 	public static final String ABBREV_RELATIVE_AGRI = "ar";
 	public static final String ABBREV_LAND_AMT = "la";
+	public static final String ABBREV_PARTICIPATING_BENE = "bn";
+	public static final String ABBREV_RELATIVE_BENE = "rb";
 	
 	public static final String ABBREV_NUMBER_IN_HOME = "n";     
 	public static final String ABBREV_HEALTH_CENTER = "h";      
@@ -149,6 +160,8 @@ public class AttributeManager {
 	public static final String ABBREV_IS_RANCHER = "ra";
 	public static final String ABBREV_IS_STOREOWNER = "st";
 	public static final String ABBREV_IS_OTHER = "ot";
+	public static final String ABBREV_IS_ARTISAN = "at";
+
 	
 	// For Update Messages
 	public static final String ABBREV_Q_CHANGE = "cq";   // Added to incorporated changes to beneficiary type
@@ -166,10 +179,13 @@ public class AttributeManager {
 	//  For example, the binary integer 'is=9' or, in binary,
 	//  'is=1001' would represent 'fa and ra" or 'farmer and rancher'.
 	//  Methods are available to perform the encoding.
-	public static final String[] isAFields = {"fa", "fi", "mu", "ra", "st", "ot"};
+	public static final String[] isAFields = {"fa", "fi", "mu", "ra", "st", "ot", "at","fo", "sv", "cr", "pl", "md", "pt","ag","ar","bn","rb"};
 	public static final String ABBREV_ISA = "is";
 
-
+	
+	
+	
+	
 	// More Y/N questions for the agri form
 	public static final String ABBREV_HAVE_BARREMINES = "ba";
 	public static final String ABBREV_HAVE_BROUTTE = "br";
@@ -188,7 +204,7 @@ public class AttributeManager {
 	// questions regarding plant, seeds, and tools.
 	public static final String ABBREV_HASA = "hs";
 	public static final String[] hasAFields = {"ba", "br", "ce", "ho", "ma", 
-		"pe", "pi", "se", "tr", "ve", "tu"};
+		"pe", "pi", "se", "tr", "ve", "tu", "co"};
 
 	// -------------- DATA VALUES
 	// These correspond to data values represented as Enums
@@ -244,6 +260,12 @@ public class AttributeManager {
 	//  'firstname=joe,lastname=smith,...,sex=M'
 	//  Using the data defined here, it would be encoded as
 	// 'f=joe,l=smith,...,g=M'
+	public static final String FINDS_BENE_DOSSIER = "NEW MCHN";
+	public static final String FINDS_AGRI_DOSSIER = "NEW AGRI";
+	public static final String FINDS_BOTH_DOSSIER = "NEW MCHN&AGRI";
+	
+	
+	
 	public static final String FINDS_DOSSIER =  "dossier";
 	public static final String FINDS_TYPE =  "type";
 	public static final String FINDS_STATUS =  "status";
@@ -257,7 +279,7 @@ public class AttributeManager {
 	public static final String FINDS_HOUSEHOLD_SIZE =  "household_size";
 	public static final String FINDS_BENEFICIARY_CATEGORY =  "beneficiary_category";
 	public static final String FINDS_SEX =  "sex";
-	public static final String FINDS_HEALTH_CENTER =  "health_center";
+//	public static final String FINDS_HEALTH_CENTER =  "health_center";
 	public static final String FINDS_DISTRIBUTION_POST =  "distribution_post";
 	public static final String MESSAGE_BENEFICIARY_ID =  "beneficiary_id";
 	public static final String MESSAGE_CREATED_AT =  "created_time";
@@ -309,6 +331,14 @@ public class AttributeManager {
 	public static final String FINDS_PARTNER_MARDNR = "partner_mardnr";
 	public static final String FINDS_PARTNER_OTHER = "partner_other";
 	
+	public static final String ABBREV_PARTNER_FAO = "fo";
+	public static final String ABBREV_PARTNER_SAVE = "sv";
+	public static final String ABBREV_PARTNER_CROSE = "cr";
+	public static final String ABBREV_PARTNER_PLAN = "pl";
+	public static final String ABBREV_PARTNER_MARDNR = "md";
+	public static final String ABBREV_PARTNER_OTHER = "pt";
+
+
 //  These don't seem to be necessary any more, but keep as commented out
 //	public static final String ABBREV_AGRICULTURE_1 = "a1";
 //	public static final String ABBREV_AGRICULTURE_2 = "a2";
@@ -341,7 +371,7 @@ public class AttributeManager {
 	public static final String LONG_SEX = "sex";
 	public static final String LONG_BENEFICIARY = "beneficiary";
 	public static final String LONG_NUMBER_IN_HOME = "NumberInHome";
-	public static final String LONG_HEALTH_CENTER = "HealthCenter";
+//	public static final String LONG_HEALTH_CENTER = "HealthCenter";
 	public static final String LONG_DISTRIBUTION_POST = "DistributionPost";
 	public static final String LONG_NAME_CHILD = "nameChild";
 	public static final String LONG_NAME_WOMAN = "nameWoman";
@@ -405,7 +435,7 @@ public class AttributeManager {
 		
 		abbreviations.put(ABBREV_CATEGORY, LONG_BENEFICIARY);
 		abbreviations.put(ABBREV_NUMBER_IN_HOME, LONG_NUMBER_IN_HOME);
-		abbreviations.put(ABBREV_HEALTH_CENTER, LONG_HEALTH_CENTER);
+//		abbreviations.put(ABBREV_HEALTH_CENTER, LONG_HEALTH_CENTER);
 		abbreviations.put(ABBREV_DISTRIBUTION_POST, LONG_DISTRIBUTION_POST);
 		abbreviations.put(ABBREV_NAME_CHILD, LONG_NAME_CHILD);
 		abbreviations.put(ABBREV_NAME_WOMAN, LONG_NAME_WOMAN);
@@ -492,11 +522,16 @@ public class AttributeManager {
 				
 		// ---------- MOBILE SIDE MAPPINGS TO ABBREVIATIONS
 		// This group maps Db column names in the on-phone Db to SMS abbreviations
+		
+		abbreviations.put(FINDS_BENE_DOSSIER, ABBREV_BENE_DOSSIER);
+		abbreviations.put(FINDS_AGRI_DOSSIER, ABBREV_AGRI_DOSSIER);
+		abbreviations.put(FINDS_BOTH_DOSSIER, ABBREV_BOTH_DOSSIER);
 		abbreviations.put(FINDS_DOSSIER, ABBREV_DOSSIER);
 		abbreviations.put(FINDS_TYPE, ABBREV_TYPE);
 		abbreviations.put(FINDS_STATUS, ABBREV_STATUS);
 		abbreviations.put(MESSAGE_TEXT, ABBREV_MESSAGE_TEXT);
 		abbreviations.put(FINDS_MESSAGE_STATUS, ABBREV_MESSAGE_STATUS);
+		abbreviations.put(FINDS_MESSAGE_ID, ABBREV_MESSAGE_ID);
 		abbreviations.put(FINDS_FIRSTNAME, ABBREV_FIRST);
 		abbreviations.put(FINDS_LASTNAME, ABBREV_LAST);
 		abbreviations.put(FINDS_ADDRESS, ABBREV_LOCALITY);
@@ -504,7 +539,7 @@ public class AttributeManager {
 		abbreviations.put(FINDS_HOUSEHOLD_SIZE, ABBREV_NUMBER_IN_HOME);
 		abbreviations.put(FINDS_BENEFICIARY_CATEGORY, ABBREV_CATEGORY );
 		abbreviations.put(FINDS_SEX, ABBREV_SEX);
-		abbreviations.put(FINDS_HEALTH_CENTER, ABBREV_HEALTH_CENTER);
+//		abbreviations.put(FINDS_HEALTH_CENTER, ABBREV_HEALTH_CENTER);
 		abbreviations.put(FINDS_DISTRIBUTION_POST,ABBREV_DISTRIBUTION_POST);
 		abbreviations.put(MESSAGE_BENEFICIARY_ID, ABBREV_ID);
 		abbreviations.put(MESSAGE_CREATED_AT, ABBREV_CREATED_AT);
@@ -515,6 +550,8 @@ public class AttributeManager {
 		abbreviations.put(FINDS_Q_VISIT_MOTHER_LEADER, ABBREV_VISIT_MOTHERLEADER);
 		abbreviations.put(FINDS_Q_PARTICIPATING_AGRI, ABBREV_IS_AGRI);
 		abbreviations.put(FINDS_Q_RELATIVE_AGRI, ABBREV_RELATIVE_AGRI);
+		abbreviations.put(FINDS_Q_PARTICIPATING_BENE, ABBREV_PARTICIPATING_BENE);
+		abbreviations.put(FINDS_Q_RELATIVE_BENE, ABBREV_RELATIVE_BENE);
 		abbreviations.put(FINDS_LAND_AMOUNT, ABBREV_LAND_AMT);
 		abbreviations.put(FINDS_RELATIVE_1, "r1");
 		abbreviations.put(FINDS_RELATIVE_2, "r2");
@@ -524,6 +561,7 @@ public class AttributeManager {
 		abbreviations.put(FINDS_IS_MUSO, ABBREV_IS_MUSO);
 		abbreviations.put(FINDS_IS_RANCHER, ABBREV_IS_RANCHER);
 		abbreviations.put(FINDS_IS_STOREOWN, ABBREV_IS_STOREOWNER);
+		abbreviations.put(FINDS_IS_ARTISAN, ABBREV_IS_ARTISAN);
 		abbreviations.put(FINDS_IS_OTHER, ABBREV_IS_OTHER);
 		abbreviations.put(FINDS_HAVE_BARREAMINES, ABBREV_HAVE_BARREMINES);
 		abbreviations.put(FINDS_HAVE_BROUETTE, ABBREV_HAVE_BROUTTE);
@@ -536,6 +574,16 @@ public class AttributeManager {
 		abbreviations.put(FINDS_HAVE_TREE, ABBREV_HAVE_TREE);
 		abbreviations.put(FINDS_HAVE_TUBER, ABBREV_HAVE_TUBER);
 		abbreviations.put(FINDS_HAVE_VEGE, ABBREV_HAVE_VEG);
+		abbreviations.put(FINDS_HAVE_COFFEE, ABBREV_HAVE_COFFEE);
+		
+		abbreviations.put(FINDS_PARTNER_FAO, ABBREV_PARTNER_FAO);
+		abbreviations.put(FINDS_PARTNER_SAVE, ABBREV_PARTNER_SAVE);
+		abbreviations.put(FINDS_PARTNER_CROSE, ABBREV_PARTNER_CROSE);
+		abbreviations.put(FINDS_PARTNER_PLAN, ABBREV_PARTNER_PLAN);
+		abbreviations.put(FINDS_PARTNER_MARDNR, ABBREV_PARTNER_MARDNR);
+		abbreviations.put(FINDS_PARTNER_OTHER, ABBREV_PARTNER_OTHER);
+		
+		
 		
 		// These are for beneficiary update messages
 		abbreviations.put(FINDS_Q_CHANGE, ABBREV_Q_CHANGE);  
@@ -768,7 +816,8 @@ public class AttributeManager {
 	public static String decodeBinaryFieldsInt(int codedInt, String[] attributes) {
 		String result = "";
 		int len = attributes.length;    
-		
+		Log.i(TAG,"AAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBREEEEEEEEEEVVVVVVVVVVVV");
+		Log.i(TAG,attributes.toString());
 		// Moving right to left in the attributes array, use the array index
 		// as the exponent in 2^k, subtracting 2^k from the codedInt on each 
 		// iteration. If 2^k can be subtracted from codedInt that means that
