@@ -311,19 +311,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		while (k < nMsgs) {
 			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
 			acdiVocaMsgs.add(acdiVocaMsg);
-//			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
-//			Log.i(TAG, "Raw Message: " + acdiVocaMsg.getRawMessage());
-//			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
-//			
-//			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//			if (AcdiVocaSmsManager.sendMessage(this, beneficiary_id, acdiVocaMsg, null)) {
-//				Log.i(TAG, "Message Sent--should update as SENT");
-//				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
-//				++nSent;
-//			} else {
-//				Log.i(TAG, "Message Not Sent -- should update as PENDING");
-//				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-//			}
 			++k;
 		}
 		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
@@ -406,7 +393,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	private void displayMessageList(int filter) {
 		Log.i(TAG, "Display messages for filter " + filter);
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = null;
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String distrKey = this.getResources().getString(R.string.distribution_point);
@@ -415,6 +401,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		
 		//dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
 		
+		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
 				|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {  // Second arg is order by
 			acdiVocaMsgs = db.createMessagesForBeneficiaries(filter, null, distributionCtr);

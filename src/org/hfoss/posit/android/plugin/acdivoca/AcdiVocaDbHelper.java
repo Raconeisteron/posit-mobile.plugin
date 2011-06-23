@@ -93,7 +93,6 @@ public class AcdiVocaDbHelper {
 			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
 			if (addUser(db, values, UserType.USER)) 
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
-
 		}
 
 		/**
@@ -485,17 +484,18 @@ public class AcdiVocaDbHelper {
 	 */
 	//public boolean authenicateUser(String username, String password, UserType userType) {
 	public int authenicateUser(String username, String password, UserType userType) {
+		int result = -1;
 		if (userType.equals(UserType.ADMIN)) {
 			if (!username.equals(ADMIN_USER_NAME) ||  !password.equals(ADMIN_USER_PASSWORD)) {
 				Log.i(TAG, "Sorry you must be ADMIN USER to do this.");
 				Toast.makeText(mContext,"Sorry you must be ADMIN USER to do this.", Toast.LENGTH_SHORT);
-				return -1;
+				result = -1;
 			}
 		} else if (userType.equals(UserType.SUPER)) {
 			if (!username.equals(SUPER_USER_NAME) ||  !password.equals(SUPER_USER_PASSWORD)) {
 				Log.i(TAG, "Sorry you must be SUPER USER to do this.");
 				Toast.makeText(mContext,"Sorry you must be SUPER USER to do this.", Toast.LENGTH_SHORT);
-				return -1;
+				result = -1;
 			}
 		} 
 		
@@ -506,7 +506,6 @@ public class AcdiVocaDbHelper {
 		c.moveToFirst();
 		Log.i(TAG, "Cursor size = " + c.getCount());
 		
-		int result;
 		if (c.isAfterLast()) 
 			result =  -1;
 		else {
@@ -626,6 +625,7 @@ public class AcdiVocaDbHelper {
 	 * @param date
 	 * @return
 	 */
+	@SuppressWarnings("finally")
 	private String adjustDateForDatePicker(String date) {
 		try {
 			String[] yrmonday = date.split("/");
@@ -643,6 +643,7 @@ public class AcdiVocaDbHelper {
 	 * @param date
 	 * @return
 	 */
+	@SuppressWarnings("finally")
 	private String adjustDateForSmsReader(String date) {
 		try { 
 			String[] yrmonday = date.split("/");
@@ -655,18 +656,84 @@ public class AcdiVocaDbHelper {
 		}
 	}
 
+
+	/**
+	 * Helper method to process ACKs for bulk update messages. Bulk updates
+	 * are messages of the form AV=msgid,d1&d2&...&dN,  where d's are dossier numbers.
+	 * Bulk update messages are stored in the message table. 
+	 * 
+	 * Uses the the message id to look up the bulk update message in the message table
+	 * and updates the FINDS table with STATUS = ACK for each dossier number in the 
+	 * bulk message. Finally, updates the MESSAGE table with STATUS=ACK.
+	 * 
+	 * @param acdiVocaMsg the message constructed by SmsManager.
+	 * @return
+	 */
+	private boolean recordAcknowledgedBulkMessage(AcdiVocaMessage acdiVocaMsg) {
+		int msgId = acdiVocaMsg.getMessageId();
+		Log.i(TAG, "Recording Bulk ACK, msg_id = " + msgId);
+
+		Cursor c = null;
+			c = mDb.query(MESSAGE_TABLE, null, 
+					MESSAGE_ID + "=" + msgId, 
+					null, null, null, null);
+			
+		int rows = 0;
+		
+		// Should just be one row in cursor
+		if (c.getCount() != 0) {
+			c.moveToFirst();
+			String msg = c.getString(c.getColumnIndex(MESSAGE_TEXT));
+			String dossiers[] = msg.split(AttributeManager.LIST_SEPARATOR);
+			ContentValues args = new ContentValues();
+			args.put(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_ACK);
+
+			// For each dossier number in the message, update the FINDS table.
+			for (int k = 0; k < dossiers.length; k++) {
+				//Log.i(TAG, "Updating FINDS table for dossier = " + dossiers[k]);
+				rows += mDb.update(FINDS_TABLE, 
+						args, 
+						FINDS_DOSSIER + " = " + "'" + dossiers[k] + "'",
+						null); 
+			}			
+			Log.i(TAG, "Bulk Acknowleddge, rows = " + rows);
+			
+			// Finally, update the message table
+			Log.i(TAG, "Updating MESSAGE table for msg = " + msgId);
+			args = new ContentValues();
+			args.put(MESSAGE_STATUS, MESSAGE_STATUS_ACK);
+			rows += mDb.update(MESSAGE_TABLE, 
+					args, 
+					MESSAGE_ID + " = " + msgId,
+					null); 
+		} else {
+			Log.i(TAG, "Failed to find message with id = " + msgId);
+		}
+		c.close();
+		mDb.close();
+		return rows > 0;
+	}
 	
 	/**
-	 * Record and incoming ACK from the modem. The modem sends back the beneficiary
-	 * id for the message.  This method looks up the message id and updates the
-	 * message table. 
-	 * @param acdiVocaMsg
+	 * Record an incoming ACK from the modem. For normal messages, the modem 
+	 * sends back the beneficiary id for the sent message.  This method looks 
+	 * up the message id and updates the MESSAGE and FIND tables. 
+	 * 
+	 * NOTE: This method also receives ACKs for bulk messages, which it passes
+	 * to a helper method. 
+	 * 
+	 * @param acdiVocaMsg the message constructed by SmsManager.
 	 * @return
 	 */
 	public boolean recordAcknowledgedMessage(AcdiVocaMessage acdiVocaMsg) {
 		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
 		Log.i(TAG, "Recording ACK, bene_id = " + acdiVocaMsg.getBeneficiaryId());
 
+		// Beneficiary IDs are negative for  ACKs of Bulk messages.
+		if (beneficiary_id < 0) {
+			return recordAcknowledgedBulkMessage(acdiVocaMsg);
+		}
+		
 		// Look up the beneficiary record and extract the message id
 		Cursor c = null;
 		c = mDb.query(FINDS_TABLE, null, 
@@ -682,6 +749,8 @@ public class AcdiVocaDbHelper {
 			Log.i(TAG, "Unable to find beneficiary, id = " + beneficiary_id);
 		}
 		c.close();
+		mDb.close();
+		
 		acdiVocaMsg.setMessageId(msg_id);
 		if (msg_id != -1) {
 			return updateMessageStatus(acdiVocaMsg, MESSAGE_STATUS_ACK);
@@ -693,12 +762,13 @@ public class AcdiVocaDbHelper {
 	
 	/**
 	 * Updates beneficiary table for bulk dossier numbers -- i.e. n1&n2&...&nM.
+	 * Bulk messages are sent to record absentees at AcdiVoca distribution events.
 	 * @param acdiVocaMsg
 	 * @return
 	 */
 	private int updateBeneficiaryTableForBulkIds(AcdiVocaMessage acdiVocaMsg, long msgId, int status) {
 		String msg = acdiVocaMsg.getSmsMessage();
-		Log.i(TAG, "updateBeneTable, sms " + msg);
+		Log.i(TAG, "updateBeneficiary Table, sms = " + msg);
 		int rows = 0;
 		String dossiers[] = msg.split(AttributeManager.LIST_SEPARATOR);
 		for (int k = 0; k < dossiers.length; k++) {
@@ -712,12 +782,13 @@ public class AcdiVocaDbHelper {
 					FINDS_DOSSIER + " = " + "'" + dossiers[k] + "'",
 					null); 
 		}
+		mDb.close();
 		return rows;
 	}
 
 	
 	/**
-	 * Updates the message status in the message table.
+	 * Updates the message status in the message table and Finds table.
 	 * @param message the SMS message
 	 * @param status the new status
 	 * @return
@@ -731,48 +802,7 @@ public class AcdiVocaDbHelper {
 		int msg_id = acdiVocaMsg.getMessageId();
 		String query = "";
 		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
-
-		//		if (msg_id == -1) {  // Newly created message
-		//			
-		//			// Create a new message in the message table
-		//			
-		//			row_id = createNewMessageTableEntry(acdiVocaMsg, beneficiary_id, status);
-		//
-		//			if (row_id != -1) {
-		//				result = true;
-		//				Log.i(TAG, "Inserted NEW message, id= " + row_id + " bene_id=" + beneficiary_id); 
-		//								
-		//				// Update the FINDS table to point to the message
-		//				ContentValues args = new ContentValues();
-		//				args.put(FINDS_MESSAGE_ID, row_id);
-		//				args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
-		//											
-		//				rows = mDb.update(FINDS_TABLE, 
-		//						args, 
-		//						FINDS_ID + " = " + beneficiary_id,
-		//						null); 
-		//				
-		//				if (rows == 0) {
-		//					result = false;
-		//					Log.i(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
-		//					
-		//					rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, row_id, status);
-		//					Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
-		//					
-		//				} else {
-		//					result = true;
-		//					Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
-		//					
-		//					// Update the message table with the new message
-		//					rows = updateMessageTable(acdiVocaMsg, beneficiary_id, row_id, status);					
-		//				}
-		//			} else {
-		//				result = false;
-		//				Log.i(TAG, "Unable to insert NEW message, id= " + row_id);  
-		//			}
-		//		}  else {  
-		// Update existing message
-
+		
 		rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);
 
 		if (rows == 0) {
@@ -807,70 +837,64 @@ public class AcdiVocaDbHelper {
 			// Update the message table with the new message
 			rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);					
 		}
-
-
-
-		//		}
 		mDb.close();
 		return result;
 	}
 	
 	/**
-	 * Helper method to create a new entry in the message table
+	 * Helper method to create a new entry in the message table and update the FINDS
+	 * table to point to the message.
 	 * @return
 	 */
 	public long createNewMessageTableEntry(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, int status) {
 		Log.i(TAG, "createNewMessage for beneficiary = " + beneficiary_id + " status= " + status);
-		boolean result = false;
-		
+
 		// Create a new message in the message table
 		ContentValues args = new ContentValues();
 		args.put(MESSAGE_BENEFICIARY_ID, beneficiary_id);
 		args.put(MESSAGE_STATUS, status);
-		
 		args.put(MESSAGE_TEXT, acdiVocaMsg.getSmsMessage());
+
 		long row_id = mDb.insert(MESSAGE_TABLE, null, args);
-		
-		if (row_id != -1) {
-			result = true;
+
+		if (row_id == -1) {
+			Log.i(TAG, "Unable to insert NEW message, id= " + row_id);
+		} else {
 			Log.i(TAG, "Inserted NEW message, id= " + row_id + " bene_id=" + beneficiary_id); 
-							
-			// Update the FINDS table to point to the message
-			args = new ContentValues();
-			args.put(FINDS_MESSAGE_ID, row_id);
-			args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
-										
-			int rows = mDb.update(FINDS_TABLE, 
-					args, 
-					FINDS_ID + " = " + beneficiary_id,
-					null); 
-			
-			if (rows == 0) {
-				result = false;
-				Log.i(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
-				
+
+			int rows = 0;
+			if (beneficiary_id == -1) {  // BULK Message
 				rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, row_id, status);
 				Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
-				
 			} else {
-				result = true;
-				Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
-				
-				// Update the message table with the new message
-				rows = updateMessageTable(acdiVocaMsg, beneficiary_id, row_id, status);					
+
+				// Update the FINDS table to point to the message
+				args = new ContentValues();
+				args.put(FINDS_MESSAGE_ID, row_id);
+				args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
+
+				rows = mDb.update(FINDS_TABLE, 
+						args, 
+						FINDS_ID + " = " + beneficiary_id,
+						null); 
+
+				if (rows == 0) {
+					Log.i(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
+
+				} else {
+					Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
+
+					// Update the message table with the new message
+					rows = updateMessageTable(acdiVocaMsg, beneficiary_id, row_id, status);					
+				}
 			}
-		} else {
-			result = false;
-			Log.i(TAG, "Unable to insert NEW message, id= " + row_id);  
 		}
-
-		
-
+		mDb.close();
 		return row_id;
 	}
 	
 	/**
-	 * Helper method to update the message table. 
+	 * Helper method to update the message table for an existing message.
 	 * @return
 	 */
 	private int updateMessageTable(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, long msg_id, int status ) {
@@ -891,6 +915,10 @@ public class AcdiVocaDbHelper {
 				args, 
 				MESSAGE_ID + " = " + msg_id,
 				null); 
+		if (rows > 0) {
+			Log.i(TAG, "Updated the message table for beneficiary id  = " + beneficiary_id);
+		}
+		//mDb.close();  Don't close -- helper method
 		return rows;
 	}
 	
@@ -983,6 +1011,8 @@ public class AcdiVocaDbHelper {
 			c = mDb.query(MESSAGE_TABLE, null, 
 					null,
 					null, null, null, order_by);
+		//Log.i(TAG, "lookup messages count = " + c.getCount());
+		//mDb.close();  // Private don't close
 		return c;
 	}
 		
@@ -1173,7 +1203,7 @@ public class AcdiVocaDbHelper {
 		}
 		mDb.close();
 		c.close();
-		
+
 		return acdiVocaMsgs;		
 	}
 
@@ -1300,17 +1330,6 @@ public class AcdiVocaDbHelper {
 	}
 
 
-//	public ContentValues fetchAllCommunes() {
-//		//		mDb = getReadableDatabase();
-//		Cursor c = mDb.query(COMMUNE_TABLE, null, null, null, null, null, null);
-//		c.moveToFirst();
-//		ContentValues values = null;
-//		if (c.getCount()!=0)
-//			values = this.getContentValuesFromRow(c);
-//		c.close();
-//		mDb.close();
-//		return values;
-//	}
 	/**
 	 * Returns selected columns for a find by id.
 	 * @param id the Find's id
@@ -1350,6 +1369,7 @@ public class AcdiVocaDbHelper {
 					c.getString(c.getColumnIndexOrThrow(column)));
 			values.put(column, c.getString(c.getColumnIndexOrThrow(column)));
 		}
+		c.close();
 		return values;
 	}
 

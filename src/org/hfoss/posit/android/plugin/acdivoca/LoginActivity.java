@@ -53,14 +53,14 @@ import android.widget.EditText;
  * 
  */
 public class LoginActivity extends Activity implements OnClickListener {
-	public static final String TAG = "AcdiVocaLookupActivity";
+	public static final String TAG = "LoginActivity";
 	public static final int ACTION_LOGIN = 0;
 	public static final int INVALID_LOGIN = 1;
 	public static final int VALID_LOGIN = 2;
 	
 	private static final int CONFIRM_EXIT = 0;
 	
-	private UserType userType;
+	private UserType mUserType;
 	private int mUserTypeOrdinal;
 	
 	/** Called when the activity is first created. */
@@ -76,11 +76,11 @@ public class LoginActivity extends Activity implements OnClickListener {
 			}
 			mUserTypeOrdinal = extras.getInt(AcdiVocaDbHelper.USER_TYPE_STRING);
 			if (mUserTypeOrdinal == UserType.USER.ordinal()) {
-				userType = UserType.USER;
+				mUserType = UserType.USER;
 			} else if (mUserTypeOrdinal == UserType.SUPER.ordinal()) {
-				userType = UserType.SUPER;
+				mUserType = UserType.SUPER;
 			} else if (mUserTypeOrdinal == UserType.ADMIN.ordinal()) {
-				userType = UserType.ADMIN;
+				mUserType = UserType.ADMIN;
 			}
 	}
 
@@ -119,7 +119,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 			String username = etext.getText().toString();
 			etext = ((EditText)findViewById(R.id.passwordEdit));
 			String password = etext.getText().toString();
-			int userTypeOrdinal = authenticateUser(username, password);
+			int userTypeOrdinal = authenticateUser(username, password, mUserType);
 			if (userTypeOrdinal != -1) {
 				setResult(RESULT_OK,returnIntent);
 				
@@ -170,7 +170,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		}
 	}
 	
-	private int authenticateUser(String username, String password) {
+	private int authenticateUser(String username, String password, UserType userType) {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		return db.authenicateUser(username, password, userType);
 	}

@@ -277,7 +277,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         case ACTION_ID:
             if (resultCode == RESULT_OK) {
                 beneficiaryId = data.getStringExtra("Id");
-                Toast.makeText(this, "Beneficiary Id = " + " " + beneficiaryId, Toast.LENGTH_LONG).show();
+               // Toast.makeText(this, "Beneficiary Id = " + " " + beneficiaryId, Toast.LENGTH_LONG).show();
                 break;
             } else {
                 finish();
@@ -549,7 +549,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     		result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
     		Log.i(TAG, "Update to Db is " + result);
     		if (result){
-    			Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_SHORT).show();
+ //   			Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_SHORT).show();
     		}
 
     		else 
