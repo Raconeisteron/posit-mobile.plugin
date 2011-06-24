@@ -86,8 +86,9 @@
 			android:launchMode="singleTop" />						
 					
 		<activity android:name="org.hfoss.posit.android.api.SettingsActivity" 
-			android:screenOrientation="portrait"
-		/>
+			android:screenOrientation="portrait" />
+		<activity android:name="org.hfoss.posit.android.api.FilePickerActivity" 
+			android:screenOrientation="portrait"/>
 		
 		<activity android:name=".ImageViewActivity" />
 		<activity android:name=".SettingsActivity" android:screenOrientation="portrait"/>	

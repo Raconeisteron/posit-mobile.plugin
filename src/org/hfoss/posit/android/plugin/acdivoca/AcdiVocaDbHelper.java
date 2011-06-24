@@ -484,11 +484,11 @@ public class AcdiVocaDbHelper {
 	 * @param userType is an enum that defines whether this is a regular or super user.
 	 * @return
 	 */
-	//public boolean authenicateUser(String username, String password, UserType userType) {
 	public int authenicateUser(String username, String password, UserType userType) {
 		int result = 0;
 		if (userType.equals(UserType.ADMIN)) {
-			if (!username.equals(ADMIN_USER_NAME) ||  !password.equals(ADMIN_USER_PASSWORD)) {
+			if (! ((username.equals(ADMIN_USER_NAME) &&  password.equals(ADMIN_USER_PASSWORD)) 
+				|| (username.equals(SUPER_USER_NAME) && password.equals(SUPER_USER_PASSWORD)) )) {
 				Log.i(TAG, "Sorry you must be ADMIN USER to do this.");
 				Toast.makeText(mContext,"Sorry you must be ADMIN USER to do this.", Toast.LENGTH_SHORT);
 				result = -1;

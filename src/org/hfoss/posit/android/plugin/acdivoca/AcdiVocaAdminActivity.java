@@ -33,6 +33,7 @@ import java.util.Iterator;
 
 import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.FilePickerActivity;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
@@ -226,7 +227,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
-				Toast.makeText(this, "Admin Login for Import Beneficiary Data.", Toast.LENGTH_LONG).show();	
+				Toast.makeText(this, "Admin Login required to import data.", Toast.LENGTH_LONG).show();	
 			}
 			break;
 		case R.id.start_distribution:
@@ -298,11 +299,12 @@ public class AcdiVocaAdminActivity extends Activity  {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.i(TAG,"onActivityResult = " + resultCode);
 		switch (requestCode) {
-		case LoginActivity.ACTION_LOGIN:
-			if (resultCode == RESULT_OK) {
-				//Toast.makeText(this, "Thank you", Toast.LENGTH_LONG).show();
-				//findViewById(R.id.fileload_progressbar).setVisibility(View.VISIBLE);
-				
+		
+		case FilePickerActivity.ACTION_CHOOSER:
+			if (resultCode == FilePickerActivity.RESULT_OK) {
+				String filename = data.getStringExtra(Intent.ACTION_CHOOSER);
+				Log.i(TAG, "File picker result = " + filename);
+
 				// Get this phone's Distribution Center
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 				mDistrCtr = prefs.getString(this.getResources().getString(R.string.distribution_point), null);
@@ -316,9 +318,36 @@ public class AcdiVocaAdminActivity extends Activity  {
 				mProgressDialog = ProgressDialog.show(this, "Loading data",
 						"Please wait.", true, true);
 				
-				ImportDataThread thread = new ImportDataThread(this, new ImportThreadHandler());
+				ImportDataThread thread = new ImportDataThread(this, filename, new ImportThreadHandler());
 				thread.start();				
+			}
+			break;
+			
+		case LoginActivity.ACTION_LOGIN:
+			if (resultCode == RESULT_OK) {
 				
+				Intent intent = new Intent();
+				intent.setClass(this, FilePickerActivity.class);
+				
+				//intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
+				this.startActivityForResult(intent, FilePickerActivity.ACTION_CHOOSER);
+							
+//				// Get this phone's Distribution Center
+//				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//				mDistrCtr = prefs.getString(this.getResources().getString(R.string.distribution_point), null);
+//				
+//				if (mDistrCtr == null) {
+//					Log.i(TAG, "Aborting loadBeneficiaryData, No distribution post selected");
+//					Toast.makeText(this, "No distribution post selected", Toast.LENGTH_SHORT);
+//					break;
+//				}
+//				
+//				mProgressDialog = ProgressDialog.show(this, "Loading data",
+//						"Please wait.", true, true);
+//				
+//				ImportDataThread thread = new ImportDataThread(this, new ImportThreadHandler());
+//				thread.start();				
+//				
 				break;
 			} else {
 				Toast.makeText(this, "Sorry. Incorrect username or password.", Toast.LENGTH_LONG).show();
@@ -334,19 +363,19 @@ public class AcdiVocaAdminActivity extends Activity  {
 	/**
 	 * Reads data from a text file into the Db.
 	 */
-	private int importBeneficiaryDataToDb() {		
+	private int importBeneficiaryDataToDb(String filename) {		
 		ContentValues values = new ContentValues();
 	
 		// Read all the file names on the SD Card
-		File directory = new File(Environment.getExternalStorageDirectory() + "/" + DEFAULT_DIRECTORY);
-		File file[] = directory.listFiles();
+//		File directory = new File(Environment.getExternalStorageDirectory() + "/" + DEFAULT_DIRECTORY);
+//		File file[] = directory.listFiles();
 		
 		// List files on sdcard
 //	    File file[] = Environment.getExternalStorageDirectory().listFiles(); 
 //	    for (int i = 0; i < file.length; i++)
 //	    	Log.i(TAG, file[i].getAbsolutePath());  
 		
-		mBeneficiaries = loadBeneficiaryData(mDistrCtr);
+		mBeneficiaries = loadBeneficiaryData(filename, mDistrCtr);
 		if (mBeneficiaries.length == 1) {
 			if (Integer.parseInt(mBeneficiaries[0]) == IO_EXCEPTION)
 				return IO_EXCEPTION;
@@ -374,12 +403,13 @@ public class AcdiVocaAdminActivity extends Activity  {
 	 * @return  Returns an array of Strings, each of which represents
 	 * a Beneficiary record.
 	 */
-	private String[] loadBeneficiaryData(String distrCtr) {
+	private String[] loadBeneficiaryData(String filename, String distrCtr) {
 		String[] data = null;
 		
 		File file = new File(Environment.getExternalStorageDirectory() 
 				+ "/" + DEFAULT_DIRECTORY + "/" 
-				+ DEFAULT_BENEFICIARY_FILE);
+				+ filename);
+				//+ DEFAULT_BENEFICIARY_FILE);
 
 		BufferedReader br = null;
 		String line = null;
@@ -478,17 +508,19 @@ public class AcdiVocaAdminActivity extends Activity  {
 	class ImportDataThread extends Thread {
 		private Context mContext;
 		private Handler mHandler;
+		private String mFilename;
 		
-		public ImportDataThread(Context context, Handler handler) {
+		public ImportDataThread(Context context, String filename, Handler handler) {
 			mHandler = handler;
 			mContext = context;
+			mFilename = filename;
 		}
 	
 		@Override
 		public void run() {
 			int result = 0;
 			
-			result = importBeneficiaryDataToDb();
+			result = importBeneficiaryDataToDb(mFilename);
 			if (result == DONE)
 				mHandler.sendEmptyMessage(AcdiVocaAdminActivity.DONE);
 			else if (result == IO_EXCEPTION)
