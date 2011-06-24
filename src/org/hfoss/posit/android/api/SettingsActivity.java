@@ -113,7 +113,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	}
 	
 	/**
-	 * Innter class for PluginSettings. Stores a record for each plugin
+	 * Inner class for PluginSettings. Stores a record for each plugin
 	 * consisting of the plugin's preferences XML file (in res/xml) and
 	 * key/activity pairs for each preference that requires an Activity launch.
 	 * @author rmorelli
@@ -275,7 +275,14 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 							|| key.equals(getString(R.string.distribution_point))
 							|| key.equals(getString(R.string.distribution_event_key)))) {
 						p.setEnabled(false);
-						Log.i(TAG, "Disabling setting for key = " + key);
+						//this.getPreferenceScreen().removePreference(p); Doesn't work here
+						Log.i(TAG, "Disabling USER setting for key = " + key);
+					}
+					if (userTypeOrdinal == UserType.ADMIN.ordinal() 
+							&& key.equals(getString(R.string.distribution_event_key))) {
+						p.setEnabled(false);
+						//this.getPreferenceScreen().removePreference(p); Doesn't work here
+						Log.i(TAG, "Disabling ADMIN setting for key = " + key);
 					}
 				}
 			} catch (ClassCastException e) {
@@ -287,6 +294,11 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	}
 	
 	
+	/**
+	 * Called automatically when a preference is clicked in the View.
+	 * Go through all the plugins and see if one with an associated
+	 * activity was clicked and, if so, start the activity. 
+	 */
 	public boolean onPreferenceClick(Preference preference) {
 		Log.i(TAG, "API onPreferenceClick " + preference.toString());
 
@@ -315,8 +327,9 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	}
 	
 	/**
-	 * Adjusts the summary string when a shared preference is changed
-	 * (non-Javadoc)
+	 * Adjusts the summary string when a shared preference is changed.
+	 * NOTE the exception for USER_TYPE_KEY, which has an int value. All
+	 * the rest are String.  Hence the ClassCastException. 
 	 * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
 	 */
 	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
@@ -344,30 +357,35 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 		}
 	}
 	
-	public void disablePreferences(Context context, int userTypeOrdinal) {
-		Log.i(TAG, "Finding " + findPreference("smsPhone"));
-		
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-		Map<String,?> prefs = sp.getAll();
-		Iterator it = prefs.keySet().iterator();
-		while (it.hasNext()) {
-			try {
-				String aKey = (String) it.next();
-				Log.i(TAG,"Preference = " + aKey);
-				//if (aKey.equals(context.getString(R.string.smsPhoneKey))) {
-				if (aKey.equals("smsPhone")) {
-					Preference p1 =  findPreference("smsPhone");
-					if (p1 != null) {
-						Log.i(TAG,"Preference disabled = " + p1.getKey());
-						p1.setEnabled(false);
-					}
-				}
-
-			} catch (ClassCastException e) {
-				Log.e(TAG, "Initialize summary strings ClassCastException");
-				Log.e(TAG, e.getStackTrace().toString());
-				continue;
-			}
-		}
-	}
+//	/**
+//	 * Deprecated. Ok. to delete. 
+//	 * @param context
+//	 * @param userTypeOrdinal
+//	 */
+//	public void disablePreferences(Context context, int userTypeOrdinal) {
+//		Log.i(TAG, "Finding " + findPreference("smsPhone"));
+//		
+//		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+//		Map<String,?> prefs = sp.getAll();
+//		Iterator it = prefs.keySet().iterator();
+//		while (it.hasNext()) {
+//			try {
+//				String aKey = (String) it.next();
+//				Log.i(TAG,"Preference = " + aKey);
+//				//if (aKey.equals(context.getString(R.string.smsPhoneKey))) {
+//				if (aKey.equals("smsPhone")) {
+//					Preference p1 =  findPreference("smsPhone");
+//					if (p1 != null) {
+//						Log.i(TAG,"Preference disabled = " + p1.getKey());
+//						p1.setEnabled(false);
+//					}
+//				}
+//
+//			} catch (ClassCastException e) {
+//				Log.e(TAG, "Initialize summary strings ClassCastException");
+//				Log.e(TAG, e.getStackTrace().toString());
+//				continue;
+//			}
+//		}
+//	}
 }

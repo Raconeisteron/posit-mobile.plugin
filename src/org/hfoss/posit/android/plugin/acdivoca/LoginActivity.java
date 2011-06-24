@@ -132,7 +132,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 				
 				SettingsActivity settings = 
 					SettingsActivity.getInstance(this, FindPluginManager.mPreferences);
-				settings.disablePreferences(this, userTypeOrdinal);
+//				settings.disablePreferences(this, userTypeOrdinal);
 				
 
 				finish();
