@@ -2,7 +2,7 @@
 	<PreferenceCategory android:title="@string/general">
  
 			<Preference android:key="testpositpref" 
-				android:title="About"
+				android:title="@string/aboutItem"
 				activity_class="org.hfoss.posit.android.AboutActivity"
 				android:summary="" />
   <!-- 

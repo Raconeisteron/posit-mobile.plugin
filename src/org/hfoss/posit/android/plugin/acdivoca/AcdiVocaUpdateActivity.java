@@ -130,7 +130,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
     		mContentValues = db.fetchBeneficiaryByDossier(beneficiaryId, null);
     		if (mContentValues == null) {
-    			Toast.makeText(this, "ERROR: No beneficiary with ID = " + beneficiaryId, Toast.LENGTH_SHORT).show();
+    			Toast.makeText(this, getString(R.string.toast_no_beneficiary) + beneficiaryId, Toast.LENGTH_SHORT).show();
     		} else {
     			setContentView(R.layout.acdivoca_update_noedit);  // Should be done after locale configuration
     			((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
@@ -148,7 +148,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
      */
     private void displayContentUneditable(ContentValues values) {
     	TextView tv = ((TextView) findViewById(R.id.dossier_label));
-    	tv.setText("Beneficiary Dossier: " + beneficiaryId);
+    	tv.setText(getString(R.string.beneficiary_dossier) + beneficiaryId);
     	tv = ((TextView) findViewById(R.id.firstnameLabel));
     	tv.setText(getString(R.string.firstname) + ": " 
     			+  values.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
@@ -225,7 +225,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     	((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
 
     	TextView tv = ((TextView) findViewById(R.id.dossier_label));
-    	tv.setText("Beneficiary Dossier: " + beneficiaryId);
+    	tv.setText(getString(R.string.beneficiary_dossier) + beneficiaryId);
 
     	// Listen for text changes in edit texts and set the isEdited flag
     	((EditText)findViewById(R.id.firstnameEdit)).addTextChangedListener(this);
@@ -553,7 +553,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     		}
 
     		else 
-    			Toast.makeText(this, "Db error", Toast.LENGTH_SHORT).show();
+    			Toast.makeText(this, getString(R.string.toast_db_error), Toast.LENGTH_SHORT).show();
 
     		finish();
     	}
@@ -568,7 +568,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.i(TAG, "onKeyDown keyCode = " + keyCode);
         if(keyCode==KeyEvent.KEYCODE_BACK && isProbablyEdited){  // 
-            Toast.makeText(this, "Backkey isEdited=" +  isProbablyEdited, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.toast_Backkey_isEdited) +  isProbablyEdited, Toast.LENGTH_SHORT).show();
             
 
             

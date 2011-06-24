@@ -123,10 +123,10 @@
 	
 	<!-- 	Change in status reasons list -->
 	<string-array name="status_change_options">
-	<item>Transfer to new category</item>
-	<item>Deceased</item>
-	<item>Fraud</item>
-	<item>Completed program</item>
+	<item>@string/update_transfer</item>
+	<item>@string/update_deceased</item>
+	<item>@string/update_fraud</item>
+	<item>@string/update_completed</item>
 	</string-array>
 	
 	<!--    Arrays for managing distribution events -->

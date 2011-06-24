@@ -248,9 +248,29 @@
     <string name="toast_sync_fail">Sync failed.</string>
     <string name="toast_sync_exit">Sync Exiting: No network available</string>
     <string name="toast_project_dne">Project does not exist. Please choose another project.</string>
-                  
- 
-  
     
+
+    <string name="loading_data">Loading data</string>
+	<string name="please_wait">Please wait.</string>
+	<string name="powered_by_posit">\n         Powered by  POSIT</string>   
+    <string name="powered_by_hfoss">Powered by HFOSS</string>
+ 	<string name="toast_admin_login">Admin Login for Import Beneficiary Data.</string>
+	<string name="toast_adminuser">Sorry you must be ADMIN USER to do this.</string>
+	<string name="aboutItem">About</string>
+	<string name="beneficiary_dossier">Beneficiary Dossier: </string>
+	
+	<string name="update_transfer">Transfer to new category</string>
+	<string name="update_deceased">Deceased</string>
+	<string name="update_fraud">Fraud</string>
+	<string name="update_completed">Completed program</string>
+	               
+ 
+<!--  To be translated -->
+
+    <string name="general">General</string> 
+    <string name="send_message">Sending messages</string> 
+    
+<!--  To be translated -->   
+    <string name="toast_admin_login_required">"Admin Login required to import data."</string>
     
 </resources>

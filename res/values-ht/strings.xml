@@ -261,5 +261,9 @@
 	<string name="french">French</string>
 	<string name="haitian">Creole haitien</string>
 	
+	<string name="powered_by_hfoss">Développé par HFOSS</string>
+    <string name="toast_admin_login">Conexion avancée pour importer les données des beneficiaires.</string>
+    <string name="toast_adminuser">Ou dwe administratè pou fè sa.</string>
+	
 </resources>
 

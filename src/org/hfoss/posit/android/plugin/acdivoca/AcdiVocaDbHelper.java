@@ -490,13 +490,13 @@ public class AcdiVocaDbHelper {
 			if (! ((username.equals(ADMIN_USER_NAME) &&  password.equals(ADMIN_USER_PASSWORD)) 
 				|| (username.equals(SUPER_USER_NAME) && password.equals(SUPER_USER_PASSWORD)) )) {
 				Log.i(TAG, "Sorry you must be ADMIN USER to do this.");
-				Toast.makeText(mContext,"Sorry you must be ADMIN USER to do this.", Toast.LENGTH_SHORT);
+				Toast.makeText(mContext,mContext.getString(R.string.toast_adminuser), Toast.LENGTH_SHORT);
 				result = -1;
 			}
 		} else if (userType.equals(UserType.SUPER)) {
 			if (!username.equals(SUPER_USER_NAME) ||  !password.equals(SUPER_USER_PASSWORD)) {
 				Log.i(TAG, "Sorry you must be SUPER USER to do this.");
-				Toast.makeText(mContext,"Sorry you must be SUPER USER to do this.", Toast.LENGTH_SHORT);
+				Toast.makeText(mContext, mContext.getString(R.string.toast_superuser), Toast.LENGTH_SHORT);
 				result = -1;
 			}
 		} 

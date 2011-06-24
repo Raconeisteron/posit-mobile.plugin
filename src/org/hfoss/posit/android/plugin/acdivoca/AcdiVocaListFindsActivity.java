@@ -450,7 +450,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 				++nDels;
 			++k;
 		}
-		Toast.makeText(this, "Deleted " + nDels + " messages.", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, getString(R.string.toast_deleted) + nDels + getString(R.string.toast_messages), Toast.LENGTH_SHORT).show();
 	}
 	
 

@@ -29,6 +29,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity.ImportDataThread;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity.ImportThreadHandler;
 
@@ -270,8 +271,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	public void sendMessages(Context context, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
 		Log.i(TAG, "sendMessages,  n =" + acdiVocaMsgs.size());
 		
-		mProgressDialog = ProgressDialog.show(context, "Sending messages",
-				"Please wait.", true, true);
+		mProgressDialog = ProgressDialog.show(context, context.getString(R.string.send_message),
+				context.getString(R.string.please_wait), true, true);
 		
 		SendMessagesThread thread = new SendMessagesThread(context, 
 				new SendMessagesThreadHandler(),
