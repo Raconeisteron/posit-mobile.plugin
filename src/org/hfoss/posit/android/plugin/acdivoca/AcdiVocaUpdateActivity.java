@@ -148,7 +148,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
      */
     private void displayContentUneditable(ContentValues values) {
     	TextView tv = ((TextView) findViewById(R.id.dossier_label));
-    	tv.setText(getString(R.string.beneficiary_dossier) + beneficiaryId);
+    	tv.setText(getString(R.string.beneficiary_dossier) + " " + beneficiaryId);
     	tv = ((TextView) findViewById(R.id.firstnameLabel));
     	tv.setText(getString(R.string.firstname) + ": " 
     			+  values.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));

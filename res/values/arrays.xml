@@ -3,13 +3,15 @@
 
 <!-- ACDI/VOCA Arrays -->
 	<string-array name="locales"> 
-	<item>English</item>
-	<item>Haitian Creole</item>
+	<item>@string/english</item>
+	<item>@string/haitian</item>
+	<item>@string/french</item>
 	</string-array>
 	
 	<string-array name="locale_values"> 
 	<item>en</item>
 	<item>ht</item>
+	<item>fr</item>
 	</string-array>	
 
 	<string-array name="commune_names"> 

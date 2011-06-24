@@ -265,12 +265,25 @@
 	<string name="update_completed">Completed program</string>
 	               
  
+ 	<string name="english">English</string>
+	<string name="french">French</string>
+	<string name="haitian">Haitian Creole</string>
+	<string name="cancelLabel">Cancel</string>
+	<string name="cancel">Cancel</string>
+	<string name="exit">Are you sure you want to exit?</string>
+	<string name="alert_dialog_ok">Ok</string>
+	<string name="alert_dialog_cancel">Cancel</string>
+ 
+ 
+ 
 <!--  To be translated -->
 
     <string name="general">General</string> 
     <string name="send_message">Sending messages</string> 
     
 <!--  To be translated -->   
-    <string name="toast_admin_login_required">"Admin Login required to import data."</string>
+    <string name="toast_admin_login_required">Admin Login required to import data.</string>
+    
+    
     
 </resources>
