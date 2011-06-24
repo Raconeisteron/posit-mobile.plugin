@@ -85,6 +85,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 
 	private int mMessageFilter = -1;   		// Set in SearchFilterActivity result
 	private int mNMessagesDisplayed = 0;
+	private int mNFinds = 0;
+	private int mNUnsentFinds = 0;
 	
 	private boolean mMessageListDisplayed = false;
 
@@ -123,7 +125,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 
 //		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		project_id = 0; //sp.getInt("PROJECT_ID", 0);
-		
 		
 //		if (mAction.equals(Intent.ACTION_SEND)) {
 //			displayMessageList(mStatusFilter, null);  // Null distribution center = all New finds
@@ -180,14 +181,15 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		else
 			mCursor = AcdiVocaFindDataManager.getInstance().fetchFindsByProjectId(this, project_id, order_by);
 		
-		//		Uri allFinds = Uri.parse("content://org.hfoss.provider.POSIT/finds_project/"+PROJECT_ID);
-		//	    mCursor = managedQuery(allFinds, null, null, null, null);
-		if (mCursor.getCount() == 0) { // No finds
+		// NOTE: This should be refactored to dispense with Cursor to avoid
+		//  possible memory leaks.
+		mNFinds = mCursor.getCount();
+		if (mNFinds == 0) { // No finds
 			setContentView(R.layout.acdivoca_list_beneficiaries);
 	        mCursor.close();
 			return;
 		}
-
+		mNUnsentFinds = calculateUnsentFinds(mCursor);
 		startManagingCursor(mCursor); // NOTE: Can't close DB while managing cursor
 
 		// CursorAdapter binds the data in 'columns' to the views in 'views' 
@@ -197,6 +199,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		// necessarily have to go with the view, as in the case of the thumbnail.
 		// See comments in MyDBHelper.
 		
+		// REFACTOR:  Create our own adapter that doesn't use Cursor
 		SimpleCursorAdapter adapter = 
 			new SimpleCursorAdapter(this, R.layout.acdivoca_list_row, mCursor, columns, views);
 		adapter.setViewBinder(this);
@@ -204,6 +207,18 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		//stopManagingCursor(mCursor);
 	}
 
+	private int calculateUnsentFinds (Cursor c) {
+		int count = 0;
+		c.moveToFirst();
+		while (!c.isAfterLast()) {
+			int status = c.getInt(c.getColumnIndex(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS));
+			if (status == AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT 
+					|| status == AcdiVocaDbHelper.MESSAGE_STATUS_PENDING)
+				++count;
+			c.moveToNext();
+		}
+		return count;
+	}
 
 	/**
 	 * Invoked when the user clicks on one of the Finds in the
@@ -273,40 +288,73 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		MenuItem deleteItem = menu.findItem(R.id.delete_messages_menu);
 		deleteItem.setVisible(false);
 
-		// If invoked from main view (rather than Admin menu)
+		// If invoked from main view Button, rather than Admin Menu (ACTION_SEND) then 
+		//  the Finds are displayed initially so just show the USER the SEND menu item
 		if (mAction.equals(Intent.ACTION_SEND)) {
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 			int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
 			Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
+
+			// Normal USER -- just show the Send menu
 			if (userTypeOrdinal == UserType.USER.ordinal()) {
 				listItem.setVisible(false);
 				syncItem.setVisible(true);
-				syncItem.setEnabled(true);
-			} else {
-				listItem.setVisible(true);
-				listItem.setEnabled(true);
-				syncItem.setVisible(false);
+				if (mNUnsentFinds > 0)
+					syncItem.setEnabled(true);
+				else 
+					syncItem.setEnabled(false);
+			} else {  // SUPER or ADMIN USER, also show the manage menu
+				adjustAdminMenuOptions(menu, syncItem, deleteItem);
+//				listItem.setVisible(true);
+//				listItem.setEnabled(true);
+//				syncItem.setVisible(true);
+//				if (mNUnsentFinds > 0)
+//					syncItem.setEnabled(true);
+//				else 
+//					syncItem.setEnabled(false);
 			}
+			return super.onPrepareOptionsMenu(menu);
 		} else {
+			adjustAdminMenuOptions(menu, syncItem, deleteItem);
+		}
 
-			if (mNMessagesDisplayed > 0 && 
-					(mMessageFilter == SearchFilterActivity.RESULT_SELECT_NEW 
-							|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_PENDING
-							|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_UPDATE
-							|| mMessageFilter == SearchFilterActivity.RESULT_BULK_UPDATE))  {
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	private void adjustAdminMenuOptions(Menu menu, MenuItem syncItem, MenuItem deleteItem) {
+		// In this case the Menu also applies to a list of MESSAGES, not FINDS
+		// and this should apply only to SUPER or ADMIN users
+		Log.i(TAG, "Prepare Menus, nMsgs = " + mNMessagesDisplayed);
+
+		// Case where messages are displayed
+		if (mMessageListDisplayed) {
+			if (mNMessagesDisplayed > 0
+					&& (mMessageFilter == SearchFilterActivity.RESULT_SELECT_NEW 
+					|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_PENDING
+					|| mMessageFilter == SearchFilterActivity.RESULT_SELECT_UPDATE
+					|| mMessageFilter == SearchFilterActivity.RESULT_BULK_UPDATE))  {
+				Log.i(TAG, "Prepare Menus, enabled SYNC");
 				syncItem.setEnabled(true);		
 			} else {
+				Log.i(TAG, "Prepare Menus, disabled SYNC");
 				syncItem.setEnabled(false);		
 			}
-			syncItem = menu.findItem(R.id.delete_messages_menu);
-			if (mMessageFilter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED
-					&& mNMessagesDisplayed > 0) {
+		} else {
+			// Case where Finds are displayed
+			if (mAction.equals(Intent.ACTION_SEND) && mNUnsentFinds > 0) 
 				syncItem.setEnabled(true);
-			} else {
+			else 
 				syncItem.setEnabled(false);
-			}	
 		}
-		return super.onPrepareOptionsMenu(menu);
+		
+		deleteItem = menu.findItem(R.id.delete_messages_menu);
+		if (mMessageFilter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED
+				&& mNMessagesDisplayed > 0) {
+			deleteItem.setEnabled(true);
+		} else {
+			deleteItem.setEnabled(false);
+		}	
+
 	}
 
 	/** 
@@ -333,21 +381,22 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 			
 		// This case sends all messages	(if messages are currently displayed)
 		case R.id.sync_messages:
+			// For regular USER, create the messages and send
 			if (userTypeOrdinal == UserType.USER.ordinal()) {
 				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 				ArrayList<AcdiVocaMessage> acdiVocaMsgs 
 					= db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
 				int n = acdiVocaMsgs.size();
+				Log.i(TAG, "onMenuSelected sending " + n + " new beneficiary messages" );
 				if (n != 0) {
-					Log.i(TAG, "onMenuSelected sending " + n + " new beneficiary messages" );
 					AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
 					mgr.sendMessages(this, acdiVocaMsgs);
-
-					//AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
+				} else {
+					
 				}
 				//displayMessageList(SearchFilterActivity.RESULT_SELECT_NEW, null);	
 
-			} else {
+			} else {  // For ADMIN and SUPER Users
 				if (this.mMessageListDisplayed) {
 					sendMessages();
 				}
@@ -492,8 +541,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 			mNMessagesDisplayed = 0;
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
 			acdiVocaMsgs.add(new AcdiVocaMessage(-1,-1,-1,"",getString(R.string.no_messages),""));
-		}
-		else {
+		} else {
 			mNMessagesDisplayed = acdiVocaMsgs.size();
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
 	        Log.i(TAG, "Fetched " + acdiVocaMsgs.size() + " messages");
