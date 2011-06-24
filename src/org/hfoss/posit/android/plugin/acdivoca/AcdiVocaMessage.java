@@ -23,7 +23,14 @@
 
 package org.hfoss.posit.android.plugin.acdivoca;
 
-public class AcdiVocaMessage {
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+public class AcdiVocaMessage implements Serializable {
 	
 	public static final String TAG = "AcdiVocaMessage";
 	
@@ -103,16 +110,26 @@ public class AcdiVocaMessage {
 		this.msgHeader = msgHeader;
 	}
 	
-//	@Override
-//	public String toString() {
-//		return "AcdiVocaMessage [messageId=" + messageId + ", beneficiaryId="
-//				+ beneficiaryId + ", rawMessage=" + rawMessage
-//				+ ", smsMessage=" + smsMessage + ", msgHeader=" + msgHeader
-//				+ "]";
-//	}
+	public void writeToFile(FileOutputStream outStream) throws IOException {
+		ObjectOutputStream ooStream = new ObjectOutputStream(outStream);
+		ooStream.writeObject(this);
+		ooStream.flush();
+	}
+	
+	public void readFromFile(FileInputStream inStream) 
+		throws IOException, ClassNotFoundException {
+		ObjectInputStream oiStream = new ObjectInputStream(inStream);
+		AcdiVocaMessage avm = (AcdiVocaMessage)oiStream.readObject();
+		this.messageId = avm.messageId;
+		this.msgStatus = avm.msgStatus;
+		this.beneficiaryId = avm.beneficiaryId;   
+		this.rawMessage = avm.rawMessage;
+		this.smsMessage = avm.smsMessage;
+		this.msgHeader = avm.msgHeader;
+	}
 
 	@Override
 	public String toString() {
-		return msgHeader + smsMessage;
+		return msgHeader + AttributeManager.PAIRS_SEPARATOR + smsMessage;
 	}
 }
