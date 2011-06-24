@@ -11,14 +11,14 @@
             android:orientation="vertical" android:scrollbars="vertical|horizontal">
                 
              <TextView android:id="@+id/dossier_heading"
-                android:text="Beneficiary Information"
+                android:text="@string/beneficiary"
                 android:textColor="#ff0000"
                 android:layout_width="fill_parent"
                 android:textSize="20dp"
                 android:layout_height="wrap_content" />        
  
             <TextView android:id="@+id/dossier_label"
-                android:text="Dossier Number: "
+                android:text="@string/dossier_number"
                 android:layout_width="fill_parent"
                 android:textSize="14dp"
                 android:layout_marginLeft="20px" 

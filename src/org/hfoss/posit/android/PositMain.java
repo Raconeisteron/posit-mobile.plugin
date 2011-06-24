@@ -299,7 +299,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			}
 		case LoginActivity.ACTION_LOGIN:
 			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, "Thank you", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
 				break;
 			} else {
 				//Toast.makeText(this, "Sorry. Incorrect username or password.", Toast.LENGTH_LONG).show();

@@ -227,7 +227,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
-				Toast.makeText(this, "Admin Login required to import data.", Toast.LENGTH_LONG).show();	
+				Toast.makeText(this, getString(R.string.toast_admin_login_required), Toast.LENGTH_LONG).show();	
 			}
 			break;
 		case R.id.start_distribution:
@@ -311,12 +311,12 @@ public class AcdiVocaAdminActivity extends Activity  {
 				
 				if (mDistrCtr == null) {
 					Log.i(TAG, "Aborting loadBeneficiaryData, No distribution post selected");
-					Toast.makeText(this, "No distribution post selected", Toast.LENGTH_SHORT);
+					Toast.makeText(this, getString(R.string.toast_distribution_post), Toast.LENGTH_SHORT);
 					break;
 				}
 				
-				mProgressDialog = ProgressDialog.show(this, "Loading data",
-						"Please wait.", true, true);
+				mProgressDialog = ProgressDialog.show(this, getString(R.string.loading_data),
+						getString(R.string.please_wait), true, true);
 				
 				ImportDataThread thread = new ImportDataThread(this, filename, new ImportThreadHandler());
 				thread.start();				
@@ -350,7 +350,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 //				
 				break;
 			} else {
-				Toast.makeText(this, "Sorry. Incorrect username or password.", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, getString(R.string.toast_incorrect), Toast.LENGTH_LONG).show();
 				finish();
 			} 
 		

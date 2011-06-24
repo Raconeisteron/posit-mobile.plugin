@@ -128,9 +128,9 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 		dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
 		
 		if (dossiers == null) {
-			Toast.makeText(this, "Sorry, there are no beneficiaries in the Db.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.toast_sorry_empty), Toast.LENGTH_SHORT).show();
 			dossiers = new String[1];
-			dossiers[0] = "No beneficiaries found";
+			dossiers[0] = getString(R.string.no_beneficiaries_found);
 			((Button)findViewById(R.id.update_lookup_button)).setEnabled(false);
 		} 
 		setUpSpinnerAdapter(dossiers);
@@ -180,7 +180,7 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 //			String id = etext.getText().toString();
 			returnIntent.putExtra("Id",id);
 			setResult(RESULT_OK,returnIntent); 
-			Toast.makeText(this, "Id= " + id, Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.toast_id) + id, Toast.LENGTH_SHORT).show();
 		} else {
 			setResult(Activity.RESULT_CANCELED, returnIntent);
 		}
