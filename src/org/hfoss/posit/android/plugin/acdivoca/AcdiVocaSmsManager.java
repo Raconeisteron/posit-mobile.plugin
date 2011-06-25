@@ -76,11 +76,16 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	private static Handler mHandler;
 	private static AcdiVocaSmsManager mInstance = null; 
 	private static String acdiVocaPhone = null;
+	private static Activity mActivity;
 	
 	private static ProgressDialog mProgressDialog;
 	public static final int DONE = 0;
 	
-	public static BroadcastReceiver mBroadcastReceiver;
+	private  BroadcastReceiver[] mReceivers;
+	private int nRcvrs = 0;
+	private int nMsgsSent = 0;
+	private int nMsgsPending = 0;
+	private String mErrorMsg = ""; // Set to last error by BroadcastReceiver
 
 	private static Hashtable<String,AcdiVocaMessage>table;
 	
@@ -88,6 +93,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	}
 	
 	public static AcdiVocaSmsManager getInstance(Activity activity){
+		mActivity = activity;
 		mInstance = new AcdiVocaSmsManager();
 		AcdiVocaSmsManager.initInstance(activity);
 		return mInstance;
@@ -278,6 +284,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	}
 	
 	public void sendMessages(Context context, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
+		mContext = context;
 		Log.i(TAG, "sendMessages,  n =" + acdiVocaMsgs.size());
 		
 		mProgressDialog = ProgressDialog.show(context, context.getString(R.string.send_message),
@@ -296,10 +303,10 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	 */
 	private void transmitMessages(Context context, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
 		Log.i(TAG, "Transmitting  messages = " + acdiVocaMsgs.size());
+		nMsgsSent = 0;
 		AcdiVocaMessage acdiVocaMsg = null;
 		Iterator<AcdiVocaMessage> it = acdiVocaMsgs.iterator();
-		int nSent = 0;
-		
+		mReceivers = new BroadcastReceiver[acdiVocaMsgs.size()];
 		while (it.hasNext()) {
 			acdiVocaMsg = it.next();
 			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
@@ -311,17 +318,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
             acdiVocaMsg.setMessageId(msgId);
 
 			sendMessage(context, beneficiary_id, acdiVocaMsg, null);
-            
-			if (this.sendMessage(context, beneficiary_id, acdiVocaMsg, null)) {
-				Log.i(TAG, "Message Sent--should update as SENT");
-				db =  new AcdiVocaDbHelper(context);
-				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
-				++nSent;
-			} else {
-				Log.i(TAG, "Message Not Sent -- should update as PENDING");
-				db =  new AcdiVocaDbHelper(context);
-				db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			}
+			
 		}
 	}
 	
@@ -336,7 +333,6 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	 * @return
 	 * @throws MalformedMimeTypeException 
 	 */
-	//public boolean sendMessage(Context context, int beneficiary_id, AcdiVocaMessage acdiVocaMessage, String phoneNumber) {
 	private boolean sendMessage(Context context, int beneficiary_id, AcdiVocaMessage acdiVocaMessage, String phoneNumber)  {
 		if (phoneNumber==null)
 			phoneNumber = PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
@@ -371,31 +367,16 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		Intent delivered = new Intent (DELIVERED);
 		PendingIntent deliveryIntent = PendingIntent.getBroadcast(context, 0,delivered, 0);
 
-		mBroadcastReceiver = new BroadcastReceiver(){
+		
+		//mBroadcastReceiver = new BroadcastReceiver() {
+		mReceivers[nRcvrs] = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context arg0, Intent arg1) {
-				String s = arg1.getAction();  //   arg1.getStringExtra("msgid");
-				Log.i(TAG, "Received message " + s + " = " + table.get(s).toString());
-				switch (getResultCode())  {
-				case Activity.RESULT_OK:
-					Log.i(TAG, "SMS sent, msgid = " + s);
-					break;
-				case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-					Log.e(TAG, "SMS generic failure, msgid =  " + s);
-					break;
-				case SmsManager.RESULT_ERROR_NO_SERVICE:
-					Log.e(TAG, "SMS No service, msgid =  " + s);
-					break;
-				case SmsManager.RESULT_ERROR_NULL_PDU:
-					Log.e(TAG, "SMS Null PDU, msgid =  " + s);
-					break;
-				case SmsManager.RESULT_ERROR_RADIO_OFF:
-					Log.e(TAG, "SMS Radio off, msgid =  " + s);
-					break;
-				}
+				handleSentMessage(this, getResultCode(), arg1);
 			}
 		};
-		context.registerReceiver(mBroadcastReceiver, intentFilter);
+		context.registerReceiver(mReceivers[nRcvrs], intentFilter);
+		++nRcvrs;
 	
 		// The length array contains 4 result:
 		// length[0]  the number of Sms messages required 
@@ -433,13 +414,58 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		return true;
 	}
 	
-	public static String formatAcdiVocaMessage(int id, String rawMessage) {
-		String msg = "";
-		//msg = ACDI_VOCA_PREFIX + "=" + id + "," + rawMessage;
-		return msg;
+	/**
+	 * A broadcast receiver received an intent about a sent message and
+	 * reports whether it was sent successfully or failed. 
+	 * @param receiver one of an array of receivers, 1 per message
+	 * @param resultCode whether it succeeded or not
+	 * @param intent  the msgid is the ACTION of the intent
+	 */
+	private void handleSentMessage (BroadcastReceiver receiver, int resultCode, Intent intent)  {
+		String msgId = intent.getAction();  //   arg1.getStringExtra("msgid")
+		AcdiVocaMessage acdiVocaMsg = table.get(msgId);
+		AcdiVocaDbHelper db =  new AcdiVocaDbHelper(mContext);
+		Log.i(TAG, "Received message " + msgId + " = " + acdiVocaMsg);
+		switch (resultCode)  {
+		case Activity.RESULT_OK:
+			Log.i(TAG, "SMS sent, msgid = " + msgId);
+			db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
+			++nMsgsSent;
+			break;
+		case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+			Log.e(TAG, "SMS generic failure, msgid =  " + msgId);
+			db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+			++nMsgsPending;
+			mErrorMsg = "Generic Failure";
+			break;
+		case SmsManager.RESULT_ERROR_NO_SERVICE:
+			Log.e(TAG, "SMS No service, msgid =  " + msgId);
+			db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+			++nMsgsPending;
+			mErrorMsg = "No cellular service";
+			break;
+		case SmsManager.RESULT_ERROR_NULL_PDU:
+			Log.e(TAG, "SMS Null PDU, msgid =  " + msgId);
+			db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+			++nMsgsPending;
+			mErrorMsg = "Null PDU error";
+			break;
+		case SmsManager.RESULT_ERROR_RADIO_OFF:
+			Log.e(TAG, "SMS Radio off, msgid =  " + msgId);
+			db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+			++nMsgsPending;
+			mErrorMsg = "Texting is off";
+			break;
+		}
+		mContext.unregisterReceiver(receiver);
+
 	}
 	
-	
+//	public static String formatAcdiVocaMessage(int id, String rawMessage) {
+//		String msg = "";
+//		//msg = ACDI_VOCA_PREFIX + "=" + id + "," + rawMessage;
+//		return msg;
+//	}
 	
 	/**
 	 * Handler for the SendMessageThread
@@ -451,13 +477,17 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			Log.i(TAG,"Message received " + msg.what);
 			if (msg.what == DONE) {
 				mProgressDialog.dismiss();
-				mProgressDialog.cancel();
+				Log.i(TAG, "Sent = " + nMsgsSent + " Pending = " + nMsgsPending);
+				((AcdiVocaAdminActivity)mActivity).smsMgrCallBack(
+						"Sent = " + nMsgsSent 
+						+ " Pending = " + nMsgsPending
+						+ " " + mErrorMsg);
 			}
 		}
 	}
 	
 	/**
-	 * Thread to handle import of data from external file. 
+	 * Thread to handle message sending. 
 	 *
 	 */
 	class SendMessagesThread extends Thread {
@@ -477,77 +507,4 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			mHandler.sendEmptyMessage(AcdiVocaSmsManager.DONE);
 		}
 	}
-	
-	
-	
-	
-	/**
-	 * This class could be used to handle incoming SMS messages.  Could
-	 * possibly be used to test whether phone company acknowledged that 
-	 * outgoing messages were received (instead of handling the ACKs
-	 * ourselves).
-	 *
-	 */
-	class SmsContentObserver extends ContentObserver {
-		
-		
-		public SmsContentObserver(Handler handler) {
-			super(handler);
-			mHandler = handler;
-			// TODO Auto-generated constructor stub
-		}
-		
-
-		@Override public boolean deliverSelfNotifications() { 
-		    return false; 
-		    }
-
-		@Override public void onChange(boolean arg0) { 
-		    super.onChange(arg0);
-
-		     Log.i("SmsContentObserver", "Notification on SMS observer"); 
-
-//		    Message msg = new Message(); 
-//		    msg.obj = "xxxxxxxxxx";
-//
-//		    mHandler.sendMessage(msg);
-
-		    Uri uriSMSURI = Uri.parse("content://sms/");
-		    Cursor cur = mContext.getContentResolver().query(uriSMSURI, null, null,
-		                 null, null);
-		    Log.i(TAG, "Cursor size " + cur.getCount());
-		    String[] columns = cur.getColumnNames();
-		    for (int k = 0; k < columns.length; k++)
-		    	Log.i(TAG, columns[k]);
-		    cur.moveToNext();
-		    String protocol = cur.getString(cur.getColumnIndex("protocol"));
-		    if(protocol == null){
-		           Log.d("SmsContentObserver", "SMS SEND"); 
-		           int threadId = cur.getInt(cur.getColumnIndex("thread_id"));
-
-		           Log.d("SmsContentObserver", "SMS SEND ID = " + threadId); 
-		           Cursor c = mContext.getContentResolver().query(Uri.parse("content://sms/outbox/" + threadId), null, null,
-		                   null, null);
-		           c.moveToNext();
-		           int p = cur.getInt(cur.getColumnIndex("person"));
-		           Log.d("SmsContentObserver", "SMS SEND person= " + p); 
-		           //getContentResolver().delete(Uri.parse("content://sms/conversations/" + threadId), null, null);
-
-		    }
-		    else{
-		        Log.d("SmsContentObserver", "SMS RECIEVE");  
-		         int threadIdIn = cur.getInt(cur.getColumnIndex("thread_id"));
-		         int msgId = cur.getInt(cur.getColumnIndex("_id"));
-			  //   mMainActivity.getContentResolver().delete(Uri.parse("content://sms/conversations/" + msgId), null, null);
-
-		      //  mMainActivity.getContentResolver().delete(Uri.parse("content://sms/conversations/" + threadIdIn), null, null);
-		        Log.i("SmsContentObserver", "Deleted??");
-		    }
-
-		 }
-		
-
-	}
-	
-	
 }

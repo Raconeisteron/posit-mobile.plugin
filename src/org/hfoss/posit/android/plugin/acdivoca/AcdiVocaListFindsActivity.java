@@ -391,7 +391,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 				if (n != 0) {
 					AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
 					mgr.sendMessages(this, acdiVocaMsgs);
-					this.unregisterReceiver(mgr.mBroadcastReceiver);
 				} else {
 					
 				}
@@ -429,11 +428,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		}
 		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
 		mgr.sendMessages(this, acdiVocaMsgs);
-	//	this.unregisterReceiver(mgr.mBroadcastReceiver);
-
-
-		//AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
-		//Toast.makeText(this, "Sent " + nSent + " messages", Toast.LENGTH_SHORT).show();
 	}
 	
 	/**
