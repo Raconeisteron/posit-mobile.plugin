@@ -25,6 +25,7 @@ public class FilePickerActivity extends ListActivity {
 	public static final String TAG = "FilePicker";
 	public static final int ACTION_CHOOSER = 1;
 	public static final int RESULT_OK = 1;
+	public static final String HOME_DIRECTORY = "/sdcard/acdivoca";
 	
 	private File currentDir;
 	private FileArrayAdapter adapter;
@@ -33,7 +34,7 @@ public class FilePickerActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		currentDir = new File("/sdcard/acdivoca");
+		currentDir = new File(HOME_DIRECTORY);
 
 		File files[] = currentDir.listFiles();
 		List<String> datafiles = new ArrayList<String>();
@@ -48,7 +49,10 @@ public class FilePickerActivity extends ListActivity {
 			e.printStackTrace();
 		}
 		
-        adapter = new FileArrayAdapter(this, R.layout.acdivoca_list_messsages, datafiles );
+		if (datafiles.size() == 0) 
+			setContentView(R.layout.acdivoca_list_files);
+
+        adapter = new FileArrayAdapter(this, R.layout.acdivoca_list_files, datafiles );
         this.setListAdapter(adapter);
 	}
 	
@@ -85,11 +89,11 @@ public class FilePickerActivity extends ListActivity {
 			View v = convertView;
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.acdivoca_list_messages_row, null);
+				v = vi.inflate(R.layout.acdivoca_list_files_row, null);
 			}
 			final String filename = items.get(position);
 			if (filename != null) {
-				TextView t1 = (TextView) v.findViewById(R.id.message_header);
+				TextView t1 = (TextView) v.findViewById(R.id.filename);
 				t1.setText(filename);
 			}
 			return v;
