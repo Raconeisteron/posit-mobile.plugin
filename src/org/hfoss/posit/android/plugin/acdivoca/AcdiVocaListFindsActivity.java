@@ -29,6 +29,7 @@ import org.hfoss.posit.android.Utils;
 import org.hfoss.posit.android.api.ListFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -61,7 +62,8 @@ import android.widget.SimpleCursorAdapter.ViewBinder;
  * Displays a summary of Finds on this phone in a clickable list.
  *
  */
-public class AcdiVocaListFindsActivity extends ListFindsActivity implements ViewBinder{
+public class AcdiVocaListFindsActivity extends ListFindsActivity 
+	implements ViewBinder, SmsCallBack {
 
 	private static final String TAG = "ListActivity";
 	private Cursor mCursor;  // Used for DB accesses
@@ -71,10 +73,15 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	private static final int CONFIRM_DELETE_DIALOG = 0;
 	public static final int FIND_FROM_LIST = 0;
 	public static final String MESSAGE_START_SUBSTRING = "t=";
+	private static final int SMS_REPORT = AcdiVocaAdminActivity.SMS_REPORT;
+	private static final int SEND_MSGS_ALERT = AcdiVocaAdminActivity.SEND_DIST_REP;
+	private static final int NO_MSGS_ALERT = SMS_REPORT + 1;
+
 	
 	private String mAction;
 	private int mStatusFilter;
-	
+	private Activity mActivity;
+	private ArrayList<AcdiVocaMessage> mAcdiVocaMsgs;
 	
 	private int project_id;
     private static final boolean DBG = false;
@@ -89,7 +96,17 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	private int mNUnsentFinds = 0;
 	
 	private boolean mMessageListDisplayed = false;
-
+	private String mSmsReport;
+	
+	/**
+	 * Callback method used by SmsManager to report how
+	 * many messages were sent. 
+	 * @param smsReport the report from SmsManager
+	 */
+	public void smsMgrCallBack(String smsReport) {
+		mSmsReport = smsReport;
+		showDialog(SMS_REPORT);
+	}
 	/** 
 	 * Called when the Activity starts.
 	 *  @param savedInstanceState contains the Activity's previously
@@ -100,6 +117,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		mActivity = this;
 		Intent intent = getIntent();
 		mAction = intent.getAction();
 		if (mAction == null) 
@@ -383,16 +401,18 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		case R.id.sync_messages:
 			// For regular USER, create the messages and send
 			if (userTypeOrdinal == UserType.USER.ordinal()) {
+				
 				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-				ArrayList<AcdiVocaMessage> acdiVocaMsgs 
-					= db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
-				int n = acdiVocaMsgs.size();
+				mAcdiVocaMsgs = db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
+				db = new AcdiVocaDbHelper(this);
+				mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_NEW, null));
+				
+				int n = mAcdiVocaMsgs.size();
 				Log.i(TAG, "onMenuSelected sending " + n + " new beneficiary messages" );
 				if (n != 0) {
-					AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
-					mgr.sendMessages(this, acdiVocaMsgs);
+					showDialog(SEND_MSGS_ALERT);
 				} else {
-					
+					showDialog(NO_MSGS_ALERT);
 				}
 				//displayMessageList(SearchFilterActivity.RESULT_SELECT_NEW, null);	
 
@@ -420,14 +440,15 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 		int nMsgs = mAdapter.getCount();
 		int nSent = 0;
 		int k = 0;
-		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
+		mAcdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
 		while (k < nMsgs) {
 			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
-			acdiVocaMsgs.add(acdiVocaMsg);
+			mAcdiVocaMsgs.add(acdiVocaMsg);
 			++k;
 		}
-		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
-		mgr.sendMessages(this, acdiVocaMsgs);
+		showDialog(SEND_MSGS_ALERT);
+//		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+//		mgr.sendMessages(this, acdiVocaMsgs);
 	}
 	
 	/**
@@ -610,6 +631,44 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity implements View
 	protected Dialog onCreateDialog(int id) {
 
 		switch (id) {
+		case SEND_MSGS_ALERT:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.about2).setTitle(mAcdiVocaMsgs.size() + getString(R.string.send_dist_rep))
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {								
+								public void onClick(DialogInterface dialog,
+										int which) {
+									AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(mActivity);
+									mgr.sendMessages(mActivity, mAcdiVocaMsgs);
+									//finish();
+								}
+							}).setNegativeButton(R.string.alert_dialog_cancel,
+									new DialogInterface.OnClickListener() {										
+										public void onClick(DialogInterface dialog, int which) {
+										}
+									}).create();
+		
+		case NO_MSGS_ALERT:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.about2).setTitle("There are no messages to send.")
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {								
+								public void onClick(DialogInterface dialog,
+										int which) {
+								}
+							}).create();
+		
+		case SMS_REPORT:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(mSmsReport)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// User clicked OK so do some stuff
+							finish();
+						}
+					}).create();
 		case CONFIRM_DELETE_DIALOG:
 			return new AlertDialog.Builder(this)
 			.setIcon(R.drawable.alert_dialog_icon)

@@ -478,7 +478,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			if (msg.what == DONE) {
 				mProgressDialog.dismiss();
 				Log.i(TAG, "Sent = " + nMsgsSent + " Pending = " + nMsgsPending);
-				((AcdiVocaAdminActivity)mActivity).smsMgrCallBack(
+				((SmsCallBack)mActivity).smsMgrCallBack(
 						"Sent = " + nMsgsSent 
 						+ " Pending = " + nMsgsPending
 						+ " " + mErrorMsg);
