@@ -227,7 +227,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 					if (ackId < 0)  {   // Check for bulk 
 						avMsg = new AcdiVocaMessage(
 								ackId * -1,  // For Bulks, the ackId is MsgId
-								-1,  // Beneficiary Id
+								AcdiVocaDbHelper.UNKNOWN_ID,  // Beneficiary Id
 								AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
 								attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
 								"",   // SmsMessage N/A
@@ -237,7 +237,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 					} else {
 						// Message for normal messages, where IDs > 0 and represent beneficiary IDs
 						avMsg = new AcdiVocaMessage(
-								-1,  // Message Id is unknown -- Modem sends back Beneficiary Id
+								AcdiVocaDbHelper.UNKNOWN_ID,  // Message Id is unknown -- Modem sends back Beneficiary Id
 								ackId,  // For non-acks, ackId is Beneficiary Id
 								AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
 								attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
@@ -351,7 +351,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 
 		String message = null;
 		int msgid = 0;
-		if (beneficiary_id != -1) {
+		if (beneficiary_id != AcdiVocaDbHelper.UNKNOWN_ID) {
 			msgid = acdiVocaMessage.getBeneficiaryId();
 			message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
 			+ AttributeManager.ATTR_VAL_SEPARATOR 
