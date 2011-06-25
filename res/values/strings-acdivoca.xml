@@ -274,7 +274,9 @@
 	<string name="alert_dialog_ok">Ok</string>
 	<string name="alert_dialog_cancel">Cancel</string>
  
- 
+    <string name="send_dist_rep"> messages to send. OK?</string>
+    <string name="io_exc">Oops! Can\'t find </string>
+    <string name="string_exc">String Exception</string>
  
 <!--  To be translated -->
 

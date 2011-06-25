@@ -265,8 +265,9 @@
 	<string name="toast_admin_login">konekte kom admin pou imp√≤te done benefisy√® yo.</string>
 	<string name="toast_adminuser">Ou dwe genyen dwa Administrat√® pou ka f√® travay sa.</string>
 
-
-
+    <string name="send_dist_rep"> pou bay mesaj pou voye. OK?</string>
+    <string name="io_exc">Oops! Yo pa ka jwenn </string>
+    <string name="string_exc">Eksepsyon ch√®n</string>
    
 
 <!--     <string name="general">Pati Jeneral</string>  -->

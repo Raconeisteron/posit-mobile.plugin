@@ -81,26 +81,38 @@ public class AcdiVocaAdminActivity extends Activity  {
 	public static final String DEFAULT_BENEFICIARY_FILE = "Beneficiare.csv";
 	public static final String DEFAULT_LIVELIHOOD_FILE = "Livelihood.csv";
 	public static final String COMMA= ",";
-	public static final String IO_EXC = "Oops! Can't find ";
-	public static final String STRING_EXC = "String Exception";
 	public static final int DONE = 0;
 	public static final int ERROR = -1;
 
 	public static final int IO_EXCEPTION = 1;
 	public static final int STRING_EXCEPTION = 2;
+	public static final int SEND_DIST_REP = 3;
+	public static final int SMS_REPORT = 4;
 
-	private ArrayAdapter<String> adapter;
+	//private ArrayAdapter<String> adapter;
 	private String mBeneficiaries[] = null;
 	private ProgressDialog mProgressDialog;
 	private String mDistrCtr;
+	
+	private Context mContext;
+	private String mSmsReport;
+	
+	private ArrayList<AcdiVocaMessage> mAcdiVocaMsgs;
 
-
+	/**
+	 * Callback method used by SmsManager to report how
+	 * many messages were sent. 
+	 * @param smsReport the report from SmsManager
+	 */
+	public void smsMgrCallBack(String smsReport) {
+		mSmsReport = smsReport;
+		showDialog(SMS_REPORT);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
-		
-
 	}
 
 	@Override
@@ -109,7 +121,6 @@ public class AcdiVocaAdminActivity extends Activity  {
 		super.onResume();
 		
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
-
 		setContentView(R.layout.acdivoca_admin);
 	}	
 	
@@ -121,13 +132,13 @@ public class AcdiVocaAdminActivity extends Activity  {
 
 	/**
 	 * Creates the menu options.
-	 * 
 	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.acdi_voca_admin_menu, menu);
+		mContext = this;
 		return true;
 	}
 
@@ -146,10 +157,16 @@ public class AcdiVocaAdminActivity extends Activity  {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+//		MenuItem listItem = menu.findItem(R.id.list_messages);
+//		MenuItem syncItem = menu.findItem(R.id.sync_messages);
+//		MenuItem deleteItem = menu.findItem(R.id.delete_messages_menu);
+
+		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String distrEventStage = prefs.getString(getString(R.string.distribution_event_key), "");
 		String distrPoint = prefs.getString(getString(R.string.distribution_point), "");
 	
+		// What type of user is logged in?
 		int userTypeOrdinal = prefs.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
 		Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
 		if (userTypeOrdinal != UserType.SUPER.ordinal()) {
@@ -158,12 +175,9 @@ public class AcdiVocaAdminActivity extends Activity  {
 			menu.getItem(1).setVisible(true);
 		}
 
-		
 		Log.i(TAG, "onPrepareMenuOptions, distrPoint ="  + distrPoint 
 				+ " distribution stage = " + distrEventStage);
 		
-		
-
 		MenuItem item = null;
 		for (int k = 0; k < menu.size(); k++) {
 			item = menu.getItem(k);
@@ -259,23 +273,17 @@ public class AcdiVocaAdminActivity extends Activity  {
 		String distributionCtr = sharedPrefs.getString(distrKey, "");
 		Log.i(TAG, distrKey +"="+ distributionCtr);
 
-		// First send update reports -- i.e., those present with changes.
+		// First create update reports -- i.e., those present with changes.
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		ArrayList<AcdiVocaMessage> acdiVocaMsgs = 
+		mAcdiVocaMsgs = 
 			db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_UPDATE, null, distributionCtr);
 
-//		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
-//		mgr.sendMessages(this, acdiVocaMsgs);
-//		AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
-		
-		// Now send bulk absences list
+		// Now create bulk absences messages
 		db = new AcdiVocaDbHelper(this);
-		acdiVocaMsgs.addAll(db.createBulkUpdateMessages(distributionCtr));
-//		acdiVocaMsgs.addAll() = db.createBulkUpdateMessages(distributionCtr);
-
-		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
-		mgr.sendMessages(this, acdiVocaMsgs);
-		//AcdiVocaSmsManager.sendMessages(this, acdiVocaMsgs);
+		mAcdiVocaMsgs.addAll(db.createBulkUpdateMessages(distributionCtr));
+		Log.i(TAG, "nMsgs to send " + mAcdiVocaMsgs.size());
+		// Prompt the user
+		showDialog(SEND_DIST_REP);
 	}
 	
 	/**
@@ -451,14 +459,25 @@ public class AcdiVocaAdminActivity extends Activity  {
 	}
 	
 	/**
-	 * Creates a dialog to confirm that the user wants to exit POSIT.
+	 * Creates a dialog to handle various alerts and announcements to the user.
 	 */
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
+		case SMS_REPORT:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(mSmsReport)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// User clicked OK so do some stuff
+							finish();
+						}
+					}).create();
 		case IO_EXCEPTION:
 			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.alert_dialog_icon).setTitle(IO_EXC + DEFAULT_BENEFICIARY_FILE)
+					R.drawable.alert_dialog_icon).setTitle(getString(R.string.io_exc) + DEFAULT_BENEFICIARY_FILE)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
@@ -469,7 +488,7 @@ public class AcdiVocaAdminActivity extends Activity  {
 					}).create();
 		case STRING_EXCEPTION:
 			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.alert_dialog_icon).setTitle(STRING_EXC)
+					R.drawable.alert_dialog_icon).setTitle(getString(R.string.string_exc))
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
@@ -478,6 +497,22 @@ public class AcdiVocaAdminActivity extends Activity  {
 							finish();
 						}
 					}).create();
+		case SEND_DIST_REP:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.about2).setTitle(mAcdiVocaMsgs.size() + getString(R.string.send_dist_rep))
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {								
+								public void onClick(DialogInterface dialog,
+										int which) {
+									AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance((Activity) mContext);
+									mgr.sendMessages(mContext, mAcdiVocaMsgs);
+									//finish();
+								}
+							}).setNegativeButton(R.string.alert_dialog_cancel,
+									new DialogInterface.OnClickListener() {										
+										public void onClick(DialogInterface dialog, int which) {
+										}
+									}).create();
 
 		default:
 			return null;
