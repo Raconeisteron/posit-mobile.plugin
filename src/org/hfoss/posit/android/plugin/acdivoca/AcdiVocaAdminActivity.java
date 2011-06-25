@@ -72,7 +72,11 @@ import android.widget.Toast;
  * using previous, next, skip, and finish buttons.
  */
 
-public class AcdiVocaAdminActivity extends Activity  {
+interface SmsCallBack {
+	public void smsMgrCallBack(String s);
+}
+
+public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 
 	public static String TAG = "AdminActivity";
 	public static final int MAX_BENEFICIARIES = 20000;  // Max readable
