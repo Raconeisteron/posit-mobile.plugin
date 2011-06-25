@@ -176,6 +176,7 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_STATUS = AttributeManager.FINDS_STATUS;
 	public static final int FINDS_STATUS_NEW = 0;      // New registration, no Dossier ID
 	public static final int FINDS_STATUS_UPDATE = 1;   // Update, imported from TBS, with Dossier ID
+	public static final int FINDS_STATUS_DONTCARE = -1;  
 	public static final String[] FIND_STATUS_STRINGS = {"New", "Update"};  // For display purpose
 
 //	public static final String FINDS_MESSAGE_ID = MESSAGE_STATUS;
@@ -1014,25 +1015,44 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	private Cursor lookupMessages(int filter, String order_by) {
+		int msg_status = 0;
+		// Map the select result to the message status
+		switch (filter) {
+		case SearchFilterActivity.RESULT_SELECT_PENDING:
+			msg_status = MESSAGE_STATUS_PENDING;
+			break;
+		case SearchFilterActivity.RESULT_SELECT_SENT:
+			msg_status = MESSAGE_STATUS_SENT;
+			break;
+		case SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED:
+			msg_status = MESSAGE_STATUS_ACK;
+			break;
+		default:
+			break;
+		}
+		// Construct the where clause
+		String whereClause = MESSAGE_TABLE + "." + MESSAGE_STATUS + " = " + msg_status;
 		Cursor c = null;
-		if (filter == SearchFilterActivity.RESULT_SELECT_PENDING)
-			c = mDb.query(MESSAGE_TABLE, null, 
-					MESSAGE_STATUS + "=" + MESSAGE_STATUS_PENDING, 
-					null, null, null, order_by);
-		
-		else if (filter == SearchFilterActivity.RESULT_SELECT_SENT)
-			c = mDb.query(MESSAGE_TABLE, null, 
-					MESSAGE_STATUS + "=" + MESSAGE_STATUS_SENT, 
-					null, null, null, order_by);
-		
-		else if (filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED)
-			c = mDb.query(MESSAGE_TABLE, null, 
-					MESSAGE_STATUS + "=" + MESSAGE_STATUS_ACK, 
-					null, null, null, order_by);
-		else  // All
-			c = mDb.query(MESSAGE_TABLE, null, 
-					null,
-					null, null, null, order_by);
+
+		if (filter == SearchFilterActivity.RESULT_SELECT_ALL) // All messages
+			c = mDb.query(true, MESSAGE_TABLE, null, null, null, null, null, order_by,null);
+		else 
+			c = mDb.query(true, MESSAGE_TABLE, null, whereClause,null, null, null, order_by,null);
+//		
+//		
+//		else if (filter == SearchFilterActivity.RESULT_SELECT_SENT)
+//			c = mDb.query(MESSAGE_TABLE, null, 
+//					MESSAGE_STATUS + "=" + MESSAGE_STATUS_SENT, 
+//					null, null, null, order_by);
+//		
+//		else if (filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED)
+//			c = mDb.query(MESSAGE_TABLE, null, 
+//					MESSAGE_STATUS + "=" + MESSAGE_STATUS_ACK, 
+//					null, null, null, order_by);
+//		else  // All
+//			c = mDb.query(MESSAGE_TABLE, null, 
+//					null,
+//					null, null, null, order_by);
 		//Log.i(TAG, "lookup messages count = " + c.getCount());
 		//mDb.close();  // Private don't close
 		return c;
@@ -1157,7 +1177,7 @@ public class AcdiVocaDbHelper {
 				acdiVocaMsgs.add(new AcdiVocaMessage(msg_id, 
 						beneficiary_id, 
 						MESSAGE_STATUS_UNSENT,
-						rawMessage, smsMessage, msgHeader));
+						rawMessage, smsMessage, msgHeader,!AcdiVocaMessage.EXISTING));
 				c.moveToNext();
 				++k;
 			}
@@ -1184,7 +1204,7 @@ public class AcdiVocaDbHelper {
 	 */
 	public ArrayList<AcdiVocaMessage> createBulkUpdateMessages(String distrCtr) {
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
-;
+
 		Cursor c = mDb.query(FINDS_TABLE, null, 
 				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
 				+ " AND " 
@@ -1222,7 +1242,8 @@ public class AcdiVocaDbHelper {
 					acdiVocaMsgs.add(new AcdiVocaMessage(-1, 
 							-1, 
 							MESSAGE_STATUS_UNSENT,
-							"", smsMessage, msgHeader));
+							"", smsMessage, msgHeader, 
+							!AcdiVocaMessage.EXISTING));
 					smsMessage = "";
 					
 				}				
@@ -1230,7 +1251,9 @@ public class AcdiVocaDbHelper {
 				++k;
 			}
 			acdiVocaMsgs.add (new AcdiVocaMessage(-1, -1, MESSAGE_STATUS_UNSENT,
-					"", smsMessage, "MsgId: bulk, Len:" + smsMessage.length()));
+					"", smsMessage, 
+					"MsgId: bulk, Len:" + smsMessage.length(), 
+					!AcdiVocaMessage.EXISTING));
 		}
 		mDb.close();
 		c.close();
@@ -1274,8 +1297,11 @@ public class AcdiVocaDbHelper {
 
 				String msgHeader = "MsgId:" + msg_id + " Stat:" + statusStr + " Len:" + smsMessage.length()
 					+ " Bid = " + beneficiary_id;
-				acdiVocaMsgs.add (new AcdiVocaMessage(msg_id, beneficiary_id, msg_status,
-						"", smsMessage, msgHeader));
+				acdiVocaMsgs.add (new AcdiVocaMessage(msg_id, beneficiary_id, 
+						msg_status,
+						"", smsMessage, 
+						msgHeader,
+						AcdiVocaMessage.EXISTING));
 				c.moveToNext();
 				++k;
 			}

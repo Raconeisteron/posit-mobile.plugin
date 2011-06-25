@@ -400,12 +400,15 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		// This case sends all messages	(if messages are currently displayed)
 		case R.id.sync_messages:
 			// For regular USER, create the messages and send
-			if (userTypeOrdinal == UserType.USER.ordinal()) {
+//			if (userTypeOrdinal == UserType.USER.ordinal()) {
 				
 				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 				mAcdiVocaMsgs = db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
-				db = new AcdiVocaDbHelper(this);
-				mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_NEW, null));
+				
+				if (userTypeOrdinal != UserType.USER.ordinal()) {
+					db = new AcdiVocaDbHelper(this);
+					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  null));
+				}
 				
 				int n = mAcdiVocaMsgs.size();
 				Log.i(TAG, "onMenuSelected sending " + n + " new beneficiary messages" );
@@ -416,13 +419,13 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				}
 				//displayMessageList(SearchFilterActivity.RESULT_SELECT_NEW, null);	
 
-			} else {  // For ADMIN and SUPER Users
-				if (this.mMessageListDisplayed) {
-					sendMessages();
-				}
-				mNMessagesDisplayed = 0;
-				fillData(null);
-			}
+//			} else {  // For ADMIN and SUPER Users
+//				if (this.mMessageListDisplayed) {
+//					sendMessages();
+//				}
+//				mNMessagesDisplayed = 0;
+//				fillData(null);
+//			}
 			break;
 			
 		case R.id.delete_messages_menu:
@@ -433,23 +436,23 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		return true;
 	}
 
-	/**
-	 * Helper method to send SMS messages. 
-	 */
-	private void sendMessages() {
-		int nMsgs = mAdapter.getCount();
-		int nSent = 0;
-		int k = 0;
-		mAcdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
-		while (k < nMsgs) {
-			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
-			mAcdiVocaMsgs.add(acdiVocaMsg);
-			++k;
-		}
-		showDialog(SEND_MSGS_ALERT);
-//		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
-//		mgr.sendMessages(this, acdiVocaMsgs);
-	}
+//	/**
+//	 * Helper method to send SMS messages. 
+//	 */
+//	private void sendMessages() {
+//		int nMsgs = mAdapter.getCount();
+//		int nSent = 0;
+//		int k = 0;
+//		mAcdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
+//		while (k < nMsgs) {
+//			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
+//			mAcdiVocaMsgs.add(acdiVocaMsg);
+//			++k;
+//		}
+//		showDialog(SEND_MSGS_ALERT);
+////		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+////		mgr.sendMessages(this, acdiVocaMsgs);
+//	}
 	
 	/**
 	 * Helper method to delete SMS messages. 
@@ -558,7 +561,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		if (acdiVocaMsgs.size() == 0) {
 			mNMessagesDisplayed = 0;
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
-			acdiVocaMsgs.add(new AcdiVocaMessage(-1,-1,-1,"",getString(R.string.no_messages),""));
+			acdiVocaMsgs.add(new AcdiVocaMessage(-1,-1,-1,"",getString(R.string.no_messages),
+					"", !AcdiVocaMessage.EXISTING));
 		} else {
 			mNMessagesDisplayed = acdiVocaMsgs.size();
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
