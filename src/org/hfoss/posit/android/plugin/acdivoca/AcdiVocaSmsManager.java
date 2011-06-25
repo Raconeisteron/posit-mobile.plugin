@@ -75,7 +75,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	private static Context mContext = null;
 	private static Handler mHandler;
 	private static AcdiVocaSmsManager mInstance = null; 
-	private static String acdiVocaPhone = null;
+	
+	private static String mAcdiVocaPhone = null;
 	private static Activity mActivity;
 	
 	private static ProgressDialog mProgressDialog;
@@ -106,8 +107,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		
 		String url = "content://sms/"; 
         Uri uri = Uri.parse(url); 
-        acdiVocaPhone = 
-			PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
+        mAcdiVocaPhone = 
+			PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.smsPhoneKey), "");
  //  Not used
  //       mContext.getContentResolver().registerContentObserver(uri, 
  //       		true, new AcdiVocaSmsManager().new SmsContentObserver(mHandler));                    
@@ -230,7 +231,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 								AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
 								attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
 								"",   // SmsMessage N/A
-								""    // Header  N/A
+								"",    // Header  N/A
+								!AcdiVocaMessage.EXISTING
 						);
 					} else {
 						// Message for normal messages, where IDs > 0 and represent beneficiary IDs
@@ -240,7 +242,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 								AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
 								attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
 								"",   // SmsMessage N/A
-								""    // Header  N/A
+								"",    // Header  N/A
+								!AcdiVocaMessage.EXISTING
 						);
 					}
 					AcdiVocaDbHelper db = new AcdiVocaDbHelper(mContext);
@@ -303,6 +306,14 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	 */
 	private void transmitMessages(Context context, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
 		Log.i(TAG, "Transmitting  messages = " + acdiVocaMsgs.size());
+		
+		mAcdiVocaPhone = PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.smsPhoneKey), "");
+		if (!isValidPhoneString(mAcdiVocaPhone)) {
+			Log.e(TAG, "Invalid phone number " + mAcdiVocaPhone);
+			mErrorMsg = "Invalid phone number = " + mAcdiVocaPhone;
+			return;			
+		}
+		
 		nMsgsSent = 0;
 		AcdiVocaMessage acdiVocaMsg = null;
 		Iterator<AcdiVocaMessage> it = acdiVocaMsgs.iterator();
@@ -313,12 +324,14 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			Log.i(TAG, "Raw Message: " + acdiVocaMsg.getRawMessage());
 			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
 			
-			AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
-            int msgId = (int)db.createNewMessageTableEntry(acdiVocaMsg,beneficiary_id,AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT);
-            acdiVocaMsg.setMessageId(msgId);
+			if (!acdiVocaMsg.isExisting()) {
+				Log.i(TAG,"This is an existing message");
+				AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
+				int msgId = (int)db.createNewMessageTableEntry(acdiVocaMsg,beneficiary_id,AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT);
+				acdiVocaMsg.setMessageId(msgId);
+			}
 
-			sendMessage(context, beneficiary_id, acdiVocaMsg, null);
-			
+			sendMessage(context, beneficiary_id, acdiVocaMsg);
 		}
 	}
 	
@@ -333,10 +346,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	 * @return
 	 * @throws MalformedMimeTypeException 
 	 */
-	private boolean sendMessage(Context context, int beneficiary_id, AcdiVocaMessage acdiVocaMessage, String phoneNumber)  {
-		if (phoneNumber==null)
-			phoneNumber = PreferenceManager.getDefaultSharedPreferences(context).getString("smsPhone", "");
-		Log.i(TAG, "Message for " + phoneNumber + "  bid = " + beneficiary_id);
+	private boolean sendMessage(Context context, int beneficiary_id, AcdiVocaMessage acdiVocaMessage)  {
+		Log.i(TAG, "Message for bid = " + beneficiary_id);
 
 		String message = null;
 		int msgid = 0;
@@ -388,11 +399,6 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		length = SmsMessage.calculateLength(message, false);
 		Log.i(TAG, "Length - 16 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
 
-		if (!isValidPhoneString(phoneNumber)) {
-			Log.e(TAG, "Invalid phone number " + phoneNumber);
-			return false;			
-		}
-
 //		SmsManager sms = SmsManager.getDefault();
 //		sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
 
@@ -402,8 +408,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		if (length[0] == 1) {  
 			try {
 				SmsManager sms = SmsManager.getDefault();
-				sms.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);    
-				Log.i(TAG,"SMS Sent: " + message + " to " + phoneNumber);
+				sms.sendTextMessage(mAcdiVocaPhone, null, message, sentIntent, deliveryIntent);    
+				Log.i(TAG,"SMS Sent: " + message + " to " + mAcdiVocaPhone);
 				return true;
 			}catch(Exception e) {
 				Log.i(TAG,e.toString());

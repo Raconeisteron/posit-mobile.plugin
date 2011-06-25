@@ -294,7 +294,7 @@ public class AcdiVocaSendSmsActivity extends ListActivity implements OnClickList
 				|| filter == SearchFilterActivity.RESULT_SELECT_PENDING
 				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
 				|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
-			acdiVocaMsgs = db.fetchSmsMessages(filter, null); 
+			acdiVocaMsgs = db.fetchSmsMessages(filter,  null); 
 		} else if (filter == SearchFilterActivity.RESULT_BULK_UPDATE) {
 			acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
 		} else
@@ -303,7 +303,9 @@ public class AcdiVocaSendSmsActivity extends ListActivity implements OnClickList
 		if (acdiVocaMsgs.size() == 0) {
 			mNMessagesDisplayed = 0;
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
-			acdiVocaMsgs.add(new AcdiVocaMessage(-1,-1,-1,"",getString(R.string.no_messages),""));
+			acdiVocaMsgs.add(new AcdiVocaMessage(-1,-1,-1,"",
+					getString(R.string.no_messages),"",
+					!AcdiVocaMessage.EXISTING));
 		}
 		else {
 			mNMessagesDisplayed = acdiVocaMsgs.size();

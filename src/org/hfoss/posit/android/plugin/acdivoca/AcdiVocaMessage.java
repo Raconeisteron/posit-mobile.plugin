@@ -30,28 +30,30 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-public class AcdiVocaMessage implements Serializable {
+public class AcdiVocaMessage {
 	
 	public static final String TAG = "AcdiVocaMessage";
 	
 	public static final String ACDI_VOCA_PREFIX = "AV";
 	public static final String ACK = "ACK";
 	public static final String IDS = "IDS";
+	public static final boolean EXISTING = true;
 
 	
 	private int messageId = -1;       // row Id of message in our Db
 	private int msgStatus = -1;
-	private int beneficiaryId;   // row Id of beneficiary in our Db
+	private int beneficiaryId;        // row Id of beneficiary in our Db
 	private String rawMessage;	     // Attr/val pairs with long attribute names
-	private String smsMessage;   // abbreviated Attr/val pairs
+	private String smsMessage;       // abbreviated Attr/val pairs
 	private String msgHeader =""; 
+	private boolean existing = !EXISTING;  // Built from an existing message or, eg, a PENDING)
 	
 	public AcdiVocaMessage() {
 		
 	}
 	
 	public AcdiVocaMessage(int messageId, int beneficiaryId, int msgStatus,  
-			String rawMessage, String smsMessage, String msgHeader) {
+			String rawMessage, String smsMessage, String msgHeader, boolean existing) {
 		super();
 		this.messageId = messageId;
 		this.beneficiaryId = beneficiaryId;
@@ -59,6 +61,7 @@ public class AcdiVocaMessage implements Serializable {
 		this.rawMessage = rawMessage;
 		this.smsMessage = smsMessage;
 		this.msgHeader = msgHeader;
+		this.existing = existing;
 	}
 
 	public int getMessageId() {
@@ -110,22 +113,12 @@ public class AcdiVocaMessage implements Serializable {
 		this.msgHeader = msgHeader;
 	}
 	
-	public void writeToFile(FileOutputStream outStream) throws IOException {
-		ObjectOutputStream ooStream = new ObjectOutputStream(outStream);
-		ooStream.writeObject(this);
-		ooStream.flush();
+	public boolean isExisting() {
+		return existing;
 	}
-	
-	public void readFromFile(FileInputStream inStream) 
-		throws IOException, ClassNotFoundException {
-		ObjectInputStream oiStream = new ObjectInputStream(inStream);
-		AcdiVocaMessage avm = (AcdiVocaMessage)oiStream.readObject();
-		this.messageId = avm.messageId;
-		this.msgStatus = avm.msgStatus;
-		this.beneficiaryId = avm.beneficiaryId;   
-		this.rawMessage = avm.rawMessage;
-		this.smsMessage = avm.smsMessage;
-		this.msgHeader = avm.msgHeader;
+
+	public void setExisting(boolean existing) {
+		this.existing = existing;
 	}
 
 	@Override
