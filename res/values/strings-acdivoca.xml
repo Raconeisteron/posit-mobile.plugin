@@ -16,6 +16,7 @@
 	<string name="start_distribution">Start distribution</string>
 	<string name="stop_distribution">Stop distribution</string>
 	<string name="send_distribution_report">Send distribution report</string>
+	<string name="no_files_found">No files to list.</string>
 
 	<string name="distribution_event_key">distr_event_stage</string>
 	<string name="distribution_event_stage">Distribution Event Stage</string>
@@ -146,11 +147,11 @@
     
     <!--  list_finds.xml -->
     <string name="noFinds">No beneficiaries</string>
-    <string name="pick_criterion_prompt">Create messages to send.</string>
+    <string name="pick_criterion_prompt">Create or retrieve existing messages.</string>
     <string name="search_filter_select_button">Select</string>
-    <string name="new_messages">Messages for new beneficiaries</string>
-    <string name="update_messages">Messages for updated beneficiaries</string>
-    <string name="bulk_messages">Distribution attendance report</string>
+    <string name="new_messages">Create messages for new beneficiaries</string>
+    <string name="update_messages">Create messages for updated beneficiaries</string>
+    <string name="bulk_messages">Create messages for absent distribution beneficiaries</string>
     <string name="all_messages">List all existing messages</string>
     <string name="sent_messages">List sent messages</string>
     <string name="pending_messages">List pending messages</string>
@@ -163,7 +164,7 @@
         <!-- Add and List Menu -->
     <string name="refresh">Clear</string>
     <string name="delete_find">Delete</string> 
-    <string name="list_messages">Create SMS Messages</string>
+    <string name="list_messages">Manage SMS Messages</string>
     <string name="sync_messages">Send SMS Messages</string>
   
     <!-- ACDI/VOCA Settings and Preferences -->

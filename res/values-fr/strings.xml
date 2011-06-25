@@ -14,6 +14,7 @@
 	<string name="start_distribution">Demarrer distribution</string>
 	<string name="stop_distribution">Stopper distribution</string>
 <!-- 	<string name="send_distribution_report">Envoyer rapport distribution</string> -->
+	<string name="no_files_found">Pas de fichiers à la liste.</string>
 
 <!-- 	<string name="distribution_event_key">Evenement distribution</string> -->
 	<string name="distribution_event_stage">Evenement Distribution</string>
@@ -140,11 +141,11 @@
     
     <!--  list_finds.xml -->
     <string name="noFinds">Pas de beneficiares</string>
-    <string name="pick_criterion_prompt">Creer le message a envoyer.</string>
+    <string name="pick_criterion_prompt">Créer ou récupérer des messages existants.</string>
     <string name="search_filter_select_button">Selectionner</string>
-    <string name="new_messages">Messages pour nouveaux beneficiaire</string>
-    <string name="update_messages">Messages mis a jour beneficiaries</string>
-    <string name="bulk_messages">Message sur Rapport de distribution</string>
+    <string name="new_messages">Créer messages pour nouveaux beneficiaire</string>
+    <string name="update_messages">Créer messages mis a jour beneficiaries</string>
+    <string name="bulk_messages">Créez des messages pour les bénéficiaires de la distribution absents</string>
     <string name="all_messages">Lister tous les messages existant</string>
     <string name="sent_messages">Lister les messages envoyes</string>
     <string name="pending_messages">Lister les message en pending</string>
@@ -157,8 +158,8 @@
         <!-- Add and List Menu -->
     <string name="refresh">Netoyer</string>
     <string name="delete_find">Supprimer</string> 
-    <string name="list_messages">Creer Message SMS</string>
-    <string name="sync_messages">Envoyer Message SMS</string>
+    <string name="list_messages">Gérer Messages SMS</string>
+    <string name="sync_messages">Envoyer Messages SMS</string>
   
     <!-- ACDI/VOCA Settings and Preferences -->
     <string name="acdivocaprefs">Preference ACDI/VOCA</string>

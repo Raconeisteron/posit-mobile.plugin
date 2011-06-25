@@ -14,6 +14,7 @@
 	<string name="start_distribution">Demare distribisyon</string>
 	<string name="stop_distribution">Stope distribisyon</string>
 <!-- 	<string name="send_distribution_report">voye rap√≤ distribisyon</string> -->
+	<string name="no_files_found">Pa gen dosye nan lis.</string>
 
 	<string name="distribution_event_stage">Evenman Distribisyon</string>
 <!-- 	<string name="select_distr_point">choizi pos distribisyon</string> -->
@@ -138,11 +139,11 @@
     
 <!--      list_finds.xml -->
     <string name="noFinds">Pbenefisy√® a pa la</string>
-    <string name="pick_criterion_prompt">kreye mesag wap voye a.</string>
+    <string name="pick_criterion_prompt">Kreye oswa rekipere mesaj ki egziste deja.</string>
     <string name="search_filter_select_button">Seleksyone</string>
-    <string name="new_messages">Mesag pou nouvo benefisy√®</string>
-    <string name="update_messages">Mesag mi a jou benefisy√®</string>
-    <string name="bulk_messages">Mesag sou Rap√≤ distribisyoon</string>
+    <string name="new_messages">Kreye mesag pou nouvo benefisy√®</string>
+    <string name="update_messages">Kreye mesag mi a jou benefisy√®</string>
+    <string name="bulk_messages">Kreye mesaj pou benefisyè distribisyon absan</string>
     <string name="all_messages">Afiche tout mesag yo</string>
     <string name="sent_messages">Afiche mesag ki voye yo</string>
     <string name="pending_messages">Afiche mesag ki an pending yo</string>
@@ -155,7 +156,7 @@
 <!--         Add and List Menu -->
     <string name="refresh">Netwaye</string>
     <string name="delete_find">Efase</string> 
-    <string name="list_messages">kree Mesag SMS</string>
+    <string name="list_messages">Jere Mesage SMS</string>
     <string name="sync_messages">Voye Mesage SMS</string>
   
 <!--     ACDI/VOCA Settings and Preferences -->
@@ -245,7 +246,7 @@
     <string name="exit">Ou vle kite tout bon?</string>
     <string name="aboutCopyright2">Outil p√≤tab identifikation ak recherch\n
 	</string>
-	<string name="aboutDescription"> Developp√© par Humanitarian FOSS project
+	<string name="aboutDescription"> Developpé par Humanitarian FOSS project
 	</string>
 	<string name="loading_data">Done yo ap chage</string>
 	<string name="please_wait">Tann yon moman svp.</string>
@@ -261,7 +262,7 @@
 	<string name="french">French</string>
 	<string name="haitian">Creole haitien</string>
 	
-	<string name="powered_by_hfoss">D√©velopp√© par HFOSS</string>
+	<string name="powered_by_hfoss">Développé par HFOSS</string>
 	<string name="toast_admin_login">konekte kom admin pou imp√≤te done benefisy√® yo.</string>
 	<string name="toast_adminuser">Ou dwe genyen dwa Administrat√® pou ka f√® travay sa.</string>
 
