@@ -405,9 +405,14 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 				mAcdiVocaMsgs = db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
 				
-				if (userTypeOrdinal != UserType.USER.ordinal()) {
+				if (userTypeOrdinal == UserType.USER.ordinal()) {
 					db = new AcdiVocaDbHelper(this);
-					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  null));
+					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
+							AcdiVocaDbHelper.FINDS_STATUS_NEW, null));
+				} else {
+					db = new AcdiVocaDbHelper(this);
+					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
+							AcdiVocaDbHelper.FINDS_STATUS_DONTCARE, null));
 				}
 				
 				int n = mAcdiVocaMsgs.size();
@@ -550,7 +555,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
 				|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
 			db = new AcdiVocaDbHelper(this);
-			acdiVocaMsgs = db.fetchSmsMessages(filter, null); 
+			acdiVocaMsgs = db.fetchSmsMessages(filter, AcdiVocaDbHelper.FINDS_STATUS_DONTCARE, null); 
 		} else if (filter == SearchFilterActivity.RESULT_BULK_UPDATE) {
 			db = new AcdiVocaDbHelper(this);
 			acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);

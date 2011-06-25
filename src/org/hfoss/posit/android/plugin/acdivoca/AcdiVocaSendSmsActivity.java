@@ -294,7 +294,7 @@ public class AcdiVocaSendSmsActivity extends ListActivity implements OnClickList
 				|| filter == SearchFilterActivity.RESULT_SELECT_PENDING
 				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
 				|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
-			acdiVocaMsgs = db.fetchSmsMessages(filter,  null); 
+			acdiVocaMsgs = db.fetchSmsMessages(filter, AcdiVocaDbHelper.FINDS_STATUS_DONTCARE,  null); 
 		} else if (filter == SearchFilterActivity.RESULT_BULK_UPDATE) {
 			acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
 		} else
