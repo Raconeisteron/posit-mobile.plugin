@@ -47,7 +47,6 @@ public class AcdiVocaMessage {
 	private String smsMessage;       // abbreviated Attr/val pairs
 	private String msgHeader =""; 
 	private boolean existing = !EXISTING;  // Built from an existing message or, eg, a PENDING)
-	private int broadcastResult;           // Result broadcast by SMS radio
 	
 	public AcdiVocaMessage() {
 		
@@ -63,6 +62,31 @@ public class AcdiVocaMessage {
 		this.smsMessage = smsMessage;
 		this.msgHeader = msgHeader;
 		this.existing = existing;
+	}
+	
+	/**
+	 * Construct an instance from an Sms Message. This should be the
+	 * converse of the toString() method, which returns this object as
+	 * an Sms message. 
+	 * @param smsText a string of the form AV=msgid,....  where the ...
+	 * is either a comma-separated list of attr=val pairs or the ...
+	 * is an ampersand separated list of Ids.  
+	 */
+	public AcdiVocaMessage(String smsText) {
+		String[] msgparts = smsText.split(AttributeManager.PAIRS_SEPARATOR);
+		String[] firstPair = msgparts[0].split(AttributeManager.ATTR_VAL_SEPARATOR);
+		String msgid = firstPair[1];
+		int id = Integer.parseInt(msgid);
+		if (id < 0) {
+			messageId = id * -1;
+			beneficiaryId = -1;
+		} else {
+			beneficiaryId = id;
+			messageId = -1;
+		} 
+		for (int k = 1; k < msgparts.length; k++) {
+			smsMessage += msgparts[k];
+		}
 	}
 
 	public int getMessageId() {
@@ -122,16 +146,26 @@ public class AcdiVocaMessage {
 		this.existing = existing;
 	}
 
-	public int getBroadcastResult() {
-		return broadcastResult;
-	}
-
-	public void setBroadcastResult(int broadcastResult) {
-		this.broadcastResult = broadcastResult;
-	}
-
+	/**
+	 * Return an Sms Message.
+	 */
 	@Override
 	public String toString() {
-		return msgHeader + AttributeManager.PAIRS_SEPARATOR + smsMessage;
+		String message = "";
+		if (beneficiaryId != AcdiVocaDbHelper.UNKNOWN_ID) {
+			message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
+			+ AttributeManager.ATTR_VAL_SEPARATOR 
+			+ getBeneficiaryId() // For normal messages we use the beneficiary's row id, 1...N
+			+ AttributeManager.PAIRS_SEPARATOR
+			+ getSmsMessage();
+		} else {
+			message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
+			+ AttributeManager.ATTR_VAL_SEPARATOR 
+			+ getMessageId() * -1   // For Bulk messages we use minus the message id (e.g., -123)
+			+ AttributeManager.PAIRS_SEPARATOR
+			+ getSmsMessage();
+		}
+		return message;
+		//return msgHeader + AttributeManager.PAIRS_SEPARATOR + smsMessage;
 	}
 }

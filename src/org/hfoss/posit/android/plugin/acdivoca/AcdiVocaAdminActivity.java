@@ -261,7 +261,6 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			
 		case R.id.send_distribution_report:
 			sendDistributionReport();
-			setDistributionEventStage( this.getString(R.string.select_distr_point));		
 			break;
 		}
 		return true;
@@ -510,6 +509,10 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 										int which) {
 									AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance((Activity) mContext);
 									mgr.sendMessages(mContext, mAcdiVocaMsgs);
+									setDistributionEventStage(getString(R.string.select_distr_point));		
+
+									mSmsReport = mAcdiVocaMsgs.size()  + " messages are being sent";
+//									showDialog(SMS_REPORT);
 									//finish();
 								}
 							}).setNegativeButton(R.string.alert_dialog_cancel,
