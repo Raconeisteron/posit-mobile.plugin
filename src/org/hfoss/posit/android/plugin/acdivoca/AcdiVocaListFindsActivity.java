@@ -401,10 +401,17 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		case R.id.sync_messages:
 			// For regular USER, create the messages and send
 //			if (userTypeOrdinal == UserType.USER.ordinal()) {
+			
+				Log.i(TAG, "Displayed messages, n = " + mNMessagesDisplayed);
+				if (mNMessagesDisplayed > 0) {
+					sendDisplayedMessages();
+					return true;
+				}
 				
+			
 				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 				mAcdiVocaMsgs = db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
-				
+				Log.i(TAG, "Created messages, n = " + mAcdiVocaMsgs.size());
 				if (userTypeOrdinal == UserType.USER.ordinal()) {
 					db = new AcdiVocaDbHelper(this);
 					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
@@ -414,6 +421,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
 							AcdiVocaDbHelper.FINDS_STATUS_DONTCARE, null));
 				}
+				
+				Log.i(TAG, "Appended pending messages, n = " + mAcdiVocaMsgs.size());
+
 				
 				int n = mAcdiVocaMsgs.size();
 				Log.i(TAG, "onMenuSelected sending " + n + " new beneficiary messages" );
@@ -441,23 +451,21 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		return true;
 	}
 
-//	/**
-//	 * Helper method to send SMS messages. 
-//	 */
-//	private void sendMessages() {
-//		int nMsgs = mAdapter.getCount();
-//		int nSent = 0;
-//		int k = 0;
-//		mAcdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
-//		while (k < nMsgs) {
-//			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
-//			mAcdiVocaMsgs.add(acdiVocaMsg);
-//			++k;
-//		}
-//		showDialog(SEND_MSGS_ALERT);
-////		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
-////		mgr.sendMessages(this, acdiVocaMsgs);
-//	}
+	/**
+	 * Helper method to send SMS messages when messages are already displayed.
+	 */
+	private void sendDisplayedMessages() {
+		int nMsgs = mAdapter.getCount();
+		Log.i(TAG, "Sending displayed messages, n= " + nMsgs);
+		int k = 0;
+		mAcdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
+		while (k < nMsgs) {
+			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
+			mAcdiVocaMsgs.add(acdiVocaMsg);
+			++k;
+		}
+		showDialog(SEND_MSGS_ALERT);
+	}
 	
 	/**
 	 * Helper method to delete SMS messages. 
