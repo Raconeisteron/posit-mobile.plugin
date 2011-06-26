@@ -436,7 +436,7 @@ public class AcdiVocaDbHelper {
 	public AcdiVocaDbHelper(Context context) {
 		this.mContext= context;
 		OpenHelper openHelper = new OpenHelper(this.mContext);
-		this.mDb = openHelper.getWritableDatabase();
+		mDb = openHelper.getWritableDatabase();
 	}
 
 	/**
@@ -776,7 +776,7 @@ public class AcdiVocaDbHelper {
 	 * @param acdiVocaMsg
 	 * @return
 	 */
-	private int updateBeneficiaryTableForBulkIds(AcdiVocaMessage acdiVocaMsg, long msgId, int status) {
+	private synchronized int updateBeneficiaryTableForBulkIds(AcdiVocaMessage acdiVocaMsg, long msgId, int status) {
 		String msg = acdiVocaMsg.getSmsMessage();
 		Log.i(TAG, "updateBeneficiary Table, sms = " + msg);
 		int rows = 0;
@@ -803,7 +803,7 @@ public class AcdiVocaDbHelper {
 	 * @param status the new status
 	 * @return
 	 */
-	public boolean updateMessageStatus(AcdiVocaMessage acdiVocaMsg, int status) {
+	public synchronized boolean updateMessageStatus(AcdiVocaMessage acdiVocaMsg, int status) {
 		Log.i(TAG, "Updating, msg_id " + acdiVocaMsg.getMessageId() + 
 				" bene_id = " + acdiVocaMsg.getBeneficiaryId() + " to status = " + status);
 		boolean result = false;
@@ -907,7 +907,7 @@ public class AcdiVocaDbHelper {
 	 * Helper method to update the message table for an existing message.
 	 * @return
 	 */
-	private int updateMessageTable(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, long msg_id, int status ) {
+	private synchronized int updateMessageTable(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, long msg_id, int status ) {
 		ContentValues args = new ContentValues();
 		args.put(this.MESSAGE_BENEFICIARY_ID, beneficiary_id);
 		args.put(MESSAGE_STATUS, status);
