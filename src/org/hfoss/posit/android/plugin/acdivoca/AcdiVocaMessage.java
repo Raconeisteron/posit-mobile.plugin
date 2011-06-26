@@ -47,6 +47,7 @@ public class AcdiVocaMessage {
 	private String smsMessage;       // abbreviated Attr/val pairs
 	private String msgHeader =""; 
 	private boolean existing = !EXISTING;  // Built from an existing message or, eg, a PENDING)
+	private int broadcastResult;           // Result broadcast by SMS radio
 	
 	public AcdiVocaMessage() {
 		
@@ -119,6 +120,14 @@ public class AcdiVocaMessage {
 
 	public void setExisting(boolean existing) {
 		this.existing = existing;
+	}
+
+	public int getBroadcastResult() {
+		return broadcastResult;
+	}
+
+	public void setBroadcastResult(int broadcastResult) {
+		this.broadcastResult = broadcastResult;
 	}
 
 	@Override
