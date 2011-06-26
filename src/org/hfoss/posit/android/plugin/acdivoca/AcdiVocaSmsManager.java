@@ -31,6 +31,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity.ImportDataThread;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity.ImportThreadHandler;
 
 
 import android.app.Activity;
@@ -70,10 +72,10 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	public static final int MAX_MESSAGE_LENGTH = 140;
 	public static final int MAX_PHONE_NUMBER_LENGTH = 10;
 	public static final int MIN_PHONE_NUMBER_LENGTH = 5;
+	public static final int DONE = 0;
 	
 	public int msgId = 0;
 	private static Context mContext = null;
-//	private static Handler mHandler;
 	private static AcdiVocaSmsManager mInstance = null; 
 	
 	private static String mAcdiVocaPhone = null;
@@ -273,7 +275,6 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	 */
 	public void sendMessages(Context context, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
 		mContext = context;
-//		mAcdiVocaMsgs = acdiVocaMsgs;
 		
 		Log.i(TAG, "sendMessages,  n =" + acdiVocaMsgs.size());
 		
@@ -285,14 +286,12 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			return;			
 		}
 
-		// We pass the service a list of messages. It handles the rest.
-		Intent smsService = new Intent(context, SmsService.class);
-		ArrayList<String> messagesToSend = getMessagesAsArray(context, acdiVocaMsgs);
+		// Build a list of messages (with updates to the Db) to pass
+		// to the Service.  Do it in a separate thread.
 
-		Log.i(TAG, "Starting background service");
-		smsService.putExtra("messages", messagesToSend);
-		smsService.putExtra("phonenumber", mAcdiVocaPhone);
-		context.startService(smsService);
+		BuildMessagesThread thread = new BuildMessagesThread(context, 
+				new BuildMessagesHandler(), acdiVocaMsgs);
+		thread.start();				
 	}
 	
 	/**
@@ -320,5 +319,45 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		}
 		return messages;
 	}
+	
+	class BuildMessagesHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			if (msg.what == DONE) {
+				Log.i(TAG, "BuildMessages thread finished");
+			}
+		}
+	}
+	
+	/**
+	 * Thread to handle import of data from external file. 
+	 *
+	 */
+	class BuildMessagesThread extends Thread {
+		private Context mContext;
+		private Handler mHandler;
+		private  ArrayList<AcdiVocaMessage> mAcdiVocaMsgs;
+		
+		public BuildMessagesThread(Context context, 
+				Handler handler, ArrayList<AcdiVocaMessage> acdiVocaMsgs) {
+			mHandler = handler;
+			mContext = context;
+			mAcdiVocaMsgs = acdiVocaMsgs;
+		}
+	
+		@Override
+		public void run() {
+			// We pass the service a list of messages. It handles the rest.
+			Intent smsService = new Intent(mContext, SmsService.class);
+			ArrayList<String> messagesToSend = getMessagesAsArray(mContext, mAcdiVocaMsgs);
+
+			Log.i(TAG, "Starting background service");
+			smsService.putExtra("messages", messagesToSend);
+			smsService.putExtra("phonenumber", mAcdiVocaPhone);
+			mContext.startService(smsService);
+			mHandler.sendEmptyMessage(AcdiVocaAdminActivity.DONE);
+		}
+	}
+	
 	
 }
