@@ -92,6 +92,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	public static final int STRING_EXCEPTION = 2;
 	public static final int SEND_DIST_REP = 3;
 	public static final int SMS_REPORT = 4;
+	public static final int SUMMARY_OF_IMPORT = 5;
 
 	//private ArrayAdapter<String> adapter;
 	private String mBeneficiaries[] = null;
@@ -100,6 +101,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	
 	private Context mContext;
 	private String mSmsReport;
+	private String mImportDataReport;
 	
 	private ArrayList<AcdiVocaMessage> mAcdiVocaMsgs;
 
@@ -400,6 +402,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		db = new AcdiVocaDbHelper(this);
 		
 		long nImports = db.addUpdateBeneficiaries(mBeneficiaries, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
+		mImportDataReport = "Beneficiaries imported : " + nImports;
 		Log.i(TAG, "Imported " + nImports + " Beneficiaries");	
 		
 		// Move to the next stage of the distribution event process
@@ -467,6 +470,17 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
+		case SUMMARY_OF_IMPORT:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(mImportDataReport)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// User clicked OK so do some stuff
+							finish();
+						}
+					}).create();
 		case SMS_REPORT:
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.alert_dialog_icon).setTitle(mSmsReport)
@@ -511,8 +525,8 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 									mgr.sendMessages(mContext, mAcdiVocaMsgs);
 									setDistributionEventStage(getString(R.string.select_distr_point));		
 
-									mSmsReport = mAcdiVocaMsgs.size()  + " messages are being sent";
-//									showDialog(SMS_REPORT);
+									 mSmsReport = "Messages being sent: " + mAcdiVocaMsgs.size();
+									showDialog(SMS_REPORT);
 									//finish();
 								}
 							}).setNegativeButton(R.string.alert_dialog_cancel,
@@ -531,6 +545,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		public void handleMessage(Message msg) {
 			if (msg.what == DONE) {
 				mProgressDialog.dismiss();
+				showDialog(SUMMARY_OF_IMPORT);
 			}
 			else if (msg.what == IO_EXCEPTION) {
 				mProgressDialog.dismiss();

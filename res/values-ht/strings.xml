@@ -14,6 +14,8 @@
 	<string name="stop_distribution">Stope distribisyon</string>
 <!-- 	<string name="send_distribution_report">voye rap√≤ distribisyon</string> -->
 	<string name="no_files_found">Pa gen dosye nan lis.</string>
+	<string name="messages_being_sent">Mesaj te voye:</string>
+	<string name="beneficiaries_imported">Benefisyè enpòte:</string>
 
 	<string name="distribution_event_stage">Evenman Distribisyon</string>
 <!-- 	<string name="select_distr_point">choizi pos distribisyon</string> -->
