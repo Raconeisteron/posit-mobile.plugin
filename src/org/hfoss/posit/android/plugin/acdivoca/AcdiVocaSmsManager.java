@@ -304,8 +304,11 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		ArrayList<String> messages = new ArrayList<String>();
 		AcdiVocaMessage acdiVocaMsg = null;
 		Iterator<AcdiVocaMessage> it = acdiVocaMsgs.iterator();
+		int count = 1;
+		int size = acdiVocaMsgs.size();
 		while (it.hasNext()) {
 			acdiVocaMsg = it.next();
+			acdiVocaMsg.setNumberSlashBatchSize(count + AttributeManager.NUMBER_SLASH_SIZE_SEPARATOR + size);
 			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
 //			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
 			
@@ -316,6 +319,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 				acdiVocaMsg.setMessageId(msgId);
 			}
 			messages.add(acdiVocaMsg.toString());
+			++count;
 		}
 		return messages;
 	}
