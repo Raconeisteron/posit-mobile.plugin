@@ -354,7 +354,7 @@
 					android:textColor="#ff0000" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 				<EditText android:id="@+id/amount_of_land" android:hint="@string/Ex:1over16"
-					android:numeric="decimal" android:layout_width="fill_parent"
+					android:inputType="text"  android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:layout_marginLeft="20px"
 					android:layout_marginRight="30px" />
 
