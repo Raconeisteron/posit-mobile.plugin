@@ -49,6 +49,7 @@ public class AcdiVocaMessage {
 	private String smsMessage;       // abbreviated Attr/val pairs
 	private String msgHeader =""; 
 	private boolean existing = !EXISTING;  // Built from an existing message or, eg, a PENDING)
+	private String numberSlashBatchSize;   // e.g 1/10  -- i.e., 1st of 10 messages in this batch
 	
 	public AcdiVocaMessage() {
 		
@@ -154,6 +155,16 @@ public class AcdiVocaMessage {
 	public void setExisting(boolean existing) {
 		this.existing = existing;
 	}
+	
+	
+
+	public String getNumberSlashBatchSize() {
+		return numberSlashBatchSize;
+	}
+
+	public void setNumberSlashBatchSize(String numberSlashBatchSize) {
+		this.numberSlashBatchSize = numberSlashBatchSize;
+	}
 
 	/**
 	 * Return an Sms Message.
@@ -162,15 +173,25 @@ public class AcdiVocaMessage {
 	public String toString() {
 		String message;
 		if (beneficiaryId != AcdiVocaDbHelper.UNKNOWN_ID) {
-			message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
+			message = 
+				AcdiVocaMessage.ACDI_VOCA_PREFIX 
 			+ AttributeManager.ATTR_VAL_SEPARATOR 
 			+ getBeneficiaryId() // For normal messages we use the beneficiary's row id, 1...N
 			+ AttributeManager.PAIRS_SEPARATOR
+			+ AttributeManager.ABBREV_MSG_NUMBER_SLASH_SIZE
+			+ AttributeManager.ATTR_VAL_SEPARATOR
+			+ getNumberSlashBatchSize()
+			+ AttributeManager.PAIRS_SEPARATOR
 			+ getSmsMessage();
 		} else {
-			message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
+			message = 
+				AcdiVocaMessage.ACDI_VOCA_PREFIX 
 			+ AttributeManager.ATTR_VAL_SEPARATOR 
 			+ getMessageId() * -1   // For Bulk messages we use minus the message id (e.g., -123)
+			+ AttributeManager.PAIRS_SEPARATOR
+			+ AttributeManager.ABBREV_MSG_NUMBER_SLASH_SIZE
+			+ AttributeManager.ATTR_VAL_SEPARATOR
+			+ getNumberSlashBatchSize()
 			+ AttributeManager.PAIRS_SEPARATOR
 			+ getSmsMessage();
 		}
