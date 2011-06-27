@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+
+<!-- ACDI/VOCA Arrays -->
+	<string-array name="locales"> 
+	<item>@string/english</item>
+	<item>@string/haitian</item>
+	<item>@string/french</item>
+	</string-array>
+	
+	<string-array name="locale_values"> 
+	<item>en</item>
+	<item>ht</item>
+	<item>fr</item>
+	</string-array>	
+
+	<string-array name="commune_names"> 
+	<item>Anse a Pitres</item>
+	<item>Thiotte</item>
+	<item>Grand Gosier</item>
+	<item>Belle Anse</item>
+	<item>La vallee</item>
+	<item>Bainet</item>
+	<item>Cote de fer</item>
+	</string-array>
+	
+	<string-array name="commune_section_names"> 
+	<item>Anse a Pitres</item>
+	<item>Thiotte</item>
+	<item>Grand Gosier</item>
+	<item>Belle Anse</item>
+	<item>La vallee</item>
+	<item>Bainet</item>
+	<item>Cote de fer</item>
+	</string-array>
+	
+	
+	<string-array name="distribution_point_names"> 
+	<item>Centre Platon Cedre</item>
+	<item>Point Fixe Ka Tousen</item>
+	<item>Anse a Pitres</item>
+	<item>Dispensaire Banane</item>
+	<item>Pt fixe Calumette</item>
+	<item>Centre Belle-Ance</item>
+	<item>Dispensaire Mapou</item>
+	<item>Pt fixe Baie d_orange</item>
+	<item>Dispensaire marbriole</item>	
+	<item>Pt fixe Corail Lamothe</item>
+	<item>Pt fixe Pichon</item>	
+	<item>Pt Fixe Bel-air</item>	
+	<item>Labiche</item>	
+	<item>Centre St Joseph</item>	
+	<item>Dispensaire Ste rose de lima</item>	
+	<item>Dispensaire Boucan Belier</item>	
+	<item>Dispensaire Ricot</item>	
+	<item>Pt Fixe Macieux</item>	
+	<item>Point Fixe de Mayette</item>	
+	<item>Point Fixe de Amazone</item>
+	<item>Dispensaire Grand Gosier</item>
+	<item>Dispensaire Bodarie</item>
+	<item>Pt fixe Boulay</item>
+	<item>Centre Sacre Coeur</item>
+	<item>Dispensaire de Savane Zombi</item>
+	<item>Dispensaire de Bleck/ Mar Mirande</item>
+	</string-array>
+	
+	<string-array name="health_center_names"> 
+	<item>Centre de santé une</item>
+	<item>Centre de santé deux</item>
+	<item>Centre de santé trois</item>
+	<item>Centre de santé quatre</item>
+	<item>Centre de santé cinq</item>
+	</string-array>
+
+
+<!--  Preferences that start activities in SettingsActivity -->
+	<string-array name="preference_activities">
+	<item>testpref</item>
+	<item>testpref2</item>
+	</string-array>
+	
+	<string-array name="preference_activity_classes">
+	<item>org.hfoss.posit.android.AboutActivity</item>
+	<item>org.hfoss.posit.android.AboutActivity</item>
+	</string-array>
+	
+	<string-array name="types_of_units">
+	<item>Livre</item>
+	<item>Marmites</item>
+	<item>Pote</item>
+	<item>Kg</item>
+	<item>Plantules</item>
+	<item>Boutures</item>
+	</string-array>
+	
+<!-- 	Distribution center list -->
+	<string-array name="distribution_centers">
+	<item>Anse a Pitres</item>
+	<item>Centre Belle-Ance</item>
+	<item>Centre Platon Cedre</item>
+	<item>Centre Sacre Coeur</item>
+	<item>Centre St Joseph</item>
+	<item>Dispensaire Banane</item>
+	<item>Dispensaire Bodarie</item>
+	<item>Dispensaire Boucan Belier</item>
+	<item>Dispensaire de Bleck/ Mar Mirande</item>
+	<item>Dispensaire de Savane Zombi</item>
+	<item>Dispensaire Grand Gosier</item>
+	<item>Dispensaire Mapou</item>
+	<item>Dispensaire marbriole</item>
+	<item>Dispensaire Ricot</item>
+	<item>Dispensaire Ste rose de lima</item>
+	<item>Labiche</item>
+	<item>Point Fixe Ka Tousen</item>
+	<item>Pt fixe Baie d_orange</item>
+	<item>Pt Fixe Bel-air</item>
+	<item>Pt fixe Boulay</item>
+	<item>Pt fixe Calumette</item>
+	<item>Pt fixe Corail Lamothe</item>
+	<item>Pt Fixe Macieux</item>
+	<item>Pt fixe Pichon</item>
+	<item>Point Fixe de Mayette(CDF)</item>
+	<item>Point Fixe d\'Amazone (CDF)</item>
+	</string-array>
+	
+	<!-- 	Change in status reasons list -->
+	<string-array name="status_change_options">
+	<item>@string/update_transfer</item>
+	<item>@string/update_deceased</item>
+	<item>@string/update_fraud</item>
+	<item>@string/update_completed</item>
+	</string-array>
+	
+	<!--    Arrays for managing distribution events -->
+	<!--  Same array used for attributes and values -->
+	<string-array name="distribution_event_stages">
+	<item>@string/select_distr_point</item>
+	<item>@string/import_beneficiary_file</item>
+	<item>@string/start_distribution_event</item>
+	<item>@string/stop_distribution_event</item>
+	<item>@string/send_distribution_report</item>
+	</string-array>
+
+	<integer-array name="distribution_event_values">
+	<item>0</item>
+	<item>1</item>
+	<item>2</item>
+	<item>3</item>
+	<item>4</item>
+	</integer-array>	
+
+	
+</resources>
