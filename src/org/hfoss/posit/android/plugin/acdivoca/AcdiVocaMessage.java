@@ -30,6 +30,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import android.util.Log;
+
 public class AcdiVocaMessage {
 	
 	public static final String TAG = "AcdiVocaMessage";
@@ -73,10 +75,15 @@ public class AcdiVocaMessage {
 	 * is an ampersand separated list of Ids.  
 	 */
 	public AcdiVocaMessage(String smsText) {
+		Log.i(TAG, "Creating from smstext:" + smsText);
 		String[] msgparts = smsText.split(AttributeManager.PAIRS_SEPARATOR);
+//		for (int k = 0; k < msgparts.length; k++) {
+//			Log.i(TAG, "msgpart " + k + " :" + msgparts[k]);
+//		}
 		String[] firstPair = msgparts[0].split(AttributeManager.ATTR_VAL_SEPARATOR);
 		String msgid = firstPair[1];
 		int id = Integer.parseInt(msgid);
+		smsMessage = "";
 		if (id < 0 && id != AcdiVocaDbHelper.UNKNOWN_ID) {
 			messageId = id * -1;
 			beneficiaryId =  AcdiVocaDbHelper.UNKNOWN_ID;
@@ -85,8 +92,10 @@ public class AcdiVocaMessage {
 			messageId =  AcdiVocaDbHelper.UNKNOWN_ID;
 		} 
 		for (int k = 1; k < msgparts.length; k++) {
-			smsMessage += msgparts[k];
+//			Log.i(TAG, "msgpart " + k + " :" + msgparts[k]);
+			smsMessage += msgparts[k] + AttributeManager.PAIRS_SEPARATOR;
 		}
+		Log.i(TAG, "Resulting sms :" + smsMessage);
 	}
 
 	public int getMessageId() {
@@ -151,7 +160,7 @@ public class AcdiVocaMessage {
 	 */
 	@Override
 	public String toString() {
-		String message = "";
+		String message;
 		if (beneficiaryId != AcdiVocaDbHelper.UNKNOWN_ID) {
 			message = AcdiVocaMessage.ACDI_VOCA_PREFIX 
 			+ AttributeManager.ATTR_VAL_SEPARATOR 
