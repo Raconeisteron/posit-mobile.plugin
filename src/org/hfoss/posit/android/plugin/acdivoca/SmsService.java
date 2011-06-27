@@ -93,34 +93,35 @@ public class SmsService extends Service {
 	private synchronized void handleSentMessage (BroadcastReceiver receiver, 
 			int resultCode, Intent intent, String smsMsg)  {
 		String msgId = intent.getAction();  //   arg1.getStringExtra("msgid")
+		Log.i(TAG, "Rcvd broadcast for msg= " + smsMsg);
 		AcdiVocaMessage avMsg = new AcdiVocaMessage(smsMsg);
 		AcdiVocaDbHelper db =  new AcdiVocaDbHelper(this);
 		switch (resultCode)  {
 		case Activity.RESULT_OK:
-			Log.d (TAG, "Received OK, msgid = " + msgId);
+			Log.d (TAG, "Received OK, msgid = " + msgId + " msg:" + avMsg.getSmsMessage());
 			db.updateMessageStatus(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
 			++nMsgsSent;
 			break;
 		case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-			Log.e(TAG, "Received  generic failure, msgid =  " + msgId);
+			Log.e(TAG, "Received  generic failure, msgid =  " + msgId + " msg:" + avMsg.getSmsMessage());
 			db.updateMessageStatus(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			++nMsgsPending;
 			mErrorMsg = "Generic Failure";
 			break;
 		case SmsManager.RESULT_ERROR_NO_SERVICE:
-			Log.e(TAG, "Received  No service, msgid =  " + msgId);
+			Log.e(TAG, "Received  No service, msgid =  " + msgId + " msg:" + avMsg.getSmsMessage());
 			db.updateMessageStatus(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			++nMsgsPending;
 			mErrorMsg = "No cellular service";
 			break;
 		case SmsManager.RESULT_ERROR_NULL_PDU:
-			Log.e(TAG, "Received Null PDU, msgid =  " + msgId);
+			Log.e(TAG, "Received Null PDU, msgid =  " + msgId + " msg:" + avMsg.getSmsMessage());
 			db.updateMessageStatus(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			++nMsgsPending;
 			mErrorMsg = "Null PDU error";
 			break;
 		case SmsManager.RESULT_ERROR_RADIO_OFF:
-			Log.e(TAG, "Received  Radio off, msgid =  " + msgId);
+			Log.e(TAG, "Received  Radio off, msgid =  " + msgId + " msg:" + avMsg.getSmsMessage());
 			db.updateMessageStatus(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			++nMsgsPending;
 			mErrorMsg = "Texting is off";
@@ -174,7 +175,7 @@ public class SmsService extends Service {
 				try {
 				SmsManager sms = SmsManager.getDefault();
 				sms.sendTextMessage(mPhoneNumber, null, message, sentIntent, deliveryIntent);    
-				Log.i(TAG,"SMS Sent: " + msgid + " to " + mPhoneNumber);
+				Log.i(TAG,"SMS Sent: " + msgid + " msg :" + message + " phone= " + mPhoneNumber);
 				} catch (IllegalArgumentException e) {
 					Log.e(TAG, "IllegalArgumentException, probably phone nubmer = " + mPhoneNumber);
 					mErrorMsg = e.getMessage();
