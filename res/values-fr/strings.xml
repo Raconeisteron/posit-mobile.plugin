@@ -15,6 +15,8 @@
 	<string name="stop_distribution">Stopper distribution</string>
 <!-- 	<string name="send_distribution_report">Envoyer rapport distribution</string> -->
 	<string name="no_files_found">Pas de fichiers à la liste.</string>
+	<string name="messages_being_sent">Les messages envoyés:</string>
+	<string name="beneficiaries_imported">Bénéficiaires importés:</string>
 
 <!-- 	<string name="distribution_event_key">Evenement distribution</string> -->
 	<string name="distribution_event_stage">Evenement Distribution</string>
