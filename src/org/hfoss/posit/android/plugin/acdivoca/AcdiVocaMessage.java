@@ -40,7 +40,7 @@ public class AcdiVocaMessage {
 	public static final boolean EXISTING = true;
 
 	
-	private int messageId = -1;       // row Id of message in our Db
+	private int messageId = AcdiVocaDbHelper.UNKNOWN_ID;    // row Id of message in our Db
 	private int msgStatus = -1;
 	private int beneficiaryId;        // row Id of beneficiary in our Db
 	private String rawMessage;	     // Attr/val pairs with long attribute names
@@ -77,12 +77,12 @@ public class AcdiVocaMessage {
 		String[] firstPair = msgparts[0].split(AttributeManager.ATTR_VAL_SEPARATOR);
 		String msgid = firstPair[1];
 		int id = Integer.parseInt(msgid);
-		if (id < 0) {
+		if (id < 0 && id != AcdiVocaDbHelper.UNKNOWN_ID) {
 			messageId = id * -1;
-			beneficiaryId = -1;
+			beneficiaryId =  AcdiVocaDbHelper.UNKNOWN_ID;
 		} else {
 			beneficiaryId = id;
-			messageId = -1;
+			messageId =  AcdiVocaDbHelper.UNKNOWN_ID;
 		} 
 		for (int k = 1; k < msgparts.length; k++) {
 			smsMessage += msgparts[k];

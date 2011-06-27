@@ -134,7 +134,7 @@ public class AcdiVocaDbHelper {
 
 	public static final String MESSAGE_TABLE = "sms_message_log";
 	public static final String MESSAGE_ID = "_id";
-	public static final int UNKNOWN_ID = -1;
+	public static final int UNKNOWN_ID = -9999;
 	public static final String MESSAGE_BENEFICIARY_ID = AttributeManager.MESSAGE_BENEFICIARY_ID;  // Row Id in Beneficiary table
 	public static final String MESSAGE_TEXT = AttributeManager.MESSAGE_TEXT;
 	public static final String MESSAGE_STATUS = AttributeManager.FINDS_MESSAGE_STATUS; 

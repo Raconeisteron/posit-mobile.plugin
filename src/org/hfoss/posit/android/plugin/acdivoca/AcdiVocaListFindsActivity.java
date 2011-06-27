@@ -574,7 +574,10 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		if (acdiVocaMsgs.size() == 0) {
 			mNMessagesDisplayed = 0;
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
-			acdiVocaMsgs.add(new AcdiVocaMessage(-1,-1,-1,"",getString(R.string.no_messages),
+			acdiVocaMsgs.add(new AcdiVocaMessage(AcdiVocaDbHelper.UNKNOWN_ID,
+					AcdiVocaDbHelper.UNKNOWN_ID,
+					-1,"",
+					getString(R.string.no_messages),
 					"", !AcdiVocaMessage.EXISTING));
 		} else {
 			mNMessagesDisplayed = acdiVocaMsgs.size();
