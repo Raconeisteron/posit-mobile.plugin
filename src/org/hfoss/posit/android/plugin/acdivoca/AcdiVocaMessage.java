@@ -92,7 +92,11 @@ public class AcdiVocaMessage {
 			beneficiaryId = id;
 			messageId =  AcdiVocaDbHelper.UNKNOWN_ID;
 		} 
-		for (int k = 1; k < msgparts.length; k++) {
+		
+		// NOTE: We skip the first 2 pairs in constructing the actual SMS 
+		// that was sent.  The first two pairs represent PREFIX information,
+		// namely, AV=mid,N:m, ...
+		for (int k = 2; k < msgparts.length; k++) {
 //			Log.i(TAG, "msgpart " + k + " :" + msgparts[k]);
 			smsMessage += msgparts[k] + AttributeManager.PAIRS_SEPARATOR;
 		}
