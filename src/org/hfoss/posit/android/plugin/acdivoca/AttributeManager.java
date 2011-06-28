@@ -121,7 +121,7 @@ public class AttributeManager {
 	public static final String ABBREV_STATUS = "s"; 
 	public static final String ABBREV_ID = "id";    
 	public static final String ABBREV_AV = "AV";
-	public static final String ABBREV_MSG_NUMBER_SLASH_SIZE = "N";
+	public static final String ABBREV_MSG_NUMBER_SLASH_SIZE = "mn";
 	public static final String ABBREV_TYPE = "t";
 	
 	public static final String ABBREV_BENE_DOSSIER = "0";
