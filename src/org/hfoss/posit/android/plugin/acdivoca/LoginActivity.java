@@ -62,18 +62,21 @@ public class LoginActivity extends Activity implements OnClickListener {
 	
 	private UserType mUserType;
 	private int mUserTypeOrdinal;
+	private int mBeneficiaryType;
 	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		 Log.i(TAG, "onCreate");
 		 
 		 Intent intent = this.getIntent();
 		 Bundle extras = intent.getExtras();
 			if (extras == null) {
 				return;
 			}
+			mBeneficiaryType = extras.getInt(AcdiVocaDbHelper.FINDS_TYPE);
+			Log.i(TAG, "onCreate, beneficiary type = " + mBeneficiaryType);
+
 			mUserTypeOrdinal = extras.getInt(AcdiVocaDbHelper.USER_TYPE_STRING);
 			if (mUserTypeOrdinal == UserType.USER.ordinal()) {
 				mUserType = UserType.USER;
@@ -113,6 +116,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		Log.i(TAG, "onClick");
 	    Intent returnIntent = new Intent();
+	    returnIntent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, mBeneficiaryType);
+
 	
 		if (v.getId() == R.id.login_button) {
 			EditText etext = ((EditText)findViewById(R.id.usernameEdit));

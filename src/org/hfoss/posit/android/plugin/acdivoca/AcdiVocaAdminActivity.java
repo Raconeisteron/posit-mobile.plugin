@@ -93,6 +93,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	public static final int SEND_DIST_REP = 3;
 	public static final int SMS_REPORT = 4;
 	public static final int SUMMARY_OF_IMPORT = 5;
+	public static final int ZERO_BENEFICIARIES_READ = 6;
 
 	//private ArrayAdapter<String> adapter;
 	private String mBeneficiaries[] = null;
@@ -163,10 +164,9 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-//		MenuItem listItem = menu.findItem(R.id.list_messages);
-//		MenuItem syncItem = menu.findItem(R.id.sync_messages);
-//		MenuItem deleteItem = menu.findItem(R.id.delete_messages_menu);
-
+		MenuItem loadAgriItem = menu.findItem(R.id.load_agri_data);
+		MenuItem loadMchnItem = menu.findItem(R.id.load_beneficiary_data);
+		MenuItem listFindsItem = menu.findItem(R.id.admin_list_beneficiaries);
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String distrEventStage = prefs.getString(getString(R.string.distribution_event_key), "");
@@ -175,10 +175,20 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		// What type of user is logged in?
 		int userTypeOrdinal = prefs.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
 		Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
+		
 		if (userTypeOrdinal != UserType.SUPER.ordinal()) {
-			menu.getItem(1).setVisible(false);
+			listFindsItem.setVisible(false);
 		} else {
-			menu.getItem(1).setVisible(true);
+			listFindsItem.setVisible(true);
+		}
+		
+		if (userTypeOrdinal == UserType.SUPER.ordinal() || userTypeOrdinal == UserType.ADMIN.ordinal()) {
+			loadAgriItem.setVisible(true);
+			loadAgriItem.setEnabled(true);
+		} else {
+			loadAgriItem.setVisible(false);
+			loadAgriItem.setEnabled(false);
+
 		}
 
 		Log.i(TAG, "onPrepareMenuOptions, distrPoint ="  + distrPoint 
@@ -245,6 +255,18 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			if (loginActivity != null) {
 				intent.setClass(this, loginActivity);
 				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
+				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
+				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
+				
+				Toast.makeText(this, getString(R.string.toast_admin_login_required), Toast.LENGTH_LONG).show();	
+			}
+			break;
+		case R.id.load_agri_data:
+			loginActivity = FindActivityProvider.getLoginActivityClass();
+			if (loginActivity != null) {
+				intent.setClass(this, loginActivity);
+				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
+				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
 				Toast.makeText(this, getString(R.string.toast_admin_login_required), Toast.LENGTH_LONG).show();	
@@ -311,27 +333,36 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.i(TAG,"onActivityResult = " + resultCode);
+		int beneficiaryType = 0;
+
 		switch (requestCode) {
 		
 		case FilePickerActivity.ACTION_CHOOSER:
 			if (resultCode == FilePickerActivity.RESULT_OK) {
 				String filename = data.getStringExtra(Intent.ACTION_CHOOSER);
-				Log.i(TAG, "File picker result = " + filename);
 
-				// Get this phone's Distribution Center
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-				mDistrCtr = prefs.getString(this.getResources().getString(R.string.distribution_point), null);
+				// Are we loading beneficiary update data, all of type MCHN or AGRI data
+				beneficiaryType = data.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, -1);
 				
-				if (mDistrCtr == null) {
-					Log.i(TAG, "Aborting loadBeneficiaryData, No distribution post selected");
-					Toast.makeText(this, getString(R.string.toast_distribution_post), Toast.LENGTH_SHORT);
-					break;
+				Log.i(TAG, "File picker file = " + filename + " Beneficiary type = " + beneficiaryType);
+
+				if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {
+
+					// Get this phone's Distribution Center
+					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+					mDistrCtr = prefs.getString(this.getResources().getString(R.string.distribution_point), null);
+
+					if (mDistrCtr == null) {
+						Log.i(TAG, "Aborting loadBeneficiaryData, No distribution post selected");
+						Toast.makeText(this, getString(R.string.toast_distribution_post), Toast.LENGTH_SHORT);
+						return;
+					}
 				}
 				
 				mProgressDialog = ProgressDialog.show(this, getString(R.string.loading_data),
 						getString(R.string.please_wait), true, true);
 				
-				ImportDataThread thread = new ImportDataThread(this, filename, new ImportThreadHandler());
+				ImportDataThread thread = new ImportDataThread(this, filename, beneficiaryType, new ImportThreadHandler());
 				thread.start();				
 			}
 			break;
@@ -340,6 +371,9 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			if (resultCode == RESULT_OK) {
 				
 				Intent intent = new Intent();
+				beneficiaryType = data.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, -1);
+				Log.i(TAG, "Logged in, beneficiary type = " + beneficiaryType);
+				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, beneficiaryType);
 				intent.setClass(this, FilePickerActivity.class);
 				
 				//intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
@@ -376,7 +410,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	/**
 	 * Reads data from a text file into the Db.
 	 */
-	private int importBeneficiaryDataToDb(String filename) {		
+	private int importBeneficiaryDataToDb(String filename, int beneficiaryType) {		
 		ContentValues values = new ContentValues();
 	
 		// Read all the file names on the SD Card
@@ -388,8 +422,13 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 //	    for (int i = 0; i < file.length; i++)
 //	    	Log.i(TAG, file[i].getAbsolutePath());  
 		
-		mBeneficiaries = loadBeneficiaryData(filename, mDistrCtr);
-		if (mBeneficiaries.length == 1) {
+		Log.i(TAG, "Reading beneficiaries from " + filename);
+		mBeneficiaries = loadBeneficiaryData(filename, mDistrCtr, beneficiaryType);
+		
+		if (mBeneficiaries.length == 0) {
+			mImportDataReport = "Beneficiaries imported : " + mBeneficiaries.length;
+			return ZERO_BENEFICIARIES_READ;
+		} else if (mBeneficiaries.length == 1) {
 			if (Integer.parseInt(mBeneficiaries[0]) == IO_EXCEPTION)
 				return IO_EXCEPTION;
 			else if (Integer.parseInt(mBeneficiaries[0]) == STRING_EXCEPTION)
@@ -398,12 +437,21 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		int rows = db.clearBeneficiaryTable();
-		Log.i(TAG, "Deleted rows = " + rows);
-		db = new AcdiVocaDbHelper(this);
-		
-		long nImports = db.addUpdateBeneficiaries(mBeneficiaries, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
+		Log.i(TAG, "Deleted rows in beneficiary table = " + rows);
+
+		long nImports = 0;
+		Log.i(TAG, "Beneficiary type to be loaded = " + beneficiaryType);
+		if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {
+			db = new AcdiVocaDbHelper(this);
+			nImports = db.addUpdateBeneficiaries(mBeneficiaries);
+
+		} else  {
+			db = new AcdiVocaDbHelper(this);
+			nImports = db.addAgriBeneficiaries(mBeneficiaries);
+		}
+
 		mImportDataReport = "Beneficiaries imported : " + nImports;
-		Log.i(TAG, "Imported " + nImports + " Beneficiaries");	
+		Log.i(TAG, "Inserted to database " + nImports + " Beneficiaries");	
 		
 		// Move to the next stage of the distribution event process
 		setDistributionEventStage( this.getString(R.string.start_distribution_event));		
@@ -417,13 +465,12 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	 * @return  Returns an array of Strings, each of which represents
 	 * a Beneficiary record.
 	 */
-	private String[] loadBeneficiaryData(String filename, String distrCtr) {
+	private String[] loadBeneficiaryData(String filename, String distrCtr, int beneficiaryType) {
 		String[] data = null;
 		
 		File file = new File(Environment.getExternalStorageDirectory() 
 				+ "/" + DEFAULT_DIRECTORY + "/" 
 				+ filename);
-				//+ DEFAULT_BENEFICIARY_FILE);
 
 		BufferedReader br = null;
 		String line = null;
@@ -436,15 +483,32 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			data = new String[MAX_BENEFICIARIES];
 			line = br.readLine();
 			//while (line != null && k < 1000)  {
-			while (line != null)  {
-				//Log.i(TAG, line);
-				if (line.length() > 0 && line.charAt(0) != '*')  {
-					if (line.contains(distrCtr)) {
-						data[k] = line;
-						k++;
+			if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {
+				
+				// Reading from Beneficiare.csv and filter by distrCtr
+				while (line != null)  {
+					//				Log.i(TAG, line);
+					if (line.length() > 0 && line.charAt(0) != '*')  {
+						if (line.contains(distrCtr)) {
+							data[k] = line;
+							k++;
+						}
 					}
+					line = br.readLine();
 				}
-				line = br.readLine();
+			} else {
+				
+				// Reading from Livelihood.csv and no filter
+				while (line != null)  {
+					//				Log.i(TAG, line);
+					if (line.length() > 0 && line.charAt(0) != '*')  {
+						if (!line.contains("No_dossier")) {
+							data[k] = line;
+							k++;
+						}
+					}
+					line = br.readLine();
+				}	
 			}
 		} catch (IOException e) {
 			Log.e(TAG, "IO Exception,  file =   " + file);
@@ -470,7 +534,18 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
-		case SUMMARY_OF_IMPORT:
+		case ZERO_BENEFICIARIES_READ:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(mImportDataReport)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// User clicked OK so do some stuff
+							finish();
+						}
+					}).create();		
+			case SUMMARY_OF_IMPORT:
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.alert_dialog_icon).setTitle(mImportDataReport)
 					.setPositiveButton(R.string.alert_dialog_ok,
@@ -546,6 +621,9 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			if (msg.what == DONE) {
 				mProgressDialog.dismiss();
 				showDialog(SUMMARY_OF_IMPORT);
+			} else if (msg.what == ZERO_BENEFICIARIES_READ) {
+				mProgressDialog.dismiss();
+				showDialog(ZERO_BENEFICIARIES_READ);
 			}
 			else if (msg.what == IO_EXCEPTION) {
 				mProgressDialog.dismiss();
@@ -566,24 +644,29 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		private Context mContext;
 		private Handler mHandler;
 		private String mFilename;
+		private int mBeneficiaryType;
 		
-		public ImportDataThread(Context context, String filename, Handler handler) {
+		public ImportDataThread(Context context, String filename, int beneficiaryType, Handler handler) {
 			mHandler = handler;
 			mContext = context;
 			mFilename = filename;
+			mBeneficiaryType = beneficiaryType;
 		}
 	
 		@Override
 		public void run() {
 			int result = 0;
 			
-			result = importBeneficiaryDataToDb(mFilename);
+			result = importBeneficiaryDataToDb(mFilename, mBeneficiaryType);
 			if (result == DONE)
 				mHandler.sendEmptyMessage(AcdiVocaAdminActivity.DONE);
 			else if (result == IO_EXCEPTION)
 				mHandler.sendEmptyMessage(AcdiVocaAdminActivity.IO_EXCEPTION);
 			else if (result == STRING_EXCEPTION)
 				mHandler.sendEmptyMessage(AcdiVocaAdminActivity.STRING_EXCEPTION);
+			else if (result == ZERO_BENEFICIARIES_READ) 
+				mHandler.sendEmptyMessage(AcdiVocaAdminActivity.ZERO_BENEFICIARIES_READ);
+
 		}
 	}
 }
