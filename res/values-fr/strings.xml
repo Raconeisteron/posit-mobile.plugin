@@ -7,6 +7,8 @@
 	<string name="admin_menu">Administration</string>
 	<string name="admin_welcome">Fonction d’administration\nChoisir dans le menu</string>
 	<string name="load_beneficiary_data">Importer donnees Beneficiare</string>
+	<string name="load_agri_data">Données Livelihood importation</string>
+	
 	<string name="manage_distribution">Gerer evenements de distribution</string>
 <!-- 	<string name="distribution_point">Point de distribution</string> -->
 	<string name="password_alert_message">Nom utilisateur ou Mot de passe incorrecte.</string>

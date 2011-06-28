@@ -376,7 +376,19 @@ public class AcdiVocaDbHelper {
 	private static final int FIELD_DISTRIBUTION_POST = 9;
 	private static final String COMMA= ",";
 
-
+	private static final int AGRI_FIELD_DOSSIER = 0;
+	private static final int AGRI_FIELD_LASTNAME = 1;
+	private static final int AGRI_FIELD_FIRSTNAME = 2;
+	private static final int AGRI_FIELD_COMMUNE = 3;
+	private static final int AGRI_FIELD_SECTION = 4;
+	private static final int AGRI_FIELD_LOCALITY = 5;
+	private static final int AGRI_FIELD_ENTRY_DATE = 6;
+	private static final int AGRI_FIELD_BIRTH_DATE = 7;
+	private static final int AGRI_FIELD_SEX = 8;
+	private static final int AGRI_FIELD_CATEGORY = 9;
+	private static final int AGRI_FIELD_NUM_PERSONS  = 10;
+	
+	
 	// Needed for ListFindsActivity to display a row in the list.
 	// The following two arrays go together to form a <DB value, UI View> pair
 	// except for the first DB value, which is just a filler.
@@ -548,6 +560,7 @@ public class AcdiVocaDbHelper {
 		return rowId;
 	}
 
+	
 	/**
 	 * Inserts an array of beneficiaries read from AcdiVoca Db.
 	 * NOTE:  The Android date picker stores months as 0..11, so
@@ -555,8 +568,8 @@ public class AcdiVocaDbHelper {
 	 * @param beneficiaries
 	 * @return
 	 */
-	public int addUpdateBeneficiaries(String[] beneficiaries, int find_status) {
-		Log.i(TAG, "Adding " + beneficiaries.length + " beneficiaries with status = " + find_status);
+	public int addAgriBeneficiaries(String[] beneficiaries) {
+		Log.i(TAG, "Adding " + beneficiaries.length + " AGRI beneficiaries");
 		String fields[] = null;
 		ContentValues values = new ContentValues();
 		int count = 0;
@@ -565,7 +578,54 @@ public class AcdiVocaDbHelper {
 
 			fields = beneficiaries[k].split(COMMA);
 //			values.put(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
-			values.put(AcdiVocaDbHelper.FINDS_STATUS, find_status);
+			values.put(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
+			values.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
+			values.put(AcdiVocaDbHelper.FINDS_DOSSIER,fields[AGRI_FIELD_DOSSIER]);
+			values.put(AcdiVocaDbHelper.FINDS_LASTNAME, fields[AGRI_FIELD_LASTNAME]);
+			values.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, fields[AGRI_FIELD_FIRSTNAME]);
+			//				values.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, fields[FIELD_SECTION]);
+			values.put(AcdiVocaDbHelper.FINDS_ADDRESS, fields[AGRI_FIELD_LOCALITY]);
+			String adjustedDate = adjustDateForDatePicker(fields[AGRI_FIELD_BIRTH_DATE]);
+//			Log.i(TAG, "adjusted date = " + adjustedDate);
+			values.put(AcdiVocaDbHelper.FINDS_DOB, adjustedDate);
+			String adjustedSex = adjustSexData(fields[AGRI_FIELD_SEX]);
+			values.put(AcdiVocaDbHelper.FINDS_SEX, adjustedSex);  
+			String adjustedCategory = adjustCategoryData(fields[AGRI_FIELD_CATEGORY]);
+			values.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, adjustedCategory);
+			values.put(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE, fields[AGRI_FIELD_NUM_PERSONS]);
+
+			//Log.i(TAG, values.toString());
+			long rowId = mDb.insert(FINDS_TABLE, null, values);
+			if (rowId != -1) 
+				++count;
+
+			//addNewBeneficiary(values);
+		}
+		mDb.close();
+		Log.i(TAG, "Inserted to Db " + count + " Beneficiaries");
+		return count;
+	}
+
+	
+	/**
+	 * Inserts an array of beneficiaries read from AcdiVoca Db.
+	 * NOTE:  The Android date picker stores months as 0..11, so
+	 *  we have to adjust dates.
+	 * @param beneficiaries
+	 * @return
+	 */
+	public int addUpdateBeneficiaries(String[] beneficiaries) {
+		Log.i(TAG, "Adding " + beneficiaries.length + " MCHN beneficiaries");
+		String fields[] = null;
+		ContentValues values = new ContentValues();
+		int count = 0;
+
+		for (int k = 0; k < beneficiaries.length; k++) {
+
+			fields = beneficiaries[k].split(COMMA);
+//			values.put(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
+			values.put(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
+			values.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
 			values.put(AcdiVocaDbHelper.FINDS_DOSSIER,fields[FIELD_DOSSIER]);
 			values.put(AcdiVocaDbHelper.FINDS_LASTNAME, fields[FIELD_LASTNAME]);
 			values.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, fields[FIELD_FIRSTNAME]);
@@ -588,7 +648,7 @@ public class AcdiVocaDbHelper {
 			//addNewBeneficiary(values);
 		}
 		mDb.close();
-		Log.i(TAG, "Inserted " + count + " Beneficiaries");
+		Log.i(TAG, "Inserted to Db " + count + " Beneficiaries");
 		return count;
 	}
 

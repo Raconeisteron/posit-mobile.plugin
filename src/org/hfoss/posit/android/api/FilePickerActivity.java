@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -29,6 +30,8 @@ public class FilePickerActivity extends ListActivity {
 	
 	private File currentDir;
 	private FileArrayAdapter adapter;
+	private int mBeneficiaryType; 
+
 
 
 	@Override
@@ -36,6 +39,13 @@ public class FilePickerActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		currentDir = new File(HOME_DIRECTORY);
 
+		Intent intent = this.getIntent();
+		 Bundle extras = intent.getExtras();
+			if (extras == null) {
+				return;
+			}
+		mBeneficiaryType= extras.getInt(AcdiVocaDbHelper.FINDS_TYPE);
+		
 		File files[] = currentDir.listFiles();
 		List<String> datafiles = new ArrayList<String>();
 		try {
@@ -63,6 +73,8 @@ public class FilePickerActivity extends ListActivity {
         String filename = adapter.getItem(position);
 	    Intent returnIntent = new Intent();
 	    returnIntent.putExtra(Intent.ACTION_CHOOSER, filename);
+	    returnIntent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, mBeneficiaryType);
+
 		setResult(RESULT_OK, returnIntent);
 		finish();
     }

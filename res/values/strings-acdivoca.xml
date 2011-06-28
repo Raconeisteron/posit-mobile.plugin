@@ -9,6 +9,8 @@
 	<string name="admin_menu">Admin</string>
 	<string name="admin_welcome">Admin Functions\nChoose from the Menu</string>
 	<string name="load_beneficiary_data">Import Beneficiary Data</string>
+	<string name="load_agri_data">Import Livelihood Data</string>
+	
 	<string name="manage_distribution">Manage Distribution Event</string>
 	<string name="distribution_point">Distribution Point</string>
 	<string name="password_alert_message">Your username or password is incorrect.</string>
@@ -17,6 +19,8 @@
 	<string name="stop_distribution">Stop distribution</string>
 	<string name="send_distribution_report">Send distribution report</string>
 	<string name="no_files_found">No files to list.</string>
+	<string name="messages_being_sent">Messages being sent:</string>
+	<string name="beneficiaries_imported">Beneficiaries imported:</string>
 
 	<string name="distribution_event_key">distr_event_stage</string>
 	<string name="distribution_event_stage">Distribution Event Stage</string>
