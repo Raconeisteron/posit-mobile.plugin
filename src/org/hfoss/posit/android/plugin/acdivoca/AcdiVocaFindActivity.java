@@ -48,6 +48,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.DatePicker.OnDateChangedListener;
@@ -127,6 +128,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		mSaveButton = ((Button)findViewById(R.id.saveToDbButton));
 		mSaveButton.setOnClickListener(this);
 		((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
+		((Button)findViewById(R.id.editFind)).setOnClickListener(this);
 		
 		// Listen for clicks on radio buttons
 		 ((RadioButton)findViewById(R.id.femaleRadio)).setOnClickListener(this);
@@ -216,11 +218,14 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				findViewById(R.id.agriPart).setVisibility(View.GONE);
 				findViewById(R.id.participating_acdivoca).setVisibility(View.GONE);
 				findViewById(R.id.radio_participating_acdivoca).setVisibility(View.GONE);
+				findViewById(R.id.label_agri).setVisibility(View.GONE);
 			}
 			if (type == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
 				findViewById(R.id.mchnPart).setVisibility(View.GONE);
 				findViewById(R.id.participating_bene_same).setVisibility(View.GONE);
 				findViewById(R.id.radio_same_bene).setVisibility(View.GONE);
+				findViewById(R.id.label_mchn).setVisibility(View.GONE);
+
 			}
 			if (type == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
 				findViewById(R.id.mchnPart).setVisibility(View.VISIBLE);
@@ -285,7 +290,8 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		Log.i(TAG,"Find id = " + mFindId);
 		// HIDE THE LAST QUESTION FOR EACH FORM
 		ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
-		displayContentInView(values);						
+		displayContentUneditable(values);
+		//displayContentInView(values);						
 	}
 
 
@@ -467,6 +473,12 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		// AGRI FORM CATAGORY
 		
 		//Add beneficiary checkbox values
+		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+		if (spinner != null) {
+			spinnerStr = (String) spinner.getSelectedItem();
+			result.put(AcdiVocaDbHelper.FINDS_COMMUNE_SECTION, spinnerStr);
+		}		
+		
 		CheckBox beneCB = (CheckBox)findViewById(R.id.farmerCheckBox);
 		int beneCtg  = 0;
 		if (beneCB.isChecked()) {
@@ -699,7 +711,165 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		return result;
 	}
 	
-
+	
+    /**
+     * Displays the content as uneditable labels -- default view.
+     * @param values
+     */
+    private void displayContentUneditable(ContentValues values) {
+    	
+    	if (values != null){
+    	findViewById(R.id.unedit).setVisibility(View.VISIBLE);
+    	findViewById(R.id.form).setVisibility(View.GONE);
+    	
+    	TextView tv = ((TextView) findViewById(R.id.first_label));
+    	tv.setText(getString(R.string.firstname) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+    	tv = ((TextView) findViewById(R.id.last_label));
+    	tv.setText(getString(R.string.lastname) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME)); 
+    	tv = ((TextView) findViewById(R.id.address_label));
+    	tv.setText(getString(R.string.address) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS)); 
+    	tv = ((TextView) findViewById(R.id.dob_label));
+    	tv.setText(getString(R.string.dob) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_DOB));  
+    	tv = ((TextView) findViewById(R.id.sex_label));
+    	tv.setText(getString(R.string.sex) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_SEX)); 
+    	tv = ((TextView) findViewById(R.id.num_ppl_label));
+    	
+    	tv.setText(getString(R.string.Number_of_people_in_home) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
+    	
+    	// MCHN PART    	
+    	
+    	String mc = values.getAsString(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
+    	if (mc != null){
+    	tv = ((TextView) findViewById(R.id.distro_label));
+    	tv.setText(getString(R.string.distribution_post) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST));
+    	
+    	tv = ((TextView) findViewById(R.id.bene_category_label));
+    	tv.setText(getString(R.string.Beneficiary_Category) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY));
+    	
+    	if (values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_MALNOURISHED) || values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_PREVENTION)){
+    		tv = ((TextView) findViewById(R.id.child_label));
+    		tv.setText(getString(R.string.responsible_if_child) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_RELATIVE_1));
+    	}
+    	if (values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_EXPECTING) || values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_NURSING)){
+    		tv = ((TextView) findViewById(R.id.mother_label));
+    		tv.setText(getString(R.string.responsible_if_mother) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_RELATIVE_1));
+    	}
+    	tv = ((TextView) findViewById(R.id.mleader_label));
+    	tv.setText(getString(R.string.mother_leader) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER));
+    	
+    	tv = ((TextView) findViewById(R.id.visit_label));
+    	tv.setText(getString(R.string.visit_mother_leader) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER));
+    	}
+    	
+    	// AGRI PART
+    	
+    	tv = ((TextView) findViewById(R.id.commune_label));
+    	tv.setText(getString(R.string.commune_section) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_COMMUNE_SECTION));
+    	
+    	String agri_cat = "";
+    	Integer val = values.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FARMER); 
+    	if (val != null){
+    	if (val == 1)
+    		agri_cat += "Farmer, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_IS_MUSO) == 1)
+    		agri_cat += "MUSO, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_IS_RANCHER) == 1)
+    		agri_cat += "Cattle Rancher, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_IS_STOREOWN) == 1)
+    		agri_cat += "Store Owner, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FISHER) == 1)
+    		agri_cat += "Fisherman, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_IS_ARTISAN) == 1)
+    		agri_cat += "Artisan, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FISHER) == 1)
+    		agri_cat += "Other, ";
+    	tv = ((TextView) findViewById(R.id.agri_category_label));
+    	if(agri_cat.length() != 0){
+    	tv.setText(getString(R.string.Beneficiary_Category) + ": " 
+    			+  agri_cat.substring(0, agri_cat.length()-2)); 
+    	}
+    	
+    	tv = ((TextView) findViewById(R.id.land_label));
+    	tv.setText(getString(R.string.amount_of_land) + ": " 
+    			+  values.getAsString(AcdiVocaDbHelper.FINDS_LAND_AMOUNT)); 
+    	
+    	
+    	String seed_cat = "";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_VEGE) == 1)
+    		seed_cat += "Vegetable, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_CEREAL) == 1)
+    		seed_cat += "Cereal, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TUBER) == 1)
+    		seed_cat += "Tuber, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TREE) == 1)
+    		seed_cat += "Tree, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_COFFEE) == 1)
+    		seed_cat += "Coffee, ";
+    	tv = ((TextView) findViewById(R.id.seed_label));
+    	if(seed_cat.length() != 0){
+    	tv.setText(getString(R.string.seed_group) + ": " 
+    			+  seed_cat.substring(0, seed_cat.length()-2));
+    	}
+    	
+    	String tool_cat = "";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_HOUE) == 1)
+    		tool_cat += "Houe, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_PIOCHE) == 1)
+    		tool_cat += "Pick, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_BROUETTE) == 1)
+    		tool_cat += "Wheelbarrow, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_MACHETTE) == 1)
+    		tool_cat += "Machete, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_SERPETTE) == 1)
+    		tool_cat += "Pruning Knife, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_PELLE) == 1)
+    		tool_cat += "Shovel, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_BARREAMINES) == 1)
+    		tool_cat += "Houe, ";
+    	tv = ((TextView) findViewById(R.id.tool_label));
+    	if(tool_cat.length()!= 0){
+    	tv.setText(getString(R.string.tools) + ": " 
+    			+  tool_cat.substring(0, tool_cat.length()-2));
+    	}
+    	
+    	String part_cat = "";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_FAO) == 1)
+    		part_cat += "FAO, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_SAVE) == 1)
+    		part_cat += "SAVE, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_CROSE) == 1)
+    		part_cat += "CROSE, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_PLAN) == 1)
+    		part_cat += "PLAN, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_MARDNR) == 1)
+    		part_cat += "MARDNR, ";
+    	if (values.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_OTHER) == 1)
+    		part_cat += "OTHER, ";
+    	tv = ((TextView) findViewById(R.id.partner_label));
+    	if(part_cat.length()!=0){
+    	tv.setText(getString(R.string.partners) + ": " 
+    			+  part_cat.substring(0, part_cat.length()-2));
+    	}
+    	}
+    	}
+    }
+	
+	
+	
+	
 	/**
 	 * Displays values from a ContentValues in the View.
 	 * @param contentValues stores <key, value> pairs
@@ -981,8 +1151,16 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		int id = v.getId();
+		if(id == R.id.editFind){
+			findViewById(R.id.unedit).setVisibility(View.GONE);
+	    	findViewById(R.id.form).setVisibility(View.VISIBLE);
+	    	mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
+			ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
+			displayContentInView(values);	
+		}
+		
 		if (id == R.id.datepicker) {
 			isProbablyEdited = true;
 			mSaveButton.setEnabled(true);	
