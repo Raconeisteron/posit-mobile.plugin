@@ -65,7 +65,7 @@
     <string name="Number_of_people_in_home">kombyen moun ki gen nan kay la</string>
     <string name="Beneficiary_Category">kategory</string>
     <string name="Infant_Category">kategory</string>
-    <string name="Malnourished">Mal Nouri</string>
+    <string name="Malnourished">Enfant Mal Nouri</string>
     <string name="In_Prevention">En Prevention</string>
     <string name="Mother_Category">Category manman</string>
     <string name="Expecting">Allaitante</string>
@@ -74,6 +74,7 @@
     <string name="add_send">Voye SMS</string>
     
 <!--       MCHN Strings -->
+    <string name="mchn_title">Preciser l‚Äôinformation d‚Äôenregistrement MCHN se trouvant au dessous</string>
     <string name="relatives_section">Paran Benefisyè</string>
     <string name="responsible_if_child">Non responsab(si se timoun)</string>
     <string name="responsible_if_mother">Reprezentan(si se fanm)</string>
@@ -190,10 +191,13 @@
     <string name="partners">Ki lòt òganizasyon kit e nan distribisyon an?</string>
     
 <!-- 	New agri strings - 6/21/11 -->
+    <string name="agri_title">Preciser l‚ÄôInformation d‚Äôenregistrement Agriculture se trouvant au dessous</string>
+    <string name="agri_relative_text">Preciser l\'information de votre membre de famille faisant partie du programme agriculture</string>
+	<string name="mchn_relative_text">Preciser l\'information de votre member de famille faisant partie du volet santè</string>
     <string name="farmer">Agriculture</string>
  	<string name="muso">MUSO</string>
  	<string name="cattle_rancher">Betail/Elevage</string> 	
-<string name="store_owner">Pwoprietè</string>
+    <string name="store_owner">Pwoprietè</string>
    	<string name="fisherman">Peche</string>
     <string name="artisan">Atizanat</string> 
    	<string name="other">Autre</string>
@@ -217,7 +221,7 @@
    	<string name="other2">Autres</string>   	
    	
 <!-- 	New update strings - 6/21/11 -->
-   	<string name="beneficiary_information">Inf√≤masyon Benefisyè</string> 
+   	<string name="beneficiary_information">Infomasyon Benefisyè</string> 
 	<string name="dossier_number">No Dosye: </string>  
 	
 	
@@ -258,6 +262,10 @@
 	<string name="cancelLabel"> Anile </string>
 	
 	<string name="update_transfer">Transfere nan yon lòt kategori</string>
+	<string name="update_transfer_lectating">Transfert de: Enceinte à Allaitante</string>
+	<string name="update_transfer_prevention">Transfert de: Allaitante à Prevention</string>
+	<string name="update_transfer_location">Transfert du au changement de lieu</string>
+	<string name="update_transfer_abortion">Transfert du a cause de l\'avortement</string>	
 	<string name="update_deceased">Decede</string>
 	<string name="update_fraud">Fraud</string>
 	<string name="update_completed">Cycle complet</string>

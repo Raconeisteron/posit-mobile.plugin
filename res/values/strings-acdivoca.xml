@@ -4,7 +4,7 @@
 	<!--  Acdi Voca Strings -->
 	
 	<!--  Admin Menu Stuff -->
-	<string name="default_phone">8602451248</string>
+	<string name="default_phone">+18602451248</string>
 	<string name="default_preference_string">default_null_value</string>
 	<string name="admin_menu">Admin</string>
 	<string name="admin_welcome">Admin Functions\nChoose from the Menu</string>
@@ -265,6 +265,10 @@
 	<string name="beneficiary_dossier">Beneficiary Dossier: </string>
 	
 	<string name="update_transfer">Transfer to new category</string>
+	<string name="update_transfer_lectating">Transfer from pregnant to lactating</string>
+	<string name="update_transfer_prevention">Transfer from lactating to preventionn</string>
+	<string name="update_transfer_location">Transfer due to location change</string>
+	<string name="update_transfer_abortion">Transfer due to abortion</string>
 	<string name="update_deceased">Deceased</string>
 	<string name="update_fraud">Fraud</string>
 	<string name="update_completed">Completed program</string>

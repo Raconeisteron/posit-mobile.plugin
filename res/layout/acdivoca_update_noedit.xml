@@ -12,7 +12,7 @@
                 
              <TextView android:id="@+id/dossier_heading"
                 android:text="@string/beneficiary"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:layout_width="fill_parent"
                 android:textSize="20dp"
                 android:layout_height="wrap_content" />        
@@ -71,7 +71,7 @@
             <TextView android:text="@string/update_questions"
                 android:layout_marginLeft="0px"
                 android:textSize="20dp"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
             <TextView android:id="@+id/beneficiary_present"
@@ -114,7 +114,7 @@
             </RadioGroup>    
             
             
-            <TextView android:text="@string/status_change" android:textColor="#ff0000"
+            <TextView android:text="@string/status_change" android:textColor="#ffffff"
                 android:id="@+id/statuschange"
                 android:layout_width="fill_parent"
                 android:layout_marginLeft="10px"
@@ -179,7 +179,7 @@
             </LinearLayout>
             
 -->    
-            <TextView android:text="@string/save_update" android:textColor="#ff0000"
+            <TextView android:text="@string/save_update" android:textColor="#ffffff"
                 android:layout_width="fill_parent" android:layout_height="wrap_content"
                 android:textSize="20dp" />        
 

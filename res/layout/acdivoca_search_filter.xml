@@ -10,7 +10,7 @@
 			android:layout_centerHorizontal="true" android:src="@drawable/acdivoca_logo"/> -->
 
 		<TextView android:text="@string/pick_criterion_prompt"
-			android:textColor="#ff0000" android:layout_width="wrap_content"
+			android:textColor="#ffffff" android:layout_width="wrap_content"
 			android:layout_gravity="center" android:textSize="20dp"
 			android:layout_height="wrap_content" />
 
