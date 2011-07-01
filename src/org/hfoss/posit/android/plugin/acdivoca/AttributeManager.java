@@ -170,6 +170,10 @@ public class AttributeManager {
 	public static final String ABBREV_CHANGE_TYPE = "ch";
 	public static final String ABBREV_Q_PRESENT = "pr";
 	public static final String ABBREV_Q_TRANSFER = "tr";
+	public static final String ABBREV_Q_TRANSFER_LACTATE = "tl";
+	public static final String ABBREV_Q_TRANSFER_PREVENTION = "tp";
+	public static final String ABBREV_Q_TRANSFER_LOCATION = "to";
+	public static final String ABBREV_Q_TRANSFER_ABORTION = "ta";
 	public static final String ABBREV_Q_MODIFICATIONS = "ms";	
 	public static final String ABBREV_Q_DECEASED = "dc";
 	public static final String ABBREV_Q_FRAUD = "fr";
@@ -228,7 +232,7 @@ public class AttributeManager {
 	public static final String FINDS_TRUE = "TRUE";
 	public static final String FINDS_FALSE = "FALSE";
 
-	public static final String FINDS_MALNOURISHED_HA = "Enfant Mal";
+	public static final String FINDS_MALNOURISHED_HA = "Enfant Mal Nouri";
 	public static final String FINDS_EXPECTING_HA = "Femme Enceinte";
 	public static final String FINDS_NURSING_HA = "Femme Allaitante";
 	public static final String FINDS_PREVENTION_HA = "Enfant Prevention";
@@ -240,9 +244,23 @@ public class AttributeManager {
 	public static final String FINDS_Q_MODIFICATIONS = "Modifications";
 	
 	public static final String FINDS_Q_TRANSFER_NEW_CATEGORY = "Transfer to new category";
-	public static final String FINDS_Q_DECEASED = "Deceased";
+	public static final String FINDS_Q_TRANSFER_LACTATE = "Transfer from pregnant to lactating";
+	public static final String FINDS_Q_TRANSFER_PREVENTION = "Transfer from lactating to prevention";
+	public static final String FINDS_Q_TRANSFER_LOCATION = "Transfer due to location change";
+	public static final String FINDS_Q_TRANSFER_ABORTION = "Transfer due to abortion";
+	public static final String FINDS_Q_DECEASED= "Deceased";
 	public static final String FINDS_Q_FRAUD = "Fraud";
 	public static final String FINDS_Q_COMPLETED_PROGRAM = "Completed program";
+	
+	//NEEDS TO TRANSLATE
+	public static final String FINDS_Q_TRANSFER_NEW_CATEGORY_HA = "Transfere nan yon lòt kategori";
+	public static final String FINDS_Q_TRANSFER_LACTATE_HA = "Transfert de: Enceinte à Allaitante";
+	public static final String FINDS_Q_TRANSFER_PREVENTION_HA = "Transfert de: Allaitante à Prevention";
+	public static final String FINDS_Q_TRANSFER_LOCATION_HA = "Transfert du au changement de lieu";
+	public static final String FINDS_Q_TRANSFER_ABORTION_HA = "Transfert du a cause de l’avortement";
+	public static final String FINDS_Q_DECEASED_HA = "Decede";
+	public static final String FINDS_Q_FRAUD_HA = "Fraud";
+	public static final String FINDS_Q_COMPLETED_PROGRAM_HA = "Cycle complet";
 	
 	
 	public static final String ABBREV_FEMALE= "F";
@@ -594,9 +612,22 @@ public class AttributeManager {
 		abbreviations.put(FINDS_Q_TRANSFER, ABBREV_Q_TRANSFER);
 		abbreviations.put(FINDS_Q_MODIFICATIONS, ABBREV_Q_MODIFICATIONS);
 		abbreviations.put(FINDS_Q_TRANSFER_NEW_CATEGORY, ABBREV_Q_TRANSFER);
+		abbreviations.put(FINDS_Q_TRANSFER_LACTATE, ABBREV_Q_TRANSFER_LACTATE);
+		abbreviations.put(FINDS_Q_TRANSFER_PREVENTION, ABBREV_Q_TRANSFER_PREVENTION);
+		abbreviations.put(FINDS_Q_TRANSFER_LOCATION, ABBREV_Q_TRANSFER_LOCATION);
+		abbreviations.put(FINDS_Q_TRANSFER_ABORTION, ABBREV_Q_TRANSFER_ABORTION);
 		abbreviations.put(FINDS_Q_DECEASED, ABBREV_Q_DECEASED);
 		abbreviations.put(FINDS_Q_FRAUD, ABBREV_Q_FRAUD);
-		abbreviations.put(FINDS_Q_COMPLETED_PROGRAM, ABBREV_Q_COMPLETED_PROGRAM); 
+		abbreviations.put(FINDS_Q_COMPLETED_PROGRAM, ABBREV_Q_COMPLETED_PROGRAM);
+		abbreviations.put(FINDS_Q_TRANSFER_NEW_CATEGORY_HA, ABBREV_Q_TRANSFER);
+		abbreviations.put(FINDS_Q_TRANSFER_LACTATE_HA, ABBREV_Q_TRANSFER_LACTATE);
+		abbreviations.put(FINDS_Q_TRANSFER_PREVENTION_HA, ABBREV_Q_TRANSFER_PREVENTION);
+		abbreviations.put(FINDS_Q_TRANSFER_LOCATION_HA, ABBREV_Q_TRANSFER_LOCATION);
+		abbreviations.put(FINDS_Q_TRANSFER_ABORTION_HA, ABBREV_Q_TRANSFER_ABORTION);
+		abbreviations.put(FINDS_Q_DECEASED_HA, ABBREV_Q_DECEASED);
+		abbreviations.put(FINDS_Q_FRAUD_HA, ABBREV_Q_FRAUD);
+		abbreviations.put(FINDS_Q_COMPLETED_PROGRAM_HA, ABBREV_Q_COMPLETED_PROGRAM);
+		
 
 		
 		// ---------- ACDIV/VOCA DATA -----------------

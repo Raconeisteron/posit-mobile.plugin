@@ -25,7 +25,7 @@
 		
 		<TextView android:id="@+id/dossierText" android:layout_width="wrap_content"
 			android:layout_height="wrap_content" 
-			android:textColor="#ff0000"
+			android:textColor="#ffffff"
 			android:layout_marginLeft="3dp"
 			android:textSize="12dp"
 			android:layout_toRightOf="@+id/row_id"  />		
@@ -56,7 +56,7 @@
 			android:layout_width="wrap_content"
 			android:layout_alignParentRight="true"
 			android:layout_height="wrap_content" 
-			android:textColor="#ff0000"
+			android:textColor="#ffffff"
 			android:layout_marginLeft="3dp"
 			android:textSize="12dp"
 			android:layout_toRightOf="@+id/lastname_field"  />		

@@ -12,7 +12,7 @@
                 
             <TextView android:id="@+id/dossier_label"
                 android:text="@string/dossier_label"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:layout_width="fill_parent"
                 android:textSize="20dp"
                 android:layout_height="wrap_content" />        
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content" />
 
             <TextView android:text="@string/dob"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:layout_marginLeft="10px"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
@@ -43,7 +43,7 @@
                 android:layout_marginLeft="20px" android:layout_marginRight="30px"
                 android:layout_height="wrap_content">
             </DatePicker>
-            <TextView android:text="@string/sex" android:textColor="#ff0000"
+            <TextView android:text="@string/sex" android:textColor="#ffffff"
                 android:layout_width="fill_parent"
                 android:layout_marginLeft="10px"
                 android:layout_height="wrap_content" />
@@ -62,7 +62,7 @@
             </RadioGroup>       
 
             <TextView android:text="@string/Beneficiary_Category"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:layout_marginLeft="10px"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
@@ -92,7 +92,7 @@
             </RadioGroup>
             
             <TextView android:text="@string/months_left_in_program"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:layout_marginLeft="10px"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />        
@@ -109,7 +109,7 @@
                 android:paddingTop="24dp" >
 
             <TextView android:id="@+id/mchm"
-                android:text="@string/mchn_info" android:textColor="#ff0000"
+                android:text="@string/mchn_info" android:textColor="#ffffff"
                 android:visibility="visible"
                 android:layout_width="fill_parent" android:layout_height="wrap_content"
                 android:textSize="20dp" />
@@ -132,7 +132,7 @@
                 android:entries="@+array/distribution_names"
                 android:layout_width="fill_parent" android:layout_height="wrap_content" />                
 
-            <TextView android:text="@string/relatives_section" android:textColor="#ff0000"
+            <TextView android:text="@string/relatives_section" android:textColor="#ffffff"
                 android:layout_width="fill_parent"
                 android:layout_marginLeft="10px"
                 android:layout_height="wrap_content" />
@@ -169,7 +169,7 @@
             <TextView android:text="@string/update_questions"
                 android:layout_marginLeft="0px"
                 android:textSize="20dp"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
             <TextView android:id="@+id/beneficiary_present"
@@ -213,7 +213,7 @@
             </RadioGroup>    
             
             
-            <TextView android:text="@string/status_change" android:textColor="#ff0000"
+            <TextView android:text="@string/status_change" android:textColor="#ffffff"
                 android:id="@+id/statuschange"
                 android:layout_width="fill_parent"
                 android:layout_marginLeft="10px"
@@ -278,7 +278,7 @@
             </LinearLayout>
             
 -->    
-            <TextView android:text="@string/save_update" android:textColor="#ff0000"
+            <TextView android:text="@string/save_update" android:textColor="#ffffff"
                 android:layout_width="fill_parent" android:layout_height="wrap_content"
                 android:textSize="20dp" />        
 

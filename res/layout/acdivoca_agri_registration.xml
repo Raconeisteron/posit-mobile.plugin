@@ -10,11 +10,11 @@
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:orientation="vertical" android:scrollbars="vertical|horizontal">
 			
-			<TextView android:text="@string/general_info" android:textColor="#ff0000"
+			<TextView android:text="@string/general_info" android:textColor="#ffffff"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:textSize="20dp" />
 				
-			<TextView android:text="@string/name_section" android:textColor="#ff0000"
+			<TextView android:text="@string/name_section" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
@@ -40,7 +40,7 @@
 				
 	 		<!--  <TextView android:text="Date of Birth / Age" -->
 				<TextView android:text="@string/dob"
-					android:textColor="#ff0000" 
+					android:textColor="#ffffff" 
 					android:layout_marginLeft="10px" 
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content" />
@@ -53,7 +53,7 @@
 					android:layout_height="wrap_content">
 				</DatePicker>	
 			
-			<TextView android:text="@string/health_center" android:textColor="#ff0000"
+			<TextView android:text="@string/health_center" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:visibility="gone"
@@ -64,7 +64,7 @@
 				android:entries="@+array/health_center_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
 			
-			<TextView android:text="@string/commune_section" android:textColor="#ff0000"
+			<TextView android:text="@string/commune_section" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
@@ -74,7 +74,7 @@
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
 			
 			
-			<TextView android:text="@string/distribution_post" android:textColor="#ff0000"
+			<TextView android:text="@string/distribution_post" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:visibility="gone"
@@ -90,7 +90,7 @@
 				android:layout_height="fill_parent" android:layout_gravity="left" 
 				android:paddingTop="10dp" >			
 
-			<TextView android:text="@string/sex" android:textColor="#ff0000"
+			<TextView android:text="@string/sex" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
@@ -109,7 +109,7 @@
 			</LinearLayout>
 	
 	
-			<TextView android:text="@string/Beneficiary_Category" android:textColor="#ff0000"
+			<TextView android:text="@string/Beneficiary_Category" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
@@ -175,7 +175,7 @@
 			
 			
 			<TextView android:text="@string/Number_of_people_in_home"
-				android:textColor="#ff0000" 
+				android:textColor="#ffffff" 
 				android:layout_marginLeft="10px" 
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content" />		
@@ -185,7 +185,7 @@
 				android:layout_height="wrap_content" android:paddingLeft="20px" 
 				android:minWidth ="48dp"/>
 	
-			<TextView android:text="@string/amount_of_land" android:textColor="#ff0000"
+			<TextView android:text="@string/amount_of_land" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />	
@@ -195,7 +195,7 @@
 				android:layout_width="fill_parent" android:layout_height="wrap_content" 
 				android:layout_marginLeft="20px" android:layout_marginRight="30px" />
 
-			<TextView android:text="@string/seed_group" android:textColor="#ff0000"
+			<TextView android:text="@string/seed_group" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
@@ -240,7 +240,7 @@
 			/>
 			</LinearLayout>
 			
-			<TextView android:text="@string/quantity_of_seeds" android:textColor="#ff0000"
+			<TextView android:text="@string/quantity_of_seeds" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:visibility="gone"
@@ -252,7 +252,7 @@
 				android:visibility="gone"
 				android:layout_height="wrap_content" android:paddingLeft="20px" 
 				android:minWidth ="48dp"/>
-			<TextView android:text="@string/unit_of_measurement" android:textColor="#ff0000"
+			<TextView android:text="@string/unit_of_measurement" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:visibility="gone"
@@ -263,7 +263,7 @@
 				android:visibility="gone"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
 				
-				<TextView android:text="@string/tools" android:textColor="#ff0000"
+				<TextView android:text="@string/tools" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />
@@ -328,7 +328,7 @@
 		 </LinearLayout>
 		 
 		 
-		 <TextView android:text="@string/partners" android:textColor="#ff0000"
+		 <TextView android:text="@string/partners" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 
 				android:layout_marginLeft="10px" 
 				android:layout_height="wrap_content" />

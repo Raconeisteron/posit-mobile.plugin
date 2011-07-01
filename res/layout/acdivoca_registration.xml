@@ -16,42 +16,42 @@
 			android:orientation="vertical" android:scrollbars="vertical|horizontal">
 		<TextView  android:id="@+id/first_label" 
 				android:text="@string/firstname"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:layout_width="fill_parent"
                 android:textSize="15dp"
                 android:layout_height="wrap_content" /> 
                 
        <TextView  android:id="@+id/last_label" 
 				android:text="@string/lastname"
-                android:textColor="#ff0000"
+                android:textColor="#ffffff"
                 android:layout_width="fill_parent"
                 android:textSize="15dp"
                 android:layout_height="wrap_content" />
                 
        <TextView  android:id="@+id/address_label" 
 		android:text="@string/address"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
        <TextView  android:id="@+id/dob_label" 
 		android:text="@string/dob"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
        <TextView  android:id="@+id/sex_label" 
 		android:text="@string/sex"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/num_ppl_label" 
 		android:text="@string/Number_of_people_in_home"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
@@ -64,42 +64,42 @@
 			
 		 <TextView  android:id="@+id/distro_label" 
 		android:text="@string/distribution_post"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />	
 			    
        <TextView  android:id="@+id/bene_category_label" 
 		android:text="@string/Beneficiary_Category"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/child_label" 
 		android:text="@string/responsible_if_child"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/mother_label" 
 		android:text="@string/responsible_if_mother"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/mleader_label" 
 		android:text="@string/mother_leader"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/visit_label" 
 		android:text="@string/visit_mother_leader"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
@@ -112,42 +112,42 @@
 			android:id="@+id/label_agri">        
        <TextView  android:id="@+id/agri_category_label" 
 		android:text="@string/Beneficiary_Category"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/commune_label" 
 		android:text="@string/commune_section"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/land_label" 
 		android:text="@string/amount_of_land"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/seed_label" 
 		android:text="@string/seed_group"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/tool_label" 
 		android:text="@string/tools"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
         
         <TextView  android:id="@+id/partner_label" 
 		android:text="@string/partners"
-        android:textColor="#ff0000"
+        android:textColor="#ffffff"
         android:layout_width="fill_parent"
         android:textSize="15dp"
         android:layout_height="wrap_content" />
@@ -172,23 +172,23 @@
 
 			<TextView android:text="@string/mchn_relative_text"
 				android:id="@+id/mchn_rel"
-				android:textColor="#ff0000" android:layout_width="fill_parent"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
 				android:visibility="gone"
 				android:layout_height="wrap_content" android:textSize="20dp" />
 				
 			<TextView android:text="@string/agri_relative_text"
 			android:id="@+id/agri_rel"
-				android:textColor="#ff0000" android:layout_width="fill_parent"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
 				android:visibility="gone"
 				android:layout_height="wrap_content" android:textSize="20dp" />
 			
 			
 			<TextView android:text="@string/general_info"
-				android:textColor="#ff0000" android:layout_width="fill_parent"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:textSize="20dp" />
 
 			<TextView android:text="@string/name_section"
-				android:textColor="#ff0000" android:layout_width="fill_parent"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
 				android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
 			<EditText android:id="@+id/firstnameEdit" android:hint="@string/firstname"
@@ -207,7 +207,7 @@
 				android:layout_marginRight="30px" />
 
 			<!-- <TextView android:text="Date of Birth / Age" -->
-			<TextView android:text="@string/dob" android:textColor="#ff0000"
+			<TextView android:text="@string/dob" android:textColor="#ffffff"
 				android:layout_marginLeft="10px" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" />
 
@@ -222,7 +222,7 @@
 				android:layout_height="fill_parent" android:layout_gravity="left"
 				android:paddingTop="10dp">
 
-				<TextView android:text="@string/sex" android:textColor="#ff0000"
+				<TextView android:text="@string/sex" android:textColor="#ffffff"
 					android:layout_width="fill_parent" android:layout_marginLeft="10px"
 					android:layout_height="wrap_content" />
 
@@ -238,7 +238,7 @@
 			</LinearLayout>
 
 			<TextView android:text="@string/Number_of_people_in_home"
-				android:textColor="#ff0000" android:layout_marginLeft="10px"
+				android:textColor="#ffffff" android:layout_marginLeft="10px"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />
 			<EditText android:id="@+id/inhomeEdit" android:layout_width="wrap_content"
 				android:numeric="integer" android:layout_marginLeft="30px"
@@ -253,13 +253,13 @@
 				
 				
 				<TextView android:text="@string/mchn_title"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:visibility="visible"  android:id="@+id/mchn_title"
 					android:focusable="true"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
 				<TextView android:text="@string/health_center"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:visibility="gone"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
@@ -270,7 +270,7 @@
 					android:layout_height="wrap_content" />
 
 				<TextView android:text="@string/distribution_post"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
 				<Spinner android:id="@+id/distributionSpinner"
@@ -282,7 +282,7 @@
 
 
 				<TextView android:text="@string/Beneficiary_Category"
-					android:textColor="#ff0000" android:layout_marginLeft="10px"
+					android:textColor="#ffffff" android:layout_marginLeft="10px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
 				<RadioGroup android:layout_width="fill_parent"
@@ -301,7 +301,7 @@
 				</RadioGroup>
 
 				<TextView android:text="@string/relatives_section"
-					android:id="@+id/relatives" android:textColor="#ff0000"
+					android:id="@+id/relatives" android:textColor="#ffffff"
 					android:visibility="gone" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
@@ -328,7 +328,7 @@
 					android:inputType="textCapSentences" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:layout_marginLeft="30px"
 					android:layout_marginRight="30px" /><TextView android:text="@string/relatives_section"
-					android:id="@+id/relatives" android:textColor="#ff0000"
+					android:id="@+id/relatives" android:textColor="#ffffff"
 					android:visibility="gone" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
@@ -357,7 +357,7 @@
 					android:layout_marginRight="30px" />
 
 				<TextView android:text="@string/mchn_questions"
-					android:layout_marginLeft="10px" android:textColor="#ff0000"
+					android:layout_marginLeft="10px" android:textColor="#ffffff"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
 				<TextView android:id="@+id/mother_leader" android:text="@string/mother_leader"
@@ -442,7 +442,7 @@
 				android:paddingTop="24dp">
 
 				<TextView android:id="@+id/mchm" android:text="@string/mchn_info"
-					android:textColor="#ff0000" android:visibility="gone"
+					android:textColor="#ffffff" android:visibility="gone"
 					android:layout_width="fill_parent" android:layout_height="wrap_content"
 					android:textSize="20dp" />
 
@@ -455,14 +455,14 @@
 
 				
 				<TextView android:text="@string/agri_title"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:visibility="visible" android:id="@+id/agri_title"
 					android:focusableInTouchMode="true"
 					android:focusable="true"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />	
 				
 				<TextView android:text="@string/commune_section"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 				<Spinner android:id="@+id/commune_sectionSpinner"
 					android:layout_marginLeft="20px" android:layout_marginRight="30px"
@@ -471,7 +471,7 @@
 
 
 				<TextView android:text="@string/Beneficiary_Category"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
 				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -511,7 +511,7 @@
 
 
 				<TextView android:text="@string/amount_of_land"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 				<EditText android:id="@+id/amount_of_land" android:hint="@string/Ex:1over16"
 					android:inputType="text"  android:layout_width="fill_parent"
@@ -519,7 +519,7 @@
 					android:layout_marginRight="30px" />
 
 				<TextView android:text="@string/seed_group"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
 
@@ -548,7 +548,7 @@
 				</LinearLayout>
 
 				<TextView android:text="@string/quantity_of_seeds"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:visibility="gone"
 					android:layout_height="wrap_content" />
 
@@ -558,7 +558,7 @@
 					android:layout_height="wrap_content" android:paddingLeft="20px"
 					android:minWidth="48dp" />
 				<TextView android:text="@string/unit_of_measurement"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:visibility="gone"
 					android:layout_height="wrap_content" />
 				<Spinner android:id="@+id/unitSpinner"
@@ -566,7 +566,7 @@
 					android:entries="@+array/types_of_units" android:visibility="gone"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
-				<TextView android:text="@string/tools" android:textColor="#ff0000"
+				<TextView android:text="@string/tools" android:textColor="#ffffff"
 					android:layout_width="fill_parent" android:layout_marginLeft="10px"
 					android:layout_height="wrap_content" />
 
@@ -612,7 +612,7 @@
 
 
 				<TextView android:text="@string/partners"
-					android:textColor="#ff0000" android:layout_width="fill_parent"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
 
 				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -687,7 +687,7 @@
 				android:layout_marginLeft="30px" android:layout_marginRight="30px" />
 
 			<TextView android:text="@string/save_info"
-				android:textColor="#ff0000" android:layout_width="fill_parent"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:textSize="20dp" />
 
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
