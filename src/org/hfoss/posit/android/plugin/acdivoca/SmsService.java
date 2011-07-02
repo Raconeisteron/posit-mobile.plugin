@@ -174,10 +174,21 @@ public class SmsService extends Service {
 				
 				try {
 				SmsManager sms = SmsManager.getDefault();
-				sms.sendTextMessage(mPhoneNumber, null, message, sentIntent, deliveryIntent);    
+				if (sms == null) {
+					mErrorMsg = "Unable to get default SmsManager";
+					Log.e(TAG, mErrorMsg);
+					return;
+				}
+				sms.sendTextMessage(mPhoneNumber, null, message, sentIntent, deliveryIntent);   
+
 				Log.i(TAG,"SMS Sent: " + msgid + " msg :" + message + " phone= " + mPhoneNumber);
 				} catch (IllegalArgumentException e) {
 					Log.e(TAG, "IllegalArgumentException, probably phone nubmer = " + mPhoneNumber);
+					mErrorMsg = e.getMessage();
+					e.printStackTrace();
+					return;
+				} catch (Exception e) {
+					Log.e(TAG, "Exception, problem = " + e.getMessage());
 					mErrorMsg = e.getMessage();
 					e.printStackTrace();
 					return;

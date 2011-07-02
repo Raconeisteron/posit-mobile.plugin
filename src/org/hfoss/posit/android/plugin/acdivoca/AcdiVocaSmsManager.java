@@ -70,7 +70,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 
 	
 	public static final int MAX_MESSAGE_LENGTH = 140;
-	public static final int MAX_PHONE_NUMBER_LENGTH = 10;
+	public static final int MAX_PHONE_NUMBER_LENGTH = 13;
 	public static final int MIN_PHONE_NUMBER_LENGTH = 5;
 	public static final int DONE = 0;
 	
@@ -313,10 +313,11 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 //			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
 			
 			if (!acdiVocaMsg.isExisting()) {
-//				Log.i(TAG,"This is an existing message");
+				Log.i(TAG,"This is an existing message");
 				AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
 				int msgId = (int)db.createNewMessageTableEntry(acdiVocaMsg,beneficiary_id,AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT);
 				acdiVocaMsg.setMessageId(msgId);
+				acdiVocaMsg.setExisting(true);
 			}
 			messages.add(acdiVocaMsg.toString());
 			++count;

@@ -88,9 +88,11 @@ public class AcdiVocaMessage {
 		if (id < 0 && id != AcdiVocaDbHelper.UNKNOWN_ID) {
 			messageId = id * -1;
 			beneficiaryId =  AcdiVocaDbHelper.UNKNOWN_ID;
+			existing = true;
 		} else {
 			beneficiaryId = id;
 			messageId =  AcdiVocaDbHelper.UNKNOWN_ID;
+			existing = true;
 		} 
 		
 		// NOTE: We skip the first 2 pairs in constructing the actual SMS 

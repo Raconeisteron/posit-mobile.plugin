@@ -192,7 +192,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     	//  New button - 6/17/11          
 
     	Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
-    	AcdiVocaFindActivity.spinnerSetter(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
+    	AcdiVocaFindActivity.setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
 
     	aRb = (RadioButton) findViewById(R.id.radio_change_in_status_yes);
     	
