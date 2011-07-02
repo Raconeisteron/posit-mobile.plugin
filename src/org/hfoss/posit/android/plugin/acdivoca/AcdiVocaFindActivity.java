@@ -277,12 +277,12 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		if (x == AcdiVocaDbHelper.FINDS_TYPE_AGRI)
 			result.put(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
 		
-		RadioButton brb = (RadioButton)findViewById(R.id.radio_yes_participating_agri);
-//		RadioButton arb = (RadioButton)findViewById(R.id.radio_yes_bene_same);
-//		if(brb.isChecked() || arb.isChecked()){
-		if(brb.isChecked()){
-			result.put(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_BOTH);
-		}
+//		RadioButton brb = (RadioButton)findViewById(R.id.radio_yes_participating_agri);
+////		RadioButton arb = (RadioButton)findViewById(R.id.radio_yes_bene_same);
+////		if(brb.isChecked() || arb.isChecked()){
+//		if(brb.isChecked()){
+//			result.put(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_BOTH);
+//		}
 		
 		// ADDING FIRST NAME
 		EditText eText = (EditText)findViewById(R.id.firstnameEdit);
@@ -827,6 +827,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				}
 				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_AGRI))
 					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
+				
 				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_BOTH))
 					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BOTH_DOSSIER);
 				
@@ -931,7 +932,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	 * Sets the 'edited' flag if text has been changed in an EditText
 	 */
 	public void afterTextChanged(Editable arg0) {
-		Log.i(TAG, "afterTextChanged " + arg0.toString());
+		//Log.i(TAG, "afterTextChanged " + arg0.toString());
 		isProbablyEdited = true;
 		mSaveButton.setEnabled(true);			
 	}
@@ -945,7 +946,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 
 	// Unused
 	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-		Log.i(TAG, "onTextChanged " + arg0.toString());		
+		//Log.i(TAG, "onTextChanged " + arg0.toString());		
 	}
 
 	
