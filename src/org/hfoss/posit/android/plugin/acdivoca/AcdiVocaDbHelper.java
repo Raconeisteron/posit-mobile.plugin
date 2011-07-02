@@ -258,7 +258,7 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_HAVE_PELLE = AttributeManager.FINDS_HAVE_PELLE;  // "have_pelle";
 	public static final String FINDS_HAVE_BARREAMINES = AttributeManager.FINDS_HAVE_BARREAMINES; // "have_barreamines";
 	public static final String FINDS_RELATIVE_1 = AttributeManager.FINDS_RELATIVE_1;  // "relative_1";
-//	public static final String FINDS_RELATIVE_2 = AttributeManager.FINDS_RELATIVE_2;  // "relative_2";
+	public static final String FINDS_RELATIVE_2 = AttributeManager.FINDS_RELATIVE_2;  // "relative_2";
 	public static final String FINDS_HAVE_COFFEE = AttributeManager.FINDS_HAVE_COFFEE; //  "have_vege";
 
 	public static final String FINDS_PARTNER_FAO = AttributeManager.FINDS_PARTNER_FAO;// "partner_fao";
