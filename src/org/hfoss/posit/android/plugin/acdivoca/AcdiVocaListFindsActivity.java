@@ -268,10 +268,10 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
  			intent = new Intent(this, AcdiVocaNewAgriActivity.class);
  			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_AGRI);
  		}
-// 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
-// 			intent = new Intent(this, AcdiVocaFindActivity.class);
-// 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
-// 		}
+ 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
+ 			intent = new Intent(this, AcdiVocaFindActivity.class);
+ 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
+ 		}
  		
  		intent.setAction(Intent.ACTION_EDIT);
 		if (DBG) Log.i(TAG,"id = " + id);
