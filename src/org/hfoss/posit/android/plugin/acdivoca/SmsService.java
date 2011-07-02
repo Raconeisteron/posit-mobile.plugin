@@ -36,6 +36,7 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.telephony.SmsManager;
+import android.telephony.SmsMessage;
 import android.util.Log;
 
 public class SmsService extends Service {
@@ -172,26 +173,32 @@ public class SmsService extends Service {
 				};
 				context.registerReceiver(mReceiver, intentFilter);
 				
+	               // The length array contains 4 result:
+                // length[0]  the number of Sms messages required 
+                // length[1]  the number of 7-bit code units used
+                // length[2]  the number of 7-bit code units remaining
+                // length[3]  an indicator of the encoding code unit size
+                int[] length = SmsMessage.calculateLength(message, true);
+                Log.i(TAG, "Length - 7 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
+                length = SmsMessage.calculateLength(message, false);
+                Log.i(TAG, "Length - 16 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
+                
+                // TODO:  Add code to break the message into 2 or more.
+               // if (length[0] == 1) {  
+				
+				
 				try {
 				SmsManager sms = SmsManager.getDefault();
-				if (sms == null) {
-					mErrorMsg = "Unable to get default SmsManager";
-					Log.e(TAG, mErrorMsg);
-					return;
-				}
-				sms.sendTextMessage(mPhoneNumber, null, message, sentIntent, deliveryIntent);   
-
+				sms.sendTextMessage(mPhoneNumber, null, message, sentIntent, deliveryIntent);    
 				Log.i(TAG,"SMS Sent: " + msgid + " msg :" + message + " phone= " + mPhoneNumber);
 				} catch (IllegalArgumentException e) {
-					Log.e(TAG, "IllegalArgumentException, probably phone nubmer = " + mPhoneNumber);
+					Log.e(TAG, "IllegalArgumentException, probably phone number = " + mPhoneNumber);
 					mErrorMsg = e.getMessage();
 					e.printStackTrace();
 					return;
 				} catch (Exception e) {
-					Log.e(TAG, "Exception, problem = " + e.getMessage());
-					mErrorMsg = e.getMessage();
+					Log.e(TAG, "Exception " +  e.getMessage());
 					e.printStackTrace();
-					return;
 				}
 			}
 		}

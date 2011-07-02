@@ -160,6 +160,7 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				final Button addFindButton = (Button)findViewById(R.id.addFindButton);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mAddButtonLabel, "string", "org.hfoss.posit.android");
 
+				
 				if (addFindButton != null) {
 					addFindButton.setText(resid);
 					addFindButton.setOnClickListener(this);
