@@ -5,184 +5,22 @@
 
 	<ScrollView android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
-		
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:orientation="vertical" android:scrollbars="vertical|horizontal"
-			android:visibility="gone"
-			android:id="@+id/unedit">
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:orientation="vertical" android:scrollbars="vertical|horizontal">
-		<TextView  android:id="@+id/first_label" 
-				android:text="@string/firstname"
-                android:textColor="#ffffff"
-                android:layout_width="fill_parent"
-                android:textSize="15dp"
-                android:layout_height="wrap_content" /> 
-                
-       <TextView  android:id="@+id/last_label" 
-				android:text="@string/lastname"
-                android:textColor="#ffffff"
-                android:layout_width="fill_parent"
-                android:textSize="15dp"
-                android:layout_height="wrap_content" />
-                
-       <TextView  android:id="@+id/address_label" 
-		android:text="@string/address"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-       <TextView  android:id="@+id/dob_label" 
-		android:text="@string/dob"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-       <TextView  android:id="@+id/sex_label" 
-		android:text="@string/sex"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/num_ppl_label" 
-		android:text="@string/Number_of_people_in_home"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-<!--         MCHN PART -->
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:orientation="vertical" android:scrollbars="vertical|horizontal"
-			android:id="@+id/label_mchn">    
-			
-			
-		 <TextView  android:id="@+id/distro_label" 
-		android:text="@string/distribution_post"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />	
-			    
-       <TextView  android:id="@+id/bene_category_label" 
-		android:text="@string/Beneficiary_Category"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/child_label" 
-		android:text="@string/responsible_if_child"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/mother_label" 
-		android:text="@string/responsible_if_mother"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/mleader_label" 
-		android:text="@string/mother_leader"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/visit_label" 
-		android:text="@string/visit_mother_leader"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        </LinearLayout>
-		<!--         agri part -->
-       <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:orientation="vertical" android:scrollbars="vertical|horizontal"
-			android:id="@+id/label_agri">        
-       <TextView  android:id="@+id/agri_category_label" 
-		android:text="@string/Beneficiary_Category"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/commune_label" 
-		android:text="@string/commune_section"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/land_label" 
-		android:text="@string/amount_of_land"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/seed_label" 
-		android:text="@string/seed_group"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/tool_label" 
-		android:text="@string/tools"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        <TextView  android:id="@+id/partner_label" 
-		android:text="@string/partners"
-        android:textColor="#ffffff"
-        android:layout_width="fill_parent"
-        android:textSize="15dp"
-        android:layout_height="wrap_content" />
-        
-        </LinearLayout>
-                 
-        
-		</LinearLayout>
-		<Button android:text="@string/update_beneficiary_edit_label" android:id="@+id/editFind"
-					android:layout_marginLeft="20px"
-					android:layout_marginRight="20px" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" />
-		
-		</LinearLayout>
-		</ScrollView>
-		<ScrollView android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:orientation="vertical" android:scrollbars="vertical|horizontal"
 			android:id="@+id/form">
 
 			<TextView android:text="@string/mchn_relative_text"
-				android:id="@+id/mchn_rel"
-				android:textColor="#ffffff" android:layout_width="fill_parent"
-				android:visibility="gone"
+				android:id="@+id/mchn_rel" android:textColor="#ffffff"
+				android:layout_width="fill_parent" android:visibility="gone"
 				android:layout_height="wrap_content" android:textSize="20dp" />
-				
+
 			<TextView android:text="@string/agri_relative_text"
-			android:id="@+id/agri_rel"
-				android:textColor="#ffffff" android:layout_width="fill_parent"
-				android:visibility="gone"
+				android:id="@+id/agri_rel" android:textColor="#ffffff"
+				android:layout_width="fill_parent" android:visibility="gone"
 				android:layout_height="wrap_content" android:textSize="20dp" />
-			
-			
+
+
 			<TextView android:text="@string/general_info"
 				android:textColor="#ffffff" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:textSize="20dp" />
@@ -245,28 +83,26 @@
 				android:layout_height="wrap_content" android:paddingLeft="20px"
 				android:minWidth="48dp" />
 
-
-			<!-- HERE BEGINS MCHN FORM STUFFS -->
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="vertical" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:id="@+id/mchnPart">
-				
-				
+
+
 				<TextView android:text="@string/mchn_title"
 					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:visibility="visible"  android:id="@+id/mchn_title"
-					android:focusable="true"
-					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
+					android:visibility="gone" android:id="@+id/mchn_title"
+					android:focusable="true" android:layout_marginLeft="10px"
+					android:layout_height="wrap_content" />
 
 				<TextView android:text="@string/health_center"
 					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:visibility="gone"
-					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
+					android:visibility="gone" android:layout_marginLeft="10px"
+					android:layout_height="wrap_content" />
 
 				<Spinner android:id="@+id/healthcenterSpinner"
 					android:layout_marginLeft="30px" android:layout_marginRight="30px"
-					android:entries="@+array/distribution_point_names" android:layout_width="fill_parent"
-					android:visibility="gone"
+					android:entries="@+array/distribution_point_names"
+					android:layout_width="fill_parent" android:visibility="gone"
 					android:layout_height="wrap_content" />
 
 				<TextView android:text="@string/distribution_post"
@@ -278,9 +114,6 @@
 					android:entries="@+array/distribution_point_names"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
-
-
-
 				<TextView android:text="@string/Beneficiary_Category"
 					android:textColor="#ffffff" android:layout_marginLeft="10px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />
@@ -289,15 +122,15 @@
 					android:layout_height="wrap_content" android:orientation="vertical"
 					android:id="@+id/infantcategoryRadio">
 
-					<RadioButton android:checked="false" android:id="@+id/malnourishedRadio"
-						android:text="@string/Malnourished" />
-					<RadioButton android:checked="false" android:id="@+id/inpreventionRadio"
-						android:text="@string/In_Prevention" />
-
 					<RadioButton android:checked="false" android:id="@+id/expectingRadio"
 						android:text="@string/Expecting" />
 					<RadioButton android:checked="false" android:id="@+id/nursingRadio"
 						android:text="@string/Nursing" />
+					<RadioButton android:checked="false" android:id="@+id/inpreventionRadio"
+						android:text="@string/In_Prevention" />
+					<RadioButton android:checked="false" android:id="@+id/malnourishedRadio"
+						android:text="@string/Malnourished" />
+
 				</RadioGroup>
 
 				<TextView android:text="@string/relatives_section"
@@ -327,7 +160,8 @@
 					android:visibility="gone" android:hint="@string/husband_if_mother"
 					android:inputType="textCapSentences" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:layout_marginLeft="30px"
-					android:layout_marginRight="30px" /><TextView android:text="@string/relatives_section"
+					android:layout_marginRight="30px" />
+				<TextView android:text="@string/relatives_section"
 					android:id="@+id/relatives" android:textColor="#ffffff"
 					android:visibility="gone" android:layout_width="fill_parent"
 					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
@@ -394,7 +228,8 @@
 						android:text="@string/No" />
 				</RadioGroup>
 
-				<TextView android:id="@+id/participating_acdivoca"
+				<!-- Are you participating in Agri? -->
+				<TextView android:id="@+id/participating_agri"
 					android:text="@string/participating_acdivoca"
 					android:layout_marginLeft="15px" android:textColor="#ffffff"
 					android:visibility="visible" android:layout_width="fill_parent"
@@ -402,17 +237,18 @@
 
 				<RadioGroup android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:orientation="horizontal"
-					android:id="@+id/radio_participating_acdivoca">
+					android:id="@+id/radio_participating_agri">
 					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px" android:id="@+id/radio_yes_acdivoca"
+						android:layout_marginLeft="30px" android:id="@+id/radio_yes_participating_agri"
 						android:text="@string/Yes" />
 					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px" android:id="@+id/radio_no_acdivoca"
+						android:layout_marginLeft="30px" android:id="@+id/radio_no_participating_agri"
 						android:text="@string/No" />
 				</RadioGroup>
 
+				<!-- Relative participating in agri? -->
 
-				<TextView android:id="@+id/relative_participating_acdivoca"
+				<TextView android:id="@+id/relative_participating_agri"
 					android:text="@string/relative_participating_acdivoca"
 					android:layout_marginLeft="15px" android:textColor="#ffffff"
 					android:visibility="gone" android:layout_width="fill_parent"
@@ -420,269 +256,23 @@
 
 				<RadioGroup android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:orientation="horizontal"
-					android:visibility="gone" android:id="@+id/radio_relative_acdivoca">
+					android:visibility="gone" android:id="@+id/radio_relative_participating_agri">
 					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px" android:id="@+id/radio_yes_relative_acdivoca"
+						android:layout_marginLeft="30px"
+						android:id="@+id/radio_yes_relative_participating_agri"
 						android:text="@string/Yes" />
 					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px" android:id="@+id/radio_no_relative_acdivoca"
-						android:text="@string/No" />
-				</RadioGroup>
-
-
-
-			</LinearLayout>
-
-
-			<!-- HERE BEGINS AGRICULTURE FORM STUFFS -->
-
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				android:orientation="vertical" android:layout_width="wrap_content"
-				android:layout_height="fill_parent" android:layout_gravity="center"
-				android:paddingTop="24dp">
-
-				<TextView android:id="@+id/mchm" android:text="@string/mchn_info"
-					android:textColor="#ffffff" android:visibility="gone"
-					android:layout_width="fill_parent" android:layout_height="wrap_content"
-					android:textSize="20dp" />
-
-			</LinearLayout>
-
-			<!-- Set the following text to gone for XML reasons -->
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				android:orientation="vertical" android:layout_width="fill_parent"
-				android:layout_height="fill_parent" android:id="@+id/agriPart">
-
-				
-				<TextView android:text="@string/agri_title"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:visibility="visible" android:id="@+id/agri_title"
-					android:focusableInTouchMode="true"
-					android:focusable="true"
-					android:layout_marginLeft="10px" android:layout_height="wrap_content" />	
-				
-				<TextView android:text="@string/commune_section"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
-				<Spinner android:id="@+id/commune_sectionSpinner"
-					android:layout_marginLeft="20px" android:layout_marginRight="30px"
-					android:entries="@+array/commune_section_names"
-					android:layout_width="fill_parent" android:layout_height="wrap_content" />
-
-
-				<TextView android:text="@string/Beneficiary_Category"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
-
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-
-
-					<CheckBox android:id="@+id/farmerCheckBox" android:text="@string/farmer"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/musoCheckBox" android:text="@string/muso"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/rancherCheckBox" android:text="@string/cattle_rancher"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-				</LinearLayout>
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-					<CheckBox android:id="@+id/storeOwnerCheckBox"
-						android:text="@string/store_owner" android:layout_width="wrap_content"
-						android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/fisherCheckBox" android:text="@string/fisherman"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-				</LinearLayout>
-
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-					<CheckBox android:id="@+id/artisanCheckBox" android:text="@string/artisan"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/otherCheckBox" android:text="@string/other"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-				</LinearLayout>
-
-
-
-				<TextView android:text="@string/amount_of_land"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
-				<EditText android:id="@+id/amount_of_land" android:hint="@string/Ex:1over16"
-					android:inputType="text"  android:layout_width="fill_parent"
-					android:layout_height="wrap_content" android:layout_marginLeft="20px"
-					android:layout_marginRight="30px" />
-
-				<TextView android:text="@string/seed_group"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
-
-
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-
-
-					<CheckBox android:id="@+id/vegeCheckBox" android:text="@string/vegetables"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/cerealCheckBox" android:text="@string/cereal"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-				</LinearLayout>
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-					<CheckBox android:id="@+id/tuberCheckBox" android:text="@string/tuber"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/treeCheckBox" android:text="@string/tree"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-
-					<CheckBox android:id="@+id/coffeeCheckBox" android:text="@string/coffee"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-				</LinearLayout>
-
-				<TextView android:text="@string/quantity_of_seeds"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:layout_marginLeft="10px" android:visibility="gone"
-					android:layout_height="wrap_content" />
-
-				<EditText android:id="@+id/quantityEdit"
-					android:layout_width="wrap_content" android:numeric="integer"
-					android:layout_marginLeft="30px" android:visibility="gone"
-					android:layout_height="wrap_content" android:paddingLeft="20px"
-					android:minWidth="48dp" />
-				<TextView android:text="@string/unit_of_measurement"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:layout_marginLeft="10px" android:visibility="gone"
-					android:layout_height="wrap_content" />
-				<Spinner android:id="@+id/unitSpinner"
-					android:layout_marginLeft="20px" android:layout_marginRight="30px"
-					android:entries="@+array/types_of_units" android:visibility="gone"
-					android:layout_width="fill_parent" android:layout_height="wrap_content" />
-
-				<TextView android:text="@string/tools" android:textColor="#ffffff"
-					android:layout_width="fill_parent" android:layout_marginLeft="10px"
-					android:layout_height="wrap_content" />
-
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-
-
-					<CheckBox android:id="@+id/houeCheckBox" android:text="@string/hoe"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/piocheCheckBox" android:text="@string/pick"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/brouetteCheckBox" android:text="@string/wheelbarrow"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-				</LinearLayout>
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-					<CheckBox android:id="@+id/machetteCheckBox" android:text="@string/machete"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/serpetteCheckBox" android:text="@string/pruning_knife"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/pelleCheckBox" android:text="@string/shovel"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-				</LinearLayout>
-
-
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-
-
-					<CheckBox android:id="@+id/barreAMinesCheckBox"
-						android:text="@string/crowbar" android:layout_width="wrap_content"
-						android:layout_height="wrap_content" />
-
-
-
-				</LinearLayout>
-
-
-				<TextView android:text="@string/partners"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
-
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-
-
-					<CheckBox android:id="@+id/faoCheckBox" android:text="@string/fao"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/saveCheckBox" android:text="@string/xmlsave"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/croseCheckBox" android:text="@string/crose"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-				</LinearLayout>
-
-				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-					android:orientation="horizontal" android:layout_width="wrap_content"
-					android:layout_height="fill_parent" android:layout_gravity="left"
-					android:paddingTop="10dp">
-
-
-					<CheckBox android:id="@+id/planCheckBox" android:text="@string/plan"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/mardnrCheckBox" android:text="@string/mardnr"
-						android:layout_width="wrap_content" android:layout_height="wrap_content" />
-					<CheckBox android:id="@+id/otherPartnerCheckBox"
-						android:text="@string/other2" android:layout_width="wrap_content"
-						android:layout_height="wrap_content" />
-				</LinearLayout>
-
-				<TextView android:id="@+id/participating_bene_same"
-					android:text="@string/participating_bene_same"
-					android:layout_marginLeft="15px" android:textColor="#ffffff"
-					android:visibility="visible" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" />
-
-				<RadioGroup android:layout_width="fill_parent"
-					android:layout_height="wrap_content" android:orientation="horizontal"
-					android:id="@+id/radio_same_bene">
-					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px" android:id="@+id/radio_yes_bene_same"
-						android:text="@string/Yes" />
-					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px" android:id="@+id/radio_no_bene_same"
-						android:text="@string/No" />
-				</RadioGroup>
-
-
-				<TextView android:id="@+id/participating_bene"
-					android:text="@string/participating_bene"
-					android:layout_marginLeft="15px" android:textColor="#ffffff"
-					android:visibility="gone" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" />
-
-				<RadioGroup android:layout_width="fill_parent"
-					android:layout_height="wrap_content" android:orientation="horizontal"
-					android:visibility="gone" android:id="@+id/radio_participating_bene">
-					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px" android:id="@+id/radio_yes_bene"
-						android:text="@string/Yes" />
-					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px" android:id="@+id/radio_no_bene"
+						android:layout_marginLeft="30px"
+						android:id="@+id/radio_no_relative_participating_agri"
 						android:text="@string/No" />
 				</RadioGroup>
 
 			</LinearLayout>
+
+			<!-- Give the relative's name -->
 
 			<EditText android:id="@+id/give_name" android:hint="@string/give_name"
-				android:inputType="textCapSentences" android:visibility="invisible"
+				android:inputType="textCapWords" android:visibility="invisible"
 				android:layout_width="fill_parent" android:layout_height="wrap_content"
 				android:layout_marginLeft="30px" android:layout_marginRight="30px" />
 
@@ -700,13 +290,11 @@
 					android:layout_marginRight="20px" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" />
 
-				<Button android:text="@string/add_send" android:id="@+id/sendSmsButton"
-					android:visibility="gone" android:layout_marginLeft="20px"
-					android:layout_marginRight="20px" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" />
-
 			</LinearLayout>
 
+
 		</LinearLayout>
+
+		<!-- </LinearLayout> -->
 	</ScrollView>
 </LinearLayout>

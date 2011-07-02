@@ -93,6 +93,24 @@ public class AcdiVocaDbHelper {
 			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
 			if (addUser(db, values, UserType.USER)) 
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
+			
+			values.put(USER_USERNAME, USER_DEFAULT_NAME_2);
+			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD_2);
+			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
+			if (addUser(db, values, UserType.USER)) 
+				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_2);
+			
+			values.put(USER_USERNAME, USER_DEFAULT_NAME_3);
+			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD_3);
+			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
+			if (addUser(db, values, UserType.USER)) 
+				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_3);
+			
+			values.put(USER_USERNAME, USER_DEFAULT_NAME_4);
+			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD_4);
+			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
+			if (addUser(db, values, UserType.USER)) 
+				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_4);
 		}
 
 		/**
@@ -117,6 +135,12 @@ public class AcdiVocaDbHelper {
 	public static final String USER_PASSWORD = "password";
 	public static final String USER_DEFAULT_NAME = "b";      // For testing purposes
 	public static final String USER_DEFAULT_PASSWORD = "b";
+	public static final String USER_DEFAULT_NAME_2 = "auxil2";      // For testing purposes
+	public static final String USER_DEFAULT_PASSWORD_2 = "acdivoca";	
+	public static final String USER_DEFAULT_NAME_3 = "auxil3";      // For testing purposes
+	public static final String USER_DEFAULT_PASSWORD_3 = "acdivoca";	
+	public static final String USER_DEFAULT_NAME_4 = "auxil4";      // For testing purposes
+	public static final String USER_DEFAULT_PASSWORD_4 = "acdivoca";		
 	public static final String ADMIN_USER_NAME = "r";
 	public static final String ADMIN_USER_PASSWORD = "a";
 	public static final String SUPER_USER_NAME = "s";

@@ -160,9 +160,10 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				final Button addFindButton = (Button)findViewById(R.id.addFindButton);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mAddButtonLabel, "string", "org.hfoss.posit.android");
 
-				addFindButton.setText(resid);
-				if (addFindButton != null)
+				if (addFindButton != null) {
+					addFindButton.setText(resid);
 					addFindButton.setOnClickListener(this);
+				}
 				
 				// Button is gone user USER user during distribution events
 				if (distrStage.equals(getString(R.string.stop_distribution_event))
@@ -347,8 +348,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 
 			case R.id.extraButton2:
 				intent.setAction(Intent.ACTION_INSERT);
-				intent.setClass(this, FindActivityProvider.getFindActivityClass());
-				//intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
+				//intent.setClass(this, FindActivityProvider.getFindActivityClass());
+				intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
 				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
 				startActivity(intent);
 				break;			
