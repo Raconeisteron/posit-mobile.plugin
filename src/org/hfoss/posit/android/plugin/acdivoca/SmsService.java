@@ -173,32 +173,45 @@ public class SmsService extends Service {
 				};
 				context.registerReceiver(mReceiver, intentFilter);
 				
-	               // The length array contains 4 result:
-                // length[0]  the number of Sms messages required 
-                // length[1]  the number of 7-bit code units used
-                // length[2]  the number of 7-bit code units remaining
-                // length[3]  an indicator of the encoding code unit size
-                int[] length = SmsMessage.calculateLength(message, true);
-                Log.i(TAG, "Length - 7 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
-                length = SmsMessage.calculateLength(message, false);
-                Log.i(TAG, "Length - 16 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
-                
-                // TODO:  Add code to break the message into 2 or more.
-               // if (length[0] == 1) {  
-				
-				
-				try {
-				SmsManager sms = SmsManager.getDefault();
-				sms.sendTextMessage(mPhoneNumber, null, message, sentIntent, deliveryIntent);    
-				Log.i(TAG,"SMS Sent: " + msgid + " msg :" + message + " phone= " + mPhoneNumber);
-				} catch (IllegalArgumentException e) {
-					Log.e(TAG, "IllegalArgumentException, probably phone number = " + mPhoneNumber);
-					mErrorMsg = e.getMessage();
-					e.printStackTrace();
-					return;
-				} catch (Exception e) {
-					Log.e(TAG, "Exception " +  e.getMessage());
-					e.printStackTrace();
+				// The length array contains 4 result:
+				// length[0]  the number of Sms messages required 
+				// length[1]  the number of 7-bit code units used
+				// length[2]  the number of 7-bit code units remaining
+				// length[3]  an indicator of the encoding code unit size
+				int[] length = SmsMessage.calculateLength(message, true);
+				Log.i(TAG, "Length - 7 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
+				length = SmsMessage.calculateLength(message, false);
+				Log.i(TAG, "Length - 16 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
+
+				// TODO:  Add code to break the message into 2 or more.
+				SmsManager smsMgr = SmsManager.getDefault();
+
+				if (length[0] == 1) {  
+					try {
+						smsMgr.sendTextMessage(mPhoneNumber, null, message, sentIntent, deliveryIntent);    
+						Log.i(TAG,"SMS Sent: " + msgid + " msg :" + message + " phone= " + mPhoneNumber);
+					} catch (IllegalArgumentException e) {
+						Log.e(TAG, "IllegalArgumentException, probably phone number = " + mPhoneNumber);
+						mErrorMsg = e.getMessage();
+						e.printStackTrace();
+						return;
+					} catch (Exception e) {
+						Log.e(TAG, "Exception " +  e.getMessage());
+						e.printStackTrace();
+					}
+				}
+				else {
+					int nMessagesNeeded = length[0];
+					ArrayList<String> msgList = smsMgr.divideMessage(message);
+					ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
+//					Iterator<String> msgIt = msgList.iterator();
+					for (int k = 0; k < msgList.size(); k++) {
+						sentIntents.add(sentIntent);
+					}
+
+					smsMgr.sendMultipartTextMessage(mPhoneNumber, null, msgList, sentIntents, null);
+					//smsMgr.sendTextMessage(mPhoneNumber, null, messageFrag, sentIntent, deliveryIntent);    
+					Log.i(TAG,"SMS Sent multipart message: " + msgid + " msg :" + msgList.toString() + " phone= " + mPhoneNumber);
 				}
 			}
 		}
