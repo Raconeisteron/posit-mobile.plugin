@@ -280,9 +280,9 @@ public class AttributeManager {
 	//  'firstname=joe,lastname=smith,...,sex=M'
 	//  Using the data defined here, it would be encoded as
 	// 'f=joe,l=smith,...,g=M'
-	public static final String FINDS_BENE_DOSSIER = "NEW MCHN";
-	public static final String FINDS_AGRI_DOSSIER = "NEW AGRI";
-	public static final String FINDS_BOTH_DOSSIER = "NEW MCHN&AGRI";
+	public static final String FINDS_BENE_DOSSIER = "Mchn";
+	public static final String FINDS_AGRI_DOSSIER = "Agri";
+	public static final String FINDS_BOTH_DOSSIER = "Both";
 	
 	
 	
@@ -818,8 +818,13 @@ public class AttributeManager {
 			// that value to the running total.  If the attribute is not in the
 			// array, just put it back in the result string.
 			int x = getIndex(attributes, attr);
+			int valInt = 0;
 			if (x != -1) {
-				int valInt = Integer.parseInt(val);
+				try {
+					valInt = Integer.parseInt(val);   // Shouldn't happen
+				} catch (NumberFormatException e) {
+					Log.e(TAG, "NumberFormatException on " + val);
+				}
 				if (valInt == 1)
 					sum += Math.pow(2, x);              // Compute a running total
 			} else {

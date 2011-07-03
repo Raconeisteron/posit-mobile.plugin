@@ -254,9 +254,11 @@
 					android:visibility="gone" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" />
 
-				<RadioGroup android:layout_width="fill_parent"
+				<RadioGroup 
+					android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:orientation="horizontal"
 					android:visibility="gone" android:id="@+id/radio_relative_participating_agri">
+					
 					<RadioButton android:checked="false"
 						android:layout_marginLeft="30px"
 						android:id="@+id/radio_yes_relative_participating_agri"

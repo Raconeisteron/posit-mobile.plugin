@@ -40,13 +40,15 @@
 		android:orientation="vertical" >
 
 			
-		<TextView android:id="@+id/lastname_field" android:layout_width="fill_parent"
+		<TextView android:id="@+id/lastname_field" android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:singleLine="true"
+			android:maxWidth="180dp"
 			android:textSize="20dp" android:layout_marginLeft="3dp"
 			android:layout_alignParentTop="true" />
 
 		<TextView android:id="@+id/firstname_field" android:layout_width="wrap_content"
 			android:layout_height="wrap_content" 
+			android:maxWidth="180dp"
 			android:layout_marginLeft="3dp"
 			android:textSize="13dp" />
 			
