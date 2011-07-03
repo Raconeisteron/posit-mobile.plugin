@@ -37,41 +37,6 @@
 					android:textColor="#ffffff" android:layout_width="fill_parent"
 					android:textSize="15dp" android:layout_height="wrap_content" />
 					
-				<!-- MCHN PART -->
-				
-				
-<!-- 				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" -->
-<!-- 					android:layout_width="fill_parent" android:layout_height="wrap_content" -->
-<!-- 					android:orientation="vertical" android:scrollbars="vertical|horizontal" -->
-<!-- 					android:id="@+id/label_mchn"> -->
-
-
-<!-- 					<TextView android:id="@+id/distro_label" android:text="@string/distribution_post" -->
-<!-- 						android:textColor="#ffffff" android:layout_width="fill_parent" -->
-<!-- 						android:textSize="15dp" android:layout_height="wrap_content" /> -->
-
-<!-- 					<TextView android:id="@+id/bene_category_label" -->
-<!-- 						android:text="@string/Beneficiary_Category" android:textColor="#ffffff" -->
-<!-- 						android:layout_width="fill_parent" android:textSize="15dp" -->
-<!-- 						android:layout_height="wrap_content" /> -->
-
-<!-- 					<TextView android:id="@+id/child_label" android:text="@string/responsible_if_child" -->
-<!-- 						android:textColor="#ffffff" android:layout_width="fill_parent" -->
-<!-- 						android:textSize="15dp" android:layout_height="wrap_content" /> -->
-
-<!-- 					<TextView android:id="@+id/mother_label" android:text="@string/responsible_if_mother" -->
-<!-- 						android:textColor="#ffffff" android:layout_width="fill_parent" -->
-<!-- 						android:textSize="15dp" android:layout_height="wrap_content" /> -->
-
-<!-- 					<TextView android:id="@+id/mleader_label" android:text="@string/mother_leader" -->
-<!-- 						android:textColor="#ffffff" android:layout_width="fill_parent" -->
-<!-- 						android:textSize="15dp" android:layout_height="wrap_content" /> -->
-
-<!-- 					<TextView android:id="@+id/visit_label" android:text="@string/visit_mother_leader" -->
-<!-- 						android:textColor="#ffffff" android:layout_width="fill_parent" -->
-<!-- 						android:textSize="15dp" android:layout_height="wrap_content" /> -->
-
-<!-- 				</LinearLayout> -->
 
 				<!-- agri part -->
 				
@@ -102,6 +67,33 @@
 
 					<TextView android:id="@+id/partner_label" android:text="@string/partners"
 						android:textColor="#ffffff" android:layout_width="fill_parent"
+						android:textSize="15dp" android:layout_height="wrap_content" />
+						
+					<TextView android:id="@+id/participating_mchn"
+						android:text="@string/participating_bene_same"
+						android:textColor="#ffffff"
+						android:visibility="visible" android:layout_width="fill_parent"
+						android:layout_height="wrap_content" />	
+						
+					<TextView android:id="@+id/participating_mchn_self_label"
+						android:textColor="#ffffff" android:layout_width="fill_parent"
+						android:layout_marginLeft="15px" 
+						android:textSize="15dp" android:layout_height="wrap_content" />
+						
+					<TextView android:id="@+id/relative_participating_mchn"
+						android:text="@string/participating_bene"
+						android:textColor="#ffffff"
+						android:visibility="visible" android:layout_width="fill_parent"
+						android:layout_height="wrap_content" />
+
+					<TextView android:id="@+id/participating_relative_mchn_label"
+						android:textColor="#ffffff" android:layout_width="fill_parent"
+						android:layout_marginLeft="15px" 
+						android:textSize="15dp" android:layout_height="wrap_content" />
+						
+					<TextView android:id="@+id/participating_relative_mchn_name"
+						android:textColor="#ffffff" android:layout_width="fill_parent"
+						android:layout_marginLeft="15px" 
 						android:textSize="15dp" android:layout_height="wrap_content" />
 
 				</LinearLayout>

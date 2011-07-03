@@ -380,8 +380,7 @@
 			</LinearLayout>
 		 
 		 
-		 
-			<TextView android:id="@+id/participating_bene_same"
+			<TextView android:id="@+id/participating_mchn"
 				android:text="@string/participating_bene_same" 
 				android:layout_marginLeft="15px" 
 				android:textColor="#ffffff"
@@ -390,19 +389,19 @@
 				
 			<RadioGroup android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:id="@+id/radio_same_bene">
+				android:id="@+id/radio_participating_mchn">
 				<RadioButton android:checked="false" 
 					android:layout_marginLeft="30px" 
-					android:id="@+id/radio_yes_bene_same"
+					android:id="@+id/radio_yes_participating_mchn"
 					android:text="@string/Yes" />
 				<RadioButton android:checked="false" 
 					android:layout_marginLeft="30px" 
-					android:id="@+id/radio_no_bene_same"
+					android:id="@+id/radio_no_participating_mchn"
 					android:text="@string/No" />
 			</RadioGroup>		
 			
 			
-			<TextView android:id="@+id/participating_bene"
+			<TextView android:id="@+id/relative_participating_mchn"
 				android:text="@string/participating_bene"
 				android:layout_marginLeft="15px" 
 				android:textColor="#ffffff"
@@ -412,17 +411,24 @@
 			<RadioGroup android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:orientation="horizontal"
 				android:visibility="gone"
-				android:id="@+id/radio_participating_bene">
+				android:id="@+id/radio_relative_participating_mchn">
 				<RadioButton android:checked="false" 
 					android:layout_marginLeft="30px" 
-					android:id="@+id/radio_yes_bene"
+					android:id="@+id/radio_yes_relative_participating_mchn"
 					android:text="@string/Yes" />
 				<RadioButton android:checked="false" 
 					android:layout_marginLeft="30px" 
-					android:id="@+id/radio_no_bene"
+					android:id="@+id/radio_no_relative_participating_mchn"
 					android:text="@string/No" />
 			</RadioGroup>
-				
+			
+			<!-- Give the relative's name -->
+
+			<EditText android:id="@+id/give_name" android:hint="@string/give_name"
+				android:inputType="textCapWords" android:visibility="invisible"
+				android:layout_width="fill_parent" android:layout_height="wrap_content"
+				android:layout_marginLeft="30px" android:layout_marginRight="30px" />
+			
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:orientation="horizontal" android:layout_width="wrap_content"
 				android:layout_height="fill_parent" android:layout_gravity="center" 
