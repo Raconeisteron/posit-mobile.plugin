@@ -1067,54 +1067,11 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 			if (mAction.equals(Intent.ACTION_EDIT)) {
 				result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
 				Log.i(TAG, "Update to Db is " + result);
-				
-//				RadioButton bene = (RadioButton)findViewById(R.id.radio_yes_bene);
-//				RadioButton same = (RadioButton)findViewById(R.id.radio_yes_bene_same);
-//				if(same.isChecked()){
-//					Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-//					intent.setAction(Intent.ACTION_INSERT);
-//			        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//			        Log.i(TAG,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_FIRSTNAME, data.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_LASTNAME, data.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_ADDRESS, data.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_SEX, data.getAsString(AcdiVocaDbHelper.FINDS_SEX));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE, data.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_DOB, data.getAsString(AcdiVocaDbHelper.FINDS_DOB));
-//					startActivityForResult(intent, 0);
-//				}
-//				if(bene.isChecked()){
-//					Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-//					intent.setAction(Intent.ACTION_INSERT);
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_ID, (long)id); // Added to go into insert with extras. So that we can hide the last question.
-//					startActivityForResult(intent, 0);
-//				}
 			} else {
-				data.put(AcdiVocaDbHelper.FINDS_DOSSIER, "New Agri");
-				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
+				data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
 				
-//				
-//				RadioButton bene = (RadioButton)findViewById(R.id.radio_yes_bene);
-//				RadioButton same = (RadioButton)findViewById(R.id.radio_yes_bene_same);
-//				if(same.isChecked()){
-//					Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-//					intent.setAction(Intent.ACTION_INSERT);
-//			        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//			        Log.i(TAG,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_FIRSTNAME, data.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_LASTNAME, data.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_ADDRESS, data.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_SEX, data.getAsString(AcdiVocaDbHelper.FINDS_SEX));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE, data.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_DOB, data.getAsString(AcdiVocaDbHelper.FINDS_DOB));
-//					startActivityForResult(intent, 0);
-//				}
-//				if(bene.isChecked()){
-//					Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-//					intent.setAction(Intent.ACTION_INSERT);
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_ID, (long)id); // Added to go into insert with extras. So that we can hide the last question.
-//					startActivityForResult(intent, 0);
-//				}
+				data.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_NEW);
+				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
 				Log.i(TAG, "Save to Db is " + result);
 			}
 			if (result){
@@ -1195,7 +1152,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 	 * Sets the 'edited' flag if text has been changed in an EditText
 	 */
 	public void afterTextChanged(Editable arg0) {
-		Log.i(TAG, "afterTextChanged " + arg0.toString());
+	//	Log.i(TAG, "afterTextChanged " + arg0.toString());
 		isProbablyEdited = true;
 		mSaveButton.setEnabled(true);	
 		// TODO Auto-generated method stub
@@ -1211,7 +1168,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 
 	// Unused
 	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-		Log.i(TAG, "onTextChanged " + arg0.toString());		
+	//	Log.i(TAG, "onTextChanged " + arg0.toString());		
 	}
 
 	

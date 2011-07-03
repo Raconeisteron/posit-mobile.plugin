@@ -68,6 +68,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	private int mFindId = 0;
 	private AcdiVocaDbHelper mDbHelper;
 	private Button mSaveButton;
+	ContentValues mSavedStateValues = null;
 	
 	
 	/** Called when the activity is first created. */
@@ -120,6 +121,12 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume, isProbablyEdited= " + isProbablyEdited);
+		
+		if (this.mSavedStateValues != null) {
+			Log.i(TAG, "onResume, restoring instance state ");
+			this.displayContentInView(mSavedStateValues);
+			mSavedStateValues = null;
+		}
 
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
@@ -405,29 +412,40 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			visitMotherLeader = AcdiVocaDbHelper.FINDS_NO;
 		}
 		result.put(AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER, visitMotherLeader); 
+
 		Log.i(TAG, AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER +"="+ visitMotherLeader);
 
-		Boolean acdiAgri = false;		
+		String acdiAgri = "";
+		//Boolean acdiAgri = false;		
 		RadioButton acdiAgriRB = (RadioButton)findViewById(R.id.radio_yes_participating_agri);
 		if (acdiAgriRB != null && acdiAgriRB.isChecked()) {
-			acdiAgri = true;
+			acdiAgri = AcdiVocaDbHelper.FINDS_YES;
 		}
 		acdiAgriRB = (RadioButton)findViewById(R.id.radio_no_participating_agri);
 		if (acdiAgriRB != null && acdiAgriRB.isChecked()) {
-			acdiAgri = false;
+			acdiAgri = AcdiVocaDbHelper.FINDS_NO;
 		}
 		result.put(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI, acdiAgri);   
 
-		Boolean acdiAgriRelative = false;		
+		//Boolean acdiAgriRelative = false;	
+		String acdiAgriRelative = "";
 		RadioButton acdiAgriSameRB = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
 		if (acdiAgriSameRB != null && acdiAgriSameRB.isChecked()) {
-			acdiAgriRelative = true;
+			acdiAgriRelative = AcdiVocaDbHelper.FINDS_YES;
 		}
 		acdiAgriSameRB = (RadioButton)findViewById(R.id.radio_no_relative_participating_agri);
 		if (acdiAgriSameRB != null && acdiAgriSameRB.isChecked()) {
-			acdiAgriRelative = false;
+			acdiAgriRelative = AcdiVocaDbHelper.FINDS_NO;
 		}
 		result.put(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI, acdiAgriRelative);
+		
+		eText = (EditText) findViewById(R.id.give_name);
+		if (eText != null) {
+			value = eText.getText().toString();
+			result.put(AcdiVocaDbHelper.FINDS_RELATIVE_2, value);
+			Log.i(TAG, "retrieve relative participating = " + value);
+		}
+
 		
 		return result;
 	}
@@ -506,7 +524,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				
 				tv = ((TextView) findViewById(R.id.participating_relative_name));
 				tv.setText(": " 
-						+  values.getAsString(AcdiVocaDbHelper.FINDS_RELATIVE_1));
+						+  values.getAsString(AcdiVocaDbHelper.FINDS_RELATIVE_2));
 
 
 			}
@@ -615,77 +633,36 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			}
 
 			// MCHN QUESTIONS
+			
 			RadioButton aRadioButton = (RadioButton)findViewById(R.id.radio_motherleader_yes);
-			Log.i(TAG, "motherLeader=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER));
+			
+			// Are you a mother leader?
+			String valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER);
+			Log.i(TAG, "motherLeader=" + valueStr);
+			setRadiosFromString(valueStr,R.id.radio_motherleader_yes, R.id.radio_motherleader_no);
+			
+			// Have you received a visit from a mother leader?
+			valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER);
+			Log.i(TAG, "motherLeaderVisit=" + valueStr);
+			setRadiosFromString(valueStr,R.id.radio_visit_yes, R.id.radio_visit_no);
 
-			Integer value = contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER);
-			if (value != null) {
-				if (value.equals(1))
-					aRadioButton.setChecked(true);
-				else 
-					aRadioButton.setChecked(false);
+			// Q: Are you participating in Agri program?
+			valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI);
+			Log.i(TAG, "acdiAgri=" + valueStr);
+			setRadiosFromString(valueStr,R.id.radio_yes_participating_agri, R.id.radio_no_participating_agri);
 
-				aRadioButton = (RadioButton)findViewById(R.id.radio_motherleader_no);
-
-				if (value.equals(0)){
-					aRadioButton.setChecked(true);
-				} else {
-					aRadioButton.setChecked(false);
-				}
-			}
-
-			value = contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER);
-			aRadioButton = (RadioButton)findViewById(R.id.radio_visit_yes);
-			Log.i(TAG, "motherLeaderVisit=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER));
-			if (value != null) {
-				if (value.equals(1))
-					aRadioButton.setChecked(true);
-				else 
-					aRadioButton.setChecked(false);
-
-				aRadioButton = (RadioButton)findViewById(R.id.radio_visit_no);
-
-				if (value.equals(0)){
-					aRadioButton.setChecked(true);
-				} else {
-					aRadioButton.setChecked(false);
-
-				}
-			}
-
-			value = contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI);
-			aRadioButton = (RadioButton)findViewById(R.id.radio_yes_participating_agri);
-			Log.i(TAG, "acdiAgri=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI));
-			if (value != null) {
-				if (value.equals(1))
-					aRadioButton.setChecked(true);
-				else 
-					aRadioButton.setChecked(false);
-				aRadioButton  = (RadioButton)findViewById(R.id.radio_no_participating_agri);
-				if (value.equals(0)){
-					aRadioButton.setChecked(true);
-				} else {
-					aRadioButton.setChecked(false);
-
-				}
-			}
-
-			//added Jun 17
-			value = contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI);
-			aRadioButton = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
-			Log.i(TAG, "acdiAgri=" + contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI));
-			if (value != null) {
-				if (value.equals(1))
-					aRadioButton.setChecked(true);
-				else 
-					aRadioButton.setChecked(false);
-				aRadioButton  = (RadioButton)findViewById(R.id.radio_no_relative_participating_agri);
-				if (value.equals(0)){
-					aRadioButton.setChecked(true);
-				} else {
-					aRadioButton.setChecked(false);
-
-				}
+			// Q: Is a relative participating in Agri program?
+			
+			valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI);
+			Log.i(TAG, "acdiAgriRel=" + valueStr);
+			setRadiosFromString(valueStr,R.id.radio_yes_relative_participating_agri, R.id.radio_no_relative_participating_agri);
+			
+			if (valueStr != null && !valueStr.equals("")) {
+				//findViewById(R.id.radio_relative_participating_agri).setVisibility(View.VISIBLE)
+				((TextView) findViewById(R.id.relative_participating_agri)).setVisibility(View.VISIBLE);
+				findViewById(R.id.radio_relative_participating_agri).setVisibility(View.VISIBLE);
+				((RadioButton) findViewById(R.id.radio_yes_relative_participating_agri)).setVisibility(View.VISIBLE);
+				((RadioButton) findViewById(R.id.radio_no_relative_participating_agri)).setVisibility(View.VISIBLE);
 			}
 			
 			// Disable Save button until form is edited
@@ -694,7 +671,36 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		}
 	}
 
-	
+
+	/**
+	 * Helper method to set a set of radio buttons given a "YES" or "No" value.
+	 * @param value
+	 * @param radioId
+	 */
+	private void setRadiosFromString(String value, int radioYes, int radioNo) {
+		RadioButton yButton = (RadioButton)findViewById(radioYes);
+		RadioButton nButton = (RadioButton)findViewById(radioNo);
+
+		if (value != null) {
+			if (value.equals(AttributeManager.FINDS_YES)) {
+				yButton.setChecked(true);
+				yButton.setVisibility(View.VISIBLE);
+			}
+			else  {
+				yButton.setChecked(false);	
+				yButton.setVisibility(View.VISIBLE);
+			}
+			
+			if (value.equals(AttributeManager.FINDS_NO)) {
+				nButton.setChecked(true);
+				nButton.setVisibility(View.VISIBLE);
+			}
+			else {
+				nButton.setChecked(false);	
+				nButton.setVisibility(View.VISIBLE);
+			}
+		}
+	}
 
 	/**
 	 * Required as part of OnClickListener interface. Handles button clicks.
@@ -702,7 +708,6 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	public void onClick(View v) {
 		Log.i(TAG, "onClick");
 		// If a RadioButton was clicked, mark the form as edited.
-		//Toast.makeText(this, "Clicked on a " + v.getClass().toString(), Toast.LENGTH_SHORT).show();
 		try {
 			if (v.getClass().equals(Class.forName("android.widget.RadioButton"))) {
 					//Toast.makeText(this, "RadioClicked", Toast.LENGTH_SHORT).show();
@@ -720,8 +725,6 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		if (id == R.id.editFind){
 	    	mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
 			ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
-//			isProbablyEdited = false;
-//			mSaveButton.setEnabled(false);	
 			displayContentInView(values);	
 		}
 		
@@ -731,11 +734,10 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		}
 		
 		// Are you participating in Agri?
-		
 		// If no, ask whether relative is participating.
+		
 		if (id == R.id.radio_no_participating_agri){
 			Log.i(TAG, "Clicked no_acdivoca");
-//			findViewById(R.id.agriPart).setVisibility(View.GONE);
 			findViewById(R.id.relative_participating_agri).setVisibility(View.VISIBLE);
 			findViewById(R.id.radio_relative_participating_agri).setVisibility(View.VISIBLE);
 		}
@@ -748,13 +750,6 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			findViewById(R.id.radio_relative_participating_agri).setVisibility(View.GONE);
 			RadioButton rb = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
 			rb.setChecked(false);
-//
-////			findViewById(R.id.agriPart).setVisibility(View.VISIBLE);
-//			findViewById(R.id.commune_sectionSpinner).setFocusable(true);
-//			findViewById(R.id.commune_sectionSpinner).setFocusableInTouchMode(true);			
-//			findViewById(R.id.commune_sectionSpinner).requestFocus();
-//			findViewById(R.id.participating_bene_same).setVisibility(View.GONE);
-//			findViewById(R.id.radio_same_bene).setVisibility(View.GONE);
 		}
 		
 		// Is a relative participating in Agri?
@@ -769,18 +764,6 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			Log.i(TAG, "Clicked yes_relative_participating_agri");
 			findViewById(R.id.give_name).setVisibility(View.VISIBLE);
 			findViewById(R.id.give_name).setEnabled(true);
-
-//			findViewById(R.id.participating_bene).setVisibility(View.GONE);
-//			findViewById(R.id.radio_participating_bene).setVisibility(View.GONE);
-//			RadioButton rb = (RadioButton)findViewById(R.id.radio_yes_bene);
-//			rb.setChecked(false);
-//			
-//			findViewById(R.id.mchnPart).setVisibility(View.VISIBLE);
-//			findViewById(R.id.distributionSpinner).setFocusable(true);
-//			findViewById(R.id.distributionSpinner).setFocusableInTouchMode(true);			
-//			findViewById(R.id.distributionSpinner).requestFocus();
-//			findViewById(R.id.participating_agri).setVisibility(View.GONE);
-//			findViewById(R.id.radio_participating_agri).setVisibility(View.GONE);
 		}		
 		
 		if (id == R.id.expectingRadio || id == R.id.nursingRadio) {
@@ -801,54 +784,23 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			
 			if (mAction.equals(Intent.ACTION_EDIT)) { // Editing an existing beneficiary
 				result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
-//				RadioButton bene = (RadioButton)findViewById(R.id.radio_yes_bene);
-//				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
-//				if(agri.isChecked()){
-//					Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-//					intent.setAction(Intent.ACTION_INSERT);
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
-//					intent.putExtra(AttributeManager.FINDS_RELATIVE_AGRI, AcdiVocaDbHelper.FINDS_YES);
-//					startActivityForResult(intent, 0);
-//				}
-//				if(bene.isChecked()){
-//					Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-//					intent.setAction(Intent.ACTION_INSERT);
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
-//					intent.putExtra(AttributeManager.FINDS_RELATIVE_BENE, AcdiVocaDbHelper.FINDS_YES);
-//					startActivityForResult(intent, 0);
-//				}
 				Log.i(TAG, "Update to Db is " + result);
 				
 			} else { // New beneficiary
 				data.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_NEW);
-				
-				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_MCHN)){
-					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BENE_DOSSIER);
-				}
-				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_AGRI))
-					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
-				
-				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_BOTH))
-					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BOTH_DOSSIER);
-				
-				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
-				//if radioAgri is checked, make intent
-				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
-//				RadioButton bene = (RadioButton)findViewById(R.id.radio_yes_bene);
-////				if(agri.isChecked()){
-////					Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-//////					intent.setAction(Intent.ACTION_INSERT);
-////					intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
-////					intent.putExtra(AttributeManager.FINDS_RELATIVE_AGRI, AcdiVocaDbHelper.FINDS_YES);
-////					startActivityForResult(intent, 0);
-////				}
-//				if(bene.isChecked()){
-//					Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-////					intent.setAction(Intent.ACTION_INSERT);
-//					intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
-//					intent.putExtra(AttributeManager.FINDS_RELATIVE_BENE, AcdiVocaDbHelper.FINDS_YES);
-//					startActivityForResult(intent, 0);
+				data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BENE_DOSSIER);
+
+//				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_MCHN)){
+//					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BENE_DOSSIER);
 //				}
+//				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_AGRI))
+//					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
+//				
+//				if (data.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE).equals(AcdiVocaDbHelper.FINDS_TYPE_BOTH))
+//					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BOTH_DOSSIER);
+//				
+				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
+				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
 				Log.i(TAG, "Save to Db is " + result);
 			}
 			if (result){
@@ -970,6 +922,9 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	}
 	
 	
+	
+	
+	
 //	Spinner spinner = (Spinner)findViewById(R.id.communeSpinner);
 //	String selected = contentValues.getAsString(AcdiVocaDbHelper.COMMUNE_NAME);
 //	int k = 0;
@@ -983,7 +938,24 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //		spinner.setSelection(k);
 //	}
 	
-//spinner function	
+@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+	Log.i(TAG, "onRestoreInstanceState");
+		mSavedStateValues = (ContentValues) savedInstanceState.get("savedstate");
+		this.displayContentInView(mSavedStateValues);
+		mSavedStateValues = null;
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		Log.i(TAG, "onSaveInstanceState");
+		mSavedStateValues = this.retrieveContentFromView();
+		outState.putParcelable("savedstate", mSavedStateValues);
+		super.onSaveInstanceState(outState);
+	}
+
+	//spinner function	
 	public static void setSpinner(Spinner spinner, ContentValues contentValues, String attribute){
 		String selected = contentValues.getAsString(attribute);
 		int k = 0;

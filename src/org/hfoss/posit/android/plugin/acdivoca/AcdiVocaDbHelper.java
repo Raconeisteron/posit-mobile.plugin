@@ -374,7 +374,7 @@ public class AcdiVocaDbHelper {
 		+ FINDS_HAVE_BARREAMINES+ " boolean, "
 
 		+ FINDS_RELATIVE_1 + " text, "
-//		+ FINDS_RELATIVE_2 + " text, "
+		+ FINDS_RELATIVE_2 + " text, "
 		+ FINDS_Q_CHANGE + " boolean, "
 		+ FINDS_CHANGE_TYPE + " text, "
 		+ FINDS_Q_PRESENT + " boolean DEFAULT FALSE ,"
@@ -577,6 +577,7 @@ public class AcdiVocaDbHelper {
 	 * @return the rowId of the new insert or -1 in case of error
 	 */
 	public long addNewBeneficiary(ContentValues values) {
+		Log.i(TAG, values.toString());
 		//		mDb = getWritableDatabase();  // Either create the DB or open it.
 		long rowId = mDb.insert(FINDS_TABLE, null, values);
 		Log.i(TAG, "addNewFind, rowId=" + rowId);
