@@ -880,14 +880,59 @@ public class AcdiVocaDbHelper {
 		return rows;
 	}
 
+	/**
+	 * Handles updating the message table and beneficiary table for bulk messages. 
+	 * In this case the msg_id is known. So we directly update the message table then
+	 * update the beneficiary table for each of the DOSIER numbers. 
+	 * @param acdiVocaMsg
+	 * @param status
+	 * @param huh
+	 * @return
+	 */
+	public boolean updateMessageStatusForBulkMsg(AcdiVocaMessage acdiVocaMsg, int status) {
+		Log.i(TAG, "Updating, msg_id " + acdiVocaMsg.getMessageId() + 
+				" bene_id = " + acdiVocaMsg.getBeneficiaryId() + " to status = " + status);
+		boolean result = false;
+		long row_id;
+		int rows = 0;
+
+		int msg_id = acdiVocaMsg.getMessageId();
+		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+		if (msg_id != UNKNOWN_ID) {
+			rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);
+
+			if (rows == 0) {
+				result = false;
+				Log.i(TAG, "Unable to update message id= " + msg_id);  
+			} else {
+				result = true;
+				Log.i(TAG, "Updated message table for message id= " + msg_id);  
+				
+				rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, msg_id, status);
+				Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
+				if (rows == 0) 
+					result = false;
+				else 
+					result = true;
+			}
+		} else {
+			Log.i(TAG, "Oops, for bulk messages, msg_id should not = " + msg_id);
+			result = false;
+		}
+		mDb.close();
+		return result;
+		
+	}
 	
 	/**
-	 * Updates the message status in the message table and Finds table.
+	 * Updates the message status in the message table and Finds table for
+	 * distribution update messages.  In this case the msg_id is UNKNOWN and
+	 * the beneficiary is KNOWN.
 	 * @param message the SMS message
 	 * @param status the new status
 	 * @return
 	 */
-	public synchronized boolean updateMessageStatus(AcdiVocaMessage acdiVocaMsg, int status) {
+	public boolean updateMessageStatus(AcdiVocaMessage acdiVocaMsg, int status) {
 		Log.i(TAG, "Updating, msg_id " + acdiVocaMsg.getMessageId() + 
 				" bene_id = " + acdiVocaMsg.getBeneficiaryId() + " to status = " + status);
 		boolean result = false;
@@ -901,10 +946,10 @@ public class AcdiVocaDbHelper {
 
 		if (rows == 0) {
 			result = false;
-			Log.i(TAG, "Unable to update message id= " + msg_id);  
+			Log.e(TAG, "Unable to update message id= " + msg_id);  
 		} else {
 			result = true;
-			Log.i(TAG, "Update message id= " + msg_id);  
+			Log.i(TAG, "Updated message id= " + msg_id);  
 		}
 
 		// Update FINDS TABLE
@@ -919,7 +964,7 @@ public class AcdiVocaDbHelper {
 
 		if (rows == 0) {
 			result = false;
-			Log.i(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
+			Log.e(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
 
 			rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, msg_id, status);
 			Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
@@ -930,6 +975,76 @@ public class AcdiVocaDbHelper {
 
 			// Update the message table with the new message
 			rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);					
+		}
+		mDb.close();
+		return result;
+	}
+	
+	/**
+	 * Updates the message status in the message table and Finds table for
+	 * distribution update messages.  In this case the msg_id is UNKNOWN and
+	 * the beneficiary is KNOWN.
+	 * @param message the SMS message
+	 * @param status the new status
+	 * @return
+	 */
+	public boolean updateMessageStatusForDistribUpdateMessage(AcdiVocaMessage acdiVocaMsg, int status) {
+		Log.i(TAG, "Updating, msg_id " + acdiVocaMsg.getMessageId() + 
+				" bene_id = " + acdiVocaMsg.getBeneficiaryId() + " to status = " + status);
+		boolean result = false;
+		long row_id;
+		int rows = 0;
+		int msg_id = acdiVocaMsg.getMessageId(); // Should be -9999 (UNKNOWN)
+		String query = "";
+		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+		
+		if (beneficiary_id != UNKNOWN_ID) {
+			// Update FINDS TABLE
+			ContentValues args = new ContentValues();
+			//args.put(FINDS_MESSAGE_ID, msg_id);
+			args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
+														
+			rows = mDb.update(FINDS_TABLE, 
+					args, 
+					FINDS_ID + " = " + beneficiary_id,
+					null); 
+
+			if (rows == 0) {
+				result = false;
+				Log.e(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
+			} else {
+				Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
+
+				// Update the message table with the new message but first get the message id
+				
+				Cursor c = mDb.query(FINDS_TABLE, null, 
+						FINDS_ID + " = " + beneficiary_id,
+						null, null, null, null);
+				if (c.getCount() == 0) {
+					result = false;
+					Log.e(TAG, "Unable to query FINDS Table for beneficiary, id= " + beneficiary_id ); 
+				} else {
+					c.moveToFirst();
+					msg_id =  c.getInt(c.getColumnIndex(FINDS_MESSAGE_ID));
+					c.close();
+				}
+				if (msg_id == UNKNOWN_ID) {
+					result = false;
+					Log.e(TAG, "Unable to get msg_id for beneficiary, id= " + beneficiary_id ); 
+				} else {
+					rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);	
+					if (rows == 0) {
+						Log.e(TAG, "Unable to update message table for beneficiary id= " + beneficiary_id ); 
+						result = false;
+					} else {
+						Log.i(TAG, "Updated message table for beneficiary id= " + beneficiary_id ); 
+						result = true;
+					}	
+				}
+			}
+		} else {
+			Log.i(TAG, "Oops, for bulk messages, msg_id should not = " + msg_id);
+			result = false;
 		}
 		mDb.close();
 		return result;
