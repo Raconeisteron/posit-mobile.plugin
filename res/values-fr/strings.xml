@@ -157,6 +157,11 @@
     <string name="no_messages">pas de message a envoyer. Utiliser le menu pour create les messages.</string>
     <string name="delete_messages">Supprimer les messages listés</string>
     <string name="confirm_delete_messages">Etes vous sure de vouloir supprimer ces message?</string>
+    <string name="unsent">Pas unvoyes</string>
+    <string name="sent">Envoyes</string>
+    <string name="pending">En pending</string>
+    <string name="ack">Acknowledged</string>
+    <string name="deleted">Deleted</string>
     
    
         <!-- Add and List Menu -->
@@ -186,7 +191,7 @@
  	
  	
  	<!-- New string constants for agriculture registration form -->
-	<string name="amount_of_land">Dimension Jarden(Carreau)</string>
+	<string name="amount_of_land">Dimension Jarden (square meters)</string>
 	<string name="Ex:1over16"></string>
     <string name="seed_group">Semences recues?</string>
     <string name="unit_of_measurement">Uniter de mesure</string>
@@ -263,9 +268,14 @@
 	<string name="cancelLabel">Annuler</string>
 	
 	<string name="update_transfer">Transferer a une autre categorie</string>
+	<string name="update_transfer_lectating">Transfert de l\'enceinte de soins infirmiers</string>
+	<string name="update_transfer_prevention">Transfer de lactating to preventionn</string>
+	<string name="update_transfer_location">Transfer due to location change</string>
+	<string name="update_transfer_abortion">Abortion</string>
 	<string name="update_deceased">Decede</string>
 	<string name="update_fraud">Fraud</string>
 	<string name="update_completed">Cycle complet</string>
+	
 	<string name="english">English</string>
 	<string name="french">Française</string>
 	<string name="haitian">Creole haitien</string>

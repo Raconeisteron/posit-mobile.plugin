@@ -473,8 +473,21 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			tv.setText(getString(R.string.address) + ": " 
 					+  values.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS)); 
 			tv = ((TextView) findViewById(R.id.dob_label));
+			
+			String date = values.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+			Log.i(TAG,"display DOB = " + date);
+			int yr=0, mon=0, day=0;
+			day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
+			yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
+			mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
+			mon += 1;
+
+			String dateAdj = yr + "/" + mon + "/" + day;
+			Log.i(TAG, dateAdj);
+			
 			tv.setText(getString(R.string.dob) + ": " 
-					+  values.getAsString(AcdiVocaDbHelper.FINDS_DOB));  
+					+  dateAdj);  
+			
 			tv = ((TextView) findViewById(R.id.sex_label));
 			tv.setText(getString(R.string.sex) + ": " 
 					+  values.getAsString(AcdiVocaDbHelper.FINDS_SEX)); 
@@ -807,12 +820,12 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			}
 			if (result){
 				Log.i(TAG, "Save to Db returned success");
-				Toast.makeText(this, "Saved to Db", Toast.LENGTH_SHORT).show();  
+				Toast.makeText(this, getString(R.string.toast_saved_db), Toast.LENGTH_SHORT).show();  
 				//Toast.makeText(this, data.toString(), Toast.LENGTH_SHORT).show();  
 			}
 			else {
 				Log.i(TAG, "Save to Db returned failure");
-				Toast.makeText(this, "Error on save to Db", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.toast_error_db), Toast.LENGTH_SHORT).show();
 			}
 			finish();
 		}
