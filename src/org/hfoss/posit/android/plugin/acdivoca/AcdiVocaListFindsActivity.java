@@ -633,7 +633,18 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 			tv = (TextView)view;
 			int msgstatus = cursor.getInt(cursor.getColumnIndex(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS));
 			String text = AcdiVocaDbHelper.MESSAGE_STATUS_STRINGS[msgstatus];
-			tv.setText(text);
+			if (text.equals("Unsent"))
+				tv.setText(R.string.unsent);
+			else if (text.equals("Sent"))
+				tv.setText(R.string.sent);
+			else if (text.equals("Pending"))
+				tv.setText(R.string.pending);
+			else if (text.equals("Acknowledged"))
+				tv.setText(R.string.ack);
+			else if (text.equals("Deleted"))
+				tv.setText(R.string.deleted);
+			else 
+				tv.setText(text);
 			break;
 
 		default:
@@ -757,12 +768,12 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
                         
                 		String s = ((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getSmsMessage();
                  		if (s.equals(getString(R.string.no_messages))) {
-                 			bt.setTextColor(Color.RED);
+                 			bt.setTextColor(Color.WHITE);
                  			bt.setTextSize(24);
                  			bt.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getSmsMessage());
                  		} else {  // This case handles a real message
                            	if (tt != null) {
-                        		tt.setTextColor(Color.RED);
+                        		tt.setTextColor(Color.WHITE);
                         		tt.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage) msg).getMsgHeader());                            
                         	}
                         	if(bt != null){

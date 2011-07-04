@@ -155,7 +155,11 @@
     <string name="no_messages">pa gen mesag. Itilize meni an pou kree mesag</string>
     <string name="delete_messages">Efase mesag ki afiche yo</string>
     <string name="confirm_delete_messages">ou vle efase yo tout bon?</string>
-    
+    <string name="unsent">Pas voye yo</string>
+    <string name="sent">Ki voye yo</string>
+    <string name="pending">An pending yo</string>
+    <string name="ack">Acknowledged</string>    
+    <string name="deleted">E passe</string>
    
 <!--         Add and List Menu -->
     <string name="refresh">Netwaye</string>
@@ -182,7 +186,7 @@
  	
  	
 <!--  	New string constants for agriculture registration form -->
-	<string name="amount_of_land">Ki Dimansyon Jaden an(Carreau)</string>
+	<string name="amount_of_land">Ki Dimansyon Jaden an (Square meters)</string>
 	<string name="Ex:1over16"></string>
     <string name="seed_group">Ki semans li jween?</string>
     <string name="unit_of_measurement">Ki mezi ki itilize</string>
@@ -265,7 +269,7 @@
 	<string name="update_transfer_lectating">Transfert de: Enceinte à Allaitante</string>
 	<string name="update_transfer_prevention">Transfert de: Allaitante à Prevention</string>
 	<string name="update_transfer_location">Transfert du au changement de lieu</string>
-	<string name="update_transfer_abortion">Transfert du a cause de l\'avortement</string>	
+	<string name="update_transfer_abortion">L\'avortement</string>	
 	<string name="update_deceased">Decede</string>
 	<string name="update_fraud">Fraud</string>
 	<string name="update_completed">Cycle complet</string>

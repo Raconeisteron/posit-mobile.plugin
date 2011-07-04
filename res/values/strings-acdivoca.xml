@@ -163,7 +163,11 @@
     <string name="no_messages">No messages to send. Use the menu to create messages.</string>
     <string name="delete_messages">Delete listed messages</string>
     <string name="confirm_delete_messages">Are you sure you want to delete these messages?</string>
-    
+    <string name="unsent">Unsent</string>
+    <string name="sent">Sent</string>
+    <string name="pending">Pending</string>
+    <string name="ack">Acknowledged</string>
+    <string name="deleted">Deleted</string>
    
         <!-- Add and List Menu -->
     <string name="refresh">Clear</string>
@@ -192,7 +196,7 @@
  	
  	
  	<!-- New string constants for agriculture registration form -->
-	<string name="amount_of_land">Amount of Land (Carreau)</string>
+	<string name="amount_of_land">Amount of Land (square meters))</string>
 	<string name="Ex:1over16"></string>
     <string name="seed_group">Seed Types</string>
     <string name="unit_of_measurement">Unit of Measurement</string>
@@ -268,7 +272,7 @@
 	<string name="update_transfer_lectating">Transfer from pregnant to lactating</string>
 	<string name="update_transfer_prevention">Transfer from lactating to preventionn</string>
 	<string name="update_transfer_location">Transfer due to location change</string>
-	<string name="update_transfer_abortion">Transfer due to abortion</string>
+	<string name="update_transfer_abortion">Abortion</string>
 	<string name="update_deceased">Deceased</string>
 	<string name="update_fraud">Fraud</string>
 	<string name="update_completed">Completed program</string>
