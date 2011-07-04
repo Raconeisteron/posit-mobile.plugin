@@ -23,6 +23,11 @@
 
 package org.hfoss.posit.android.plugin.acdivoca;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -34,10 +39,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.IBinder;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import android.widget.Toast;
 
 public class SmsService extends Service {
 	public static final String TAG = "AcdiVocaSmsManager";
@@ -147,6 +154,37 @@ public class SmsService extends Service {
 		}
 	}
 	
+	
+	/**
+	 * Appends Sms Messages to a text file on the SD card.
+	 * @param sFileName
+	 * @param msg
+	 */
+	public void logMessages(ArrayList<String> msgs){
+		try
+		{
+			File file = new File(Environment.getExternalStorageDirectory() 
+					+ "/" + AcdiVocaAdminActivity.DEFAULT_DIRECTORY + "/" 
+					+ AcdiVocaAdminActivity.SMS_LOG_FILE);
+
+			//FileWriter writer = new FileWriter(file);
+			PrintWriter writer =  new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+
+			Iterator<String> it = msgs.iterator();
+			while (it.hasNext()) {
+				String msg = it.next();
+				writer.println(msg);
+				Log.i(TAG, "Wrote to file: " + msg);
+			}
+			writer.flush();
+			writer.close();
+		}
+		catch(IOException e) {
+			Log.e(TAG, "IO Exception writing to Log " + e.getMessage());
+			e.printStackTrace();
+		}
+	}   
+
 	class SendMessagesTask extends AsyncTask<Context, Integer, String> {
 		public static final String TAG = "AsyncTask";
 		
@@ -156,6 +194,7 @@ public class SmsService extends Service {
 		protected String doInBackground(Context... contexts) {
 			Log.i(TAG, "doInBackground");
 			this.context = contexts[0];
+			logMessages(mMessages);
 			transmitMessages(context, mMessages);
 			return null;
 		}

@@ -82,6 +82,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	public static final int MAX_BENEFICIARIES = 20000;  // Max readable
 	
 	public static final String DEFAULT_DIRECTORY = "acdivoca";
+	public static final String SMS_LOG_FILE = "smslog.txt";
 	public static final String DEFAULT_BENEFICIARY_FILE = "Beneficiare.csv";
 	public static final String DEFAULT_LIVELIHOOD_FILE = "Livelihood.csv";
 	public static final String COMMA= ",";
