@@ -26,10 +26,13 @@
 	<EditText android:id="@+id/dossierEdit" 
 		android:layout_marginTop="30px"
 		android:textSize="24dp"
+		android:numeric="integer"
 		android:hint="@string/dossier_hint"
-		android:inputType="textCapSentences" android:layout_gravity="center"
+		android:layout_gravity="center"
 		android:minWidth="150px" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" />
+<!-- 		android:inputType="textCapSentences"  -->
+
 
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="horizontal" 
