@@ -121,17 +121,17 @@
 			
 			
 			<CheckBox android:id="@+id/farmerCheckBox"
-			 android:text="Farmer"
+			 android:text="@string/farmer"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/musoCheckBox"
-			 android:text="MUSO"
+			 android:text="@string/muso"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/rancherCheckBox"
-			 android:text="Cattle Rancher"
+			 android:text="@string/cattle_rancher"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -141,12 +141,12 @@
 				android:layout_height="fill_parent" android:layout_gravity="left" 
 				android:paddingTop="10dp" >
 			<CheckBox android:id ="@+id/storeOwnerCheckBox"
-			 android:text="Store Owner"
+			 android:text="@string/store_owner"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id ="@+id/fisherCheckBox"
-			 android:text="Fisherman"
+			 android:text="@string/fisherman"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -157,12 +157,12 @@
 				android:layout_height="fill_parent" android:layout_gravity="left" 
 				android:paddingTop="10dp" >
 			<CheckBox android:id ="@+id/artisanCheckBox"
-			 android:text="Artisan"
+			 android:text="@string/artisan"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id ="@+id/otherCheckBox"
-			 android:text="Other"
+			 android:text="@string/other"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -208,12 +208,12 @@
 			
 			
 			<CheckBox android:id="@+id/vegeCheckBox"
-			 android:text="Vegetables"
+			 android:text="@string/vegetables"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/cerealCheckBox"
-			 android:text="Cereal"
+			 android:text="@string/cereal"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -223,18 +223,18 @@
 				android:layout_height="fill_parent" android:layout_gravity="left" 
 				android:paddingTop="10dp" >
 			<CheckBox android:id ="@+id/tuberCheckBox"
-			 android:text="Tubers"
+			 android:text="@string/tuber"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id ="@+id/treeCheckBox"
-			 android:text="Tree"
+			 android:text="@string/tree"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			
 			<CheckBox android:id ="@+id/coffeeCheckBox"
-			 android:text="Coffee"
+			 android:text="@string/coffee"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -275,17 +275,17 @@
 			
 			
 			<CheckBox android:id="@+id/houeCheckBox"
-			 android:text="Hoe"
+			 android:text="@string/hoe"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/piocheCheckBox"
-			 android:text="Pick"
+			 android:text="@string/pick"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/brouetteCheckBox"
-			 android:text="Wheelbarrow"
+			 android:text="@string/wheelbarrow"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -295,17 +295,17 @@
 				android:layout_height="fill_parent" android:layout_gravity="left" 
 				android:paddingTop="10dp" >
 			<CheckBox android:id ="@+id/machetteCheckBox"
-			 android:text="Machete"
+			 android:text="@string/machete"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id ="@+id/serpetteCheckBox"
-			 android:text="Pruning knife"
+			 android:text="@string/pruning_knife"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id ="@+id/pelleCheckBox"
-			 android:text="Shovel"
+			 android:text="@string/shovel"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -319,7 +319,7 @@
 			
 			
 			<CheckBox android:id="@+id/barreAMinesCheckBox"
-			 android:text="Crowbar"
+			 android:text="@string/crowbar"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"/>
 			 
@@ -340,17 +340,17 @@
 			
 			
 			<CheckBox android:id="@+id/faoCheckBox"
-			 android:text="FAO"
+			 android:text="@string/fao"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/saveCheckBox"
-			 android:text="SAVE"
+			 android:text="@string/xmlsave"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/croseCheckBox"
-			 android:text="CROSE"
+			 android:text="@string/crose"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
@@ -363,17 +363,17 @@
 			
 			
 			<CheckBox android:id="@+id/planCheckBox"
-			 android:text="PLAN"
+			 android:text="@string/plan"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/mardnrCheckBox"
-			 android:text="MARDNR"
+			 android:text="@string/mardnr"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
 			<CheckBox android:id="@+id/otherPartnerCheckBox"
-			 android:text="Other"
+			 android:text="@string/other2"
 			 android:layout_width="wrap_content"
 			 android:layout_height="wrap_content"
 			/>
