@@ -228,12 +228,18 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	private int calculateUnsentFinds (Cursor c) {
 		int count = 0;
 		c.moveToFirst();
-		while (!c.isAfterLast()) {
+		while (!c.isAfterLast()) {  
 			int status = c.getInt(c.getColumnIndex(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS));
 			if (status == AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT 
 					|| status == AcdiVocaDbHelper.MESSAGE_STATUS_PENDING)
 				++count;
-			c.moveToNext();
+			try {
+				c.moveToNext();
+			} catch (Exception e) {
+				Log.e(TAG, "Exception, may have exceeded maximum size at row = " + count + " msg: " + e.getMessage());
+				e.printStackTrace();
+				return count;
+			}
 		}
 		return count;
 	}
