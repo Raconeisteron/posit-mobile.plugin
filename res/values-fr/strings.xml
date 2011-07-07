@@ -50,7 +50,9 @@
 	<string name="general_info">Informations generales</string>
 	<string name="mchn_info">Information MCHN</string>
  	<string name="save_info">Enregistrer saisie</string>
-    <string name="name_section">Nom Localite</string>
+    <string name="name_section">Nom Beneficiaire</string>
+    <string name="locality_section">Localite</string>
+    
     <string name="lastname">Nom</string>
     <string name="firstname">Prenom</string>
     <string name="commune">Commune</string>
@@ -64,11 +66,11 @@
     <string name="Male">M</string>
     <string name="Female">F</string>	
     
-    <string name="Number_of_people_in_home">Nbre de personne dans la maison</string>
+    <string name="Number_of_people_in_home">Nombre de personne dans la maison</string>
     <string name="Beneficiary_Category">Categorie</string>
     <string name="Infant_Category">Categorie</string>
-    <string name="Malnourished">Mal Nouri</string>
-    <string name="In_Prevention">En Prevention</string>
+    <string name="Malnourished">Mal Nouri (6-59 mois)</string>
+    <string name="In_Prevention">En Prevention (6-23 mois)</string>
     <string name="Mother_Category">Categorie Mere</string>
     <string name="Expecting">Allaitante</string>
     <string name="Nursing">Enceinte</string>
@@ -77,7 +79,7 @@
     
     <!--   MCHN Strings -->
     <string name="relatives_section">Parent Beneficiaire</string>
-    <string name="responsible_if_child">Nom responsable(si enfant)</string>
+    <string name="responsible_if_child">Nom responsable (si enfant)</string>
     <string name="responsible_if_mother">Representant (si femme)</string>
     <string name="father_if_child">Nom Pere (si enfant)</string>
     <string name="husband_if_mother">Nom mari (Si femme)</string>
@@ -89,13 +91,14 @@
     <string name="mchn_questions">Question</string>
     <string name="mother_leader">Etes vous mere leader?</string>
     <string name="visit_mother_leader">Avez vous recu la visite de mere leader?</string>
-    <string name="relative_participating_acdivoca"> Y a t-il quelqu’un de votre famille qui participe au programme Agriculture de ACDI/VOCA?</string>
-    <string name="participating_acdivoca">Avez vous recu de l’aide du programe agriculture de acdivoca ?</string>
+<!--     <string name="relative_participating_acdivoca"> Y a t-il quelqu\'un de votre famille qui participe au programme Agriculture de ACDI/VOCA?</string> -->
+	<string name="participating_beneficiary_agri">Participant d\'agriculture</string>
+	<string name="participating_beneficiary_mchn">Participant de MCHN</string>    <string name="participating_acdivoca">Est-ce que vous ou quelqu\'un dans votre maison reçoivent de l\'aide du programe agriculture de ACDI/VOCA?</string>
     <string name="give_name">Si oui, Precisez le nom</string>
     <string name="Yes">Oui</string>
     <string name="No">Non</string>
-	<string name="participating_bene">Y a t-il quelqu’un de votre famille qui participe dans le programme d’acdivoca ?</string>
-    <string name="participating_bene_same">Participez vous dans le programme d’acdivoca?</string>
+<!-- 	<string name="participating_bene">Y a t-il quelqu\'un de votre famille qui participe dans le programme d’acdivoca ?</string> -->
+    <string name="participating_bene_same">Est-ce que vous ou quelqu\'un dans votre maison reçoivent de l\'aide du programe santé de ACDI/VOCA?</string>
     
     
    
@@ -126,7 +129,7 @@
     <string name="toast_Backkey_isEdited">Backkey isEdited=</string>
     <string name="toast_no_beneficiary">ERROR: No dossier non trouve = </string>
     <string name="toast_beneficiary_id">No dossier Beneficiare= </string>
-	<string name="toast_sorry_empty">Desolez, il n’y a pas de beneficiaire dans la base.</string>
+	<string name="toast_sorry_empty">Desolez, il n\'y a pas de beneficiaire dans la base.</string>
     <string name="toast_id">No dossier= </string>
     <string name="toast_admin_beneficiary_data">Importer donnees beneficiaire:</string>
     <string name="toast_distribution_post">Poste distribution non encore selectionnee</string>
@@ -191,13 +194,13 @@
  	
  	
  	<!-- New string constants for agriculture registration form -->
-	<string name="amount_of_land">Dimension Jarden (square meters)</string>
+	<string name="amount_of_land">Dimension Jarden (carreau)</string>
 	<string name="Ex:1over16"></string>
     <string name="seed_group">Semences recues?</string>
     <string name="unit_of_measurement">Uniter de mesure</string>
     <string name="quantity_of_seeds">Quantite de semences</string>
     <string name="tools">Outils</string>
-    <string name="partners">partenaire ayant participle dans la distribution?</string>
+    <string name="partners">Partenaire ayant participle dans la distribution?</string>
     
 	<!-- New agri strings - 6/21/11 -->
  	<string name="farmer">Agriculture</string>
@@ -271,7 +274,7 @@
 	<string name="update_transfer_lectating">Transferer de l\'enceinte de soins infirmiers</string>
 	<string name="update_transfer_prevention">Transferer de lactating to preventionn</string>
 	<string name="update_transfer_location">Transferer a un\'autre point de distribution</string>
-	<string name="update_edit_beneficiary">Une révision</string>
+	<string name="update_edit_beneficiary">Changé l\'information de beneficiare</string>
 	<string name="update_transfer_abortion">Abortion</string>
 	<string name="update_deceased">Decede</string>
 	<string name="update_fraud">Fraud</string>

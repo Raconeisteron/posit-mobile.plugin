@@ -23,45 +23,79 @@
 	<item>Bainet</item>
 	<item>Cote de fer</item>
 	</string-array>
-	
-	<string-array name="commune_section_names"> 
-	<item>Anse a Pitres</item>
-	<item>Thiotte</item>
-	<item>Grand Gosier</item>
-	<item>Belle Anse</item>
-	<item>La vallee</item>
-	<item>Bainet</item>
-	<item>Cote de fer</item>
+
+	<string-array name="commune_section_names">
+		<item>11eme La vallee</item>
+		<item>1ere Musac</item>
+		<item>3 eme La vallee</item>
+		<item>3eme Bras de gauche</item>
+		<item>4eme Haut Gandou</item>
+		<item>5eme Bas Gandou</item>
+		<item>6eme Bas de la croix</item>
+		<item>6ème Jamais-Vu</item>
+		<item>8eme orangers</item>
+		<item>9eme Bas des gris gris</item>
+		<item>Amazone</item>
+		<item>Anse a Pitres</item>
+		<item>Baie d_Orange</item>
+		<item>Bas Grandou</item>
+		<item>BelAir</item>
+		<item>Belle Anse</item>
+		<item>Bodarie</item>
+		<item>Bois d_Orme</item>
+		<item>Boucan Belier</item>
+		<item>BoucanGuillaume</item>
+		<item>Bras de gauche</item>
+		<item>Bresilienne</item>
+		<item>Callumette</item>
+		<item>Centre de Santé Anse a Pitres</item>
+		<item>CollinedesChaines</item>
+		<item>CorailLamothe</item>
+		<item>Cote de fer</item>
+		<item>Grand Gosier</item>
+		<item>Gris-Gris</item>
+		<item>Haut Grandou</item>
+		<item>Jamais vus</item>
+		<item>Labich</item>
+		<item>Mabriole</item>
+		<item>Mapou</item>
+		<item>Morne a Brule</item>
+		<item>Pichon</item>
+		<item>Platon Cedre</item>
+		<item>Pot de Chambre/2eMareMirande</item>
+		<item>Thiotte 1ereColombier</item>
+		<item>Tou mahot</item>
 	</string-array>
 	
 	
 	<string-array name="distribution_point_names"> 
-	<item>Centre Platon Cedre</item>
-	<item>Point Fixe Ka Tousen</item>
 	<item>Anse a Pitres</item>
-	<item>Dispensaire Banane</item>
-	<item>Pt fixe Calumette</item>
 	<item>Centre Belle-Ance</item>
-	<item>Dispensaire Mapou</item>
-	<item>Pt fixe Baie d_orange</item>
-	<item>Dispensaire marbriole</item>	
-	<item>Pt fixe Corail Lamothe</item>
-	<item>Pt fixe Pichon</item>	
-	<item>Pt Fixe Bel-air</item>	
-	<item>Labiche</item>	
+	<item>Centre Platon Cedre</item>
+	<item>Centre Sacre Coeur</item>	
 	<item>Centre St Joseph</item>	
-	<item>Dispensaire Ste rose de lima</item>	
-	<item>Dispensaire Boucan Belier</item>	
-	<item>Dispensaire Ricot</item>	
-	<item>Pt Fixe Macieux</item>	
-	<item>Point Fixe de Mayette</item>	
-	<item>Point Fixe de Amazone</item>
-	<item>Dispensaire Grand Gosier</item>
+	<item>Dispensaire Banane</item>
 	<item>Dispensaire Bodarie</item>
-	<item>Pt fixe Boulay</item>
-	<item>Centre Sacre Coeur</item>
-	<item>Dispensaire de Savane Zombi</item>
+	<item>Dispensaire Boucan Belier</item>	
 	<item>Dispensaire de Bleck/ Mar Mirande</item>
+	<item>Dispensaire de Savane Zombi</item>
+	<item>Dispensaire Grand Gosier</item>
+	<item>Dispensaire Mapou</item>
+	<item>Dispensaire marbriole</item>				
+	<item>Dispensaire Ricot</item>	
+	<item>Dispensaire Ste rose de lima</item>	
+	<item>Labiche</item>	
+	<item>Point Fixe de Amazone</item>
+	<item>Point Fixe de Mayette</item>	
+	<item>Point Fixe Ka Tousen</item>	
+	<item>Pt fixe Baie d_orange</item>	
+	<item>Pt Fixe Bel-air</item>	
+	<item>Pt fixe Boulay</item>
+	<item>Pt fixe Calumette</item>	
+	<item>Pt fixe Corail Lamothe</item>
+	<item>Pt Fixe Macieux</item>	
+	<item>Pt fixe Pichon</item>		
+
 	</string-array>
 	
 	<string-array name="health_center_names"> 
@@ -93,35 +127,36 @@
 	<item>Boutures</item>
 	</string-array>
 	
+<!--  TODO:  This should probably be deleted -->
 <!-- 	Distribution center list -->
-	<string-array name="distribution_centers">
-	<item>Anse a Pitres</item>
-	<item>Centre Belle-Ance</item>
-	<item>Centre Platon Cedre</item>
-	<item>Centre Sacre Coeur</item>
-	<item>Centre St Joseph</item>
-	<item>Dispensaire Banane</item>
-	<item>Dispensaire Bodarie</item>
-	<item>Dispensaire Boucan Belier</item>
-	<item>Dispensaire de Bleck/ Mar Mirande</item>
-	<item>Dispensaire de Savane Zombi</item>
-	<item>Dispensaire Grand Gosier</item>
-	<item>Dispensaire Mapou</item>
-	<item>Dispensaire marbriole</item>
-	<item>Dispensaire Ricot</item>
-	<item>Dispensaire Ste rose de lima</item>
-	<item>Labiche</item>
-	<item>Point Fixe Ka Tousen</item>
-	<item>Pt fixe Baie d_orange</item>
-	<item>Pt Fixe Bel-air</item>
-	<item>Pt fixe Boulay</item>
-	<item>Pt fixe Calumette</item>
-	<item>Pt fixe Corail Lamothe</item>
-	<item>Pt Fixe Macieux</item>
-	<item>Pt fixe Pichon</item>
-	<item>Point Fixe de Mayette(CDF)</item>
-	<item>Point Fixe d\'Amazone (CDF)</item>
-	</string-array>
+<!-- 	<string-array name="distribution_centers"> -->
+<!-- 	<item>Anse a Pitres</item> -->
+<!-- 	<item>Centre Belle-Ance</item> -->
+<!-- 	<item>Centre Platon Cedre</item> -->
+<!-- 	<item>Centre Sacre Coeur</item> -->
+<!-- 	<item>Centre St Joseph</item> -->
+<!-- 	<item>Dispensaire Banane</item> -->
+<!-- 	<item>Dispensaire Bodarie</item> -->
+<!-- 	<item>Dispensaire Boucan Belier</item> -->
+<!-- 	<item>Dispensaire de Bleck/ Mar Mirande</item> -->
+<!-- 	<item>Dispensaire de Savane Zombi</item> -->
+<!-- 	<item>Dispensaire Grand Gosier</item> -->
+<!-- 	<item>Dispensaire Mapou</item> -->
+<!-- 	<item>Dispensaire marbriole</item> -->
+<!-- 	<item>Dispensaire Ricot</item> -->
+<!-- 	<item>Dispensaire Ste rose de lima</item> -->
+<!-- 	<item>Labiche</item> -->
+<!-- 	<item>Point Fixe Ka Tousen</item> -->
+<!-- 	<item>Pt fixe Baie d_orange</item> -->
+<!-- 	<item>Pt Fixe Bel-air</item> -->
+<!-- 	<item>Pt fixe Boulay</item> -->
+<!-- 	<item>Pt fixe Calumette</item> -->
+<!-- 	<item>Pt fixe Corail Lamothe</item> -->
+<!-- 	<item>Pt Fixe Macieux</item> -->
+<!-- 	<item>Pt fixe Pichon</item> -->
+<!-- 	<item>Point Fixe de Mayette(CDF)</item> -->
+<!-- 	<item>Point fixe d\'Amazone (CDF)</item> -->
+<!-- 	</string-array> -->
 	
 	<!-- 	Change in status reasons list -->
 	<string-array name="status_change_options">

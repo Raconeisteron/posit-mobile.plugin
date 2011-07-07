@@ -91,80 +91,17 @@
                     android:text="@string/Nursing" />    
             </RadioGroup>
             
-            <TextView android:text="@string/months_left_in_program"
-                android:textColor="#ffffff"
-                android:layout_marginLeft="10px"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />        
-            <EditText android:id="@+id/monthsInProgramEdit" android:layout_width="wrap_content"
-                android:numeric="integer"
-                android:layout_marginLeft="30px"
-                android:layout_height="wrap_content" android:paddingLeft="20px"
-                android:minWidth ="48dp"/>
-<!--      
-            
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical" android:layout_width="wrap_content"
-                android:layout_height="fill_parent" android:layout_gravity="center"
-                android:paddingTop="24dp" >
-
-            <TextView android:id="@+id/mchm"
-                android:text="@string/mchn_info" android:textColor="#ffffff"
-                android:visibility="visible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:textSize="20dp" />
-                
-            <TextView android:text="@string/health_center" android:textColor="#ffffff"
-                android:layout_width="fill_parent"
-                android:layout_marginLeft="10px"
-                android:layout_height="wrap_content" />
-            <Spinner android:id="@+id/healthcenterSpinner"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px"
-                android:entries="@+array/health_center_names"
-                android:layout_width="fill_parent" android:layout_height="wrap_content" />                
-
-            <TextView android:text="@string/distribution_post" android:textColor="#ffffff"
-                android:layout_width="fill_parent"
-                android:layout_marginLeft="10px"
-                android:layout_height="wrap_content" />
-            <Spinner android:id="@+id/distributionSpinner"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px"
-                android:entries="@+array/distribution_names"
-                android:layout_width="fill_parent" android:layout_height="wrap_content" />                
-
-            <TextView android:text="@string/relatives_section" android:textColor="#ffffff"
-                android:layout_width="fill_parent"
-                android:layout_marginLeft="10px"
-                android:layout_height="wrap_content" />
-                                
-            <EditText android:id="@+id/responsibleIfChildEdit"
-                android:hint="@string/responsible_if_child"
-                android:inputType="textCapSentences"
-                android:visibility="invisible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px" />
-
-            <EditText android:id="@+id/fatherIfChildEdit"
-                android:hint="@string/father_if_child"
-                android:inputType="textCapSentences"
-                android:visibility="invisible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px" />
-                
-            <EditText android:id="@+id/responsibleIfMotherEdit"
-                android:hint="@string/responsible_if_mother"
-                android:inputType="textCapSentences"
-                android:visibility="invisible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px" />
-
-            <EditText android:id="@+id/husbandIfMotherEdit"
-                android:hint="@string/husband_if_mother"
-                android:inputType="textCapSentences"
-                android:visibility="invisible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px" />    
--->
+<!--             <TextView android:text="@string/months_left_in_program" -->
+<!--                 android:textColor="#ffffff" -->
+<!--                 android:layout_marginLeft="10px" -->
+<!--                 android:layout_width="fill_parent" -->
+<!--                 android:layout_height="wrap_content" />         -->
+ 
+<!--             <EditText android:id="@+id/monthsInProgramEdit" android:layout_width="wrap_content" -->
+<!--                 android:numeric="integer" -->
+<!--                 android:layout_marginLeft="30px" -->
+<!--                 android:layout_height="wrap_content" android:paddingLeft="20px" -->
+<!--                 android:minWidth ="48dp"/> -->
 
             <TextView android:text="@string/update_questions"
                 android:layout_marginLeft="0px"
@@ -190,8 +127,6 @@
                     android:id="@+id/radio_present_no"
                     android:text="@string/No" />
             </RadioGroup>    
-
-<!-- Commented out the unused buttons and made a new button for the new status information - 6/17/11 -->
 
             <TextView android:id="@+id/change_in_status"
                 android:text="@string/change_in_status" android:textColor="#ffffff"
@@ -224,60 +159,7 @@
                 android:entries="@+array/status_change_options"
                 android:layout_width="fill_parent" android:layout_height="wrap_content"
                 android:visibility="gone" />                
-
-
-
-<!--             <TextView android:id="@+id/transfer_required" -->
-<!--                 android:text="@string/transfer_required"  -->
-<!--                 android:layout_marginLeft="15px"  -->
-<!--                 android:textColor="#ffffff" -->
-<!--                 android:visibility="visible" -->
-<!--                 android:layout_width="fill_parent" android:layout_height="wrap_content" /> -->
-                
-<!--             <RadioGroup android:layout_width="fill_parent" -->
-<!--                 android:layout_height="wrap_content" android:orientation="horizontal" -->
-<!--                 android:id="@+id/radio_transfer_required"> -->
-<!--                 <RadioButton android:checked="false"  -->
-<!--                     android:layout_marginLeft="30px"  -->
-<!--                     android:id="@+id/radio_transfer_yes" -->
-<!--                     android:text="@string/Yes" /> -->
-<!--                 <RadioButton android:checked="false"                      -->
-<!--                     android:layout_marginLeft="30px"  -->
-<!--                     android:id="@+id/radio_transfer_no" -->
-<!--                     android:text="@string/No" /> -->
-<!--             </RadioGroup>                     -->
-
-<!--             <TextView android:id="@+id/modifications_needed" -->
-<!--                 android:text="@string/modifications_needed"  -->
-<!--                 android:layout_marginLeft="15px"  -->
-<!--                 android:textColor="#ffffff" -->
-<!--                 android:visibility="visible" -->
-<!--                 android:layout_width="fill_parent" android:layout_height="wrap_content" />     -->
-                
-<!--             <RadioGroup android:layout_width="fill_parent" -->
-<!--                 android:layout_height="wrap_content" android:orientation="horizontal" -->
-<!--                 android:id="@+id/radio_modifications"> -->
-<!--                 <RadioButton android:checked="false"  -->
-<!--                     android:layout_marginLeft="30px"  -->
-<!--                     android:id="@+id/radio_modifications_yes" -->
-<!--                     android:text="@string/Yes" /> -->
-<!--                 <RadioButton android:checked="false"  -->
-<!--                     android:layout_marginLeft="30px"  -->
-<!--                     android:id="@+id/radio_modifications_no" -->
-<!--                     android:text="@string/No" /> -->
-<!--             </RadioGroup> -->
-
-                        
-<!--
-            <EditText android:id="@+id/give_name"
-                android:hint="@string/give_name"
-                android:inputType="textCapSentences"
-                android:visibility="invisible"
-                android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:layout_marginLeft="30px" android:layout_marginRight="30px" />                
-            </LinearLayout>
-            
--->    
+ 
             <TextView android:text="@string/save_update" android:textColor="#ffffff"
                 android:layout_width="fill_parent" android:layout_height="wrap_content"
                 android:textSize="20dp" />        
@@ -295,9 +177,7 @@
 					android:visibility="visible"
 					android:layout_marginLeft="20px" android:layout_marginRight="20px"
 					android:layout_width="fill_parent" android:layout_height="wrap_content" />	                    
-<!--  
-
--->                    
+                  
             </LinearLayout>
 
 </LinearLayout>

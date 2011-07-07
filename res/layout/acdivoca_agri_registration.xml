@@ -31,6 +31,19 @@
 				android:layout_marginLeft="20px" 
 				android:inputType="textCapWords"
 				android:layout_height="wrap_content" />
+								
+			<TextView android:text="@string/commune_section" android:textColor="#ffffff"
+				android:layout_width="fill_parent" 
+				android:layout_marginLeft="10px" 
+				android:layout_height="wrap_content" />
+			<Spinner android:id="@+id/commune_sectionSpinner" 
+				android:layout_marginLeft="20px" android:layout_marginRight="30px"
+				android:entries="@+array/commune_section_names"
+				android:layout_width="fill_parent" android:layout_height="wrap_content" />					
+ 
+ 			<TextView android:text="@string/locality_section"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
+				android:layout_marginLeft="10px" android:layout_height="wrap_content" />
  				
 			<EditText android:id="@+id/addressEdit"
 				android:hint="@string/address"
@@ -63,15 +76,6 @@
 				android:layout_marginLeft="20px" android:layout_marginRight="30px"
 				android:entries="@+array/health_center_names"
 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
-			
-			<TextView android:text="@string/commune" android:textColor="#ffffff"
-				android:layout_width="fill_parent" 
-				android:layout_marginLeft="10px" 
-				android:layout_height="wrap_content" />
-			<Spinner android:id="@+id/commune_sectionSpinner" 
-				android:layout_marginLeft="20px" android:layout_marginRight="30px"
-				android:entries="@+array/commune_section_names"
-				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
 			
 			
 			<TextView android:text="@string/distribution_post" android:textColor="#ffffff"
@@ -399,28 +403,6 @@
 					android:id="@+id/radio_no_participating_mchn"
 					android:text="@string/No" />
 			</RadioGroup>		
-			
-			
-			<TextView android:id="@+id/relative_participating_mchn"
-				android:text="@string/participating_bene"
-				android:layout_marginLeft="15px" 
-				android:textColor="#ffffff"
-				android:visibility="gone"
-				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
-				
-			<RadioGroup android:layout_width="fill_parent"
-				android:layout_height="wrap_content" android:orientation="horizontal"
-				android:visibility="gone"
-				android:id="@+id/radio_relative_participating_mchn">
-				<RadioButton android:checked="false" 
-					android:layout_marginLeft="30px" 
-					android:id="@+id/radio_yes_relative_participating_mchn"
-					android:text="@string/Yes" />
-				<RadioButton android:checked="false" 
-					android:layout_marginLeft="30px" 
-					android:id="@+id/radio_no_relative_participating_mchn"
-					android:text="@string/No" />
-			</RadioGroup>
 			
 			<!-- Give the relative's name -->
 

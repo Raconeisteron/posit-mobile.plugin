@@ -46,27 +46,28 @@
 
 	
 	<string name="general_info">Infòmasyon general</string>
-	<string name="mchn_info">Inf√≤masyon MCHN</string>
+	<string name="mchn_info">Infòmasyon MCHN</string>
  	<string name="save_info">Enregistr sezi</string>
-    <string name="name_section">Non Lokalite</string>
+    <string name="name_section">Non Benefisyè</string>
+    <string name="locality_section">Localite</string>    
     <string name="lastname">Siyati</string>
     <string name="firstname">Prenon</string>
-    <string name="commune">komin</string>
+    <string name="commune">Komin</string>
     <string name="commune_section">Seksyon kominal</string>
     <string name="address">Lokalite</string>	
 	
     <string name="sex">Seks</string>
     <string name="dob">Dat li fet</string>
-    <string name="dob_age">l‚ÄôAge</string>
+    <string name="dob_age">l\'Age</string>
     <string name="dob_age_hint">Age (si nom DN)</string>
     <string name="Male">Gason</string>
     <string name="Female">Fi</string>	
     
-    <string name="Number_of_people_in_home">kombyen moun ki gen nan kay la</string>
-    <string name="Beneficiary_Category">kategory</string>
-    <string name="Infant_Category">kategory</string>
-    <string name="Malnourished">Enfant Mal Nouri</string>
-    <string name="In_Prevention">En Prevention</string>
+    <string name="Number_of_people_in_home">Kombyen moun ki gen nan kay la</string>
+    <string name="Beneficiary_Category">Kategory</string>
+    <string name="Infant_Category">Kategory</string>
+    <string name="Malnourished">Enfant Mal Nouri (6-59 mwa)</string>
+    <string name="In_Prevention">En Prevention (6-23 mwa)</string>
     <string name="Mother_Category">Category manman</string>
     <string name="Expecting">Allaitante</string>
     <string name="Nursing">Enceinte</string>
@@ -74,7 +75,7 @@
     <string name="add_send">Voye SMS</string>
     
 <!--       MCHN Strings -->
-    <string name="mchn_title">Preciser l‚Äôinformation d‚Äôenregistrement MCHN se trouvant au dessous</string>
+    <string name="mchn_title">Preciser Infòmasyon d\'registrement MCHN se trouvant au dessous</string>
     <string name="relatives_section">Paran Benefisyè</string>
     <string name="responsible_if_child">Non responsab(si se timoun)</string>
     <string name="responsible_if_mother">Reprezentan(si se fanm)</string>
@@ -85,16 +86,18 @@
     <string name="distribution_post">Pos distribisyon</string>
 	<string name="status_change">Typ stati</string>
     
-    <string name="mchn_questions">keksyon</string>
-    <string name="mother_leader">eske ou se yon mere leader?</string>
+    <string name="mchn_questions">Keksyon</string>
+    <string name="mother_leader">Eske ou se yon mere leader?</string>
     <string name="visit_mother_leader">Eske yon mere leader te visitew?</string>
-    <string name="relative_participating_acdivoca"> eske gen moun nan fanmiw kin an pwogram agrikilty ACDI/VOCA?</string>
-    <string name="participating_acdivoca">eske ou jween nan pwogram agrikilti acdivoca?</string>
+<!--     <string name="relative_participating_acdivoca"> Eske gen moun nan fanmiw kin an pwogram agrikilty ACDI/VOCA?</string> -->
+	<string name="participating_beneficiary_agri">Participant Agri</string>
+	<string name="participating_beneficiary_mchn">Participant Mchn</string>
+    <string name="participating_acdivoca">Eske ou au lot moun nan fanmiw lap jween nan pwogram agrikilti ACDI/VOCA?</string>
     <string name="give_name">Siw reponn oui,Ekri non moun nan</string>
     <string name="Yes">Oui</string>
     <string name="No">Non</string>
-    <string name="participating_bene">Eske genyen lòt moun nan fanmiy ki nan pwogram acdivoca?</string>
-    <string name="participating_bene_same">Eske ou patisipe nan pwogram acdivoca?</string>
+<!--     <string name="participating_bene">Eske genyen lòt moun nan fanmiy ki nan pwogram sante ACDI/VOCA?</string> -->
+    <string name="participating_bene_same">Eske ou au lot moun nan fanmiw lap patisipe nan pwogram santé ACDI/VOCA?</string>
     
        
 <!--      Update View -->
@@ -105,13 +108,13 @@
     <string name="months_left_in_program">Mwa li rete</string>
     <string name="save_update">Enregistre mi a jou</string>
     <string name="save_button">Enregistre mi a jou</string>
-    <string name="update_questions">keksyon mi a jou</string>
-    <string name="beneficiary_present">eske benefisyè a vin pran mange?</string>
+    <string name="update_questions">Keksyon mi a jou</string>
+    <string name="beneficiary_present">Eske benefisyè a vin pran mange?</string>
     <string name="transfer_required">Eske benefisyè a dwe ale nan yon lot kategory?</string>
-    <string name="modifications_needed">eske benefisyè a dwe modifye</string>
+    <string name="modifications_needed">Eske benefisyè a dwe modifye</string>
     
 <!--     This is a new question for a button to replace the last two questions - 6/17/11 -->
-    <string name="change_in_status">eske statil dwe change?</string>
+    <string name="change_in_status">Eske statil dwe change?</string>
 
 <!--     Toast messages - 6/21/11 -->
 	<string name="toast_save_update">Enregistre saw fè a nan baze la</string>
@@ -132,7 +135,7 @@
     <string name="toast_superuser">Ou dwe yon itilizatè avanse pou ka fè travay sa.</string>
     <string name="toast_fillform_agricultural">rampli fòm nan pou moun agrikilti a.</string>
     <string name="toast_sent">Voye </string>
-    <string name="toast_messages"> mesag.</string>
+    <string name="toast_messages"> Mesag.</string>
     <string name="toast_deleted">Efase </string>
      
     
@@ -186,7 +189,7 @@
  	
  	
 <!--  	New string constants for agriculture registration form -->
-	<string name="amount_of_land">Ki Dimansyon Jaden an (Square meters)</string>
+	<string name="amount_of_land">Ki Dimansyon Jaden an (kawo)</string>
 	<string name="Ex:1over16"></string>
     <string name="seed_group">Ki semans li jween?</string>
     <string name="unit_of_measurement">Ki mezi ki itilize</string>
@@ -269,7 +272,7 @@
 	<string name="update_transfer_lectating">Transfert de: Enceinte à Allaitante</string>
 	<string name="update_transfer_prevention">Transfert de: Allaitante à Prevention</string>
 	<string name="update_transfer_location">Transfert du au changement de lieu</string>
-	<string name="update_edit_beneficiary">Regade encore</string>
+	<string name="update_edit_beneficiary">Changé infòmasyon de benefisyè</string>
 	<string name="update_transfer_abortion">L\'avortement</string>	
 	<string name="update_deceased">Decede</string>
 	<string name="update_fraud">Fraud</string>

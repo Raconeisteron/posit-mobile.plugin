@@ -52,7 +52,9 @@
 	<string name="general_info">General Information</string>
 	<string name="mchn_info">MCHN Information</string>
  	<string name="save_info">Save the registration</string>
-    <string name="name_section">Name and Address</string>
+    <string name="name_section">Beneficiary Name</string>
+    <string name="locality_section">Locality</string>
+    
     <string name="lastname">Last Name</string>
     <string name="firstname">First Name</string>
     <string name="commune">Commune</string>
@@ -69,8 +71,8 @@
     <string name="Number_of_people_in_home">Number of people in home</string>
     <string name="Beneficiary_Category">Beneficiary Category</string>
     <string name="Infant_Category">Infant Category</string>
-    <string name="Malnourished">Malnourished</string>
-    <string name="In_Prevention">In Prevention</string>
+    <string name="Malnourished">Malnourished (6-59 months)</string>
+    <string name="In_Prevention">In Prevention (6-23 months)</string>
     <string name="Mother_Category">Mother Category</string>
     <string name="Expecting">Expecting</string>
     <string name="Nursing">Nursing</string>
@@ -92,13 +94,15 @@
     <string name="mchn_questions">Questions</string>
     <string name="mother_leader">Are you a mother leader?</string>
     <string name="visit_mother_leader">Have you received a visit from a mother leader?</string>
-    <string name="relative_participating_acdivoca">Is someone in your family participating in ACDI/VOCA Agriculture program?</string>
-    <string name="participating_acdivoca">Are you receiving aid from ACDI/VOCA Agriculture Program?</string>
+<!--     <string name="relative_participating_acdivoca">Is someone in your family participating in ACDI/VOCA Agriculture program?</string> -->
+    <string name="participating_acdivoca">Are you or is someone in your home receiving aid from ACDI/VOCA Agriculture Program?</string>
+	<string name="participating_beneficiary_agri">Agri participant</string>
+	<string name="participating_beneficiary_mchn">Mchn participant</string>
     <string name="give_name">If so, give name</string>
     <string name="Yes">Yes</string>
     <string name="No">No</string>
-    <string name="participating_bene">Is someone in your family participating in ACDI/VOCA Beneficiary program?</string>
-    <string name="participating_bene_same">Are you participating in ACDI/VOCA Beneficiary Program?</string>
+<!--     <string name="participating_bene">Is someone in your family participating in ACDI/VOCA Beneficiary program?</string> -->
+    <string name="participating_bene_same">Are you or is someone in your home participating in ACDI/VOCA Health Program?</string>
     
     
    
@@ -196,7 +200,7 @@
  	
  	
  	<!-- New string constants for agriculture registration form -->
-	<string name="amount_of_land">Amount of Land (square meters))</string>
+	<string name="amount_of_land">Amount of Land (carreau))</string>
 	<string name="Ex:1over16"></string>
     <string name="seed_group">Seed Types</string>
     <string name="unit_of_measurement">Unit of Measurement</string>
@@ -272,7 +276,7 @@
 	<string name="update_transfer_lectating">Transfer from pregnant to lactating</string>
 	<string name="update_transfer_prevention">Transfer from lactating to preventionn</string>
 	<string name="update_transfer_location">Transfer due to location change</string>
-	<string name="update_edit_beneficiary">Revise beneficiary details</string>
+	<string name="update_edit_beneficiary">Changed beneficiary data</string>
 	<string name="update_transfer_abortion">Abortion</string>
 	<string name="update_deceased">Deceased</string>
 	<string name="update_fraud">Fraud</string>

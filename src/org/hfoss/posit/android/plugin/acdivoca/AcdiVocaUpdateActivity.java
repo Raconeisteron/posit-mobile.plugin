@@ -230,7 +230,7 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     	// Listen for text changes in edit texts and set the isEdited flag
     	((EditText)findViewById(R.id.firstnameEdit)).addTextChangedListener(this);
     	((EditText)findViewById(R.id.lastnameEdit)).addTextChangedListener(this);
-    	((EditText)findViewById(R.id.monthsInProgramEdit)).addTextChangedListener(this);
+//    	((EditText)findViewById(R.id.monthsInProgramEdit)).addTextChangedListener(this);
 
     	// Initialize the DatePicker and listen for changes
     	Calendar calendar = Calendar.getInstance();
@@ -340,9 +340,9 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     		value = eText.getText().toString();
     		result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
 
-    		eText = (EditText)findViewById(R.id.monthsInProgramEdit);
-    		value = eText.getText().toString();
-    		result.put(AcdiVocaDbHelper.FINDS_MONTHS_REMAINING, value);
+//    		eText = (EditText)findViewById(R.id.monthsInProgramEdit);
+//    		value = eText.getText().toString();
+//    		result.put(AcdiVocaDbHelper.FINDS_MONTHS_REMAINING, value);
 
     		//value = mMonth + "/" + mDay + "/" + mYear;
     		DatePicker picker = ((DatePicker)findViewById(R.id.datepicker));
@@ -450,8 +450,8 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
         	e.printStackTrace();
         }
 
-        eText = (EditText)findViewById(R.id.monthsInProgramEdit);
-        eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_MONTHS_REMAINING));
+//        eText = (EditText)findViewById(R.id.monthsInProgramEdit);
+//        eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_MONTHS_REMAINING));
 
         
         // Chris - 6/9/11 - Filling the form            

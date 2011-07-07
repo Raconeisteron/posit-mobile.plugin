@@ -253,8 +253,8 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		 
 		 ((RadioButton)findViewById(R.id.radio_yes_participating_mchn)).setOnClickListener(this);
 		 ((RadioButton)findViewById(R.id.radio_no_participating_mchn)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.radio_yes_relative_participating_mchn)).setOnClickListener(this);
-		 ((RadioButton)findViewById(R.id.radio_no_relative_participating_mchn)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.radio_yes_relative_participating_mchn)).setOnClickListener(this);
+//		 ((RadioButton)findViewById(R.id.radio_no_relative_participating_mchn)).setOnClickListener(this);
 		 
 		// Listen for clicks on check boxes
 		 ((CheckBox)findViewById(R.id.farmerCheckBox)).setOnClickListener(this);
@@ -471,9 +471,9 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 				tv.setText(": " 
 						+  values.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE));
 
-				tv = ((TextView) findViewById(R.id.participating_relative_mchn_label));
-				tv.setText(": " 
-						+  values.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE));
+//				tv = ((TextView) findViewById(R.id.participating_relative_mchn_label));
+//				tv.setText(": " 
+//						+  values.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE));
 				
 				tv = ((TextView) findViewById(R.id.participating_relative_mchn_name));
 				tv.setText(": " 
@@ -545,15 +545,15 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		}
 		result.put(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE, bene); 
 		
-		bene = "";
-		beneRB = (RadioButton)findViewById(R.id.radio_yes_relative_participating_mchn);
-		if (beneRB != null && beneRB.isChecked()) 
-			bene = AcdiVocaDbHelper.FINDS_YES;
-		beneRB = (RadioButton)findViewById(R.id.radio_no_relative_participating_mchn);
-		if (beneRB != null && beneRB.isChecked()) {
-			bene = AcdiVocaDbHelper.FINDS_NO;
-		}
-		result.put(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE, bene); 
+//		bene = "";
+//		beneRB = (RadioButton)findViewById(R.id.radio_yes_relative_participating_mchn);
+//		if (beneRB != null && beneRB.isChecked()) 
+//			bene = AcdiVocaDbHelper.FINDS_YES;
+//		beneRB = (RadioButton)findViewById(R.id.radio_no_relative_participating_mchn);
+//		if (beneRB != null && beneRB.isChecked()) {
+//			bene = AcdiVocaDbHelper.FINDS_NO;
+//		}
+//		result.put(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE, bene); 
 		
 		//Add beneficiary checkbox values
 		CheckBox beneCB = (CheckBox)findViewById(R.id.farmerCheckBox);
@@ -796,16 +796,16 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		}
 		result.put(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE, acdiMchn);   
 
-		String acdiMchnRelative = "";
-		RadioButton acdiMchnRelativeRB = (RadioButton)findViewById(R.id.radio_yes_relative_participating_mchn);
-		if (acdiMchnRelativeRB != null && acdiMchnRelativeRB.isChecked()) {
-			acdiMchnRelative = AcdiVocaDbHelper.FINDS_YES;
-		}
-		acdiMchnRelativeRB = (RadioButton)findViewById(R.id.radio_no_relative_participating_mchn);
-		if (acdiMchnRelativeRB != null && acdiMchnRelativeRB.isChecked()) {
-			acdiMchnRelative = AcdiVocaDbHelper.FINDS_NO;
-		}
-		result.put(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE, acdiMchnRelative);
+//		String acdiMchnRelative = "";
+//		RadioButton acdiMchnRelativeRB = (RadioButton)findViewById(R.id.radio_yes_relative_participating_mchn);
+//		if (acdiMchnRelativeRB != null && acdiMchnRelativeRB.isChecked()) {
+//			acdiMchnRelative = AcdiVocaDbHelper.FINDS_YES;
+//		}
+//		acdiMchnRelativeRB = (RadioButton)findViewById(R.id.radio_no_relative_participating_mchn);
+//		if (acdiMchnRelativeRB != null && acdiMchnRelativeRB.isChecked()) {
+//			acdiMchnRelative = AcdiVocaDbHelper.FINDS_NO;
+//		}
+//		result.put(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE, acdiMchnRelative);
 		
 		eText = (EditText) findViewById(R.id.give_name);
 		if (eText != null) {
@@ -826,168 +826,142 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		if (contentValues != null){
 			setContentView(R.layout.acdivoca_agri_registration);
 			initializeListeners();
-			
+
 			EditText eText = (EditText) findViewById(R.id.lastnameEdit);
 			String txt = contentValues.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME);
+
 			if (txt != null){
 				eText.setText(txt);
+			}
 
-				eText = (EditText) findViewById(R.id.firstnameEdit);
-				eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
-				Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+			eText = (EditText) findViewById(R.id.firstnameEdit);
+			eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+			Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
 
-				eText = (EditText)findViewById(R.id.addressEdit);
-				eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS));
+			eText = (EditText)findViewById(R.id.addressEdit);
+			eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_ADDRESS));
 
-				eText = (EditText)findViewById(R.id.amount_of_land);
-				eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_LAND_AMOUNT));
+			eText = (EditText)findViewById(R.id.amount_of_land);
+			eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_LAND_AMOUNT));
 
-				eText = (EditText)findViewById(R.id.inhomeEdit);
-				eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
+			eText = (EditText)findViewById(R.id.inhomeEdit);
+			eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE));
 
-				//		eText = (EditText)findViewById(R.id.quantityEdit);
-				//		eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEED_AMOUNT));
-
-				//		DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
-				//		String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
-				//		Log.i(TAG,"display DOB = " + date);
-				//		dp.init(Integer.parseInt(date.substring(date.lastIndexOf("/")+1)), 
-				//				Integer.parseInt(date.substring(0,date.indexOf("/"))),
-				//				Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/"))),
-				//				this);
-
-				DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
-				String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
-				Log.i(TAG,"display DOB = " + date);
-				int yr=0, mon=0, day=0;
-				day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
-				yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
-				mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
-				Log.i(TAG, yr + "/" + mon + "/" + day);
-				//		mon = mon + 1;  // Months are number 0..11
-				//		day = day - 1;
-				try {
-					if (date != null) {
-						Log.i(TAG,"display DOB = " + date);
-						dp.init(yr, mon, day, this);
-					}
-				} catch (IllegalArgumentException e) {
-					Log.e(TAG, "Illegal Argument, probably month == 12 in " + date);
-					e.printStackTrace();
+			DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
+			String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+			Log.i(TAG,"display DOB = " + date);
+			int yr=0, mon=0, day=0;
+			day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
+			yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
+			mon = Integer.parseInt(date.substring(date.indexOf("/")+1,date.lastIndexOf("/")));
+			Log.i(TAG, yr + "/" + mon + "/" + day);
+			//		mon = mon + 1;  // Months are number 0..11
+			//		day = day - 1;
+			try {
+				if (date != null) {
+					Log.i(TAG,"display DOB = " + date);
+					dp.init(yr, mon, day, this);
 				}
+			} catch (IllegalArgumentException e) {
+				Log.e(TAG, "Illegal Argument, probably month == 12 in " + date);
+				e.printStackTrace();
+			}
 
-				RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
-				Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
-				if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_FEMALE))
-					sexRB.setChecked(true);
-				sexRB = (RadioButton)findViewById(R.id.maleRadio);
-				if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_MALE))
-					sexRB.setChecked(true);
+			RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
+			Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
+			if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_FEMALE))
+				sexRB.setChecked(true);
+			sexRB = (RadioButton)findViewById(R.id.maleRadio);
+			if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_MALE))
+				sexRB.setChecked(true);
 
-				RadioButton beneRB = (RadioButton)findViewById(R.id.radio_yes_relative_participating_mchn);
-				String val = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE);
-				if (val != null){
-					if (val.equals(AcdiVocaDbHelper.FINDS_YES))
-						beneRB.setChecked(true);
-					beneRB = (RadioButton)findViewById(R.id.radio_no_relative_participating_mchn);
-					if (val.equals(AcdiVocaDbHelper.FINDS_NO))
-						beneRB.setChecked(true);
+			RadioButton beneRB = null; // = (RadioButton)findViewById(R.id.radio_yes_relative_participating_mchn);
+			beneRB = (RadioButton)findViewById(R.id.radio_yes_participating_mchn);
 
-					beneRB = (RadioButton)findViewById(R.id.radio_yes_participating_mchn);
-					if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE).equals(AcdiVocaDbHelper.FINDS_YES))
-						beneRB.setChecked(true);
-					beneRB = (RadioButton)findViewById(R.id.radio_no_participating_mchn);
-					if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE).equals(AcdiVocaDbHelper.FINDS_NO))
-						beneRB.setChecked(true);
+			beneRB = (RadioButton)findViewById(R.id.radio_yes_participating_mchn);
+			if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE).equals(AcdiVocaDbHelper.FINDS_YES))
+				beneRB.setChecked(true);
+			beneRB = (RadioButton)findViewById(R.id.radio_no_participating_mchn);
+			if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE).equals(AcdiVocaDbHelper.FINDS_NO))
+				beneRB.setChecked(true);
 
-					// HANDLE CHECKBOX NEEDS TO FIND A BETTER WAY
-					CheckBox aCheckBox = (CheckBox)findViewById(R.id.farmerCheckBox);
-					Log.i(TAG, "isFarmer = " +  contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FARMER).toString());
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FARMER) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.musoCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_MUSO) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.rancherCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_RANCHER) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.storeOwnerCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_STOREOWN) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.fisherCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FISHER) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.artisanCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_ARTISAN) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.otherCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_OTHER) == 1);
+			// HANDLE CHECKBOX NEEDS TO FIND A BETTER WAY
+			CheckBox aCheckBox = (CheckBox)findViewById(R.id.farmerCheckBox);
+			Log.i(TAG, "isFarmer = " +  contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FARMER).toString());
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FARMER) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.musoCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_MUSO) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.rancherCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_RANCHER) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.storeOwnerCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_STOREOWN) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.fisherCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_FISHER) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.artisanCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_ARTISAN) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.otherCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_IS_OTHER) == 1);
 
-					aCheckBox = (CheckBox)findViewById(R.id.barreAMinesCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_BARREAMINES) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.vegeCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_VEGE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.cerealCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_CEREAL) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.tuberCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TUBER) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.treeCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TREE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.coffeeCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_COFFEE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.houeCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_HOUE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.piocheCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_PIOCHE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.brouetteCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_BROUETTE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.machetteCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_MACHETTE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.serpetteCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_SERPETTE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.pelleCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_PELLE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.barreAMinesCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_BARREAMINES) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.vegeCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_VEGE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.cerealCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_CEREAL) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.tuberCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TUBER) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.treeCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TREE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.coffeeCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_COFFEE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.houeCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_HOUE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.piocheCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_PIOCHE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.brouetteCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_BROUETTE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.machetteCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_MACHETTE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.serpetteCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_SERPETTE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.pelleCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_PELLE) == 1);
 
-					aCheckBox = (CheckBox)findViewById(R.id.faoCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_FAO) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.saveCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_SAVE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.croseCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_CROSE) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.planCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_PLAN) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.mardnrCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_MARDNR) == 1);
-					aCheckBox = (CheckBox)findViewById(R.id.otherPartnerCheckBox);
-					aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_OTHER) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.faoCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_FAO) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.saveCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_SAVE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.croseCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_CROSE) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.planCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_PLAN) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.mardnrCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_MARDNR) == 1);
+			aCheckBox = (CheckBox)findViewById(R.id.otherPartnerCheckBox);
+			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_PARTNER_OTHER) == 1);
 
-					Log.i(TAG, "display Beneficiary Catagory=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY));
+			Log.i(TAG, "display Beneficiary Catagory=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY));
 
-					Spinner spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-					AcdiVocaFindActivity.setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_COMMUNE_SECTION);
-					
-					// Q: Are you participating in Mchn program?
-					String valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE);
-					Log.i(TAG, "acdiMchn=" + valueStr);
-					setRadiosFromString(valueStr,R.id.radio_yes_participating_mchn, R.id.radio_no_participating_mchn);
+			Spinner spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
+			AcdiVocaFindActivity.setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_COMMUNE_SECTION);
 
-					// Q: Is a relative participating in Mchn program?
-					
-					valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_BENE);
-					Log.i(TAG, "acdiAgriRel=" + valueStr);
-					setRadiosFromString(valueStr,R.id.radio_yes_relative_participating_mchn, R.id.radio_no_relative_participating_mchn);
-					
-					valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_RELATIVE_2);
-					Log.i(TAG, "Relative = " + valueStr);
+			// Q: Are you or a relative participating in Mchn program?
+			String valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE);
+			Log.i(TAG, "acdiMchn=" + valueStr);
+			setRadiosFromString(valueStr,R.id.radio_yes_participating_mchn, R.id.radio_no_participating_mchn);
 
-					
-					if (valueStr != null && !valueStr.equals("")) {
-						//((TextView) findViewById(R.id.participating_mchn)).setVisibility(View.VISIBLE);
-						((EditText) findViewById(R.id.give_name)).setVisibility(View.VISIBLE);
-						((EditText) findViewById(R.id.give_name)).setText(valueStr);
-						
-						findViewById(R.id.radio_relative_participating_mchn).setVisibility(View.VISIBLE);
-						((RadioButton) findViewById(R.id.radio_yes_relative_participating_mchn)).setVisibility(View.VISIBLE);
-						((RadioButton) findViewById(R.id.radio_no_relative_participating_mchn)).setVisibility(View.VISIBLE);
-					}
-				}
+			// Get relative's or self's name
+			valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_RELATIVE_2);
+			Log.i(TAG, "Relative = " + valueStr);
+
+			if (valueStr != null && !valueStr.equals("")) {
+				//((TextView) findViewById(R.id.participating_mchn)).setVisibility(View.VISIBLE);
+				((EditText) findViewById(R.id.give_name)).setVisibility(View.VISIBLE);
+				((EditText) findViewById(R.id.give_name)).setText(valueStr);
 			}
 		}
 	}
+
 	
 	/**
 	 * Helper method to set a set of radio buttons given a "YES" or "No" value.
@@ -1053,53 +1027,22 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 			mSaveButton.setEnabled(true);	
 		}
 		
-		// Are you participating in Mchb?
-		// If no, ask whether relative is participating.
+		// Are you or a family member participating in Mchn?
+		// If no, do nothing
 		
 		if (id == R.id.radio_no_participating_mchn){
-			Log.i(TAG, "Clicked no on MCHN");
-			findViewById(R.id.relative_participating_mchn).setVisibility(View.VISIBLE);
-			findViewById(R.id.radio_relative_participating_mchn).setVisibility(View.VISIBLE);
-		}
+			Log.i(TAG, "Clicked no on MCHN or relative");
+			findViewById(R.id.give_name).setVisibility(View.GONE);
+			findViewById(R.id.give_name).setEnabled(false);			}
 		
-//		// If yes, make the relative part invisible
+//		// If yes, get the name
 //		
 		if (id == R.id.radio_yes_participating_mchn){
-			Log.i(TAG, "Clicked yes on MCHN");
-			findViewById(R.id.relative_participating_mchn).setVisibility(View.GONE);
-			findViewById(R.id.radio_relative_participating_mchn).setVisibility(View.GONE);
-			RadioButton rb = (RadioButton)findViewById(R.id.radio_yes_relative_participating_mchn);
-			rb.setChecked(false);
+			Log.i(TAG, "Clicked yes on MCHN or relative");
+			findViewById(R.id.give_name).setVisibility(View.VISIBLE);
+			findViewById(R.id.give_name).setEnabled(true);	
 		}
 		
-		// Is a relative participating in Mchn?
-		// If no, don't show the text field
-		if (id == R.id.radio_no_relative_participating_mchn){
-			Log.i(TAG, "Clicked no_relative_participating_mchn");
-			findViewById(R.id.give_name).setVisibility(View.GONE);
-			findViewById(R.id.give_name).setEnabled(false);		}
-		
-		// If relative participating in Agri, get the name.
-		if (id == R.id.radio_yes_relative_participating_mchn){
-			Log.i(TAG, "Clicked yes_relative_participating_mchn");
-			findViewById(R.id.give_name).setVisibility(View.VISIBLE);
-			findViewById(R.id.give_name).setEnabled(true);
-		}		
-	
-
-		
-//		
-//		
-//		
-//		if (id == R.id.radio_no_bene_same){
-//			findViewById(R.id.participating_bene).setVisibility(View.VISIBLE);
-//			findViewById(R.id.radio_participating_bene).setVisibility(View.VISIBLE);
-//		}
-//		
-//		if (id == R.id.radio_yes_bene_same){
-//			findViewById(R.id.participating_bene).setVisibility(View.GONE);
-//			findViewById(R.id.radio_participating_bene).setVisibility(View.GONE);
-//		}
 		
 		// TODO:  Edit this case
 		if(v.getId()==R.id.saveToDbButton) {
