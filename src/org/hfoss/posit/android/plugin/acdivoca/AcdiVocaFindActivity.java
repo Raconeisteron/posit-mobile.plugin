@@ -216,8 +216,8 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		((RadioButton)findViewById(R.id.radio_yes_participating_agri)).setOnClickListener(this);
 		((RadioButton)findViewById(R.id.radio_no_participating_agri)).setOnClickListener(this);
 		//added Jun17
-		((RadioButton)findViewById(R.id.radio_yes_relative_participating_agri)).setOnClickListener(this);
-		((RadioButton)findViewById(R.id.radio_no_relative_participating_agri)).setOnClickListener(this);
+//		((RadioButton)findViewById(R.id.radio_yes_relative_participating_agri)).setOnClickListener(this);
+//		((RadioButton)findViewById(R.id.radio_no_relative_participating_agri)).setOnClickListener(this);
 		//added from agri
 		//		 ((RadioButton)findViewById(R.id.radio_yes_bene)).setOnClickListener(this);
 		//		 ((RadioButton)findViewById(R.id.radio_no_bene)).setOnClickListener(this);
@@ -428,15 +428,15 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 
 		//Boolean acdiAgriRelative = false;	
 		String acdiAgriRelative = "";
-		RadioButton acdiAgriRelativeRB = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
-		if (acdiAgriRelativeRB != null && acdiAgriRelativeRB.isChecked()) {
-			acdiAgriRelative = AcdiVocaDbHelper.FINDS_YES;
-		}
-		acdiAgriRelativeRB = (RadioButton)findViewById(R.id.radio_no_relative_participating_agri);
-		if (acdiAgriRelativeRB != null && acdiAgriRelativeRB.isChecked()) {
-			acdiAgriRelative = AcdiVocaDbHelper.FINDS_NO;
-		}
-		result.put(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI, acdiAgriRelative);
+		RadioButton acdiAgriRelativeRB = null; // (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
+//		if (acdiAgriRelativeRB != null && acdiAgriRelativeRB.isChecked()) {
+//			acdiAgriRelative = AcdiVocaDbHelper.FINDS_YES;
+//		}
+//		acdiAgriRelativeRB = (RadioButton)findViewById(R.id.radio_no_relative_participating_agri);
+//		if (acdiAgriRelativeRB != null && acdiAgriRelativeRB.isChecked()) {
+//			acdiAgriRelative = AcdiVocaDbHelper.FINDS_NO;
+//		}
+//		result.put(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI, acdiAgriRelative);
 		
 		eText = (EditText) findViewById(R.id.give_name);
 		if (eText != null) {
@@ -530,9 +530,9 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				tv.setText(": " 
 						+  values.getAsString(AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI));
 
-				tv = ((TextView) findViewById(R.id.participating_relative_label));
-				tv.setText(": " 
-						+  values.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI));
+//				tv = ((TextView) findViewById(R.id.participating_relative_label));
+//				tv.setText(": " 
+//						+  values.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI));
 				
 				tv = ((TextView) findViewById(R.id.participating_relative_name));
 				tv.setText(": " 
@@ -661,12 +661,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			Log.i(TAG, "acdiAgri=" + valueStr);
 			setRadiosFromString(valueStr,R.id.radio_yes_participating_agri, R.id.radio_no_participating_agri);
 
-			// Q: Is a relative participating in Agri program?
-			
-			valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_RELATIVE_AGRI);
-			Log.i(TAG, "acdiAgriRel=" + valueStr);
-			setRadiosFromString(valueStr,R.id.radio_yes_relative_participating_agri, R.id.radio_no_relative_participating_agri);
-			
+			// Get self or relative's name
 			valueStr = contentValues.getAsString(AcdiVocaDbHelper.FINDS_RELATIVE_2);
 			Log.i(TAG, "Relative = " + valueStr);
 			
@@ -674,10 +669,6 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 				//findViewById(R.id.radio_relative_participating_agri).setVisibility(View.VISIBLE)
 				((EditText) findViewById(R.id.give_name)).setVisibility(View.VISIBLE);
 				((EditText) findViewById(R.id.give_name)).setText(valueStr);
-
-				findViewById(R.id.radio_relative_participating_agri).setVisibility(View.VISIBLE);
-				((RadioButton) findViewById(R.id.radio_yes_relative_participating_agri)).setVisibility(View.VISIBLE);
-				((RadioButton) findViewById(R.id.radio_no_relative_participating_agri)).setVisibility(View.VISIBLE);
 			}
 			
 			// Disable Save button until form is edited
@@ -748,48 +739,32 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 			mSaveButton.setEnabled(true);	
 		}
 		
-		// Are you participating in Agri?
-		// If no, ask whether relative is participating.
+		// Are you or a relative participating in Agri?
+		// If no, do nothing
 		
 		if (id == R.id.radio_no_participating_agri){
-			Log.i(TAG, "Clicked no_acdivoca");
-			findViewById(R.id.relative_participating_agri).setVisibility(View.VISIBLE);
-			findViewById(R.id.radio_relative_participating_agri).setVisibility(View.VISIBLE);
-		}
-		
-//		// If yes, get Agri data including communal section, seeds, tools, etc..
-//		
-		if (id == R.id.radio_yes_participating_agri){
-			Log.i(TAG, "Clicked yes_acdivoca");
-			findViewById(R.id.relative_participating_agri).setVisibility(View.GONE);
-			findViewById(R.id.radio_relative_participating_agri).setVisibility(View.GONE);
-			RadioButton rb = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
-			rb.setChecked(false);
-		}
-		
-		// Is a relative participating in Agri?
-		// If no, hide the Agri form 
-		if (id == R.id.radio_no_relative_participating_agri){
-			Log.i(TAG, "Clicked no_relative_participating_agri");
+			Log.i(TAG, "Clicked no on you or relative participating relative");
 			findViewById(R.id.give_name).setVisibility(View.GONE);
 			findViewById(R.id.give_name).setEnabled(false);		}
 		
-		// If relative participating in Agri, get the name.
-		if (id == R.id.radio_yes_relative_participating_agri){
+//		// If yes, get name.
+//		
+		if (id == R.id.radio_yes_participating_agri){
 			Log.i(TAG, "Clicked yes_relative_participating_agri");
 			findViewById(R.id.give_name).setVisibility(View.VISIBLE);
 			findViewById(R.id.give_name).setEnabled(true);
-		}		
+		}
+		
 		
 		if (id == R.id.expectingRadio || id == R.id.nursingRadio) {
 			findViewById(R.id.relatives).setVisibility(View.VISIBLE);
 			findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.VISIBLE);
-			findViewById(R.id.responsibleIfChildEdit).setVisibility(View.INVISIBLE);
+			findViewById(R.id.responsibleIfChildEdit).setVisibility(View.GONE);
 		} 
 		if (id == R.id.malnourishedRadio || id == R.id.inpreventionRadio) {
 			findViewById(R.id.relatives).setVisibility(View.VISIBLE);		
 			findViewById(R.id.responsibleIfChildEdit).setVisibility(View.VISIBLE);
-			findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.INVISIBLE);
+			findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.GONE);
 		}
 		if(v.getId()==R.id.saveToDbButton) {
 			boolean result = false;
@@ -815,7 +790,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //					data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BOTH_DOSSIER);
 //				
 				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
-				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
+//				RadioButton agri = (RadioButton)findViewById(R.id.radio_yes_relative_participating_agri);
 				Log.i(TAG, "Save to Db is " + result);
 			}
 			if (result){

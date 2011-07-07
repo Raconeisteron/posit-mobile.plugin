@@ -79,13 +79,14 @@
 						android:layout_marginLeft="15px" 
 						android:textSize="15dp" android:layout_height="wrap_content" />
 						
-					<TextView android:id="@+id/relative_participating_agri"
-						android:text="@string/relative_participating_acdivoca"
-						android:textColor="#ffffff"
-						android:visibility="visible" android:layout_width="fill_parent"
-						android:layout_height="wrap_content" />
+<!-- 					<TextView android:id="@+id/relative_participating_agri" -->
+<!-- 						android:text="@string/relative_participating_acdivoca" -->
+<!-- 						android:textColor="#ffffff" -->
+<!-- 						android:visibility="visible" android:layout_width="fill_parent" -->
+<!-- 						android:layout_height="wrap_content" /> -->
 
 					<TextView android:id="@+id/participating_relative_label"
+						android:text="@string/participating_beneficiary_agri"
 						android:textColor="#ffffff" android:layout_width="fill_parent"
 						android:layout_marginLeft="15px" 
 						android:textSize="15dp" android:layout_height="wrap_content" />

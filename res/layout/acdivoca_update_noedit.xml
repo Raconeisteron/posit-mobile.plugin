@@ -61,12 +61,12 @@
                 android:layout_height="wrap_content" />
                 
             
-            <TextView android:id="@+id/monthsInProgramLabel" 
-            	android:text="@string/months_left_in_program"
-                android:textSize="14dp"
-                android:layout_marginLeft="20px"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />        
+<!--             <TextView android:id="@+id/monthsInProgramLabel"  -->
+<!--             	android:text="@string/months_left_in_program" -->
+<!--                 android:textSize="14dp" -->
+<!--                 android:layout_marginLeft="20px" -->
+<!--                 android:layout_width="fill_parent" -->
+<!--                 android:layout_height="wrap_content" />         -->
 
             <TextView android:text="@string/update_questions"
                 android:layout_marginLeft="0px"

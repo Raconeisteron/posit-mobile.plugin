@@ -20,7 +20,6 @@
 				android:layout_width="fill_parent" android:visibility="gone"
 				android:layout_height="wrap_content" android:textSize="20dp" />
 
-
 			<TextView android:text="@string/general_info"
 				android:textColor="#ffffff" android:layout_width="fill_parent"
 				android:layout_height="wrap_content" android:textSize="20dp" />
@@ -38,6 +37,38 @@
 				android:layout_width="fill_parent" android:layout_marginRight="30px"
 				android:layout_marginLeft="20px" android:inputType="textCapWords"
 				android:layout_height="wrap_content" />
+				
+				
+				<TextView android:text="@string/mchn_title"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
+					android:visibility="gone" android:id="@+id/mchn_title"
+					android:focusable="true" android:layout_marginLeft="10px"
+					android:layout_height="wrap_content" />
+
+				<TextView android:text="@string/health_center"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
+					android:visibility="gone" android:layout_marginLeft="10px"
+					android:layout_height="wrap_content" />
+
+				<Spinner android:id="@+id/healthcenterSpinner"
+					android:layout_marginLeft="30px" android:layout_marginRight="30px"
+					android:entries="@+array/distribution_point_names"
+					android:layout_width="fill_parent" android:visibility="gone"
+					android:layout_height="wrap_content" />
+
+				<TextView android:text="@string/distribution_post"
+					android:textColor="#ffffff" android:layout_width="fill_parent"
+					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
+
+				<Spinner android:id="@+id/distributionSpinner"
+					android:layout_marginLeft="30px" android:layout_marginRight="30px"
+					android:entries="@+array/distribution_point_names"
+					android:layout_width="fill_parent" android:layout_height="wrap_content" />				
+
+			<TextView android:text="@string/locality_section"
+				android:textColor="#ffffff" android:layout_width="fill_parent"
+				android:layout_marginLeft="10px" android:layout_height="wrap_content" />
+
 
 			<EditText android:id="@+id/addressEdit" android:hint="@string/address"
 				android:inputType="textCapWords" android:layout_width="fill_parent"
@@ -87,32 +118,6 @@
 				android:orientation="vertical" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" android:id="@+id/mchnPart">
 
-
-				<TextView android:text="@string/mchn_title"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:visibility="gone" android:id="@+id/mchn_title"
-					android:focusable="true" android:layout_marginLeft="10px"
-					android:layout_height="wrap_content" />
-
-				<TextView android:text="@string/health_center"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:visibility="gone" android:layout_marginLeft="10px"
-					android:layout_height="wrap_content" />
-
-				<Spinner android:id="@+id/healthcenterSpinner"
-					android:layout_marginLeft="30px" android:layout_marginRight="30px"
-					android:entries="@+array/distribution_point_names"
-					android:layout_width="fill_parent" android:visibility="gone"
-					android:layout_height="wrap_content" />
-
-				<TextView android:text="@string/distribution_post"
-					android:textColor="#ffffff" android:layout_width="fill_parent"
-					android:layout_marginLeft="10px" android:layout_height="wrap_content" />
-
-				<Spinner android:id="@+id/distributionSpinner"
-					android:layout_marginLeft="30px" android:layout_marginRight="30px"
-					android:entries="@+array/distribution_point_names"
-					android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
 				<TextView android:text="@string/Beneficiary_Category"
 					android:textColor="#ffffff" android:layout_marginLeft="10px"
@@ -228,7 +233,8 @@
 						android:text="@string/No" />
 				</RadioGroup>
 
-				<!-- Are you participating in Agri? -->
+				<!-- You or a relative participating in agri? -->
+				
 				<TextView android:id="@+id/participating_agri"
 					android:text="@string/participating_acdivoca"
 					android:layout_marginLeft="15px" android:textColor="#ffffff"
@@ -246,35 +252,13 @@
 						android:text="@string/No" />
 				</RadioGroup>
 
-				<!-- Relative participating in agri? -->
-
-				<TextView android:id="@+id/relative_participating_agri"
-					android:text="@string/relative_participating_acdivoca"
-					android:layout_marginLeft="15px" android:textColor="#ffffff"
-					android:visibility="gone" android:layout_width="fill_parent"
-					android:layout_height="wrap_content" />
-
-				<RadioGroup 
-					android:layout_width="fill_parent"
-					android:layout_height="wrap_content" android:orientation="horizontal"
-					android:visibility="gone" android:id="@+id/radio_relative_participating_agri">
-					
-					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px"
-						android:id="@+id/radio_yes_relative_participating_agri"
-						android:text="@string/Yes" />
-					<RadioButton android:checked="false"
-						android:layout_marginLeft="30px"
-						android:id="@+id/radio_no_relative_participating_agri"
-						android:text="@string/No" />
-				</RadioGroup>
 
 			</LinearLayout>
 
 			<!-- Give the relative's name -->
 
 			<EditText android:id="@+id/give_name" android:hint="@string/give_name"
-				android:inputType="textCapWords" android:visibility="invisible"
+				android:inputType="textCapWords" android:visibility="gone"
 				android:layout_width="fill_parent" android:layout_height="wrap_content"
 				android:layout_marginLeft="30px" android:layout_marginRight="30px" />
 
