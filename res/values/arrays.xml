@@ -129,9 +129,11 @@
 	<item>@string/update_transfer_prevention</item>
 	<item>@string/update_transfer_location</item>
 	<item>@string/update_transfer_abortion</item>
+	<item>@string/update_edit_beneficiary</item>
 	<item>@string/update_deceased</item>
 	<item>@string/update_fraud</item>
 	<item>@string/update_completed</item>
+	<item>@string/update_other</item>
 	</string-array>
 	
 	<!--    Arrays for managing distribution events -->

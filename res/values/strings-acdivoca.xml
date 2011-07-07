@@ -272,10 +272,13 @@
 	<string name="update_transfer_lectating">Transfer from pregnant to lactating</string>
 	<string name="update_transfer_prevention">Transfer from lactating to preventionn</string>
 	<string name="update_transfer_location">Transfer due to location change</string>
+	<string name="update_edit_beneficiary">Revise beneficiary details</string>
 	<string name="update_transfer_abortion">Abortion</string>
 	<string name="update_deceased">Deceased</string>
 	<string name="update_fraud">Fraud</string>
 	<string name="update_completed">Completed program</string>
+	<string name="update_other">Other</string>
+	
 	               
  
  	<string name="english">English</string>
