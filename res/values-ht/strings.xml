@@ -222,7 +222,7 @@
    	<string name="crose">CROSE</string>
    	<string name="plan">PLAN</string>
    	<string name="mardnr">MARDNR</string>
-   	<string name="other2">Autres</string>   	
+   	<string name="other2">Lot</string>   	
    	
 <!-- 	New update strings - 6/21/11 -->
    	<string name="beneficiary_information">Infomasyon Benefisyè</string> 
@@ -265,14 +265,17 @@
 	<string name="alert_dialog_cancel">Anile</string>
 	<string name="cancelLabel"> Anile </string>
 	
-	<string name="update_transfer">Transfere nan yon lòt kategori</string>
+	<string name="update_transfer">Transfert nan yon lòt kategori</string>
 	<string name="update_transfer_lectating">Transfert de: Enceinte à Allaitante</string>
 	<string name="update_transfer_prevention">Transfert de: Allaitante à Prevention</string>
 	<string name="update_transfer_location">Transfert du au changement de lieu</string>
+	<string name="update_edit_beneficiary">Regade encore</string>
 	<string name="update_transfer_abortion">L\'avortement</string>	
 	<string name="update_deceased">Decede</string>
 	<string name="update_fraud">Fraud</string>
 	<string name="update_completed">Cycle complet</string>
+	<string name="update_other">Lot</string>
+	
 	<string name="english">English</string>
 	<string name="french">French</string>
 	<string name="haitian">Creole haitien</string>
