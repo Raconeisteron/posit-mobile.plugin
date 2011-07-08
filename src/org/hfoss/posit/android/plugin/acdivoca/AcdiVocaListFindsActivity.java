@@ -231,7 +231,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		while (!c.isAfterLast()) {  
 			int status = c.getInt(c.getColumnIndex(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS));
 			if (status == AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT 
-					|| status == AcdiVocaDbHelper.MESSAGE_STATUS_PENDING)
+					|| status == AcdiVocaDbHelper.MESSAGE_STATUS_PENDING
+//					|| status == AcdiVocaDbHelper.MESSAGE_STATUS_SENT   // Temporary // to resend some sent msgs
+					);
 				++count;
 			try {
 				c.moveToNext();
@@ -669,14 +671,22 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 
 		switch (id) {
 		case SEND_MSGS_ALERT:
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mActivity);
+			final String phoneNumber = sp.getString(mActivity.getString(R.string.smsPhoneKey),"");
+
 			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.about2).setTitle(mAcdiVocaMsgs.size() + getString(R.string.send_dist_rep))
+					R.drawable.about2).setTitle(
+							"#: " + phoneNumber
+							+ " " + mAcdiVocaMsgs.size() 
+							+ " " + getString(R.string.send_dist_rep))
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {								
 								public void onClick(DialogInterface dialog,
 										int which) {
 									AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(mActivity);
 									mgr.sendMessages(mActivity, mAcdiVocaMsgs);
+									mSmsReport = "Sending to " + phoneNumber + " # : " + mAcdiVocaMsgs.size();
+									showDialog(SMS_REPORT);
 									//finish();
 								}
 							}).setNegativeButton(R.string.alert_dialog_cancel,

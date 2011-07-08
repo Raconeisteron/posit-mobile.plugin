@@ -591,8 +591,13 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 						}
 					}).create();
 		case SEND_DIST_REP:
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+			final String phoneNumber = sp.getString(mContext.getString(R.string.smsPhoneKey),"");
 			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.about2).setTitle(mAcdiVocaMsgs.size() + getString(R.string.send_dist_rep))
+					R.drawable.about2).setTitle(
+							"#: " + phoneNumber
+							+ " " + mAcdiVocaMsgs.size() 
+							+ " " + getString(R.string.send_dist_rep))
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {								
 								public void onClick(DialogInterface dialog,
@@ -600,8 +605,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 									AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance((Activity) mContext);
 									mgr.sendMessages(mContext, mAcdiVocaMsgs);
 									setDistributionEventStage(getString(R.string.select_distr_point));		
-
-									 mSmsReport = "Messages being sent: " + mAcdiVocaMsgs.size();
+									mSmsReport = "Sending to " + phoneNumber + " # : " + mAcdiVocaMsgs.size();
 									showDialog(SMS_REPORT);
 									//finish();
 								}
