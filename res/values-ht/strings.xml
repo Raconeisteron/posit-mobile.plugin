@@ -39,9 +39,9 @@
 	
 	<string name="list_beneficiary_label">Lis\nBenefisyè</string>
 	<string name="send_sms_label">Voye\nMesaj SMS</string>
-	<string name="add_beneficiary_label">Nouvo\nBenefisyè</string>
+	<string name="add_beneficiary_label">Nouvo Benefisyè\nSantè</string>
 	<string name="update_beneficiary_label">mete benefisyè a jou\n</string>
-	<string name="new_agri_beneficiary_label">Nouvo benefisyè\nAgricilti</string>
+	<string name="new_agri_beneficiary_label">Nouvo Benefisyè\nAgricilti</string>
 	<string name="update_beneficiary_edit_label">Edisyon</string>
 
 	
@@ -83,7 +83,7 @@
     <string name="husband_if_mother">Nom mari (Si se yon fanm)</string>
     
     <string name="health_center">Sant sante, Dispensè, ou pwen fiks</string>
-    <string name="distribution_post">Pos distribisyon</string>
+    <string name="distribution_post">Sant sante, Dispensè, ou pwen fiks</string>    
 	<string name="status_change">Typ stati</string>
     
     <string name="mchn_questions">Keksyon</string>

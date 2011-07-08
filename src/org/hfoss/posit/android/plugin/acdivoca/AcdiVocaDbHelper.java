@@ -234,6 +234,10 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_GUID = "guid";    // Globally unique ID
 
 
+	public static final String FINDS_ZERO = "0";
+	public static final String FINDS_ONE = "1";
+
+	
 	//added to handle the agriculture registration form
 	public static final String FINDS_LAND_AMOUNT = AttributeManager.FINDS_LAND_AMOUNT; // "amount_of_land";	
 //	public static final String FINDS_SEED_AMOUNT = "seed_amount";
@@ -1231,11 +1235,6 @@ public class AcdiVocaDbHelper {
 		default:
 			break;
 		}
-		// Construct the where clause
-//		String whereClause = MESSAGE_TABLE + "." + MESSAGE_STATUS + " = " + msg_status;
-//		if (bene_status != FINDS_STATUS_DONTCARE) 
-//		whereClause += " AND " + MESSAGE_TABLE + "." + MESSAGE_BENEFICIARY_ID + " = " + FINDS_TABLE + "." + FINDS_ID
-//		+ " AND " + FINDS_TABLE + "." + FINDS_STATUS + " = " + bene_status;
 		
 		String whereClause = "";
 		if (bene_status == FINDS_STATUS_DONTCARE) 
@@ -1281,6 +1280,7 @@ public class AcdiVocaDbHelper {
 					FINDS_STATUS + " = " + FINDS_STATUS_UPDATE 
 					+ " AND " 
 					+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT
+					//+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_SENT
 					+ " AND " 
 					+ FINDS_DISTRIBUTION_POST + "=" + "'" + distrCtr + "'" 
 					+ " AND "  
