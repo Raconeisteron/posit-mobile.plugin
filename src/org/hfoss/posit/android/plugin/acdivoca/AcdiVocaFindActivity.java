@@ -115,84 +115,87 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	}
 
 	/**
+	 * Methods to saved and restore state if the user hits home or times out or
+	 * hits the power button. 
+	 */
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+	Log.i(TAG, "onRestoreInstanceState");
+		mSavedStateValues = (ContentValues) savedInstanceState.get("savedstate");
+		isProbablyEdited = (boolean) savedInstanceState.getBoolean("isprobablyEdited");
+		this.displayContentInView(mSavedStateValues);
+		mSavedStateValues = null;
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		Log.i(TAG, "onSaveInstanceState");
+		mSavedStateValues = this.retrieveContentFromView();
+		outState.putParcelable("savedstate", mSavedStateValues);
+		outState.putBoolean("isprobablyEdited",this.isProbablyEdited);
+		super.onSaveInstanceState(outState);
+	}
+	
+	
+	/**
 	 * 
 	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume, isProbablyEdited= " + isProbablyEdited);
-		
+
+		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+
+
 		if (this.mSavedStateValues != null) {
 			Log.i(TAG, "onResume, restoring instance state ");
 			this.displayContentInView(mSavedStateValues);
 			mSavedStateValues = null;
-		}
+			initializeListeners();
+		} else {
 
-		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+			setContentView(R.layout.acdivoca_registration);  // Should be done after locale configuration
 
-		setContentView(R.layout.acdivoca_registration);  // Should be done after locale configuration
+			// Listen for clicks on radio buttons, edit texts, spinners, etc.
+			initializeListeners();
 
-//		mSaveButton = ((Button)findViewById(R.id.saveToDbButton));
-//		mSaveButton.setOnClickListener(this);
-
-		// Listen for clicks on radio buttons, edit texts, spinners, etc.
-		initializeListeners();
-
-		final Intent intent = getIntent();
-		mAction = intent.getAction();
-		if (mAction != null && mAction.equals(Intent.ACTION_EDIT)) {
-			int type = intent.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, 0);
-//			if (type == AcdiVocaDbHelper.FINDS_TYPE_MCHN){
-//				findViewById(R.id.participating_agri).setVisibility(View.GONE);
-//				findViewById(R.id.radio_participating_agri).setVisibility(View.GONE);
-//			}
-//			if (type == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
-//				findViewById(R.id.mchnPart).setVisibility(View.GONE);
-//				findViewById(R.id.radio_same_bene).setVisibility(View.GONE);
-//				findViewById(R.id.label_mchn).setVisibility(View.GONE);
-//			}
-//			if (type == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
-//				findViewById(R.id.mchnPart).setVisibility(View.VISIBLE);
-//				//				findViewById(R.id.agriPart).setVisibility(View.VISIBLE);
-//				findViewById(R.id.participating_agri).setVisibility(View.GONE);
-//				findViewById(R.id.radio_participating_agri).setVisibility(View.GONE);
-//				findViewById(R.id.participating_bene_same).setVisibility(View.GONE);
-//				findViewById(R.id.radio_same_bene).setVisibility(View.GONE);
-//			}
-
-			displayAsUneditable();
-			isProbablyEdited = false; // In EDIT mode, initialize after filling in data
-			mSaveButton.setEnabled(false);
-		}
-
-		if (mAction != null && mAction.equals(Intent.ACTION_INSERT)){
-			Log.i(TAG,"############################################");
-			Log.i(TAG,"you are now in insert");
-			if(intent.getExtras() != null){
+			// Is this an EDIT ?
+			final Intent intent = getIntent();
+			mAction = intent.getAction();
+			if (mAction != null && mAction.equals(Intent.ACTION_EDIT)) {
 				int type = intent.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, 0);
-//				if (type == AcdiVocaDbHelper.FINDS_TYPE_MCHN){
-//					//					findViewById(R.id.agriPart).setVisibility(View.GONE);
-//				}
-//				if (type == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
-//					findViewById(R.id.mchnPart).setVisibility(View.GONE);					
-//				}
-				String doing = intent.getStringExtra(AttributeManager.FINDS_RELATIVE_AGRI);
-				if (doing != null){
-					if (doing.equals(AcdiVocaDbHelper.FINDS_YES)){
-						findViewById(R.id.agri_rel).setVisibility(View.VISIBLE);
-						findViewById(R.id.participating_mchn).setVisibility(View.GONE);
-						findViewById(R.id.radio_participating_mchn).setVisibility(View.GONE);
+				displayAsUneditable();
+				isProbablyEdited = false; // In EDIT mode, initialize after filling in data
+				mSaveButton.setEnabled(false);
+			}
+
+			// Is this an INSERT?
+			if (mAction != null && mAction.equals(Intent.ACTION_INSERT)){
+				Log.i(TAG,"############################################");
+				Log.i(TAG,"you are now in insert");
+				if(intent.getExtras() != null){
+					int type = intent.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, 0);
+					String doing = intent.getStringExtra(AttributeManager.FINDS_RELATIVE_AGRI);
+					if (doing != null){
+						if (doing.equals(AcdiVocaDbHelper.FINDS_YES)){
+							findViewById(R.id.agri_rel).setVisibility(View.VISIBLE);
+							findViewById(R.id.participating_mchn).setVisibility(View.GONE);
+							findViewById(R.id.radio_participating_mchn).setVisibility(View.GONE);
+						}
 					}
-				}
-				doing = intent.getStringExtra(AttributeManager.FINDS_RELATIVE_BENE);
-				if (doing != null){
-					if (doing.equals(AcdiVocaDbHelper.FINDS_YES)){
-						findViewById(R.id.mchn_rel).setVisibility(View.VISIBLE);
-						findViewById(R.id.participating_agri).setVisibility(View.GONE);
-						findViewById(R.id.radio_participating_agri).setVisibility(View.GONE);
+					doing = intent.getStringExtra(AttributeManager.FINDS_RELATIVE_BENE);
+					if (doing != null){
+						if (doing.equals(AcdiVocaDbHelper.FINDS_YES)){
+							findViewById(R.id.mchn_rel).setVisibility(View.VISIBLE);
+							findViewById(R.id.participating_agri).setVisibility(View.GONE);
+							findViewById(R.id.radio_participating_agri).setVisibility(View.GONE);
+						}
 					}
 				}
 			}
+
 		}
 	}
 	
@@ -927,23 +930,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 //		}
 //		spinner.setSelection(k);
 //	}
-	
-@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-	Log.i(TAG, "onRestoreInstanceState");
-		mSavedStateValues = (ContentValues) savedInstanceState.get("savedstate");
-		this.displayContentInView(mSavedStateValues);
-		mSavedStateValues = null;
-		super.onRestoreInstanceState(savedInstanceState);
-	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		Log.i(TAG, "onSaveInstanceState");
-		mSavedStateValues = this.retrieveContentFromView();
-		outState.putParcelable("savedstate", mSavedStateValues);
-		super.onSaveInstanceState(outState);
-	}
 
 	//spinner function	
 	public static void setSpinner(Spinner spinner, ContentValues contentValues, String attribute){

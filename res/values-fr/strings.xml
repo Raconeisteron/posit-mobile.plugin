@@ -85,7 +85,7 @@
     <string name="husband_if_mother">Nom mari (Si femme)</string>
     
     <string name="health_center">Centre sante, Dispensaire, ou point fixe</string>
-    <string name="distribution_post">Poste distribution</string>
+    <string name="distribution_post">Centre sante, Dispensaire, ou point fixe</string>    
 	<string name="status_change">Type de status</string>
     
     <string name="mchn_questions">Question</string>
