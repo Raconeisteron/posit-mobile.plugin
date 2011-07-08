@@ -80,13 +80,15 @@ public class SmsService extends Service {
 	 */
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		mMessages = intent.getStringArrayListExtra("messages");
-		mPhoneNumber = intent.getStringExtra("phonenumber");
-		Log.i(TAG, "Started background service, phone = " + mPhoneNumber +
-				" nMessages = " + mMessages.size());
+		if (intent != null) {
+			mMessages = intent.getStringArrayListExtra("messages");
+			mPhoneNumber = intent.getStringExtra("phonenumber");
+			Log.i(TAG, "Started background service, phone = " + mPhoneNumber +
+					" nMessages = " + mMessages.size());
 
-		sendMessagesTask = new SendMessagesTask();
-		sendMessagesTask.execute(this);
+			sendMessagesTask = new SendMessagesTask();
+			sendMessagesTask.execute(this);
+		}
 		
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -221,10 +223,17 @@ public class SmsService extends Service {
 				mReceiver = new BroadcastReceiver() {
 					@Override
 					public synchronized void onReceive(Context arg0, Intent arg1) {
+						try {
 						handleSentMessage(this, getResultCode(), arg1, message);
 						--mBroadcastsOutstanding;
+						
 						unregisterReceiver(this);
 						Log.i(TAG, "Broadcasts outstanding  = " + mBroadcastsOutstanding);
+						} catch (Exception e) {
+							Log.e("BroadcastReceiver", "Error in onReceive for msgId " + arg1.getAction());
+							Log.e("BroadcastReceiver", e.getMessage());
+							e.printStackTrace();
+						}
 					}
 				};
 				context.registerReceiver(mReceiver, intentFilter);
