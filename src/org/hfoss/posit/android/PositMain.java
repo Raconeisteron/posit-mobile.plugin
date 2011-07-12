@@ -400,15 +400,13 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		case R.id.settings_menu_item:
 			startActivity(new Intent(this, SettingsActivity.class));
 			break;
-		case R.id.about_menu_item:
-			startActivity(new Intent(this, AboutActivity.class));
-			break;
 		case R.id.admin_menu_item:
 			startActivity(new Intent(this, AcdiVocaAdminActivity.class));
 			break;
-//		case R.id.projects_menu_item:
-//			startActivity(new Intent(this, ShowProjectsActivity.class));
-//			break;
+		case R.id.about_menu_item:
+			startActivity(new Intent(this, AboutActivity.class));
+			break;
+
 		}
 		
 		return true;

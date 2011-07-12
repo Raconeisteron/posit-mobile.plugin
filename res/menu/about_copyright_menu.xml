@@ -3,8 +3,8 @@
 		android:id="@+id/settings_menu_item" 
 		android:icon="@android:drawable/ic_menu_preferences"
 		android:title="@string/settings"></item>
-	<item 
-		android:id="@+id/goback_menu_item" 
-		android:title="@string/returnItem"
-		android:icon="@drawable/ic_menu_refresh"></item>
+<!-- 	<item  -->
+<!-- 		android:id="@+id/goback_menu_item"  -->
+<!-- 		android:title="@string/returnItem" -->
+<!-- 		android:icon="@drawable/ic_menu_refresh"></item> -->
 </menu>
