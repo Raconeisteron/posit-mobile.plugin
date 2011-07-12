@@ -38,10 +38,10 @@
 <!-- 	 Button Labels -->
 	
 	<string name="list_beneficiary_label">Lis\nBenefisyè</string>
-	<string name="send_sms_label">Voye\nMesaj SMS</string>
-	<string name="add_beneficiary_label">Nouvo Benefisyè\nSantè</string>
-	<string name="update_beneficiary_label">mete benefisyè a jou\n</string>
-	<string name="new_agri_beneficiary_label">Nouvo Benefisyè\nAgricilti</string>
+	<string name="send_sms_label">Voye\nMesaj\nSMS</string>
+	<string name="add_beneficiary_label">Nouvo\nBenefisyè\nSantè</string>
+	<string name="update_beneficiary_label">Mete\nBenefisyè\na Jou</string>
+	<string name="new_agri_beneficiary_label">Nouvo\nBenefisyè\nAgricilti</string>
 	<string name="update_beneficiary_edit_label">Edisyon</string>
 
 	
