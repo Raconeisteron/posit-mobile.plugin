@@ -42,10 +42,10 @@
 	<!--  Button Labels -->
 	
 	<string name="list_beneficiary_label">List\nBeneficiary</string>
-	<string name="send_sms_label">Send\nSMS Messages</string>
-	<string name="add_beneficiary_label">New\nBeneficiary</string>
-	<string name="update_beneficiary_label">Update\nBeneficiary</string>
-	<string name="new_agri_beneficiary_label">New\nAgriculture</string>
+	<string name="send_sms_label">Send\nText\nMessages</string>
+	<string name="add_beneficiary_label">New\nHealth\nBeneficiary</string>
+	<string name="update_beneficiary_label">Update\nHealth\nBeneficiary</string>
+	<string name="new_agri_beneficiary_label">New\nAgriculture\nBeneficiary</string>
 	<string name="update_beneficiary_edit_label">Edit</string>
 
 	

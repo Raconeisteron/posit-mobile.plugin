@@ -2,6 +2,7 @@
 	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
+		android:paddingTop="5dip"
 		android:gravity="center_horizontal|top"
 		android:orientation="vertical"
 		xmlns:android="http://schemas.android.com/apk/res/android">
@@ -9,30 +10,42 @@
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical" android:layout_width="wrap_content"
 		android:layout_height="fill_parent" 
-		android:layout_marginTop="100dp"
 		android:layout_gravity="center">
 
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:orientation="horizontal" android:layout_width="wrap_content"
+			android:orientation="horizontal" android:layout_width="match_parent" android:layout_marginTop="17dip"
 			android:layout_height="fill_parent" android:layout_gravity="center">
-			<Button android:id="@+id/listFindButton" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:text="List Find" />
-
-			<Button android:id="@+id/addFindButton" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:text="Add Find" />
-
+			<Button android:id="@+id/addFindButton" android:visibility="visible" 
+				android:background="@layout/custom_button"
+				android:text="Add Find" android:layout_width="110dip" 
+				android:layout_height="110dip" android:textColor="#000000" 
+				android:textSize="12dip" android:paddingTop="35dip" android:paddingBottom="28dip" 
+				android:layout_marginTop="22dip" android:gravity="center" 
+				android:layout_marginRight="8dip" android:layout_marginBottom="10dip"/>
+			<Button android:id="@+id/extraButton2" android:visibility="visible" 
+				android:background="@layout/custom_button"
+				android:text="Extra Button2" android:layout_width="110dip" 
+				android:layout_height="110dip" android:textColor="#000000" 
+				android:textSize="12dip" android:paddingTop="35dip" android:paddingBottom="28dip" 
+				android:layout_marginTop="22dip"  android:layout_marginBottom="10dip"/>
 		</LinearLayout>
+		
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:orientation="horizontal" android:layout_width="wrap_content"
 			android:layout_height="fill_parent" android:layout_gravity="center">
 
-			<Button android:id="@+id/extraButton" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:visibility="gone"
-				android:text="Extra Button" />
-
-			<Button android:id="@+id/extraButton2" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:visibility="visible"
-				android:text="Extra Button2" />
+			<Button android:id="@+id/extraButton" android:visibility="gone"
+				android:background="@layout/custom_button"
+				android:text="Extra Button" android:layout_width="110dip" 
+				android:layout_height="110dip" android:textSize="12dip" 
+				android:textColor="#000000" android:layout_marginRight="8dip"  
+				android:layout_marginBottom="10dip" android:paddingBottom="10dip"/>
+			<Button android:id="@+id/listFindButton" android:text="List Find" 
+				android:background="@layout/custom_button"
+				android:layout_width="110dip" android:layout_height="110dip" 
+				android:gravity="center" android:textSize="12dip" android:textColor="#000000" 
+				android:layout_marginBottom="30dip"/>
+				
 		</LinearLayout>
 
 	</LinearLayout>
