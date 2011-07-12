@@ -213,7 +213,8 @@
    	<string name="vegetables">Marecheres</string>
    	<string name="cereal">Cerealiere</string>
    	<string name="tuber">Tuberculess</string>  
-   	<string name="tree">Arbres</string>   	
+   	<string name="tree">Arbres</string>  
+    <string name="grafting">Greffage</string>    	
    	<string name="coffee">Cafe</string>     
    	<string name="hoe">Houe</string>     	
    	<string name="pick">Pioche</string>     	

@@ -222,7 +222,8 @@
        <string name="vegetables">Vegetables</string>
        <string name="cereal">Cereal</string>
        <string name="tuber">Tubers</string>  
-       <string name="tree">Tree</string>       
+       <string name="tree">Tree</string>    
+       <string name="grafting">Grafting</string>   
        <string name="coffee">Coffee</string>     
        <string name="hoe">Hoe</string>         
        <string name="pick">Pick</string>         

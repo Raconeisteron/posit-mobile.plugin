@@ -202,6 +202,7 @@ public class AttributeManager {
 	public static final String ABBREV_HAVE_PIOCHE = "pi";
 	public static final String ABBREV_HAVE_SERPETTE = "se";
 	public static final String ABBREV_HAVE_TREE = "tr";
+	public static final String ABBREV_HAVE_GRAFTING = "gr";
 	public static final String ABBREV_HAVE_VEG = "ve";
 	public static final String ABBREV_HAVE_TUBER = "tu";
 	public static final String ABBREV_HAVE_COFFEE = "co";
@@ -210,7 +211,7 @@ public class AttributeManager {
 	// questions regarding plant, seeds, and tools.
 	public static final String ABBREV_HASA = "hs";
 	public static final String[] hasAFields = {"ba", "br", "ce", "ho", "ma", 
-		"pe", "pi", "se", "tr", "ve", "tu", "co"};
+		"pe", "pi", "se", "tr", "ve", "tu", "co", "gr"};
 
 	// -------------- DATA VALUES
 	// These correspond to data values represented as Enums
@@ -338,6 +339,7 @@ public class AttributeManager {
 	public static final String FINDS_HAVE_PIOCHE = "have_pick";
 	public static final String FINDS_HAVE_SERPETTE = "have_pruning_knife";
 	public static final String FINDS_HAVE_TREE = "have_tree";
+	public static final String FINDS_HAVE_GRAFTING = "have_grafting";
 	public static final String FINDS_HAVE_TUBER = "have_tuber";
 	public static final String FINDS_HAVE_VEGE = "have_vege";
 	public static final String FINDS_HAVE_COFFEE = "have_coffee";
@@ -560,6 +562,7 @@ public class AttributeManager {
 		abbreviations.put(FINDS_BENEFICIARY_CATEGORY, ABBREV_CATEGORY );
 		abbreviations.put(FINDS_SEX, ABBREV_SEX);
 //		abbreviations.put(FINDS_HEALTH_CENTER, ABBREV_HEALTH_CENTER);
+		abbreviations.put(LONG_COMMUNE_SECTION, ABBREV_COMMUNE_SECTION);
 		abbreviations.put(FINDS_DISTRIBUTION_POST,ABBREV_DISTRIBUTION_POST);
 		abbreviations.put(MESSAGE_BENEFICIARY_ID, ABBREV_ID);
 		abbreviations.put(MESSAGE_CREATED_AT, ABBREV_CREATED_AT);
@@ -592,6 +595,7 @@ public class AttributeManager {
 		abbreviations.put(FINDS_HAVE_PIOCHE, ABBREV_HAVE_PIOCHE);
 		abbreviations.put(FINDS_HAVE_SERPETTE, ABBREV_HAVE_SERPETTE);
 		abbreviations.put(FINDS_HAVE_TREE, ABBREV_HAVE_TREE);
+		abbreviations.put(FINDS_HAVE_GRAFTING, ABBREV_HAVE_GRAFTING);
 		abbreviations.put(FINDS_HAVE_TUBER, ABBREV_HAVE_TUBER);
 		abbreviations.put(FINDS_HAVE_VEGE, ABBREV_HAVE_VEG);
 		abbreviations.put(FINDS_HAVE_COFFEE, ABBREV_HAVE_COFFEE);
@@ -669,6 +673,43 @@ public class AttributeManager {
 		abbreviations.put("Centre de sant� cinq", "h4" );
 		
 	}
+	
+	
+	/* *******************
+	 * 
+	 * 
+	 * 
+Centre Platon Cedre	HEAP-014
+Point Fixe Ka Tousen	HEAP-017
+Anse a Pitres	HEAP-020
+dispensaire Banane	HEAP-021
+	
+Pt fixe Calumette	HEBA-016
+Centre Belle-Ance	HEBA-017
+Dispensaire Mapou	HEBA006
+Pt fixe Baie d_orange	HEBA007
+Dispensaire marbriole	HEBA008
+Pt fixe Corail Lamothe	HEBA009
+Pt fixe Pichon	HEBA010
+Pt Fixe Bel-air	HEBA015
+	
+Labiche	HECF-005
+Centre St Joseph	HECF001
+Dispensaire Ste rose de lima	HECF002
+Dispensaire Boucan Belier	HECF003
+Dispensaire Ricot	HECF004
+Pt Fixe Macieux	HECF023
+Point Fixe de Mayette	HECF024
+Point Fixe de Amazone	HECF025
+	
+Dispensaire Grand Gosier	HEGG-018
+Dispensaire Bodarie	HEGG-019
+Pt fixe Boulay	HEGG-020
+	
+Centre Sacre Coeur	HETH-024
+Dispensaire de Savane Zombi	HETH026
+Dispensaire de Bleck/ Mar Mirande	HETH027
+***********************************************	 */
 	
 	/**
 	 * Server side method -- Converted to remove reference to server side enum

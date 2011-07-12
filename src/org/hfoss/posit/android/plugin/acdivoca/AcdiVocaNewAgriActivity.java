@@ -206,6 +206,7 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		 ((CheckBox)findViewById(R.id.cerealCheckBox)).setOnClickListener(this);
 		 ((CheckBox)findViewById(R.id.tuberCheckBox)).setOnClickListener(this);
 		 ((CheckBox)findViewById(R.id.treeCheckBox)).setOnClickListener(this);
+		 ((CheckBox)findViewById(R.id.graftingCheckBox)).setOnClickListener(this);
 		 ((CheckBox)findViewById(R.id.coffeeCheckBox)).setOnClickListener(this);
 		 
 		 ((CheckBox)findViewById(R.id.houeCheckBox)).setOnClickListener(this);
@@ -354,6 +355,8 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 					seed_cat += "Tuber, ";
 				if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TREE) == 1)
 					seed_cat += "Tree, ";
+				if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_GRAFTING) == 1)
+					seed_cat += "Grafting, ";
 				if (values.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_COFFEE) == 1)
 					seed_cat += "Coffee, ";
 
@@ -590,6 +593,14 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 		else
 			result.put(AcdiVocaDbHelper.FINDS_HAVE_TREE, AcdiVocaDbHelper.FINDS_ZERO);
 		
+		seedCB = (CheckBox)findViewById(R.id.graftingCheckBox);
+		if (seedCB.isChecked()){
+			seedCtg += Math.pow(2, 3);
+			result.put(AcdiVocaDbHelper.FINDS_HAVE_GRAFTING, AcdiVocaDbHelper.FINDS_ONE);
+		}
+		else
+			result.put(AcdiVocaDbHelper.FINDS_HAVE_GRAFTING, AcdiVocaDbHelper.FINDS_ZERO);
+
 		seedCB = (CheckBox)findViewById(R.id.coffeeCheckBox);
 		if (seedCB.isChecked()){
 			seedCtg += Math.pow(2, 4);
@@ -889,6 +900,8 @@ public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChang
 //			aCheckBox = (CheckBox)findViewById(R.id.treeCheckBox);
 //			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_TREE) == 1);
 			setCheckboxFromString(contentValues.getAsString(AcdiVocaDbHelper.FINDS_HAVE_TREE), (CheckBox)findViewById(R.id.treeCheckBox));
+
+			setCheckboxFromString(contentValues.getAsString(AcdiVocaDbHelper.FINDS_HAVE_GRAFTING), (CheckBox)findViewById(R.id.graftingCheckBox));
 			
 //			aCheckBox = (CheckBox)findViewById(R.id.coffeeCheckBox);
 //			aCheckBox.setChecked(contentValues.getAsInteger(AcdiVocaDbHelper.FINDS_HAVE_COFFEE) == 1);
