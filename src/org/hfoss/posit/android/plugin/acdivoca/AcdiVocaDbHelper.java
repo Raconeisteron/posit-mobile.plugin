@@ -254,6 +254,7 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_HAVE_CEREAL = AttributeManager.FINDS_HAVE_CEREAL;  //  "have_cereal";
 	public static final String FINDS_HAVE_TUBER = AttributeManager.FINDS_HAVE_TUBER;  // "have_tuber";
 	public static final String FINDS_HAVE_TREE = AttributeManager.FINDS_HAVE_TREE; // "have_tree";
+	public static final String FINDS_HAVE_GRAFTING = AttributeManager.FINDS_HAVE_GRAFTING; // "have_grafting";
 	public static final String FINDS_HAVE_HOUE = AttributeManager.FINDS_HAVE_HOUE;  //  "have_houe";
 	public static final String FINDS_HAVE_PIOCHE = AttributeManager.FINDS_HAVE_PIOCHE;  // "have_pioche";
 	public static final String FINDS_HAVE_BROUETTE = AttributeManager.FINDS_HAVE_BROUETTE; // "have_brouette";
@@ -359,6 +360,7 @@ public class AcdiVocaDbHelper {
 		+ FINDS_HAVE_TUBER+ " boolean, "
 		+ FINDS_HAVE_CEREAL+ " boolean, "
 		+ FINDS_HAVE_TREE+ " boolean, "
+		+ FINDS_HAVE_GRAFTING+ " boolean, "
 		+ FINDS_HAVE_COFFEE + " boolean, "
 		+ FINDS_PARTNER_FAO + " boolean, "
 		+ FINDS_PARTNER_SAVE + " boolean, "

@@ -237,6 +237,12 @@
 			 android:layout_height="wrap_content"
 			/>
 			
+			<CheckBox android:id ="@+id/graftingCheckBox"
+			 android:text="@string/grafting"
+			 android:layout_width="wrap_content"
+			 android:layout_height="wrap_content"
+			/>
+			
 			<CheckBox android:id ="@+id/coffeeCheckBox"
 			 android:text="@string/coffee"
 			 android:layout_width="wrap_content"
