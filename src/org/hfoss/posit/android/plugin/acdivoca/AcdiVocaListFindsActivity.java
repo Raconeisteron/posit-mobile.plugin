@@ -317,27 +317,18 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		// If invoked from main view Button, rather than Admin Menu (ACTION_SEND) then 
 		//  the Finds are displayed initially so just show the USER the SEND menu item
 		if (mAction.equals(Intent.ACTION_SEND)) {
-			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-			int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
-			Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
+			Log.i(TAG, "UserType = " + AppControlManager.getUserType());
 
 			// Normal USER -- just show the Send menu
-			if (userTypeOrdinal == UserType.USER.ordinal()) {
+			if (AppControlManager.isRegularUser()) {
 				listItem.setVisible(false);
 				syncItem.setVisible(true);
 				if (mNUnsentFinds > 0)
 					syncItem.setEnabled(true);
 				else 
 					syncItem.setEnabled(false);
-			} else {  // SUPER or ADMIN USER, also show the manage menu
+			} else {  // SUPER or ADMIN USER, also show the manage messages menu
 				adjustAdminMenuOptions(menu, syncItem, deleteItem);
-//				listItem.setVisible(true);
-//				listItem.setEnabled(true);
-//				syncItem.setVisible(true);
-//				if (mNUnsentFinds > 0)
-//					syncItem.setEnabled(true);
-//				else 
-//					syncItem.setEnabled(false);
 			}
 			return super.onPrepareOptionsMenu(menu);
 		} else {
@@ -391,9 +382,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Log.i(TAG, "Menu item selected " + item.getTitle());
 		Intent intent;
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
-		Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
+		Log.i(TAG, "UserType = " + AppControlManager.getUserType());
 		
 		switch (item.getItemId()) {	
 		
@@ -408,7 +397,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		// This case sends all messages	(if messages are currently displayed)
 		case R.id.sync_messages:
 			// For regular USER, create the messages and send
-//			if (userTypeOrdinal == UserType.USER.ordinal()) {
 			
 				Log.i(TAG, "Displayed messages, n = " + mNMessagesDisplayed);
 				if (mNMessagesDisplayed > 0) {
@@ -420,7 +408,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 				mAcdiVocaMsgs = db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
 				Log.i(TAG, "Created messages, n = " + mAcdiVocaMsgs.size());
-				if (userTypeOrdinal == UserType.USER.ordinal()) {
+				if (AppControlManager.isRegularUser()) {
 					db = new AcdiVocaDbHelper(this);
 					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
 							AcdiVocaDbHelper.FINDS_STATUS_NEW, null));
@@ -440,15 +428,6 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				} else {
 					showDialog(NO_MSGS_ALERT);
 				}
-				//displayMessageList(SearchFilterActivity.RESULT_SELECT_NEW, null);	
-
-//			} else {  // For ADMIN and SUPER Users
-//				if (this.mMessageListDisplayed) {
-//					sendMessages();
-//				}
-//				mNMessagesDisplayed = 0;
-//				fillData(null);
-//			}
 			break;
 			
 		case R.id.delete_messages_menu:
@@ -553,13 +532,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	 * Displays SMS messages, filter by status and type.
 	 */
 	private void displayMessageList(int filter, String distributionCtr) {
-		Log.i(TAG, "Display messages for filter " + filter);
+		Log.i(TAG, "Display messages for filter " + filter + " for distribution center " + distributionCtr);
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = null;
-		
-//		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-//		String distrKey = this.getResources().getString(R.string.distribution_point);
-//		String distributionCtr = sharedPrefs.getString(distrKey, "");
-		Log.i(TAG, "Distribution center = "+ distributionCtr);
 				
 		AcdiVocaDbHelper db = null;   
 		if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
@@ -677,7 +651,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.about2).setTitle(
 							"#: " + phoneNumber
-							+ " " + mAcdiVocaMsgs.size() 
+							+ "\n" + mAcdiVocaMsgs.size() 
 							+ " " + getString(R.string.send_dist_rep))
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {								

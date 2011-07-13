@@ -564,7 +564,10 @@ public class AcdiVocaDbHelper {
 		return result;
 	}
 
-	public void dumpUsers() {
+	/**
+	 * Utility method to display the list of users in the Logcat.
+	 */
+	private void dumpUsers() {
 		Log.i(TAG, "Dumping user table");
 		//		mDb = getReadableDatabase();
 		Cursor c = mDb.query(USER_TABLE, null, null, null, null, null, null);
