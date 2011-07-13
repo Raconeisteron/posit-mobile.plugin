@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
+import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 import org.xmlpull.v1.XmlPullParser;
@@ -270,7 +271,8 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 				String value = sp.getString(key, null);
 				if (p!= null && value != null) {
 					p.setSummary(value);
-					if (userTypeOrdinal == UserType.USER.ordinal() 
+//					if (userTypeOrdinal == UserType.USER.ordinal() 
+					if (AppControlManager.isRegularUser() 
 							&& (key.equals(getString(R.string.smsPhoneKey))
 							|| key.equals(getString(R.string.distribution_point))
 							|| key.equals(getString(R.string.distribution_event_key)))) {
@@ -278,7 +280,8 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 						//this.getPreferenceScreen().removePreference(p); Doesn't work here
 						Log.i(TAG, "Disabling USER setting for key = " + key);
 					}
-					if (userTypeOrdinal == UserType.ADMIN.ordinal() 
+//					if (userTypeOrdinal == UserType.ADMIN.ordinal() 
+					if (AppControlManager.isAdminUser() 
 							&& key.equals(getString(R.string.distribution_event_key))) {
 						p.setEnabled(false);
 						//this.getPreferenceScreen().removePreference(p); Doesn't work here
@@ -334,58 +337,25 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 	 */
 	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
 		try {
-		if (!key.equals(AcdiVocaDbHelper.USER_TYPE_KEY)) {
+			if (!key.equals(AcdiVocaDbHelper.USER_TYPE_KEY)) {
 
-			Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
-					" value = " + sp.getString(key, ""));
-			Log.i(TAG, "Preferences= " + sp.getAll().toString());
-			Preference p =  this.findPreference(key);
-			String value = sp.getString(key, null);
-			if (p != null && value != null)
-				p.setSummary(value);
+				Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
+						" value = " + sp.getString(key, ""));
+				Log.i(TAG, "Preferences= " + sp.getAll().toString());
+				Preference p =  this.findPreference(key);
+				String value = sp.getString(key, null);
+				if (p != null && value != null)
+					p.setSummary(value);
 
-			if (key.equals(getString(R.string.distribution_point)) && value != null) {
-				Editor ed = sp.edit();
-				ed.putString(getString(R.string.distribution_event_key), 
-						getString(R.string.import_beneficiary_file));
-				ed.commit();
+				// If the ADMIN user changes the distribution point preference, initiate a distribution event.
+				if (key.equals(getString(R.string.distribution_point)) && value != null) {
+					AppControlManager.initDistributionEvent(this);
+				}
+
 			}
-		}
 		} catch (ClassCastException e) {
 			Log.e(TAG, "Class Cast Exception on " + key);
 			e.printStackTrace();
 		}
 	}
-	
-//	/**
-//	 * Deprecated. Ok. to delete. 
-//	 * @param context
-//	 * @param userTypeOrdinal
-//	 */
-//	public void disablePreferences(Context context, int userTypeOrdinal) {
-//		Log.i(TAG, "Finding " + findPreference("smsPhone"));
-//		
-//		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-//		Map<String,?> prefs = sp.getAll();
-//		Iterator it = prefs.keySet().iterator();
-//		while (it.hasNext()) {
-//			try {
-//				String aKey = (String) it.next();
-//				Log.i(TAG,"Preference = " + aKey);
-//				//if (aKey.equals(context.getString(R.string.smsPhoneKey))) {
-//				if (aKey.equals("smsPhone")) {
-//					Preference p1 =  findPreference("smsPhone");
-//					if (p1 != null) {
-//						Log.i(TAG,"Preference disabled = " + p1.getKey());
-//						p1.setEnabled(false);
-//					}
-//				}
-//
-//			} catch (ClassCastException e) {
-//				Log.e(TAG, "Initialize summary strings ClassCastException");
-//				Log.e(TAG, e.getStackTrace().toString());
-//				continue;
-//			}
-//		}
-//	}
 }

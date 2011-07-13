@@ -33,6 +33,8 @@ import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
+
 import org.hfoss.posit.android.plugin.acdivoca.SearchFilterActivity;
 
 import android.app.Activity;
@@ -141,13 +143,10 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 
 			setContentView(R.layout.main);
 			
-			// Change visibility of buttons based on UserType
-			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-			int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
-			String distrStage = sp.getString(getString(R.string.distribution_event_key), "");
-			Log.i(TAG, "POSIT Start, distrStage = " + distrStage);
-			
-			
+//			// Change visibility of buttons based on UserType
+
+			Log.i(TAG, "POSIT Start, distrStage = " + AppControlManager.displayDistributionStage(this));
+						
 			if (FindPluginManager.mMainIcon != null) {
 				final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
 				int resID = getResources().getIdentifier(FindPluginManager.mMainIcon, "drawable", "org.hfoss.posit.android");
@@ -156,7 +155,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			
 			// New Beneficiary button
 			if (FindPluginManager.mAddButtonLabel != null) {
-				//final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 				final Button addFindButton = (Button)findViewById(R.id.addFindButton);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mAddButtonLabel, "string", "org.hfoss.posit.android");
 
@@ -166,18 +164,16 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					addFindButton.setOnClickListener(this);
 				}
 				
-				// Button is gone user USER user during distribution events
-				if (distrStage.equals(getString(R.string.stop_distribution_event))
-						&& userTypeOrdinal == UserType.USER.ordinal()) {
+				// Button is gone for USER users during distribution events
+				if (AppControlManager.isDuringDistributionEvent()  && AppControlManager.isRegularUser()) {
 					addFindButton.setVisibility(View.GONE);
 				} else {
 					addFindButton.setVisibility(View.VISIBLE);
 				}
 			}
 
-			// List beneficiary -- i.e. send messages
+			// Send messages button
 			if (FindPluginManager.mListButtonLabel != null) {
-//				final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
 				final Button listFindButton = (Button) findViewById(R.id.listFindButton);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mListButtonLabel, "string", "org.hfoss.posit.android");
 				if (listFindButton != null) {
@@ -185,9 +181,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					listFindButton.setOnClickListener(this);
 				}
 				
-				// Button is gone user USER user during distribution events
-				if (distrStage.equals(getString(R.string.stop_distribution_event))
-						&& userTypeOrdinal == UserType.USER.ordinal()) {
+				// Button is gone for USER user during distribution events
+				if (AppControlManager.isDuringDistributionEvent()  && AppControlManager.isRegularUser()) {
 					listFindButton.setVisibility(View.GONE);
 				} else {
 					listFindButton.setVisibility(View.VISIBLE);
@@ -204,15 +199,19 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					extraButton.setVisibility(View.VISIBLE);
 				}
 				
-				// Button is gone user USER and ADMIN users except during distribution events
-				if (!distrStage.equals(getString(R.string.stop_distribution_event))
-						&& (userTypeOrdinal == UserType.USER.ordinal()
-						|| userTypeOrdinal == UserType.ADMIN.ordinal())) {
-					extraButton.setVisibility(View.GONE);
-				} else {
-					extraButton.setVisibility(View.VISIBLE);
+				// Button is gone for USER and ADMIN users except during distribution events
+				if (AppControlManager.isRegularUser() || AppControlManager.isAdminUser()) {
+					if (AppControlManager.isDuringDistributionEvent()) 
+						extraButton.setVisibility(View.VISIBLE);
+					else
+						extraButton.setVisibility(View.GONE);
+					
+					// Enable the Button only if the event is started
+					if (AppControlManager.isDistributionStarted())
+						extraButton.setEnabled(true);
+					else
+						extraButton.setEnabled(false);
 				}
-
 			}
 
 			// New agriculture beneficiary
@@ -225,13 +224,15 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 					extraButton.setOnClickListener(this);
 				}
 				
-				// Button is gone user USER user during distribution events
-				if (distrStage.equals(getString(R.string.stop_distribution_event))
-						&& userTypeOrdinal == UserType.USER.ordinal()) {
+				// Button is gone for USER users during distribution events
+				Log.i(TAG, "Distr Stage = " +  AppControlManager.displayDistributionStage(this));
+				if (AppControlManager.isDuringDistributionEvent() && AppControlManager.isRegularUser()) {
 					extraButton.setVisibility(View.GONE);
 				} else {
 					extraButton.setVisibility(View.VISIBLE);
 				}
+				
+				Log.i(TAG, "Extra button visibility = " + extraButton.getVisibility());
 			}
 			
 	}
@@ -263,7 +264,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	protected void onRestart() {
 		super.onRestart();
 		Log.i(TAG,"Restarting");
-//		startPOSIT();
 	}
 
 	@Override
@@ -282,35 +282,14 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.i(TAG,"onActivityResult Result from registration = " + resultCode);
 		switch (requestCode) {
-		//		case LOGIN_ACTIVITY:
-		//			if (resultCode == LOGIN_CANCELED)
-		//				finish();
-		//			else if (resultCode == LOGIN_SUCCESSFUL) {
-		//				Intent intent = new Intent(this, ShowProjectsActivity.class);
-		//				startActivity(intent);
-		//			}
-		//			break;
-		//		case REGISTRATION_CANCELLED:
-		//			finish();
-		//			break;
-		case REGISTRATION_ACTIVITY:
-			//			if (resultCode == RegisterActivity.CANCELLED)
-			if (resultCode == LOGIN_CANCELED) {
-				Log.i(TAG,"Login canceled");
-				finish();
-			}
+
 		case LoginActivity.ACTION_LOGIN:
 			if (resultCode == RESULT_OK) {
 				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
 				break;
 			} else {
-				//Toast.makeText(this, "Sorry. Incorrect username or password.", Toast.LENGTH_LONG).show();
-				//showDialog(LOGIN_CANCELED);
-				//super.onActivityResult(requestCode, resultCode, data);
-				//setContentView(R.layout.main);
 				finish();
 			} 
-		
 		default:
 			super.onActivityResult(requestCode, resultCode, data);
 		}
@@ -337,8 +316,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 				//intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
 				intent.setClass(this, AcdiVocaListFindsActivity.class);
 				startActivity(intent);				
-				//startActivity(new Intent(this, AcdiVocaListFindsActivity.class));
-
 				break;
 
 			case R.id.extraButton:
@@ -349,7 +326,6 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 
 			case R.id.extraButton2:
 				intent.setAction(Intent.ACTION_INSERT);
-				//intent.setClass(this, FindActivityProvider.getFindActivityClass());
 				intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
 				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
 				startActivity(intent);
@@ -371,20 +347,22 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 	}
 
 	/**
-	 * Updates the RWG Start/End menus based on whether RWG is running or not.   
+	 * Shows/Hides menus based on user type, SUPER, ADMIN, USER  
 	 * 
 	 * @see android.app.Activity#onPrepareOptionsMenu(android.view.Menu)
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
-		Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
-		if (userTypeOrdinal != UserType.SUPER.ordinal() && userTypeOrdinal != UserType.ADMIN.ordinal()) {
-			menu.getItem(1).setVisible(false);
-		} else {
-			menu.getItem(1).setVisible(true);
-		}
+		MenuItem  adminMenu = menu.findItem(R.id.admin_menu_item);
+
+		Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
+		
+		// Hide the ADMIN menu from regular users
+		if (AppControlManager.isRegularUser())
+			adminMenu.setVisible(false);
+		else 
+			adminMenu.setVisible(true);
+
 		return super.onPrepareOptionsMenu(menu);
 	}
 

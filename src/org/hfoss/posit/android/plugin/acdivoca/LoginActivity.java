@@ -1,5 +1,5 @@
 /*
- * File: AcdiVocaFindActivity.java
+ * File: LoginActivity.java
  * 
  * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
@@ -59,7 +59,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	public static final int VALID_LOGIN = 2;
 	
 	private static final int CONFIRM_EXIT = 0;
-	
+		
 	private UserType mUserType;
 	private int mUserTypeOrdinal;
 	private int mBeneficiaryType;
@@ -68,23 +68,23 @@ public class LoginActivity extends Activity implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		 
-		 Intent intent = this.getIntent();
-		 Bundle extras = intent.getExtras();
-			if (extras == null) {
-				return;
-			}
-			mBeneficiaryType = extras.getInt(AcdiVocaDbHelper.FINDS_TYPE);
-			Log.i(TAG, "onCreate, beneficiary type = " + mBeneficiaryType);
 
-			mUserTypeOrdinal = extras.getInt(AcdiVocaDbHelper.USER_TYPE_STRING);
-			if (mUserTypeOrdinal == UserType.USER.ordinal()) {
-				mUserType = UserType.USER;
-			} else if (mUserTypeOrdinal == UserType.SUPER.ordinal()) {
-				mUserType = UserType.SUPER;
-			} else if (mUserTypeOrdinal == UserType.ADMIN.ordinal()) {
-				mUserType = UserType.ADMIN;
-			}
+		Intent intent = this.getIntent();
+		Bundle extras = intent.getExtras();
+		if (extras == null) {
+			return;
+		}
+		mBeneficiaryType = extras.getInt(AcdiVocaDbHelper.FINDS_TYPE);
+		Log.i(TAG, "onCreate, beneficiary type = " + mBeneficiaryType);
+
+		mUserTypeOrdinal = extras.getInt(AcdiVocaDbHelper.USER_TYPE_STRING);
+		if (mUserTypeOrdinal == UserType.USER.ordinal()) {
+			mUserType = UserType.USER;
+		} else if (mUserTypeOrdinal == UserType.SUPER.ordinal()) {
+			mUserType = UserType.SUPER;
+		} else if (mUserTypeOrdinal == UserType.ADMIN.ordinal()) {
+			mUserType = UserType.ADMIN;
+		}
 	}
 
 
@@ -128,18 +128,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 			if (userTypeOrdinal != -1) {
 				setResult(RESULT_OK,returnIntent);
 				
-				// Remember what type of user this is -- for controlling menus, etc.
-				SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-				Editor editor = sp.edit();
-				editor.putInt(AcdiVocaDbHelper.USER_TYPE_KEY, userTypeOrdinal);
-				editor.commit();
-				Log.i(TAG, "User Type Key = "  +  sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY,-1));
+				// Remember what type of user this is -- for controlling menus, etc.			
+				AppControlManager.setUserType(userTypeOrdinal);
+				Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
 				
-				SettingsActivity settings = 
-					SettingsActivity.getInstance(this, FindPluginManager.mPreferences);
-//				settings.disablePreferences(this, userTypeOrdinal);
-				
-
 				finish();
 			} else {
 				showDialog(INVALID_LOGIN);
@@ -175,8 +167,16 @@ public class LoginActivity extends Activity implements OnClickListener {
 		}
 	}
 	
+	/**
+	 * Local authentication method just calls DbHelper to authenticate.
+	 * @param username
+	 * @param password
+	 * @param userType
+	 * @return
+	 */
 	private int authenticateUser(String username, String password, UserType userType) {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		return db.authenicateUser(username, password, userType);
 	}
+
 }

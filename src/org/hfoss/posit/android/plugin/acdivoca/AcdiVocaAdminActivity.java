@@ -169,21 +169,22 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		MenuItem loadMchnItem = menu.findItem(R.id.load_beneficiary_data);
 		MenuItem listFindsItem = menu.findItem(R.id.admin_list_beneficiaries);
 		
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String distrEventStage = prefs.getString(getString(R.string.distribution_event_key), "");
-		String distrPoint = prefs.getString(getString(R.string.distribution_point), "");
+		// Is the app in Distribution mode?
+		Log.i(TAG, "Distribution Stage = " + AppControlManager.displayDistributionStage(this));
 	
 		// What type of user is logged in?
-		int userTypeOrdinal = prefs.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
-		Log.i(TAG, "UserTypeKey = " + userTypeOrdinal);
-		
-		if (userTypeOrdinal != UserType.SUPER.ordinal()) {
+		Log.i(TAG, "UserType = " + AppControlManager.getUserType());
+
+		// Only SUPER user sees the ListFinds menu
+		if (!AppControlManager.isSuperUser()) {
 			listFindsItem.setVisible(false);
 		} else {
 			listFindsItem.setVisible(true);
 		}
 		
-		if (userTypeOrdinal == UserType.SUPER.ordinal() || userTypeOrdinal == UserType.ADMIN.ordinal()) {
+		// SUPER and ADMIN users can import livelihood data
+		if ( !AppControlManager.isDuringDistributionEvent() 
+				&& (AppControlManager.isSuperUser() || AppControlManager.isAdminUser())) {
 			loadAgriItem.setVisible(true);
 			loadAgriItem.setEnabled(true);
 		} else {
@@ -192,26 +193,27 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 
 		}
 
-		Log.i(TAG, "onPrepareMenuOptions, distrPoint ="  + distrPoint 
-				+ " distribution stage = " + distrEventStage);
+		Log.i(TAG, "onPrepareMenuOptions, " 
+				+ " distribution stage = " + AppControlManager.displayDistributionStage(this));
 		
+		// For each menu item set its visibility based on Distribution event stage
 		MenuItem item = null;
 		for (int k = 0; k < menu.size(); k++) {
 			item = menu.getItem(k);
 			switch (item.getItemId()) {
 			case R.id.load_beneficiary_data:
-				if (distrEventStage.equals(getString(R.string.import_beneficiary_file))) 
+				if (AppControlManager.isImportDataStage()) 
 					item.setEnabled(true);
 				else 
 					item.setEnabled(false);
 				break;
 			case R.id.start_stop_distribution:
 				SubMenu sub = item.getSubMenu();
-				if (distrEventStage.equals(getString(R.string.start_distribution_event))) {
+				if (AppControlManager.isStartDistributionStage()) {
 					item.setEnabled(true);
 					sub.getItem(0).setEnabled(true);
 					sub.getItem(1).setEnabled(false);
-				} else if (distrEventStage.equals(getString(R.string.stop_distribution_event))) {
+				} else if (AppControlManager.isStopDistributionStage()) {
 					item.setEnabled(true);
 					sub.getItem(0).setEnabled(false);
 					sub.getItem(1).setEnabled(true);		
@@ -220,7 +222,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 				}
 				break;
 			case R.id.send_distribution_report:
-				if (distrEventStage.equals(getString(R.string.send_distribution_report))) 
+				if (AppControlManager.isSendDistributionReportStage()) 
 					item.setEnabled(true);
 				else 
 					item.setEnabled(false);
@@ -247,10 +249,6 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		case R.id.admin_list_beneficiaries:
 			startActivity(new Intent(this, AcdiVocaListFindsActivity.class));
 			break;
-//		case R.id.manage_distribution:
-//			TextView tv = (TextView) findViewById(R.id.manage_event_text_view);
-//			tv.setVisibility(View.VISIBLE);
-//			break;
 		case R.id.load_beneficiary_data:
 			Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
 			if (loginActivity != null) {
@@ -276,14 +274,13 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		case R.id.start_distribution:
 			Log.i(TAG, "Start distribution event");
 			item.setEnabled(false);
-			setDistributionEventStage( this.getString(R.string.stop_distribution_event));		
+			AppControlManager.moveToNextDistributionStage(this);
 			break;
 		case R.id.stop_distribution:
 			Log.i(TAG, "Start distribution event");
 			item.setEnabled(false);
-			setDistributionEventStage( this.getString(R.string.send_distribution_report));		
+			AppControlManager.moveToNextDistributionStage(this);
 			break;
-			
 		case R.id.send_distribution_report:
 			sendDistributionReport();
 			break;
@@ -301,7 +298,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		String distributionCtr = sharedPrefs.getString(distrKey, "");
 		Log.i(TAG, distrKey +"="+ distributionCtr);
 
-		// First create update reports -- i.e., those present with changes.
+		// First create update reports -- i.e., those beneficiaries who were present and had changes.
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		mAcdiVocaMsgs = 
 			db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_UPDATE, null, distributionCtr);
@@ -314,22 +311,6 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		showDialog(SEND_DIST_REP);
 	}
 	
-	/**
-	 * Helper method to set the stage for distribution events.
-	 * @param distrEventStage
-	 */
-	private void setDistributionEventStage(String distrEventStage) {
-		SharedPreferences prefs = null;
-		Editor editor = null;
-		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		//distrEventStage = prefs.getString(getString(R.string.distribution_event_key), "");
-
-		editor = prefs.edit();
-		editor.putString(getString(R.string.distribution_event_key), distrEventStage);
-		editor.commit();
-		distrEventStage = prefs.getString(getString(R.string.distribution_event_key), "");
-		Log.i(TAG, "Distribution stage = " + distrEventStage);					
-	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -377,25 +358,8 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, beneficiaryType);
 				intent.setClass(this, FilePickerActivity.class);
 				
-				//intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
 				this.startActivityForResult(intent, FilePickerActivity.ACTION_CHOOSER);
-							
-//				// Get this phone's Distribution Center
-//				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//				mDistrCtr = prefs.getString(this.getResources().getString(R.string.distribution_point), null);
-//				
-//				if (mDistrCtr == null) {
-//					Log.i(TAG, "Aborting loadBeneficiaryData, No distribution post selected");
-//					Toast.makeText(this, "No distribution post selected", Toast.LENGTH_SHORT);
-//					break;
-//				}
-//				
-//				mProgressDialog = ProgressDialog.show(this, "Loading data",
-//						"Please wait.", true, true);
-//				
-//				ImportDataThread thread = new ImportDataThread(this, new ImportThreadHandler());
-//				thread.start();				
-//				
+			
 				break;
 			} else {
 				Toast.makeText(this, getString(R.string.toast_incorrect), Toast.LENGTH_LONG).show();
@@ -455,7 +419,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		Log.i(TAG, "Inserted to database " + nImports + " Beneficiaries");	
 		
 		// Move to the next stage of the distribution event process
-		setDistributionEventStage( this.getString(R.string.start_distribution_event));		
+		AppControlManager.moveToNextDistributionStage(this);
 		return DONE;
 	}
 	
@@ -596,7 +560,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.about2).setTitle(
 							"#: " + phoneNumber
-							+ " " + mAcdiVocaMsgs.size() 
+							+ "\n" + mAcdiVocaMsgs.size() 
 							+ " " + getString(R.string.send_dist_rep))
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {								
@@ -604,7 +568,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 										int which) {
 									AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance((Activity) mContext);
 									mgr.sendMessages(mContext, mAcdiVocaMsgs);
-									setDistributionEventStage(getString(R.string.select_distr_point));		
+									AppControlManager.moveToNextDistributionStage(mContext);
 									mSmsReport = "Sending to " + phoneNumber + " # : " + mAcdiVocaMsgs.size();
 									showDialog(SMS_REPORT);
 									//finish();
