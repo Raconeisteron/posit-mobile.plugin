@@ -96,6 +96,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	public static final int SUMMARY_OF_IMPORT = 5;
 	public static final int ZERO_BENEFICIARIES_READ = 6;
 	public static final int INVALID_PHONE_NUMBER = 7;
+	public static final int DISTRIBUTION_SUMMARY = 8;
 
 	//private ArrayAdapter<String> adapter;
 	private String mBeneficiaries[] = null;
@@ -105,7 +106,9 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	private Context mContext;
 	private String mSmsReport;
 	private String mImportDataReport;
-	
+	private String mDistributionSummaryReport;
+	private String[] mSummaryItems;
+
 	private ArrayList<AcdiVocaMessage> mAcdiVocaMsgs;
 
 	/**
@@ -281,6 +284,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			Log.i(TAG, "Start distribution event");
 			item.setEnabled(false);
 			AppControlManager.moveToNextDistributionStage(this);
+			displayDistributionSummary();
 			break;
 		case R.id.send_distribution_report:
 			sendDistributionReport();
@@ -289,6 +293,30 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		return true;
 	}
 	
+	/**
+	 * Provides a summary of the distribution event and displays it
+	 * as an Alert Dialog. 
+	 */
+	private void displayDistributionSummary() {
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		String distrKey = this.getResources().getString(R.string.distribution_point);
+		String distributionCtr = sharedPrefs.getString(distrKey, "");
+		Log.i(TAG, distrKey +"="+ distributionCtr);
+		
+		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+		int nAbsentees = db.queryNDistributionAbsentees(distributionCtr);
+		db = new AcdiVocaDbHelper(this);
+		int nWomen = db.queryNDistributionWomenProcessed(distributionCtr);
+		db = new AcdiVocaDbHelper(this);
+		int nChildren = db.queryNDistributionChildrenProcessed(distributionCtr);
+
+		mSummaryItems = new String[3];
+		mDistributionSummaryReport = "Distribution Summary";
+		mSummaryItems[0] = "nAbsentees = " + nAbsentees;
+		mSummaryItems[1] = "nMothers = " + nWomen;
+		mSummaryItems[2] = "nChildren = " + nChildren;
+		showDialog(DISTRIBUTION_SUMMARY);
+	}
 	
 	/**
 	 * Sends both update messages and bulk messages.
@@ -506,7 +534,6 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	 */
 	@Override
 	protected Dialog onCreateDialog(int id) {
-//	protected Dialog onCreateDialog(int id, Bundle args) {
 		Log.i(TAG, "onCreateDialog, id= " + id);
 		switch (id) {
 		case ZERO_BENEFICIARIES_READ:
@@ -520,7 +547,19 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 							finish();
 						}
 					}).create();		
-			case SUMMARY_OF_IMPORT:
+		case DISTRIBUTION_SUMMARY:
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(mDistributionSummaryReport)
+					.setItems(mSummaryItems, null)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// User clicked OK so do some stuff
+							finish();
+						}
+					}).create();
+		case SUMMARY_OF_IMPORT:
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.alert_dialog_icon).setTitle(mImportDataReport)
 					.setPositiveButton(R.string.alert_dialog_ok,
@@ -573,8 +612,8 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 							"#: " + phoneNumber
 							+ "\n" + mAcdiVocaMsgs.size() 
 							+ " " + getString(R.string.send_dist_rep))
-					.setPositiveButton(R.string.alert_dialog_ok,
-							new DialogInterface.OnClickListener() {								
+							.setPositiveButton(R.string.alert_dialog_ok,
+									new DialogInterface.OnClickListener() {								
 								public void onClick(DialogInterface dialog,
 										int which) {
 									AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance((Activity) mContext);
@@ -586,11 +625,10 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 								}
 							}).setNegativeButton(R.string.alert_dialog_cancel,
 									new DialogInterface.OnClickListener() {										
-										public void onClick(DialogInterface dialog, int which) {
-											dialog.dismiss();
-										}
-									}).create();
-
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.dismiss();
+								}
+							}).create();
 		default:
 			return null;
 		}

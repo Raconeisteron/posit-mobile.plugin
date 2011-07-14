@@ -1560,7 +1560,74 @@ public class AcdiVocaDbHelper {
 		return message;
 	}
 	
+	/**
+	 * Returns the number of babies in prevention or malnouri processed.
+	 * @return
+	 */
+	public int queryNDistributionChildrenProcessed(String distrSite) {
+		Cursor c = mDb.query(FINDS_TABLE, null, 
+				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
+				+ " AND " 
+				+ FINDS_DISTRIBUTION_POST + " = " + "'" + distrSite  + "'"
+				+ " AND " 
+				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_TRUE + "'"
+				+ " AND (" 
+				+ FINDS_BENEFICIARY_CATEGORY + "=" +  "'" + this.FINDS_PREVENTION + "'"
+				+ " OR " 
+				+ FINDS_BENEFICIARY_CATEGORY + "=" +  "'" + this.FINDS_MALNOURISHED + "' )"
+				,
+				null, null, null, null);
+		int count = c.getCount();
+		c.close();
+		mDb.close();
+		return count;
+	}
 
+	
+	
+	/**
+	 * Returns the number of expectant of lactating mothers processed.
+	 * @return
+	 */
+	public int queryNDistributionWomenProcessed(String distrSite) {
+		Cursor c = mDb.query(FINDS_TABLE, null, 
+				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
+				+ " AND " 
+				+ FINDS_DISTRIBUTION_POST + " = " + "'" + distrSite  + "'"
+				+ " AND " 
+				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_TRUE + "'"
+				+ " AND (" 
+				+ FINDS_BENEFICIARY_CATEGORY + "=" +  "'" + this.FINDS_EXPECTING + "'"
+				+ " OR " 
+				+ FINDS_BENEFICIARY_CATEGORY + "=" +  "'" + this.FINDS_NURSING + "' )"
+				,
+				null, null, null, null);
+		int count = c.getCount();
+		c.close();
+		mDb.close();
+		return count;
+	}
+	
+	/**
+	 * Returns the number of beneficiaries who were absent at
+	 * the end of the distribution event.
+	 * @return
+	 */
+	public int queryNDistributionAbsentees(String distrSite) {
+		Cursor c = mDb.query(FINDS_TABLE, null, 
+				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
+				+ " AND " 
+				+ FINDS_DISTRIBUTION_POST + " = " + "'" + distrSite  + "'"
+				+ " AND " 
+				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_FALSE + "'"
+				,
+				null, null, null, null);
+		int count = c.getCount();
+		c.close();
+		mDb.close();
+		return count;
+	}
+	
 	/** 
 	 * Returns an array of dossier numbers for all beneficiaries.
 	 * @distribSite the Distribution Site of the beneficiaries
