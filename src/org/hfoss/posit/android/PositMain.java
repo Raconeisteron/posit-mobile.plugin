@@ -100,6 +100,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		// A newly installed POSIT should have no shared prefs
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mSpEditor = mSharedPrefs.edit();
+		mSpEditor.putString(getString(R.string.smsPhoneKey), getString(R.string.default_phone));
+		mSpEditor.commit();
 		Log.i(TAG, "Preferences= " + mSharedPrefs.getAll().toString());
 
 		// If this is a new install, we need to set up the Server
@@ -312,8 +314,8 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 			case R.id.listFindButton:
 				intent = new Intent();
 				intent.setAction(Intent.ACTION_SEND);
-				intent.putExtra(AcdiVocaDbHelper.FINDS_STATUS, SearchFilterActivity.RESULT_SELECT_NEW);
-				//intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
+				//intent.putExtra(AcdiVocaDbHelper.FINDS_STATUS, SearchFilterActivity.RESULT_SELECT_NEW);
+				intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
 				intent.setClass(this, AcdiVocaListFindsActivity.class);
 				startActivity(intent);				
 				break;
