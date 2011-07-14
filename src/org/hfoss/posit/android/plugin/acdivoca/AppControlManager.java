@@ -75,7 +75,6 @@ public class AppControlManager {
 	
 	public static boolean isRegularUser() {
 		return sLoggedInUserTypeOrdinal == UserType.USER.ordinal();
-
 	}
 	
 	
@@ -170,9 +169,9 @@ public class AppControlManager {
 		return sDistributionStage == SEND_DISTRIBUTION_REPORT;
 	}		
 	
-	public static void initDistributionStage() {
-		sDistributionStage = 1;
-	}
+//	public static void initDistributionStage() {
+//		sDistributionStage = 1;
+//	}
 	
 	public static void moveToNextDistributionStage(Context context) {
 		sDistributionStage = (sDistributionStage + 1) % END_DISTRIBUTION_STAGE;

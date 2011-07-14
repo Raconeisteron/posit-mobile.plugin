@@ -278,13 +278,13 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		
 		Log.i(TAG, "sendMessages,  n =" + acdiVocaMsgs.size());
 		
-		mAcdiVocaPhone = PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.smsPhoneKey), "");
-		Log.i(TAG, "Phone number = " + mAcdiVocaPhone);
-		if (!isValidPhoneString(mAcdiVocaPhone)) {
-			Log.e(TAG, "Invalid phone number " + mAcdiVocaPhone);
-			mErrorMsg = "Invalid phone number = " + mAcdiVocaPhone;
-			return;			
-		}
+//		mAcdiVocaPhone = PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.smsPhoneKey), "");
+//		Log.i(TAG, "Phone number = " + mAcdiVocaPhone);
+//		if (!isValidPhoneString(mAcdiVocaPhone)) {
+//			Log.e(TAG, "Invalid phone number " + mAcdiVocaPhone);
+//			mErrorMsg = "Invalid phone number = " + mAcdiVocaPhone;
+//			return;			
+//		}
 
 		// Build a list of messages (with updates to the Db) to pass
 		// to the Service.  Do it in a separate thread.
@@ -292,6 +292,28 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		BuildMessagesThread thread = new BuildMessagesThread(context, 
 				new BuildMessagesHandler(), acdiVocaMsgs);
 		thread.start();				
+	}
+	
+	
+	/**
+	 * Utility method to test that the phone number preference is set before
+	 * trying to send messages. 
+	 * @param context
+	 * @return
+	 */
+	public boolean isPhoneNumberSet(Context context) {
+		String phoneNumber = PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.smsPhoneKey), "");
+		Log.i(TAG, "Phone number = " + phoneNumber);
+		if (!isValidPhoneString(phoneNumber)) {
+			Log.e(TAG, "Invalid phone number " + phoneNumber);
+			return false;			
+		}
+		return true;
+	}
+	
+	public static String getPhoneNumber(Context context) {
+		String phone = PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.smsPhoneKey), "");
+		return phone;
 	}
 	
 	/**
