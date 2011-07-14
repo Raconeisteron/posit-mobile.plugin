@@ -95,6 +95,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	public static final int SMS_REPORT = 4;
 	public static final int SUMMARY_OF_IMPORT = 5;
 	public static final int ZERO_BENEFICIARIES_READ = 6;
+	public static final int INVALID_PHONE_NUMBER = 7;
 
 	//private ArrayAdapter<String> adapter;
 	private String mBeneficiaries[] = null;
@@ -293,6 +294,13 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	 * Sends both update messages and bulk messages.
 	 */
 	private void sendDistributionReport() {
+		
+		AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+		if (!mgr.isPhoneNumberSet(this)) {
+			showDialog(INVALID_PHONE_NUMBER);
+			return;
+		}
+
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String distrKey = this.getResources().getString(R.string.distribution_point);
 		String distributionCtr = sharedPrefs.getString(distrKey, "");
@@ -498,6 +506,8 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	 */
 	@Override
 	protected Dialog onCreateDialog(int id) {
+//	protected Dialog onCreateDialog(int id, Bundle args) {
+		Log.i(TAG, "onCreateDialog, id= " + id);
 		switch (id) {
 		case ZERO_BENEFICIARIES_READ:
 			return new AlertDialog.Builder(this).setIcon(
@@ -557,6 +567,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		case SEND_DIST_REP:
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
 			final String phoneNumber = sp.getString(mContext.getString(R.string.smsPhoneKey),"");
+			Log.i(TAG, "phonenumber = " + phoneNumber); 
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.about2).setTitle(
 							"#: " + phoneNumber
@@ -569,13 +580,14 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 									AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance((Activity) mContext);
 									mgr.sendMessages(mContext, mAcdiVocaMsgs);
 									AppControlManager.moveToNextDistributionStage(mContext);
-									mSmsReport = "Sending to " + phoneNumber + " # : " + mAcdiVocaMsgs.size();
+									mSmsReport = "#: " + phoneNumber + "\n" + mAcdiVocaMsgs.size();
 									showDialog(SMS_REPORT);
 									//finish();
 								}
 							}).setNegativeButton(R.string.alert_dialog_cancel,
 									new DialogInterface.OnClickListener() {										
 										public void onClick(DialogInterface dialog, int which) {
+											dialog.dismiss();
 										}
 									}).create();
 
@@ -583,6 +595,32 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			return null;
 		}
 	}
+	
+	
+	/**
+	 * Called just before the dialog is shown. Need to change title
+	 * to reflect the current phone number. 
+	 */
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+		super.onPrepareDialog(id, dialog, args);
+		switch (id) {
+		case SEND_DIST_REP:
+			Log.i(TAG, "onPrepareDialog id= " + id);
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+			final String phoneNumber = sp.getString(mContext.getString(R.string.smsPhoneKey),"");
+			Log.i(TAG, "phonenumber = " + phoneNumber); 
+			dialog.setTitle("#: " + phoneNumber
+					+ "\n" +  mAcdiVocaMsgs.size() 
+					+ " " + mContext.getString(R.string.send_dist_rep));
+			break;
+		}
+	}
+	
+	
+
+
+
 
 	class ImportThreadHandler extends Handler {
 		@Override

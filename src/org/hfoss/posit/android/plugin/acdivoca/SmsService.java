@@ -187,6 +187,10 @@ public class SmsService extends Service {
 		}
 	}   
 
+	/**
+	 * Separately threaded task to send messages.  
+	 *
+	 */
 	class SendMessagesTask extends AsyncTask<Context, Integer, String> {
 		public static final String TAG = "AsyncTask";
 		

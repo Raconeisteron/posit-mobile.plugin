@@ -6,6 +6,7 @@
 				android:key="@string/smsPhoneKey"  
 				android:title="@string/SMS_phone"
 				android:summary = "@string/SMS_phone" 
+				android:phoneNumber="true"
 				android:shouldDisableView="true"
 				android:defaultValue = "@string/default_phone"
 				android:positiveButtonText="@string/alert_dialog_ok"

@@ -75,6 +75,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	public static final String MESSAGE_START_SUBSTRING = "t=";
 	private static final int SMS_REPORT = AcdiVocaAdminActivity.SMS_REPORT;
 	private static final int SEND_MSGS_ALERT = AcdiVocaAdminActivity.SEND_DIST_REP;
+	private static final int INVALID_PHONE_NUMBER = AcdiVocaAdminActivity.INVALID_PHONE_NUMBER;
 	private static final int NO_MSGS_ALERT = SMS_REPORT + 1;
 
 	
@@ -398,6 +399,12 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		case R.id.sync_messages:
 			// For regular USER, create the messages and send
 			
+				AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(this);
+				if (!mgr.isPhoneNumberSet(this)) {
+					showDialog(INVALID_PHONE_NUMBER);
+					return true;
+				}
+			
 				Log.i(TAG, "Displayed messages, n = " + mNMessagesDisplayed);
 				if (mNMessagesDisplayed > 0) {
 					sendDisplayedMessages();
@@ -679,6 +686,17 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 								}
 							}).create();
 		
+			
+		case INVALID_PHONE_NUMBER:
+			String title = "Invalid phone number: " + AcdiVocaSmsManager.getPhoneNumber(mActivity);
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.about2).setTitle(title)
+					.setPositiveButton(R.string.alert_dialog_ok,
+							new DialogInterface.OnClickListener() {								
+								public void onClick(DialogInterface dialog,
+										int which) {
+								}
+							}).create();
 		case SMS_REPORT:
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.alert_dialog_icon).setTitle(mSmsReport)
@@ -734,6 +752,30 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		}
 	}
 
+	/**
+	 * Called just before the dialog is shown. Need to change title
+	 * to reflect the current phone number. 
+	 */
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+		super.onPrepareDialog(id, dialog, args);
+		switch (id) {
+		case SEND_MSGS_ALERT:
+			Log.i(TAG, "onPrepareDialog id= " + id);
+			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mActivity);
+			final String phoneNumber = sp.getString(mActivity.getString(R.string.smsPhoneKey),"");
+			Log.i(TAG, "phonenumber = " + phoneNumber); 
+			dialog.setTitle(
+					"#: " + phoneNumber
+					+ "\n" + mAcdiVocaMsgs.size() 
+					+ " " + getString(R.string.send_dist_rep));
+			break;
+		}
+	}
+
+	
+	
+	
 
 	private class MessageListAdapter<AcdiVocaMessage> extends ArrayAdapter<AcdiVocaMessage> {
 
