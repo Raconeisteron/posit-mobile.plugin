@@ -642,24 +642,25 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
 		super.onPrepareDialog(id, dialog, args);
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+		String phoneNumber = sp.getString(mContext.getString(R.string.smsPhoneKey),"");
+		Log.i(TAG, "phonenumber = " + phoneNumber); 
 		switch (id) {
 		case SEND_DIST_REP:
 			Log.i(TAG, "onPrepareDialog id= " + id);
-			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-			final String phoneNumber = sp.getString(mContext.getString(R.string.smsPhoneKey),"");
-			Log.i(TAG, "phonenumber = " + phoneNumber); 
 			dialog.setTitle("#: " + phoneNumber
 					+ "\n" +  mAcdiVocaMsgs.size() 
 					+ " " + mContext.getString(R.string.send_dist_rep));
 			break;
+		case SMS_REPORT:
+			dialog.setTitle( mAcdiVocaMsgs.size() + " messages being sent to " + phoneNumber);
 		}
 	}
 	
-	
 
-
-
-
+	/**
+	 * Class for handling data import.
+	 */
 	class ImportThreadHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
