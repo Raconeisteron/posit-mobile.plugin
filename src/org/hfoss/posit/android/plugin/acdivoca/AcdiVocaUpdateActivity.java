@@ -192,7 +192,21 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     	//  New button - 6/17/11          
 
     	Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
-    	AcdiVocaFindActivity.setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
+//    	AcdiVocaFindActivity.setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
+		String selected = contentValues.getAsString(AcdiVocaDbHelper.FINDS_CHANGE_TYPE); 
+		int k = 0;  //I was unable to use the spinner function here.
+		if(selected != null){
+			while (k < spinner.getCount()-1 && !(k == Integer.parseInt(selected))) {
+				++k;			
+			}
+			if (k < spinner.getCount())
+				spinner.setSelection(k);
+			else
+				spinner.setSelection(0);
+		}
+		else{
+			spinner.setSelection(0);
+		}
 
     	aRb = (RadioButton) findViewById(R.id.radio_change_in_status_yes);
     	
@@ -398,11 +412,21 @@ public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChange
     		change = AcdiVocaDbHelper.FINDS_FALSE;
     	result.put(AcdiVocaDbHelper.FINDS_Q_CHANGE, change); 
 
-    	String spinnerStr = "";
+//    	String spinnerStr = "";
+    	int spinnerInt;
     	Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
+//    	String[] strArrSpin = {AttributeManager.FINDS_Q_TRANSFER_LACTATE, AttributeManager.FINDS_Q_TRANSFER_PREVENTION, 
+//    			AttributeManager.FINDS_Q_TRANSFER_LOCATION, AttributeManager.FINDS_Q_TRANSFER_ABORTION, 
+//    			AttributeManager.FINDS_Q_CHANGED_BENEFICIARY_DATA, AttributeManager.FINDS_Q_DECEASED, 
+//    			AttributeManager.FINDS_Q_FRAUD, AttributeManager.FINDS_Q_COMPLETED_PROGRAM, 
+//    			AttributeManager.FINDS_Q_OTHER};
     	if (spinner != null) {
-    		spinnerStr = (String) spinner.getSelectedItem();
-    		result.put(AcdiVocaDbHelper.FINDS_CHANGE_TYPE, spinnerStr);
+//    		spinnerStr = (String) spinner.getSelectedItem();
+
+    		//Note: I changed how the spinner gets data. It is now based on position
+    		spinnerInt = spinner.getSelectedItemPosition();
+//    		spinnerStr = strArrSpin[spinnerInt];
+    		result.put(AcdiVocaDbHelper.FINDS_CHANGE_TYPE, String.valueOf(spinnerInt));
     	}
 
     	return result;

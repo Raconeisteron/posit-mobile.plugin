@@ -44,13 +44,104 @@ public class AttributeManager {
 	public static final String TAG = "AttributeManager";
 	
 	private static AttributeManager mInstance = null; 
-	private static HashMap<String,String> abbreviations;
+	private static HashMap<String,String> mappings;
 
+	public enum BeneficiaryType {
+		UNKNOWN(-1), MCHN(0), AGRI(1), BOTH(2);
+
+		private int code;
+
+		private BeneficiaryType(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+	}
+
+	public enum Sex {
+		U, M, F
+	};
+
+	public enum YnQuestion {
+		U, Y, N
+	};
+
+	public enum BeneficiaryCategory {
+		UNKNOWN(-1), AGRI(0), EXPECTING(1), NURSING(2), PREVENTION(3), MALNOURISHED(
+				4);
+
+		private int code;
+
+		private BeneficiaryCategory(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+	}
+
+	public enum Abbreviated {
+		TRUE, FALSE
+	};
+
+	public enum MessageStatus {
+		UNKNOWN(-1), NEW(0), UPDATED(1), PENDING(2), PROCESSED(3), ALL(4);
+		private int code;
+
+		private MessageStatus(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+	};
+
+	public enum MessageType {
+		UNKNOWN(-1), REGISTRATION(0), UPDATE(1), ATTENDANCE(2), ALL(3);
+
+		private int code;
+
+		private MessageType(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+	}	
 	
 	public static final String ATTR_VAL_SEPARATOR = "=";
 	public static final String PAIRS_SEPARATOR = ",";
 	public static final String LIST_SEPARATOR = "&"; // Don't use '/' and don't use '|'
 	public static final String NUMBER_SLASH_SIZE_SEPARATOR = ":";
+	public static final String NOT_FOUND = " NOT FOUND";
+	public static final String WHERE = " where ";
+	public static final String SELECT_FROM = "select * from ";
+	public static final String DATE_SEPARATOR = ":";
+	public static final String LINE_ENDER = ";";
+	public static final String CONJUNCTION = " and ";
+	public static final String DOES_NOT_EXIST = " does not exist!";
+	public static final String MATCH_NOT_FOUND = "MATCH NOT FOUND!";
+	public static final String UPDATE = "UPDATE ";
+	public static final String SET = " SET ";
+	public static final String SINGLE_QUOTE = "'";
+	public static final String OPEN_PAREN = "(";
+	public static final String CLOSE_PAREN = ")";
+	public static final String DB_HOST = "org.sqlite.JDBC";
+	public static final String DB_NAME = "jdbc:sqlite:";
+	public static final String INSERT = "INSERT INTO ";
+	public static final String VALUES = "VALUES ";
+	public static final String USER_DIRECTORY = "user.dir";
+	public static final String DATABASE_PATHNAME = "/db/";
+	public static final int ACK_MESSAGES_AT = 5;
+	public static final String MSG_NUMBER_SEPARATOR = ":";
+	
+	public static final String NEW_USER = "Insert into user (username, password, role) values('";
+	public static final int NEW_USER_ROLE = 1;
 
 	public static final String OUTER_DELIM = PAIRS_SEPARATOR;
 	public static final String INNER_DELIM = ATTR_VAL_SEPARATOR;
@@ -71,8 +162,6 @@ public class AttributeManager {
 	public static final String FORM_ADDRESS="Address";
 	public static final String FORM_AGE="Age";
 	public static final String FORM_SEX="Sex";
-	public static final String FORM_MALE="Male";
-	public static final String FORM_FEMALE="Female";
 
 	public static final String FORM_BENEFICIARY_CATEGORY="BeneficiaryCategory";
 	public static final String FORM_NUMBER_IN_HOUSE= "NumberInHome"; // "Number of persons in the house:";
@@ -88,14 +177,9 @@ public class AttributeManager {
 	public static final String FORM_AGRICULTURE_2 = "Agr2";  // Agriculture Program of ACDI/VOCA?:";
 	public static final String FORM_GIVE_NAME= "GiveName";  // "If yes, give the name:";
 
-	public static final String BUTTON_YES="Yes";
-	public static final String BUTTON_NO="No";
-	public static final String BUTTON_MALE="MALE";
-	public static final String BUTTON_FEMALE="FEMALE";
-	public static final String BUTTON_INFANT_MAL="Enfant mal nourri";
-	public static final String BUTTON_INFANT_PREVENTION="Enfant en prevention";
-	public static final String BUTTON_MOTHER_EXPECTING="Femme enceinte";
-	public static final String BUTTON_MOTHER_NURSING="Femme allaitante";
+	
+	public static final String FORM_HEALTH = "Health";
+
 	
 	public static final String FORM_DOSSIER="Dossier";
 	public static final String FORM_DOB= "DateOfBirth";
@@ -105,6 +189,52 @@ public class AttributeManager {
 	public static final String FORM_MODIFICATIONS= "Modifications";  // "Are modifications needed in the beneficiary's record?";
 	public static final String FORM_SUSPEND= "Suspend";  // "Should the beneficiary be suspended?";
 	public static final String FORM_WHY= "Why"; //"If so, why?:";
+	public static final String FORM_AGRICULTURE_CATEGORY = "AgricultureCategory";
+	public static final String FORM_LAND = "AmountOfLand";
+	public static final String FORM_SEED_TYPE = "SeedTypes";
+	public static final String FORM_SEED_QUANTITY = "QuantityOfSeeds";
+	public static final String FORM_MEASUREMENT = "UnitOfMeasurement";
+	public static final String FORM_TOOLS = "Tools";
+	public static final String FORM_ORGANIZATIONS = "Organizations";	
+	public static final String FORM_AGRI = "Agriculture";	
+	
+	
+	public static final String FINDS_DOSSIER =  "dossier";
+	public static final String FINDS_TYPE =  "type";
+	public static final String FINDS_BENEFICIARY_TYPE = "type";     //Newly added
+	public static final String FINDS_MESSAGE_TYPE = "message_type"; //Newly added
+	public static final String FINDS_STATUS =  "status";
+	public static final String MESSAGE_TEXT =  "message";
+	public static final String FINDS_MESSAGE_ID = "message_id";
+	public static final String FINDS_MESSAGE_STATUS =  "message_status";
+	public static final String FINDS_FIRSTNAME =  "firstname";
+	public static final String FINDS_LASTNAME =  "lastname";
+	public static final String FINDS_ADDRESS =  "address";
+	public static final String FINDS_DOB =  "dob";
+	public static final String FINDS_HOUSEHOLD_SIZE =  "household_size";
+	public static final String FINDS_BENEFICIARY_CATEGORY =  "beneficiary_category";
+	public static final String FINDS_SEX =  "sex";
+	public static final String FINDS_HEALTH_CENTER =  "health_center"; //Re-added
+	public static final String FINDS_DISTRIBUTION_POST =  "distribution_post";
+	public static final String MESSAGE_BENEFICIARY_ID =  "beneficiary_id";
+	public static final String MESSAGE_CREATED_AT =  "created_time";
+	public static final String MESSAGE_SENT_AT =  "sent_time";
+	public static final String MESSAGE_ACK_AT =  "acknowledged_time";
+	
+	public static final String FINDS_Q_MOTHER_LEADER = "mother_leader";
+	public static final String FINDS_Q_VISIT_MOTHER_LEADER = "visit_mother_leader";
+	public static final String FINDS_Q_PARTICIPATING_AGRI = "participating_agri";
+	public static final String FINDS_Q_RELATIVE_AGRI = "same_person_participating_agri";
+	public static final String FINDS_Q_PARTICIPATING_BENE = "participating_bene";
+	public static final String FINDS_Q_RELATIVE_BENE = "same_person_participating_bene";
+	
+
+	public static final String FINDS_NAME_AGRI_PARTICIPANT = "name_agri_participant";
+	public static final String FINDS_LAND_AMOUNT = "amount_of_land";
+	public static final String FINDS_RELATIVE_1 = "relative_1";
+	public static final String FINDS_RELATIVE_2 = "relative_2";
+	public static final String FINDS_MONTHS_REMAINING = "MonthsRemaining";
+	
 	
 	
 	// Abbreviated names of fields and attributes that make
@@ -150,12 +280,35 @@ public class AttributeManager {
 	public static final String ABBREV_HEALTH_CENTER = "h";      
 	public static final String ABBREV_DISTRIBUTION_POST = "d"; 
 	
+	public static final String ABBREV_RELATIVE_1 = "r1";
+	public static final String ABBREV_RELATIVE_2 = "r2";
 	public static final String ABBREV_NAME_CHILD = "nc";
 	public static final String ABBREV_NAME_WOMAN = "nw";
 	public static final String ABBREV_HUSBAND = "h";
 	public static final String ABBREV_FATHER = "f";
+
+	public static final String ABBREV_SEED_QUANTITY = "sq";
+	public static final String ABBREV_MEASUREMENT_UNIT = "mu";
+	public static final String ABBREV_MONTHS = "mo";  //Added to compliment the attribute-value pair
 	
 	// Constants for Y/N questions on the agri form
+	
+	public static final String FORM_FARMER = "Farmer";
+	public static final String FORM_MUSO = "Muso";
+	public static final String FORM_CATTLE_RANCHER = "CattleRancher";
+	public static final String FORM_STORE_OWNER = "StoreOwner";
+	public static final String FORM_FISHERMAN = "Fisherman";
+	public static final String FORM_OTHER = "Other";
+	public static final String FORM_ARTISAN = "Artisan";
+	
+	public static final String FINDS_IS_FARMER = "is_farmer";
+	public static final String FINDS_IS_FISHER = "is_fisher";
+	public static final String FINDS_IS_MUSO = "is_MUSO";
+	public static final String FINDS_IS_RANCHER = "is_rancher";
+	public static final String FINDS_IS_STOREOWN = "is_store_owner";
+	public static final String FINDS_IS_OTHER = "is_other";
+	public static final String FINDS_IS_ARTISAN = "is_artisan";
+	
 	public static final String ABBREV_IS_FARMER = "fa";
 	public static final String ABBREV_IS_FISHER = "fi";
 	public static final String ABBREV_IS_MUSO = "mu";
@@ -163,6 +316,27 @@ public class AttributeManager {
 	public static final String ABBREV_IS_STOREOWNER = "st";
 	public static final String ABBREV_IS_OTHER = "ot";
 	public static final String ABBREV_IS_ARTISAN = "at";
+	
+	public static final String FORM_FAO = "FAO";
+	public static final String FORM_SAVE_ORG = "SAVEOrg";
+	public static final String FORM_CROSE = "CROSE";
+	public static final String FORM_PLAN = "PLAN";
+	public static final String FORM_MARDNR = "MARDNR";
+	public static final String FORM_OTHER_ORG = "OtherOrg";
+	
+	public static final String FINDS_PARTNER_FAO = "partner_fao";
+	public static final String FINDS_PARTNER_SAVE = "partner_save";
+	public static final String FINDS_PARTNER_CROSE = "partner_crose";
+	public static final String FINDS_PARTNER_PLAN = "partner_plan";
+	public static final String FINDS_PARTNER_MARDNR = "partner_mardnr";
+	public static final String FINDS_PARTNER_OTHER = "partner_other";
+	
+	public static final String ABBREV_PARTNER_FAO = "fo";
+	public static final String ABBREV_PARTNER_SAVE = "sv";
+	public static final String ABBREV_PARTNER_CROSE = "cr";
+	public static final String ABBREV_PARTNER_PLAN = "pl";
+	public static final String ABBREV_PARTNER_MARDNR = "md";
+	public static final String ABBREV_PARTNER_OTHER = "pt";
 
 	
 	// For Update Messages
@@ -185,7 +359,11 @@ public class AttributeManager {
 	//  For example, the binary integer 'is=9' or, in binary,
 	//  'is=1001' would represent 'fa and ra" or 'farmer and rancher'.
 	//  Methods are available to perform the encoding.
-	public static final String[] isAFields = {"fa", "fi", "mu", "ra", "st", "ot", "at","fo", "sv", "cr", "pl", "md", "pt","ag","ar","bn","rb"};
+	public static final String[] isAFields = {ABBREV_IS_FARMER, ABBREV_IS_FISHER, ABBREV_IS_MUSO,
+		ABBREV_IS_RANCHER, ABBREV_IS_STOREOWNER, ABBREV_IS_OTHER, ABBREV_IS_ARTISAN, 
+		ABBREV_PARTNER_FAO, ABBREV_PARTNER_SAVE, ABBREV_PARTNER_CROSE, ABBREV_PARTNER_PLAN,
+		ABBREV_PARTNER_MARDNR, ABBREV_PARTNER_OTHER, ABBREV_IS_AGRI, ABBREV_RELATIVE_AGRI,
+		ABBREV_PARTICIPATING_BENE, ABBREV_RELATIVE_BENE};
 	public static final String ABBREV_ISA = "is";
 
 	
@@ -193,6 +371,39 @@ public class AttributeManager {
 	
 	
 	// More Y/N questions for the agri form
+	
+	public static final String FORM_VEGETABLES = "Vegetables";
+	public static final String FORM_CEREAL = "Cereal";
+	public static final String FORM_TUBERS = "Tubers";
+	public static final String FORM_TREE = "Tree";
+	public static final String FORM_LIVRE = "Livre";
+	public static final String FORM_MARMITES = "Marmites";
+	public static final String FORM_POTE = "Pote";
+	public static final String FORM_KG = "Kg";
+	public static final String FORM_PLANTULES = "Plantules";
+	public static final String FORM_BOUTURES = "Boutures";
+	public static final String FORM_HOE = "Hoe";
+	public static final String FORM_PICKAXE = "Pickaxe";
+	public static final String FORM_WHEELBARROW = "Wheelbarrow";
+	public static final String FORM_MACHETTE = "Machette";
+	public static final String FORM_PRUNING_KNIFE = "PruningKnife";
+	public static final String FORM_SHOVEL = "Shovel";
+	public static final String FORM_CROWBAR = "Crowbar";
+	
+	public static final String FINDS_HAVE_BARREAMINES = "have_crowbar";
+	public static final String FINDS_HAVE_BROUETTE = "have_wheelbarrow";
+	public static final String FINDS_HAVE_CEREAL = "have_cereal";
+	public static final String FINDS_HAVE_HOUE = "have_hoe";
+	public static final String FINDS_HAVE_MACHETTE = "have_machete";
+	public static final String FINDS_HAVE_PELLE = "have_shovel";
+	public static final String FINDS_HAVE_PIOCHE = "have_pick";
+	public static final String FINDS_HAVE_SERPETTE = "have_pruning_knife";
+	public static final String FINDS_HAVE_TREE = "have_tree";
+	public static final String FINDS_HAVE_GRAFTING = "have_grafting";
+	public static final String FINDS_HAVE_TUBER = "have_tuber";
+	public static final String FINDS_HAVE_VEGE = "have_vege";
+	public static final String FINDS_HAVE_COFFEE = "have_coffee";
+	
 	public static final String ABBREV_HAVE_BARREMINES = "ba";
 	public static final String ABBREV_HAVE_BROUTTE = "br";
 	public static final String ABBREV_HAVE_CEREAL = "ce";
@@ -210,33 +421,69 @@ public class AttributeManager {
 	// This pair of constants is used to encode/decode Y/N
 	// questions regarding plant, seeds, and tools.
 	public static final String ABBREV_HASA = "hs";
-	public static final String[] hasAFields = {"ba", "br", "ce", "ho", "ma", 
-		"pe", "pi", "se", "tr", "ve", "tu", "co", "gr"};
+	public static final String[] hasAFields = {ABBREV_HAVE_BARREMINES, ABBREV_HAVE_BROUTTE,
+		ABBREV_HAVE_CEREAL, ABBREV_HAVE_HOE, ABBREV_HAVE_MACHETE, ABBREV_HAVE_PELLE, 
+		ABBREV_HAVE_PIOCHE, ABBREV_HAVE_SERPETTE, ABBREV_HAVE_TREE, ABBREV_HAVE_VEG, 
+		ABBREV_HAVE_TUBER, ABBREV_HAVE_COFFEE, ABBREV_HAVE_GRAFTING};
 
 	// -------------- DATA VALUES
 	// These correspond to data values represented as Enums
-	public static final String ABBREV_MALNOURISHED = "M";
-	public static final String ABBREV_EXPECTING = "E";
-	public static final String ABBREV_NURSING = "N";
-	public static final String ABBREV_PREVENTION = "P";
+	// public static final String FORM_MALE="MALE";
+	// public static final String FORM_FEMALE="FEMALE";
+	public static final String FORM_INFANT_MAL = "InfantMal";
+	public static final String FORM_INFANT_PREVENTION = "InfantPrevention";
+	public static final String FORM_MOTHER_EXPECTING = "MotherExpecting";
+	public static final String FORM_MOTHER_NURSING = "MotherNursing";
+	
+	public static final String BUTTON_INFANT_MAL="Enfant mal nourri";
+	public static final String BUTTON_INFANT_PREVENTION="Enfant en prevention";
+	public static final String BUTTON_MOTHER_EXPECTING="Femme enceinte";
+	public static final String BUTTON_MOTHER_NURSING="Femme allaitante";
+	
 	
 	public static final String FINDS_MALNOURISHED = "MALNOURISHED";
 	public static final String FINDS_EXPECTING = "EXPECTING";
 	public static final String FINDS_NURSING = "NURSING";
 	public static final String FINDS_PREVENTION = "PREVENTION";
 	
-	public static final String FINDS_FEMALE = "FEMALE";
-	public static final String FINDS_MALE = "MALE";
-	public static final String FINDS_NO = "NO"; 
-	public static final String FINDS_YES = "YES";
-	
-	public static final String FINDS_TRUE = "TRUE";
-	public static final String FINDS_FALSE = "FALSE";
-
+//	public static final String FINDS_MALNOURISHED_HA = "Enfant Mal"; //Note: different spelling
 	public static final String FINDS_MALNOURISHED_HA = "Enfant Mal Nouri";
 	public static final String FINDS_EXPECTING_HA = "Femme Enceinte";
 	public static final String FINDS_NURSING_HA = "Femme Allaitante";
 	public static final String FINDS_PREVENTION_HA = "Enfant Prevention";
+	
+	public static final String ABBREV_MALNOURISHED = "M";
+	public static final String ABBREV_EXPECTING = "E";
+	public static final String ABBREV_NURSING = "N";
+	public static final String ABBREV_PREVENTION = "P";
+
+	public static final String FORM_FEMALE="Female";
+	public static final String FORM_MALE="Male";
+	public static final String FORM_NO = "No";	
+	public static final String FORM_YES = "Yes";
+	
+	public static final String FINDS_FEMALE = "FEMALE";
+	public static final String FINDS_MALE = "MALE";
+	public static final String FINDS_NO = "NO"; 
+	public static final String FINDS_YES = "YES";
+	public static final String FINDS_TRUE = "TRUE";
+	public static final String FINDS_FALSE = "FALSE";
+	
+	public static final String BUTTON_FEMALE="FEMALE";
+	public static final String BUTTON_MALE="MALE";
+	public static final String BUTTON_NO="No";
+	public static final String BUTTON_YES="Yes";
+	
+	public static final String ABBREV_FEMALE= "F";
+	public static final String ABBREV_MALE= "M";
+	public static final String ABBREV_NO= "N";	
+	public static final String ABBREV_YES= "Y";
+
+	
+	public static final String ABBREV_TRUE = "T";
+	public static final String ABBREV_FALSE = "F";
+
+
 	
 	public static final String FINDS_Q_CHANGE = "ChangeInStatus";   // Added to incorporated changes to beneficiary type
 	public static final String FINDS_CHANGE_TYPE = "ChangeType";
@@ -249,28 +496,22 @@ public class AttributeManager {
 	public static final String FINDS_Q_TRANSFER_PREVENTION = "Transfer from lactating to prevention";
 	public static final String FINDS_Q_TRANSFER_LOCATION = "Transfer due to location change";
 	public static final String FINDS_Q_TRANSFER_ABORTION = "Transfer due to abortion";
+	public static final String FINDS_Q_CHANGED_BENEFICIARY_DATA = "Changed beneficiary data"; //Added
 	public static final String FINDS_Q_DECEASED= "Deceased";
 	public static final String FINDS_Q_FRAUD = "Fraud";
 	public static final String FINDS_Q_COMPLETED_PROGRAM = "Completed program";
+	public static final String FINDS_Q_OTHER = "Other"; //Added
 	
 	//NEEDS TO TRANSLATE
-	public static final String FINDS_Q_TRANSFER_NEW_CATEGORY_HA = "Transfere nan yon lòt kategori";
-	public static final String FINDS_Q_TRANSFER_LACTATE_HA = "Transfert de: Enceinte à Allaitante";
-	public static final String FINDS_Q_TRANSFER_PREVENTION_HA = "Transfert de: Allaitante à Prevention";
-	public static final String FINDS_Q_TRANSFER_LOCATION_HA = "Transfert du au changement de lieu";
-	public static final String FINDS_Q_TRANSFER_ABORTION_HA = "Transfert du a cause de l’avortement";
-	public static final String FINDS_Q_DECEASED_HA = "Decede";
-	public static final String FINDS_Q_FRAUD_HA = "Fraud";
-	public static final String FINDS_Q_COMPLETED_PROGRAM_HA = "Cycle complet";
-	
-	
-	public static final String ABBREV_FEMALE= "F";
-	public static final String ABBREV_MALE= "M";
-	public static final String ABBREV_YES= "Y";
-	public static final String ABBREV_NO= "N";
-	
-	public static final String ABBREV_TRUE = "T";
-	public static final String ABBREV_FALSE = "F";
+//	public static final String FINDS_Q_TRANSFER_NEW_CATEGORY_HA = "Transfere nan yon lòt kategori";
+//	public static final String FINDS_Q_TRANSFER_LACTATE_HA = "Transfert de: Enceinte à Allaitante";
+//	public static final String FINDS_Q_TRANSFER_PREVENTION_HA = "Transfert de: Allaitante à Prevention";
+//	public static final String FINDS_Q_TRANSFER_LOCATION_HA = "Transfert du au changement de lieu";
+//	public static final String FINDS_Q_TRANSFER_ABORTION_HA = "Transfert du a cause de l’avortement";
+//	public static final String FINDS_Q_DECEASED_HA = "Decede";
+//	public static final String FINDS_Q_FRAUD_HA = "Fraud";
+//	public static final String FINDS_Q_COMPLETED_PROGRAM_HA = "Cycle complet";
+
 	
 	public static final String FINDS_RELATIVE_AGRI = "relative_having_agrAid";
 	public static final String FINDS_RELATIVE_BENE = "relative_having_beneAid";
@@ -285,81 +526,6 @@ public class AttributeManager {
 	public static final String FINDS_AGRI_DOSSIER = "Agri";
 	public static final String FINDS_BOTH_DOSSIER = "Both";
 	
-	
-	
-	public static final String FINDS_DOSSIER =  "dossier";
-	public static final String FINDS_TYPE =  "type";
-	public static final String FINDS_STATUS =  "status";
-	public static final String MESSAGE_TEXT =  "message";
-	public static final String FINDS_MESSAGE_ID = "message_id";
-	public static final String FINDS_MESSAGE_STATUS =  "message_status";
-	public static final String FINDS_FIRSTNAME =  "firstname";
-	public static final String FINDS_LASTNAME =  "lastname";
-	public static final String FINDS_ADDRESS =  "address";
-	public static final String FINDS_DOB =  "dob";
-	public static final String FINDS_HOUSEHOLD_SIZE =  "household_size";
-	public static final String FINDS_BENEFICIARY_CATEGORY =  "beneficiary_category";
-	public static final String FINDS_SEX =  "sex";
-//	public static final String FINDS_HEALTH_CENTER =  "health_center";
-	public static final String FINDS_DISTRIBUTION_POST =  "distribution_post";
-	public static final String MESSAGE_BENEFICIARY_ID =  "beneficiary_id";
-	public static final String MESSAGE_CREATED_AT =  "created_time";
-	public static final String MESSAGE_SENT_AT =  "sent_time";
-	public static final String MESSAGE_ACK_AT =  "acknowledged_time";
-	
-	public static final String FINDS_Q_MOTHER_LEADER = "mother_leader";
-	public static final String FINDS_Q_VISIT_MOTHER_LEADER = "visit_mother_leader";
-	public static final String FINDS_Q_PARTICIPATING_AGRI = "participating_agri";
-	public static final String FINDS_Q_RELATIVE_AGRI = "same_person_participating_agri";
-	public static final String FINDS_Q_PARTICIPATING_BENE = "participating_bene";
-	public static final String FINDS_Q_RELATIVE_BENE = "same_person_participating_bene";
-	
-
-	public static final String FINDS_NAME_AGRI_PARTICIPANT = "name_agri_participant";
-	public static final String FINDS_LAND_AMOUNT = "amount_of_land";
-	public static final String FINDS_RELATIVE_1 = "relative_1";
-	public static final String FINDS_RELATIVE_2 = "relative_2";
-	public static final String FINDS_MONTHS_REMAINING = "MonthsRemaining";
-
-	
-	public static final String FINDS_IS_FARMER = "is_farmer";
-	public static final String FINDS_IS_FISHER = "is_fisher";
-	public static final String FINDS_IS_MUSO = "is_MUSO";
-	public static final String FINDS_IS_RANCHER = "is_rancher";
-	public static final String FINDS_IS_STOREOWN = "is_store_owner";
-	public static final String FINDS_IS_OTHER = "is_other";
-	public static final String FINDS_IS_ARTISAN = "is_artisan";
-	
-	public static final String FINDS_HAVE_BARREAMINES = "have_crowbar";
-	public static final String FINDS_HAVE_BROUETTE = "have_wheelbarrow";
-	public static final String FINDS_HAVE_CEREAL = "have_cereal";
-	public static final String FINDS_HAVE_HOUE = "have_hoe";
-	public static final String FINDS_HAVE_MACHETTE = "have_machete";
-	public static final String FINDS_HAVE_PELLE = "have_shovel";
-	public static final String FINDS_HAVE_PIOCHE = "have_pick";
-	public static final String FINDS_HAVE_SERPETTE = "have_pruning_knife";
-	public static final String FINDS_HAVE_TREE = "have_tree";
-	public static final String FINDS_HAVE_GRAFTING = "have_grafting";
-	public static final String FINDS_HAVE_TUBER = "have_tuber";
-	public static final String FINDS_HAVE_VEGE = "have_vege";
-	public static final String FINDS_HAVE_COFFEE = "have_coffee";
-
-	
-	
-	public static final String FINDS_PARTNER_FAO = "partner_fao";
-	public static final String FINDS_PARTNER_SAVE = "partner_save";
-	public static final String FINDS_PARTNER_CROSE = "partner_crose";
-	public static final String FINDS_PARTNER_PLAN = "partner_plan";
-	public static final String FINDS_PARTNER_MARDNR = "partner_mardnr";
-	public static final String FINDS_PARTNER_OTHER = "partner_other";
-	
-	public static final String ABBREV_PARTNER_FAO = "fo";
-	public static final String ABBREV_PARTNER_SAVE = "sv";
-	public static final String ABBREV_PARTNER_CROSE = "cr";
-	public static final String ABBREV_PARTNER_PLAN = "pl";
-	public static final String ABBREV_PARTNER_MARDNR = "md";
-	public static final String ABBREV_PARTNER_OTHER = "pt";
-
 
 //  These don't seem to be necessary any more, but keep as commented out
 //	public static final String ABBREV_AGRICULTURE_1 = "a1";
@@ -384,47 +550,144 @@ public class AttributeManager {
 	// ------------- LONG NAMES FOR SERVER SIDE FORMS
 	// Don't know whether all of these are necessary?
 	// TODO:  Clean up this list
-	public static final String LONG_FIRST = "firstName";
-	public static final String LONG_LAST = "lastName";
-	public static final String LONG_COMMUNE = "commune";
+//	public static final String LONG_FIRST = "firstName";
+//	public static final String LONG_LAST = "lastName";
+	public static final String LONG_MESSAGE_NUMBER = "messageNumber"; //added
+//	public static final String LONG_COMMUNE = "commune";
 	public static final String LONG_COMMUNE_SECTION = "communeSection";
-	public static final String LONG_ADDRESS = "address";
-	public static final String LONG_AGE = "age";
-	public static final String LONG_SEX = "sex";
-	public static final String LONG_BENEFICIARY = "beneficiary";
+//	public static final String LONG_ADDRESS = "address";
+//	public static final String LONG_AGE = "age";
+//	public static final String LONG_SEX = "sex";
+//	public static final String LONG_BENEFICIARY = "beneficiary";
 	public static final String LONG_NUMBER_IN_HOME = "NumberInHome";
-//	public static final String LONG_HEALTH_CENTER = "HealthCenter";
-	public static final String LONG_DISTRIBUTION_POST = "DistributionPost";
-	public static final String LONG_NAME_CHILD = "nameChild";
-	public static final String LONG_NAME_WOMAN = "nameWoman";
-	public static final String LONG_HUSBAND = "husband";
-	public static final String LONG_FATHER = "father";
-	public static final String LONG_MOTHER_LEADER = "motherLeader";
-	public static final String LONG_VISIT_MOTHER = "visitMotherLeader";
-	public static final String LONG_AGRICULTURE_1 = "agriculture1";
-	public static final String LONG_AGRICULTURE_2 = "agriculture2";
-	public static final String LONG_GIVE_NAME = "giveName";
-	public static final String LONG_YES = "yes";
-	public static final String LONG_NO = "no";
-	public static final String LONG_MALE = "male";
-	public static final String LONG_FEMALE = "female";
-	public static final String LONG_INFANT_CATEGORY = "InfantCategory";
+//	public static final String LONG_HEALTH_CENTER = "HealthCenter"; //re-added
+//	public static final String LONG_DISTRIBUTION_POST = "DistributionPost";
+//	public static final String LONG_RELATIVE_1 = "Relative1"; //added
+//	public static final String LONG_RELATIVE_2 = "Relative2"; //added
+//	public static final String LONG_NAME_CHILD = "nameChild";
+//	public static final String LONG_NAME_WOMAN = "nameWoman";
+//	public static final String LONG_HUSBAND = "husband";
+//	public static final String LONG_FATHER = "father";
+//	public static final String LONG_MOTHER_LEADER = "motherLeader";
+//	public static final String LONG_VISIT_MOTHER = "visitMotherLeader";
+//	public static final String LONG_AGRICULTURE_1 = "agriculture1";
+//	public static final String LONG_AGRICULTURE_2 = "agriculture2";
+//	public static final String LONG_GIVE_NAME = "giveName";
+//	public static final String LONG_YES = "yes";
+//	public static final String LONG_NO = "no";
+//	public static final String LONG_MALE = "male";
+//	public static final String LONG_FEMALE = "female";
+//	public static final String LONG_INFANT_CATEGORY = "InfantCategory";
 	public static final String LONG_INFANT_MAL = "InfantMal";
 	public static final String LONG_INFANT_PREVENTION = "InfantPrevention";
-	public static final String LONG_MOTHER_CATEGORY = "MotherCategory";
+//	public static final String LONG_MOTHER_CATEGORY = "MotherCategory";
 	public static final String LONG_MOTHER_EXPECTING = "MotherExpecting";
 	public static final String LONG_MOTHER_NURSING = "MotherNursing";
-	public static final String LONG_DATA = "data";
-	public static final String LONG_GENERAL_INFORMATION = "generalInformation";
-	public static final String LONG_MCHN_INFORMATION = "mchnInformation";
-	public static final String LONG_CONTROLS = "controls";
+//	public static final String LONG_DATA = "data";
+//	public static final String LONG_GENERAL_INFORMATION = "generalInformation";
+//	public static final String LONG_MCHN_INFORMATION = "mchnInformation";
+//	public static final String LONG_CONTROLS = "controls";
+	public static final String LONG_MESSAGE_STATUS = "messageStatus"; //added
 	public static final String LONG_STATUS = "status";
 	public static final String LONG_ID = "id";
 	public static final String LONG_AV = "AV";
 	public static final String LONG_TYPE = "type";
+	public static final String LONG_MESSAGE_TYPE = "messageType";  //added
+//	public static final String LONG_BENEFICIARY_TYPE = "beneficiaryType"; //added
 	
-	public static final String LONG_DOSSIER = "dossier";
+//	public static final String LONG_DOSSIER = "dossier";
+	
+	
+	
+// Distribution points
+
 		
+	
+//	public static final String CENTRE_PLATON_CEDRE = "Centre Platon Cedre";
+//	public static final String POINT_FIXE_KA_TOUSEN = "Point Fixe Ka Tousen";
+//	public static final String ANSE_A_PITRES = "Anse a Pitres";
+//	public static final String DISPENSAIRE_BANANE = "Dispensaire Banane";
+//	public static final String PT_FIXE_CALUMETTE = "Pt fixe Calumette";
+//	public static final String CENTRE_BELLE_ANCE = "Centre Belle-Ance";
+//	public static final String DISPENSAIRE_MAPOU = "Dispensaire Mapou";
+//	public static final String PT_FIXE_BAIE_D_ORANGE = "Pt fixe Baie d_orange";
+//	public static final String DISPENSAIRE_MARBRIOLE = "Dispensaire marbriole";
+//	public static final String PT_FIXE_CORAIL_LAMOTHE = "Pt fixe Corail Lamothe";
+//	public static final String PT_FIXE_PICHON = "Pt fixe Pichon";
+//	public static final String PT_FIXE_BEL_AIR = "Pt Fixe Bel-air";
+//	public static final String LABICHE = "Labiche";
+//	public static final String CENTRE_ST_JOSPEH = "Centre St Joseph";
+//	public static final String DISPENSAIRE_STE_ROSE_DE_LIMA = "Dispensaire Ste rose de lima";
+//	public static final String DISPENSAIRE_BOUCAN_BELIER = "Dispensaire Boucan Belier";
+//	public static final String DISPENSAIRE_RICOT = "Dispensaire Ricot";
+//	public static final String PT_FIXE_MACIEUX = "Pt Fixe Macieux";
+//	public static final String POINT_FIXE_DE_MAYETTE = "Point Fixe de Mayette";
+//	public static final String POINT_FIXE_DE_AMAZONE = "Point Fixe de Amazone";
+//	public static final String DISPENSAIRE_GRAND_GOSIER = "Dispensaire Grand Gosier";
+//	public static final String DISPENSAIRE_BODARIE = "Dispensaire Bodarie";
+//	public static final String PT_FIXE_BOULAY = "Pt fixe Boulay";
+//	public static final String CENTRE_SACRE_COUER = "Centre Sacre Coeur";
+//	public static final String DISPENSAIRE_DE_SAVANE_ZOMBI = "Dispensaire de Savane Zombi";
+//	public static final String DISPENSAIRE_DE_BLACK_MAR_MIRANDE = "Dispensaire de Bleck/ Mar Mirande";
+//	
+	
+	public static final String DISTRIBUTION_POINT_1 = "Centre Platon Cedre";
+	public static final String DISTRIBUTION_POINT_2 = "Point Fixe Ka Tousen";
+	public static final String DISTRIBUTION_POINT_3 = "Anse a Pitres";
+	public static final String DISTRIBUTION_POINT_4 = "Dispensaire Banane";
+	public static final String DISTRIBUTION_POINT_5 = "Pt fixe Calumette";
+	public static final String DISTRIBUTION_POINT_6 = "Centre Belle-Ance";
+	public static final String DISTRIBUTION_POINT_7 = "Dispensaire Mapou";
+	public static final String DISTRIBUTION_POINT_8 = "Pt fixe Baie d_orange";
+	public static final String DISTRIBUTION_POINT_9 = "Dispensaire marbriole";
+	public static final String DISTRIBUTION_POINT_10 = "Pt fixe Corail Lamothe";
+	public static final String DISTRIBUTION_POINT_11 = "Pt fixe Pichon";
+	public static final String DISTRIBUTION_POINT_12 = "Pt Fixe Bel-air";
+	public static final String DISTRIBUTION_POINT_13 = "Labiche";
+	public static final String DISTRIBUTION_POINT_14 = "Centre St Joseph";
+	public static final String DISTRIBUTION_POINT_15 = "Dispensaire Ste rose de lima";
+	public static final String DISTRIBUTION_POINT_16 = "Dispensaire Boucan Belier";
+	public static final String DISTRIBUTION_POINT_17 = "Dispensaire Ricot";
+	public static final String DISTRIBUTION_POINT_18 = "Pt Fixe Macieux";
+	public static final String DISTRIBUTION_POINT_19 = "Point Fixe de Mayette";
+	public static final String DISTRIBUTION_POINT_20 = "Point Fixe de Amazone";
+	public static final String DISTRIBUTION_POINT_21 = "Dispensaire Grand Gosier";
+	public static final String DISTRIBUTION_POINT_22 = "Dispensaire Bodarie";
+	public static final String DISTRIBUTION_POINT_23 = "Pt fixe Boulay";
+	public static final String DISTRIBUTION_POINT_24 = "Centre Sacre Coeur";
+	public static final String DISTRIBUTION_POINT_25 = "Dispensaire de Savane Zombi";
+	public static final String DISTRIBUTION_POINT_26 = "Dispensaire de Bleck/ Mar Mirande";
+	
+	
+	public static final String ABBREV_D1 = "HEAP-014";
+	public static final String ABBREV_D2 = "HEAP-017";
+	public static final String ABBREV_D3 = "HEAP-020";
+	public static final String ABBREV_D4 = "HEAP-021";
+	public static final String ABBREV_D5 = "HEBA-016";
+	public static final String ABBREV_D6 = "HEBA-017";
+	public static final String ABBREV_D7 = "HEBA006";
+	public static final String ABBREV_D8 = "HEBA007";
+	public static final String ABBREV_D9 = "HEBA008";	
+	public static final String ABBREV_D10 = "HEBA009";
+	public static final String ABBREV_D11 = "HEBA010";	
+	public static final String ABBREV_D12 = "HEBA015";	
+	public static final String ABBREV_D13 = "HECF-005";	
+	public static final String ABBREV_D14 = "HECF001";	
+	public static final String ABBREV_D15 = "HECF002";	
+	public static final String ABBREV_D16 = "HECF003";	
+	public static final String ABBREV_D17 = "HECF004";	
+	public static final String ABBREV_D18 = "HECF023";	
+	public static final String ABBREV_D19 = "HECF024";	
+	public static final String ABBREV_D20 = "HECF025";
+	public static final String ABBREV_D21 = "HEGG-018";
+	public static final String ABBREV_D22 = "HEGG-019";
+	public static final String ABBREV_D23 = "HEGG-020";
+	public static final String ABBREV_D24 = "HETH-024";
+	public static final String ABBREV_D25 = "HETH026";
+	public static final String ABBREV_D26 = "HETH027";
+	
+	
+	
 	
 	/**
 	 * Private constructor means it can't be instantiated.
@@ -445,192 +708,158 @@ public class AttributeManager {
 	 */
 //	public AttributeManager() {
 	public static void init() {
-		abbreviations = new HashMap<String, String>();
-//		abbreviations.put(ABBREV_ATTRIBUTE, LONG_ATTRIBUTE);
-		abbreviations.put(ABBREV_FIRST, LONG_FIRST);
-		abbreviations.put(ABBREV_LAST, LONG_LAST);
-		abbreviations.put(ABBREV_COMMUNE, LONG_COMMUNE);
-		abbreviations.put(ABBREV_COMMUNE_SECTION, LONG_COMMUNE_SECTION);
-		abbreviations.put(ABBREV_LOCALITY, LONG_ADDRESS);
-		abbreviations.put(ABBREV_DOB, LONG_AGE);
-		abbreviations.put(ABBREV_SEX, LONG_SEX);
-		
-		abbreviations.put(ABBREV_CATEGORY, LONG_BENEFICIARY);
-		abbreviations.put(ABBREV_NUMBER_IN_HOME, LONG_NUMBER_IN_HOME);
-//		abbreviations.put(ABBREV_HEALTH_CENTER, LONG_HEALTH_CENTER);
-		abbreviations.put(ABBREV_DISTRIBUTION_POST, LONG_DISTRIBUTION_POST);
-		abbreviations.put(ABBREV_NAME_CHILD, LONG_NAME_CHILD);
-		abbreviations.put(ABBREV_NAME_WOMAN, LONG_NAME_WOMAN);
-		abbreviations.put(ABBREV_HUSBAND, LONG_HUSBAND);
-		abbreviations.put(ABBREV_FATHER, LONG_FATHER);
-//		abbreviations.put(ABBREV_MOTHER_LEADER, LONG_MOTHER_LEADER);
-//		abbreviations.put(ABBREV_VISIT_MOTHER, LONG_VISIT_MOTHER);
-//		abbreviations.put(ABBREV_AGRICULTURE_1, LONG_AGRICULTURE_1);
-//		abbreviations.put(ABBREV_AGRICULTURE_2, LONG_AGRICULTURE_2);
-//		abbreviations.put(ABBREV_GIVE_NAME, LONG_GIVE_NAME);
-//		abbreviations.put(ABBREV_YES, LONG_YES);
-//		abbreviations.put(ABBREV_NO, LONG_NO);
-//		abbreviations.put(ABBREV_MALE, LONG_MALE);
-//		abbreviations.put(ABBREV_FEMALE, LONG_FEMALE);
-//		abbreviations.put(ABBREV_INFANT_CATEGORY, LONG_INFANT_CATEGORY);
-//		abbreviations.put(ABBREV_INFANT_MAL, LONG_INFANT_MAL);
-//		abbreviations.put(ABBREV_INFANT_PREVENTION, LONG_INFANT_PREVENTION);
-//		abbreviations.put(ABBREV_MOTHER_CATEGORY, LONG_MOTHER_CATEGORY);
-//		abbreviations.put(ABBREV_MOTHER_EXPECTING, LONG_MOTHER_EXPECTING);
-//		abbreviations.put(ABBREV_MOTHER_NURSING, LONG_MOTHER_NURSING);
-//		abbreviations.put(ABBREV_DATA, LONG_DATA);
-//		abbreviations.put(ABBREV_GENERAL_INFORMATION, LONG_GENERAL_INFORMATION);
-//		abbreviations.put(ABBREV_MCHN_INFORMATION, LONG_MCHN_INFORMATION);
-//		abbreviations.put(ABBREV_CONTROLS, LONG_CONTROLS);
-		
-		abbreviations.put(ABBREV_STATUS,LONG_STATUS);
-		abbreviations.put(ABBREV_ID,LONG_ID);
-		abbreviations.put(ABBREV_AV, LONG_AV);
-		abbreviations.put(ABBREV_TYPE, LONG_TYPE);
-		
-//		// This group maps SMS abbreviations to full attribute names (for the server)
-//		abbreviations.put("i", FINDS_DOSSIER);
-//		abbreviations.put("t", FINDS_TYPE);
-//		abbreviations.put( "s", FINDS_STATUS);
-//		abbreviations.put("t", MESSAGE_TEXT);
-//		abbreviations.put( "m", FINDS_MESSAGE_STATUS);
-//		abbreviations.put("f", FINDS_FIRSTNAME);
-//		abbreviations.put("l", FINDS_LASTNAME);
-//		abbreviations.put("a", FINDS_ADDRESS);
-//		abbreviations.put("b", FINDS_DOB);
-//		abbreviations.put("n", FINDS_HOUSEHOLD_SIZE);
-//		abbreviations.put("c", FINDS_BENEFICIARY_CATEGORY);
-//		abbreviations.put("g", FINDS_SEX);
-//		abbreviations.put("h", FINDS_HEALTH_CENTER);
-//		abbreviations.put("d", FINDS_DISTRIBUTION_POST);
-//		abbreviations.put("#", MESSAGE_BENEFICIARY_ID);
-//		abbreviations.put("t1", MESSAGE_CREATED_AT);
-//		abbreviations.put("t2", MESSAGE_SENT_AT);
-//		abbreviations.put("t3", MESSAGE_ACK_AT);
+		mappings = new HashMap<String, String>();
+//		mappings.put(ABBREV_ATTRIBUTE, LONG_ATTRIBUTE);
+//		mappings.put(ABBREV_FIRST, LONG_FIRST);
+//		mappings.put(ABBREV_LAST, LONG_LAST);
+//		mappings.put(ABBREV_COMMUNE, LONG_COMMUNE);
+		mappings.put(ABBREV_COMMUNE_SECTION, LONG_COMMUNE_SECTION);
+//		mappings.put(ABBREV_LOCALITY, LONG_ADDRESS);
+//		mappings.put(ABBREV_DOB, LONG_AGE);
+//		mappings.put(ABBREV_SEX, LONG_SEX);
 //		
-//		
+//		mappings.put(ABBREV_CATEGORY, LONG_BENEFICIARY);
+//		mappings.put(ABBREV_NUMBER_IN_HOME, LONG_NUMBER_IN_HOME);
+//		mappings.put(ABBREV_HEALTH_CENTER, LONG_HEALTH_CENTER); //Re-added
+//		mappings.put(ABBREV_DISTRIBUTION_POST, LONG_DISTRIBUTION_POST);
+//		mappings.put(ABBREV_NAME_CHILD, LONG_NAME_CHILD);
+//		mappings.put(ABBREV_NAME_WOMAN, LONG_NAME_WOMAN);
+//		mappings.put(ABBREV_HUSBAND, LONG_HUSBAND);
+//		mappings.put(ABBREV_FATHER, LONG_FATHER);
+//		mappings.put(ABBREV_RELATIVE_1, LONG_RELATIVE_1); //added
+//		mappings.put(ABBREV_RELATIVE_2, LONG_RELATIVE_2); //added
+
+		
+		mappings.put(ABBREV_MESSAGE_STATUS, LONG_MESSAGE_STATUS); //added
+		mappings.put(ABBREV_STATUS,LONG_STATUS);
+		mappings.put(ABBREV_ID,LONG_ID);
+		mappings.put(ABBREV_AV, LONG_AV);
+		mappings.put(ABBREV_TYPE, LONG_TYPE);
+		
 		
 		// ----------- DATA MAPPINGS -------------------------
-		abbreviations.put(FINDS_FEMALE, ABBREV_FEMALE);
-		abbreviations.put(FINDS_MALE,ABBREV_MALE);
-		abbreviations.put(FINDS_NO, ABBREV_NO);
-		abbreviations.put(FINDS_YES, ABBREV_YES);
+		mappings.put(FINDS_FEMALE, ABBREV_FEMALE);
+		mappings.put(FINDS_MALE,ABBREV_MALE);
+		mappings.put(FINDS_NO, ABBREV_NO);
+		mappings.put(FINDS_YES, ABBREV_YES);
 		
-		abbreviations.put(FINDS_TRUE, ABBREV_TRUE);
-		abbreviations.put(FINDS_FALSE, ABBREV_FALSE);
+		mappings.put(FINDS_TRUE, ABBREV_TRUE);
+		mappings.put(FINDS_FALSE, ABBREV_FALSE);
 
-		abbreviations.put(FINDS_EXPECTING, ABBREV_EXPECTING);
-		abbreviations.put(FINDS_EXPECTING_HA, ABBREV_EXPECTING);
-		abbreviations.put(FINDS_NURSING, ABBREV_NURSING);
-		abbreviations.put(FINDS_NURSING_HA, ABBREV_NURSING);	
-		abbreviations.put(FINDS_PREVENTION, ABBREV_PREVENTION);
-		abbreviations.put(FINDS_PREVENTION_HA, ABBREV_PREVENTION);		
-		abbreviations.put(FINDS_MALNOURISHED, ABBREV_MALNOURISHED);
-		abbreviations.put(FINDS_MALNOURISHED_HA, ABBREV_MALNOURISHED);	
+		mappings.put(FINDS_EXPECTING, ABBREV_EXPECTING);
+		mappings.put(FINDS_EXPECTING_HA, ABBREV_EXPECTING);
+		mappings.put(FINDS_NURSING, ABBREV_NURSING);
+		mappings.put(FINDS_NURSING_HA, ABBREV_NURSING);	
+		mappings.put(FINDS_PREVENTION, ABBREV_PREVENTION);
+		mappings.put(FINDS_PREVENTION_HA, ABBREV_PREVENTION);		
+		mappings.put(FINDS_MALNOURISHED, ABBREV_MALNOURISHED);
+		mappings.put(FINDS_MALNOURISHED_HA, ABBREV_MALNOURISHED);	
 		
 		//  Server needs abbrev --> long for these Enums
-		abbreviations.put(ABBREV_EXPECTING, FINDS_EXPECTING);
-		abbreviations.put(ABBREV_NURSING, FINDS_NURSING);
-		abbreviations.put(ABBREV_PREVENTION, FINDS_PREVENTION);
-		abbreviations.put(ABBREV_MALNOURISHED, FINDS_MALNOURISHED);
+		mappings.put(ABBREV_EXPECTING, FINDS_EXPECTING);
+		mappings.put(ABBREV_NURSING, FINDS_NURSING);
+		mappings.put(ABBREV_PREVENTION, FINDS_PREVENTION);
+		mappings.put(ABBREV_MALNOURISHED, FINDS_MALNOURISHED);
 		
 		//  Not sure whether these are needed on server side?
-//		abbreviations.put("F", "FEMALE");
-//		abbreviations.put("M", "MALE");
-//		abbreviations.put("E", "EXPECTING");
-//		abbreviations.put("N", "NURSING");
-//		abbreviations.put("P", "PREVENTION");
-//		abbreviations.put("MA", "MALNOURISHED");
+//		mappings.put("F", "FEMALE");
+//		mappings.put("M", "MALE");
+//		mappings.put("E", "EXPECTING");
+//		mappings.put("N", "NURSING");
+//		mappings.put("P", "PREVENTION");
+//		mappings.put("MA", "MALNOURISHED");
 				
 		// ---------- MOBILE SIDE MAPPINGS TO ABBREVIATIONS
 		// This group maps Db column names in the on-phone Db to SMS abbreviations
 		
-		abbreviations.put(FINDS_BENE_DOSSIER, ABBREV_BENE_DOSSIER);
-		abbreviations.put(FINDS_AGRI_DOSSIER, ABBREV_AGRI_DOSSIER);
-		abbreviations.put(FINDS_BOTH_DOSSIER, ABBREV_BOTH_DOSSIER);
-		abbreviations.put(FINDS_DOSSIER, ABBREV_DOSSIER);
-		abbreviations.put(FINDS_TYPE, ABBREV_TYPE);
-		abbreviations.put(FINDS_STATUS, ABBREV_STATUS);
-		abbreviations.put(MESSAGE_TEXT, ABBREV_MESSAGE_TEXT);
-		abbreviations.put(FINDS_MESSAGE_STATUS, ABBREV_MESSAGE_STATUS);
-		abbreviations.put(FINDS_MESSAGE_ID, ABBREV_MESSAGE_ID);
-		abbreviations.put(FINDS_FIRSTNAME, ABBREV_FIRST);
-		abbreviations.put(FINDS_LASTNAME, ABBREV_LAST);
-		abbreviations.put(FINDS_ADDRESS, ABBREV_LOCALITY);
-		abbreviations.put(FINDS_DOB, ABBREV_DOB);
-		abbreviations.put(FINDS_HOUSEHOLD_SIZE, ABBREV_NUMBER_IN_HOME);
-		abbreviations.put(FINDS_BENEFICIARY_CATEGORY, ABBREV_CATEGORY );
-		abbreviations.put(FINDS_SEX, ABBREV_SEX);
-//		abbreviations.put(FINDS_HEALTH_CENTER, ABBREV_HEALTH_CENTER);
-		abbreviations.put(LONG_COMMUNE_SECTION, ABBREV_COMMUNE_SECTION);
-		abbreviations.put(FINDS_DISTRIBUTION_POST,ABBREV_DISTRIBUTION_POST);
-		abbreviations.put(MESSAGE_BENEFICIARY_ID, ABBREV_ID);
-		abbreviations.put(MESSAGE_CREATED_AT, ABBREV_CREATED_AT);
-		abbreviations.put(MESSAGE_SENT_AT, ABBREV_SENT_AT);
-		abbreviations.put(MESSAGE_ACK_AT, ABBREV_ACK_AT);
+		mappings.put(FINDS_BENE_DOSSIER, ABBREV_BENE_DOSSIER);
+		mappings.put(FINDS_AGRI_DOSSIER, ABBREV_AGRI_DOSSIER);
+		mappings.put(FINDS_BOTH_DOSSIER, ABBREV_BOTH_DOSSIER);
+		mappings.put(FINDS_DOSSIER, ABBREV_DOSSIER);
+		mappings.put(FINDS_TYPE, ABBREV_TYPE);
+		mappings.put(FINDS_STATUS, ABBREV_STATUS);
+		mappings.put(FINDS_BENEFICIARY_TYPE, ABBREV_TYPE); //added
+		mappings.put(FINDS_MESSAGE_TYPE, ABBREV_STATUS); //added
+		mappings.put(MESSAGE_TEXT, ABBREV_MESSAGE_TEXT);
+		mappings.put(FINDS_MESSAGE_STATUS, ABBREV_MESSAGE_STATUS);
+		mappings.put(FINDS_MESSAGE_ID, ABBREV_MESSAGE_ID);
+		mappings.put(FINDS_FIRSTNAME, ABBREV_FIRST);
+		mappings.put(FINDS_LASTNAME, ABBREV_LAST);
+		mappings.put(FINDS_ADDRESS, ABBREV_LOCALITY);
+		mappings.put(FINDS_DOB, ABBREV_DOB);
+		mappings.put(FINDS_HOUSEHOLD_SIZE, ABBREV_NUMBER_IN_HOME);
+		mappings.put(FINDS_BENEFICIARY_CATEGORY, ABBREV_CATEGORY );
+		mappings.put(FINDS_SEX, ABBREV_SEX);
+		mappings.put(FINDS_HEALTH_CENTER, ABBREV_HEALTH_CENTER);//re-added
+		mappings.put(LONG_COMMUNE_SECTION, ABBREV_COMMUNE_SECTION);
+		mappings.put(FINDS_DISTRIBUTION_POST,ABBREV_DISTRIBUTION_POST);
+		mappings.put(MESSAGE_BENEFICIARY_ID, ABBREV_ID);
+		mappings.put(MESSAGE_CREATED_AT, ABBREV_CREATED_AT);
+		mappings.put(MESSAGE_SENT_AT, ABBREV_SENT_AT);
+		mappings.put(MESSAGE_ACK_AT, ABBREV_ACK_AT);
 		
-		abbreviations.put(FINDS_Q_MOTHER_LEADER, ABBREV_IS_MOTHERLEADER);
-		abbreviations.put(FINDS_Q_VISIT_MOTHER_LEADER, ABBREV_VISIT_MOTHERLEADER);
-		abbreviations.put(FINDS_Q_PARTICIPATING_AGRI, ABBREV_IS_AGRI);
-		abbreviations.put(FINDS_Q_RELATIVE_AGRI, ABBREV_RELATIVE_AGRI);
-		abbreviations.put(FINDS_Q_PARTICIPATING_BENE, ABBREV_PARTICIPATING_BENE);
-		abbreviations.put(FINDS_Q_RELATIVE_BENE, ABBREV_RELATIVE_BENE);
-		abbreviations.put(FINDS_LAND_AMOUNT, ABBREV_LAND_AMT);
-		abbreviations.put(FINDS_RELATIVE_1, "r1");
-		abbreviations.put(FINDS_RELATIVE_2, "r2");
-		abbreviations.put(FINDS_MONTHS_REMAINING, "mo");
-		abbreviations.put(FINDS_IS_FARMER, ABBREV_IS_FARMER);
-		abbreviations.put(FINDS_IS_FISHER, ABBREV_IS_FISHER);
-		abbreviations.put(FINDS_IS_MUSO, ABBREV_IS_MUSO);
-		abbreviations.put(FINDS_IS_RANCHER, ABBREV_IS_RANCHER);
-		abbreviations.put(FINDS_IS_STOREOWN, ABBREV_IS_STOREOWNER);
-		abbreviations.put(FINDS_IS_ARTISAN, ABBREV_IS_ARTISAN);
-		abbreviations.put(FINDS_IS_OTHER, ABBREV_IS_OTHER);
-		abbreviations.put(FINDS_HAVE_BARREAMINES, ABBREV_HAVE_BARREMINES);
-		abbreviations.put(FINDS_HAVE_BROUETTE, ABBREV_HAVE_BROUTTE);
-		abbreviations.put(FINDS_HAVE_CEREAL, ABBREV_HAVE_CEREAL);
-		abbreviations.put(FINDS_HAVE_HOUE, ABBREV_HAVE_HOE);
-		abbreviations.put(FINDS_HAVE_MACHETTE, ABBREV_HAVE_MACHETE);
-		abbreviations.put(FINDS_HAVE_PELLE, ABBREV_HAVE_PELLE);
-		abbreviations.put(FINDS_HAVE_PIOCHE, ABBREV_HAVE_PIOCHE);
-		abbreviations.put(FINDS_HAVE_SERPETTE, ABBREV_HAVE_SERPETTE);
-		abbreviations.put(FINDS_HAVE_TREE, ABBREV_HAVE_TREE);
-		abbreviations.put(FINDS_HAVE_GRAFTING, ABBREV_HAVE_GRAFTING);
-		abbreviations.put(FINDS_HAVE_TUBER, ABBREV_HAVE_TUBER);
-		abbreviations.put(FINDS_HAVE_VEGE, ABBREV_HAVE_VEG);
-		abbreviations.put(FINDS_HAVE_COFFEE, ABBREV_HAVE_COFFEE);
+		mappings.put(FINDS_Q_MOTHER_LEADER, ABBREV_IS_MOTHERLEADER);
+		mappings.put(FINDS_Q_VISIT_MOTHER_LEADER, ABBREV_VISIT_MOTHERLEADER);
+		mappings.put(FINDS_Q_PARTICIPATING_AGRI, ABBREV_IS_AGRI);
+		mappings.put(FINDS_Q_RELATIVE_AGRI, ABBREV_RELATIVE_AGRI);
+		mappings.put(FINDS_Q_PARTICIPATING_BENE, ABBREV_PARTICIPATING_BENE);
+		mappings.put(FINDS_Q_RELATIVE_BENE, ABBREV_RELATIVE_BENE);
+		mappings.put(FINDS_LAND_AMOUNT, ABBREV_LAND_AMT);
+		mappings.put(FINDS_RELATIVE_1, ABBREV_RELATIVE_1);
+		mappings.put(FINDS_RELATIVE_2, ABBREV_RELATIVE_2);
+		mappings.put(FINDS_MONTHS_REMAINING, ABBREV_MONTHS);
+		mappings.put(FINDS_IS_FARMER, ABBREV_IS_FARMER);
+		mappings.put(FINDS_IS_FISHER, ABBREV_IS_FISHER);
+		mappings.put(FINDS_IS_MUSO, ABBREV_IS_MUSO);
+		mappings.put(FINDS_IS_RANCHER, ABBREV_IS_RANCHER);
+		mappings.put(FINDS_IS_STOREOWN, ABBREV_IS_STOREOWNER);
+		mappings.put(FINDS_IS_ARTISAN, ABBREV_IS_ARTISAN);
+		mappings.put(FINDS_IS_OTHER, ABBREV_IS_OTHER);
+		mappings.put(FINDS_HAVE_BARREAMINES, ABBREV_HAVE_BARREMINES);
+		mappings.put(FINDS_HAVE_BROUETTE, ABBREV_HAVE_BROUTTE);
+		mappings.put(FINDS_HAVE_CEREAL, ABBREV_HAVE_CEREAL);
+		mappings.put(FINDS_HAVE_HOUE, ABBREV_HAVE_HOE);
+		mappings.put(FINDS_HAVE_MACHETTE, ABBREV_HAVE_MACHETE);
+		mappings.put(FINDS_HAVE_PELLE, ABBREV_HAVE_PELLE);
+		mappings.put(FINDS_HAVE_PIOCHE, ABBREV_HAVE_PIOCHE);
+		mappings.put(FINDS_HAVE_SERPETTE, ABBREV_HAVE_SERPETTE);
+		mappings.put(FINDS_HAVE_TREE, ABBREV_HAVE_TREE);
+		mappings.put(FINDS_HAVE_GRAFTING, ABBREV_HAVE_GRAFTING);
+		mappings.put(FINDS_HAVE_TUBER, ABBREV_HAVE_TUBER);
+		mappings.put(FINDS_HAVE_VEGE, ABBREV_HAVE_VEG);
+		mappings.put(FINDS_HAVE_COFFEE, ABBREV_HAVE_COFFEE);
 		
-		abbreviations.put(FINDS_PARTNER_FAO, ABBREV_PARTNER_FAO);
-		abbreviations.put(FINDS_PARTNER_SAVE, ABBREV_PARTNER_SAVE);
-		abbreviations.put(FINDS_PARTNER_CROSE, ABBREV_PARTNER_CROSE);
-		abbreviations.put(FINDS_PARTNER_PLAN, ABBREV_PARTNER_PLAN);
-		abbreviations.put(FINDS_PARTNER_MARDNR, ABBREV_PARTNER_MARDNR);
-		abbreviations.put(FINDS_PARTNER_OTHER, ABBREV_PARTNER_OTHER);
+		mappings.put(FINDS_PARTNER_FAO, ABBREV_PARTNER_FAO);
+		mappings.put(FINDS_PARTNER_SAVE, ABBREV_PARTNER_SAVE);
+		mappings.put(FINDS_PARTNER_CROSE, ABBREV_PARTNER_CROSE);
+		mappings.put(FINDS_PARTNER_PLAN, ABBREV_PARTNER_PLAN);
+		mappings.put(FINDS_PARTNER_MARDNR, ABBREV_PARTNER_MARDNR);
+		mappings.put(FINDS_PARTNER_OTHER, ABBREV_PARTNER_OTHER);
 		
 		
 		
 		// These are for beneficiary update messages
-		abbreviations.put(FINDS_Q_CHANGE, ABBREV_Q_CHANGE);  
-		abbreviations.put(FINDS_CHANGE_TYPE, ABBREV_CHANGE_TYPE);  
-		abbreviations.put(FINDS_Q_PRESENT, ABBREV_Q_PRESENT);
-		abbreviations.put(FINDS_Q_TRANSFER, ABBREV_Q_TRANSFER);
-		abbreviations.put(FINDS_Q_MODIFICATIONS, ABBREV_Q_MODIFICATIONS);
-		abbreviations.put(FINDS_Q_TRANSFER_NEW_CATEGORY, ABBREV_Q_TRANSFER);
-		abbreviations.put(FINDS_Q_TRANSFER_LACTATE, ABBREV_Q_TRANSFER_LACTATE);
-		abbreviations.put(FINDS_Q_TRANSFER_PREVENTION, ABBREV_Q_TRANSFER_PREVENTION);
-		abbreviations.put(FINDS_Q_TRANSFER_LOCATION, ABBREV_Q_TRANSFER_LOCATION);
-		abbreviations.put(FINDS_Q_TRANSFER_ABORTION, ABBREV_Q_TRANSFER_ABORTION);
-		abbreviations.put(FINDS_Q_DECEASED, ABBREV_Q_DECEASED);
-		abbreviations.put(FINDS_Q_FRAUD, ABBREV_Q_FRAUD);
-		abbreviations.put(FINDS_Q_COMPLETED_PROGRAM, ABBREV_Q_COMPLETED_PROGRAM);
-		abbreviations.put(FINDS_Q_TRANSFER_NEW_CATEGORY_HA, ABBREV_Q_TRANSFER);
-		abbreviations.put(FINDS_Q_TRANSFER_LACTATE_HA, ABBREV_Q_TRANSFER_LACTATE);
-		abbreviations.put(FINDS_Q_TRANSFER_PREVENTION_HA, ABBREV_Q_TRANSFER_PREVENTION);
-		abbreviations.put(FINDS_Q_TRANSFER_LOCATION_HA, ABBREV_Q_TRANSFER_LOCATION);
-		abbreviations.put(FINDS_Q_TRANSFER_ABORTION_HA, ABBREV_Q_TRANSFER_ABORTION);
-		abbreviations.put(FINDS_Q_DECEASED_HA, ABBREV_Q_DECEASED);
-		abbreviations.put(FINDS_Q_FRAUD_HA, ABBREV_Q_FRAUD);
-		abbreviations.put(FINDS_Q_COMPLETED_PROGRAM_HA, ABBREV_Q_COMPLETED_PROGRAM);
+		mappings.put(FINDS_Q_CHANGE, ABBREV_Q_CHANGE);  
+		mappings.put(FINDS_CHANGE_TYPE, ABBREV_CHANGE_TYPE);  
+		mappings.put(FINDS_Q_PRESENT, ABBREV_Q_PRESENT);
+		mappings.put(FINDS_Q_TRANSFER, ABBREV_Q_TRANSFER);
+		mappings.put(FINDS_Q_MODIFICATIONS, ABBREV_Q_MODIFICATIONS);
+		mappings.put(FINDS_Q_TRANSFER_NEW_CATEGORY, ABBREV_Q_TRANSFER);
+		mappings.put(FINDS_Q_TRANSFER_LACTATE, ABBREV_Q_TRANSFER_LACTATE);
+		mappings.put(FINDS_Q_TRANSFER_PREVENTION, ABBREV_Q_TRANSFER_PREVENTION);
+		mappings.put(FINDS_Q_TRANSFER_LOCATION, ABBREV_Q_TRANSFER_LOCATION);
+		mappings.put(FINDS_Q_TRANSFER_ABORTION, ABBREV_Q_TRANSFER_ABORTION);
+		mappings.put(FINDS_Q_DECEASED, ABBREV_Q_DECEASED);
+		mappings.put(FINDS_Q_FRAUD, ABBREV_Q_FRAUD);
+		mappings.put(FINDS_Q_COMPLETED_PROGRAM, ABBREV_Q_COMPLETED_PROGRAM);
+//		mappings.put(FINDS_Q_TRANSFER_NEW_CATEGORY_HA, ABBREV_Q_TRANSFER);
+//		mappings.put(FINDS_Q_TRANSFER_LACTATE_HA, ABBREV_Q_TRANSFER_LACTATE);
+//		mappings.put(FINDS_Q_TRANSFER_PREVENTION_HA, ABBREV_Q_TRANSFER_PREVENTION);
+//		mappings.put(FINDS_Q_TRANSFER_LOCATION_HA, ABBREV_Q_TRANSFER_LOCATION);
+//		mappings.put(FINDS_Q_TRANSFER_ABORTION_HA, ABBREV_Q_TRANSFER_ABORTION);
+//		mappings.put(FINDS_Q_DECEASED_HA, ABBREV_Q_DECEASED);
+//		mappings.put(FINDS_Q_FRAUD_HA, ABBREV_Q_FRAUD);
+//		mappings.put(FINDS_Q_COMPLETED_PROGRAM_HA, ABBREV_Q_COMPLETED_PROGRAM);
 		
 
 		
@@ -638,39 +867,72 @@ public class AttributeManager {
 		// There should be mappings for all fixed data
 		// used on the phone.
 //		<string-array name="distribution_point_names"> 
-		abbreviations.put("Centre Platon Cedre",  "d1" );
-		abbreviations.put("Point Fixe Ka Tousen",  "d2" );
-		abbreviations.put("Anse a Pitres",  "d3" );
-		abbreviations.put("Dispensaire Banane",  "d4" );
-		abbreviations.put("Pt fixe Calumette",  "d5" );
-		abbreviations.put("Centre Belle-Ance",  "d6" );
-		abbreviations.put("Dispensaire Mapou", "d7"  );
-		abbreviations.put("Pt fixe Baie d_orange", "d8"  );
-		abbreviations.put("Dispensaire marbriole", "d9"  );	
-		abbreviations.put("Pt fixe Corail Lamothe", "d10"  );
-		abbreviations.put("Pt fixe Pichon",   "d11" );	
-		abbreviations.put("Pt Fixe Bel-air",  "d12"  );	
-		abbreviations.put("Labiche",   "d13" );	
-		abbreviations.put("Centre St Joseph",   "d14" );	
-		abbreviations.put("Dispensaire Ste rose de lima",  "d15"  );	
-		abbreviations.put("Dispensaire Boucan Belier", "d16"   );	
-		abbreviations.put("Dispensaire Ricot",   "d17" );	
-		abbreviations.put("Pt Fixe Macieux",  "d18"  );	
-		abbreviations.put("Point Fixe de Mayette",   "d19" );	
-		abbreviations.put("Point Fixe de Amazone",   "d20" );
-		abbreviations.put("Dispensaire Grand Gosier", "d21"   );
-		abbreviations.put("Dispensaire Bodarie",   "d22" );
-		abbreviations.put("Pt fixe Boulay",  "d23"  );
-		abbreviations.put("Centre Sacre Coeur",   "d24" );
-		abbreviations.put("Dispensaire de Savane Zombi",  "d25"  );
-		abbreviations.put("Dispensaire de Bleck/ Mar Mirande",   "d26" );
+		mappings.put(DISTRIBUTION_POINT_1,  ABBREV_D1 );
+		mappings.put(DISTRIBUTION_POINT_2,  ABBREV_D2 );
+		mappings.put(DISTRIBUTION_POINT_3,  ABBREV_D3 );
+		mappings.put(DISTRIBUTION_POINT_4,  ABBREV_D4 );
+		mappings.put(DISTRIBUTION_POINT_5,  ABBREV_D5 );
+		mappings.put(DISTRIBUTION_POINT_6,  ABBREV_D6 );
+		mappings.put(DISTRIBUTION_POINT_7, ABBREV_D7  );
+		mappings.put(DISTRIBUTION_POINT_8, ABBREV_D8  );
+		mappings.put(DISTRIBUTION_POINT_9, ABBREV_D9  );	
+		mappings.put(DISTRIBUTION_POINT_10, ABBREV_D10  );
+		mappings.put(DISTRIBUTION_POINT_11,   ABBREV_D11 );	
+		mappings.put(DISTRIBUTION_POINT_12,  ABBREV_D12  );	
+		mappings.put(DISTRIBUTION_POINT_13,   ABBREV_D13 );	
+		mappings.put(DISTRIBUTION_POINT_14,   ABBREV_D14 );	
+		mappings.put(DISTRIBUTION_POINT_15,  ABBREV_D15  );	
+		mappings.put(DISTRIBUTION_POINT_16, ABBREV_D16   );	
+		mappings.put(DISTRIBUTION_POINT_17,   ABBREV_D17 );	
+		mappings.put(DISTRIBUTION_POINT_18,  ABBREV_D18  );	
+		mappings.put(DISTRIBUTION_POINT_19,   ABBREV_D19 );	
+		mappings.put(DISTRIBUTION_POINT_20,   ABBREV_D20 );
+		mappings.put(DISTRIBUTION_POINT_21, ABBREV_D21   );
+		mappings.put(DISTRIBUTION_POINT_22,   ABBREV_D22 );
+		mappings.put(DISTRIBUTION_POINT_23, ABBREV_D23  );
+		mappings.put(DISTRIBUTION_POINT_24,   ABBREV_D24 );
+		mappings.put(DISTRIBUTION_POINT_25,  ABBREV_D25  );
+		mappings.put(DISTRIBUTION_POINT_26,   ABBREV_D26 );
+		
+		mappings.put(ABBREV_D1, DISTRIBUTION_POINT_1);
+		mappings.put(ABBREV_D2, DISTRIBUTION_POINT_2);
+		mappings.put(ABBREV_D3, DISTRIBUTION_POINT_3);
+		mappings.put(ABBREV_D4, DISTRIBUTION_POINT_4);
+		mappings.put(ABBREV_D5, DISTRIBUTION_POINT_5);
+		mappings.put(ABBREV_D6, DISTRIBUTION_POINT_6);
+		mappings.put(ABBREV_D7, DISTRIBUTION_POINT_7);
+		mappings.put(ABBREV_D8, DISTRIBUTION_POINT_8);
+		mappings.put(ABBREV_D9, DISTRIBUTION_POINT_9);
+		mappings.put(ABBREV_D10, DISTRIBUTION_POINT_10);
+		mappings.put(ABBREV_D11, DISTRIBUTION_POINT_11);
+		mappings.put(ABBREV_D12, DISTRIBUTION_POINT_12);
+		mappings.put(ABBREV_D13, DISTRIBUTION_POINT_13);
+		mappings.put(ABBREV_D14, DISTRIBUTION_POINT_14);
+		mappings.put(ABBREV_D15, DISTRIBUTION_POINT_15);
+		mappings.put(ABBREV_D16, DISTRIBUTION_POINT_16);
+		mappings.put(ABBREV_D17, DISTRIBUTION_POINT_17);
+		mappings.put(ABBREV_D18, DISTRIBUTION_POINT_18);
+		mappings.put(ABBREV_D19, DISTRIBUTION_POINT_19);
+		mappings.put(ABBREV_D20, DISTRIBUTION_POINT_20);
+		mappings.put(ABBREV_D21, DISTRIBUTION_POINT_21);
+		mappings.put(ABBREV_D22, DISTRIBUTION_POINT_22);
+		mappings.put(ABBREV_D23, DISTRIBUTION_POINT_23);
+		mappings.put(ABBREV_D24, DISTRIBUTION_POINT_24);
+		mappings.put(ABBREV_D25, DISTRIBUTION_POINT_25);
+		mappings.put(ABBREV_D26, DISTRIBUTION_POINT_26);
 		
 //		<string-array name="health_center_names"> 
-		abbreviations.put("Centre de sant� une", "h1" );
-		abbreviations.put("Centre de sant� deux", "h2"  );
-		abbreviations.put("Centre de sant� trois", "h3" );
-		abbreviations.put("Centre de sant� quatre", "h4" );
-		abbreviations.put("Centre de sant� cinq", "h4" );
+//		mappings.put("Centre de sant� une", "h1" );
+//		mappings.put("Centre de sant� deux", "h2"  );
+//		mappings.put("Centre de sant� trois", "h3" );
+//		mappings.put("Centre de sant� quatre", "h4" );
+//		mappings.put("Centre de sant� cinq", "h5" );
+//		
+//		mappings.put("h1", "Centre de sant� un");
+//		mappings.put("h2", "Centre de sant� deux");
+//		mappings.put("h3", "Centre de sant� trois");
+//		mappings.put("h4", "Centre de sant� quatre");
+//		mappings.put("h5", "Centre de sant� cinq");
 		
 	}
 	
@@ -721,7 +983,7 @@ Dispensaire de Bleck/ Mar Mirande	HETH027
 //	public static String mapToLong(Beneficiary.Abbreviated abbreviatedAttributes, String s){
 	public static String mapToLong(boolean abbreviatedAttributes, String s){
 		if (abbreviatedAttributes) {
-			String str = abbreviations.get(s);
+			String str = mappings.get(s);
 			if (str != null)
 				return str;
 			else 
@@ -731,24 +993,6 @@ Dispensaire de Bleck/ Mar Mirande	HETH027
 			return s;
 	}
 	
-//	/**
-//	 * Server side method.
-//	 * Maps the short form field names to long form
-//	 * @param abbreviatedAttributes TRUE if abbreviated, FALSE if not
-//	 * @param s the String to be mapped to long
-//	 * @return the long form of the String
-//	 */
-//	public String mapToLong(SmsMessage.Abbreviated abbreviatedAttributes, String s){
-//		if (abbreviatedAttributes == SmsMessage.Abbreviated.TRUE) {
-//			String str = abbreviations.get(s);
-//			if (str != null)
-//				return str;
-//			else 
-//				return "";
-//		}
-//		else
-//			return s;
-//	}
 	
 	/**
 	 * Mobile side method. 
@@ -782,20 +1026,7 @@ Dispensaire de Bleck/ Mar Mirande	HETH027
 		return false;
 	}
 	
-//	/**
-//	 * Convert a value to an abbreviated value. This is mostly
-//	 * used for the names of health centers and distribution posts.
-//	 * @param val a String of the form "Name of Some Health Center"
-//	 * @return a String of the form "1" representing that health center
-//	 */
-//	public static String convertValToAbbrev(String val) {
-//		String abbrev = abbreviations.get(val);
-//		if (abbrev != null)
-//			return abbrev;
-//		else 
-//			return val;
-//	}
-//	
+
 	/**
 	 * Mobile side. 
 	 * Convert a value to an abbreviated value. This is mostly
@@ -805,7 +1036,7 @@ Dispensaire de Bleck/ Mar Mirande	HETH027
 	 */
 	public static String getMapping(String val) {
 		//System.out.println("val = " + val);
-		String result = abbreviations.get(val);
+		String result = mappings.get(val);
 		if (result != null) {
 				return result;
 		}
@@ -817,12 +1048,12 @@ Dispensaire de Bleck/ Mar Mirande	HETH027
 	 * A simple test method. 
 	 */
 	public void testAllAttributes() {
-		Iterator<String> it = abbreviations.keySet().iterator();
-		//Iterator<String> it = abbreviations.values().iterator();
+		Iterator<String> it = mappings.keySet().iterator();
+		//Iterator<String> it = mappings.values().iterator();
 		while (it.hasNext()) { 
 			String s = it.next();
 			
-			//.println(s +  " = " + abbreviations.get(s));
+			//.println(s +  " = " + mappings.get(s));
 		}
 	}
 
@@ -939,7 +1170,7 @@ Dispensaire de Bleck/ Mar Mirande	HETH027
 		AttributeManager am = AttributeManager.getInstance(); // new AttributeManager();
 		//System.out.print(am.mapToLong(false, "f"));
 		//am.testAllAttributes();
-		//System.out.println("Str= " + am.abbreviations.get("M"));
+		//System.out.println("Str= " + am.mappings.get("M"));
 		String ids[] = "1/2".split("/");
 		for (int k = 0; k < ids.length; k++)
 			System.out.println(ids[k]);
