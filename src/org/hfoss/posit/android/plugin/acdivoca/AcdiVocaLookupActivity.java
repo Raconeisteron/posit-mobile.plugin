@@ -121,9 +121,10 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String distrKey = this.getResources().getString(R.string.distribution_point);
 		String distributionCtr = sharedPrefs.getString(distrKey, "");
-		Log.i(TAG, distrKey +"="+ distributionCtr);
+		Log.i(TAG, distrKey +"="+ AttributeManager.getMapping(distributionCtr));
+		Log.i(TAG,"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		
-		((TextView)findViewById(R.id.distribution_label)).setText(distributionCtr);
+		((TextView)findViewById(R.id.distribution_label)).setText(AttributeManager.getMapping(distributionCtr));
 
 		dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
 		
