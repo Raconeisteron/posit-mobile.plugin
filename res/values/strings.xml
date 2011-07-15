@@ -55,8 +55,11 @@
 	<string name="aboutCopyright1">POSIT</string>
 	<string name="aboutCopyright2">Portable Open Search and Identification Tool\n
 	</string>
-	<string name="aboutDescription"> Developed by the Humanitarian FOSS project
+	<string name="aboutDescription"> Developed by the Humanitarian FOSS Project at Trinity College
 	</string>
+	<string name="acdivocaDescription1">ACDI/ VOCA Mobile Phone-Based Beneficiary Registration and Update System</string>
+	<string name="acdivocaDescription2">(POSIT-Haiti)</string>
+	<string name="organizationDescription">Sponsored by the NSF, USAID, and ACDI/VOCA</string>
 	<string name="httpLink">http://hfoss.org</string>
 	<string name="save">Save</string>
 	<string name="closing">No Save</string>
