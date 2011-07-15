@@ -247,9 +247,10 @@ public class SmsService extends Service {
 				// length[1]  the number of 7-bit code units used
 				// length[2]  the number of 7-bit code units remaining
 				// length[3]  an indicator of the encoding code unit size
-				int[] length = SmsMessage.calculateLength(message, true);
+				int[] length = null;
+				length = SmsMessage.calculateLength(message, true);
 				Log.i(TAG, "Length - 7 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
-				length = SmsMessage.calculateLength(message, false);
+				length= SmsMessage.calculateLength(message, false);
 				Log.i(TAG, "Length - 16 bit encoding = " + length[0] + " " + length[1] + " " + length[2] + " " + length[3]);
 
 				// TODO:  Add code to break the message into 2 or more.
@@ -270,7 +271,7 @@ public class SmsService extends Service {
 					}
 				}
 				else {
-					int nMessagesNeeded = length[0];
+ 					int nMessagesNeeded = length[0];
 					ArrayList<String> msgList = smsMgr.divideMessage(message);
 					ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
 //					Iterator<String> msgIt = msgList.iterator();
