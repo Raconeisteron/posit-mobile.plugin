@@ -6,40 +6,34 @@
 	android:background="#000000"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical">
-
-	<ImageView 
-		android:id="@+id/Logo" 
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" 
-		android:layout_alignParentTop="true"
-		android:layout_centerHorizontal="true" 
-		android:src="@drawable/icon" />
-
+		
 	<LinearLayout 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content" 
 		android:gravity="center"
 		android:orientation="vertical">
 
-		<TextView 
+		<TextView
 			android:id="@+id/developmentTeamLabel"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"
 			android:textSize="15sp" 
 			android:textColor="#ffffff" 
-			android:text="@string/aboutCopyright1"
-			android:layout_marginBottom="2sp" 
-			android:layout_centerHorizontal="true" />
+			android:text="@string/acdivocaDescription1"
+			android:layout_marginBottom="3dp" 
+			android:layout_centerHorizontal="true" android:gravity="center"/>
 
-		<TextView 
+		<TextView
 			android:id="@+id/developmentTeamLabel"
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"
 			android:textSize="15sp" 
 			android:textColor="#ffffff" 
-			android:text="@string/aboutCopyright2"
-			android:layout_marginBottom="2sp" 
-			android:layout_centerHorizontal="true" />
+			android:text="@string/acdivocaDescription2"
+			android:layout_marginBottom="3dp" 
+			android:layout_centerHorizontal="true" android:gravity="center"/>
+
+<ImageView android:layout_height="wrap_content" android:src="@drawable/acdivoca_logo" android:layout_width="wrap_content" android:id="@+id/Logo"></ImageView>
 
 		<TextView
 			android:id="@+id/developmentTeamLabel"
@@ -49,7 +43,8 @@
 			android:textColor="#ffffff" 
 			android:text="@string/aboutDescription"
 			android:layout_marginBottom="3dp" 
-			android:layout_centerHorizontal="true" />
+			android:layout_centerHorizontal="true" android:gravity="center"/>
+			
 		<TextView 
 			android:id="@+id/developmentTeamLabel"
 			android:layout_width="wrap_content" 
@@ -57,7 +52,40 @@
 			android:textSize="15sp" 
 			android:textColor="#ffffff" 
 			android:text="@string/httpLink"
-			android:layout_marginBottom="3dp" />
+			android:layout_marginBottom="3dp"/>
+
+		<ImageView android:src="@drawable/hfoss_logo" android:id="@+id/Logo" android:layout_height="match_parent" android:layout_width="wrap_content"></ImageView>
+
+		<TextView 
+			android:id="@+id/developmentTeamLabel"
+			android:layout_width="wrap_content" 
+			android:textSize="15sp" 
+			android:textColor="#ffffff" 
+			android:text="@string/aboutCopyright1"
+			android:layout_marginBottom="2sp" 
+			android:layout_centerHorizontal="true" android:layout_height="match_parent"/>
+
+		<TextView 
+			android:id="@+id/developmentTeamLabel"
+			android:textSize="15sp" 
+			android:textColor="#ffffff" 
+			android:text="@string/aboutCopyright2"
+			android:layout_centerHorizontal="true" android:paddingBottom="0dip" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+			
+		<ImageView android:layout_height="wrap_content" android:src="@drawable/icon" android:layout_width="wrap_content" android:id="@+id/Logo"></ImageView>
+			
+		<TextView
+			android:id="@+id/developmentTeamLabel"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"
+			android:textSize="15sp" 
+			android:textColor="#ffffff" 
+			android:text="@string/organizationDescription"
+			android:layout_marginBottom="3dp" 
+			android:layout_centerHorizontal="true" android:gravity="center"/>
+
+		<ImageView android:src="@drawable/usaid_logo" android:id="@+id/Logo" android:layout_height="wrap_content" android:layout_width="match_parent"></ImageView>	
+
 <!-- 
 		<TextView 
 			android:id="@+id/developmentTeamLabel"
