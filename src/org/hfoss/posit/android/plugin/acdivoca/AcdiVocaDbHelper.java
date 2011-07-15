@@ -82,34 +82,39 @@ public class AcdiVocaDbHelper {
 			if (!addUser(db, values, UserType.SUPER))
 				Log.e(TAG, "Error adding user = " + SUPER_USER_NAME);
 
+			values = new ContentValues();
 			values.put(USER_USERNAME, ADMIN_USER_NAME);
 			values.put(USER_PASSWORD, ADMIN_USER_PASSWORD);
 			values.put(USER_TYPE_STRING, UserType.ADMIN.ordinal());
 			if (!addUser(db, values, UserType.ADMIN)) 
 				Log.e(TAG, "Error adding user = " + ADMIN_USER_NAME);
-
+			
+			values = new ContentValues();
 			values.put(USER_USERNAME, USER_DEFAULT_NAME);
 			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD);
 			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
-			if (addUser(db, values, UserType.USER)) 
+			if (!addUser(db, values, UserType.USER)) 
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
 			
+			values = new ContentValues();
 			values.put(USER_USERNAME, USER_DEFAULT_NAME_2);
 			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD_2);
 			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
-			if (addUser(db, values, UserType.USER)) 
+			if (!addUser(db, values, UserType.USER)) 
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_2);
 			
+			values = new ContentValues();
 			values.put(USER_USERNAME, USER_DEFAULT_NAME_3);
 			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD_3);
 			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
-			if (addUser(db, values, UserType.USER)) 
+			if (!addUser(db, values, UserType.USER)) 
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_3);
 			
+			values = new ContentValues();
 			values.put(USER_USERNAME, USER_DEFAULT_NAME_4);
 			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD_4);
 			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
-			if (addUser(db, values, UserType.USER)) 
+			if (!addUser(db, values, UserType.USER)) 
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_4);
 		}
 
@@ -529,6 +534,7 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	public int authenicateUser(String username, String password, UserType userType) {
+		Log.i(TAG, "Authenticating user = " + username + " Access type = " + userType);
 		int result = 0;
 		if (userType.equals(UserType.ADMIN)) {
 			if (! ((username.equals(ADMIN_USER_NAME) &&  password.equals(ADMIN_USER_PASSWORD)) 
@@ -1522,43 +1528,47 @@ public class AcdiVocaDbHelper {
 	 * @return a String of the form a1=v1, ..., aN=vN
 	 */
 	private String abbreviateBeneficiaryStringForSms(String beneficiary) {
-		String message = "";
-		String abbrev = "";
-		String[] pair = null;
-		
-		String[] attr_val_pairs = beneficiary.split(",");
-		String attr = "";
-		String val = "";
-		for (int k = 0; k < attr_val_pairs.length; k++) {
-			//Log.i(TAG, "Pair-" + k + " = " + attr_val_pairs[k]);
-			pair = attr_val_pairs[k].split("=");
-			if (pair.length == 0) {
-				attr = "";
-				val = "";
-			} else if (pair.length == 1) {
-				attr = pair[0].trim();
-				val = "";
-			} else {
-				attr = pair[0].trim();
-				val = pair[1].trim();
-			}
+        String message = "";
+        String abbrev = "";
+        String[] pair = null;
+        
+        String[] attr_val_pairs = beneficiary.split(",");
+        String attr = "";
+        String val = "";
+        for (int k = 0; k < attr_val_pairs.length; k++) {
+            //Log.i(TAG, "Pair-" + k + " = " + attr_val_pairs[k]);
+            pair = attr_val_pairs[k].split("=");
+            if (pair.length == 0) {
+                attr = "";
+                val = "";
+            } else if (pair.length == 1) {
+                attr = pair[0].trim();
+                val = "";
+            } else {
+                attr = pair[0].trim();
+                val = pair[1].trim();
+            }
 
-			if (!attr.equals(FINDS_ID) 
-					&& !attr.equals(FINDS_PROJECT_ID) 
-					//&& !attr.equals(FINDS_MESSAGE_TEXT) 
-					&& !val.equals("null")
-					) {
-				if(attr.equals(FINDS_DOB))
-					abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, adjustDateForSmsReader(val));	
-				else
-					abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
-				//abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
-				if (!abbrev.equals(""))
-					message += abbrev + ",";
-			}
-		}
-		return message;
-	}
+            if (!attr.equals(FINDS_ID) 
+                    && !attr.equals(FINDS_PROJECT_ID) 
+                    //&& !attr.equals(FINDS_MESSAGE_TEXT) 
+                    && !val.equals("null")
+                    ) {
+                if(attr.equals(FINDS_DOB))
+                    abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, adjustDateForSmsReader(val));
+                if(attr.equals(FINDS_DISTRIBUTION_POST)) //new code to manage codes already in DB
+                    abbrev = AttributeManager.getMapping(FINDS_DISTRIBUTION_POST) + AttributeManager.ATTR_VAL_SEPARATOR + val;
+                else
+                    abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
+                //abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
+                if (!abbrev.equals(""))
+                    message += abbrev + ",";
+            }
+        }
+        return message;
+    }
+
+
 	
 	/**
 	 * Returns the number of babies in prevention or malnouri processed.
