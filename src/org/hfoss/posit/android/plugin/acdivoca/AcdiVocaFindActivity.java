@@ -43,7 +43,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -122,7 +121,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 	Log.i(TAG, "onRestoreInstanceState");
 		mSavedStateValues = (ContentValues) savedInstanceState.get("savedstate");
-		isProbablyEdited = (boolean) savedInstanceState.getBoolean("isprobablyEdited");
+		isProbablyEdited = savedInstanceState.getBoolean("isprobablyEdited");
 		this.displayContentInView(mSavedStateValues);
 		mSavedStateValues = null;
 		super.onRestoreInstanceState(savedInstanceState);
@@ -343,7 +342,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		Spinner spinner = (Spinner)findViewById(R.id.distributionSpinner);
 		if (spinner != null) {
 			spinnerStr = (String) spinner.getSelectedItem();
-			result.put(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST, spinnerStr);
+			result.put(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST, AttributeManager.getMapping(spinnerStr));
 		}
 		
         // ADDING BENEFICIARY CATAGORY FOR MCHN FORM AND RESPECTIVE TEXT FIELDS
@@ -413,8 +412,28 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 		String val = c.getAsString(key);
 		if(val!=null && label != R.string.participating_acdivoca && label != R.string.give_name)
 			tv.setText(getString(label) + ": " +  val);
+		else if (val==null && label != R.string.participating_acdivoca && label != R.string.give_name)
+			tv.setText(getString(label) + ": " + "");	
 		else
-			tv.setText(": "+val);
+			tv.setText(": "+"");
+	}
+	/**
+	 * setDistoTextView method
+	 * @param c is contentValues
+	 * @param id is id of the field
+	 * @param label is label to be added to
+	 * @param key is the text to be looked up
+	 * set the text on the view
+	 */
+	private void setDistroTextView(ContentValues c, int id, int label,String key){
+		TextView tv = ((TextView) findViewById(id));
+		String val = AttributeManager.getMapping(c.getAsString(key));
+		if(val!=null && label != R.string.participating_acdivoca && label != R.string.give_name)
+			tv.setText(getString(label) + ": " +  val);
+		else if (val == null)
+			tv.setText(getString(label) + ": " + "");	
+		else
+			tv.setText(": "+"");
 	}
     /**
      * Displays the content as uneditable labels -- default view.
@@ -454,8 +473,9 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 
 			String mc = values.getAsString(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
 			if (mc != null){
-				setTextView(values, R.id.distro_label, R.string.distribution_post, AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
-			
+
+				setDistroTextView(values, R.id.distro_label, R.string.distribution_post, AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
+				
 				setTextView(values, R.id.bene_category_label, R.string.Beneficiary_Category, AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY);
 
 
@@ -549,7 +569,7 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 
 			// SPINNERS FOR MCHN
 			Spinner spinner = (Spinner)findViewById(R.id.distributionSpinner);
-			setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
+			setDistroSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
 
 			// NUMBNER OF PEOPLE IN HOME
 			displayText(contentValues, R.id.inhomeEdit, AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
@@ -840,6 +860,25 @@ public class AcdiVocaFindActivity extends FindActivity implements OnDateChangedL
 	//spinner function	
 	public static void setSpinner(Spinner spinner, ContentValues contentValues, String attribute){
 		String selected = contentValues.getAsString(attribute);
+		int k = 0;
+		if(selected != null){
+			String item = (String) spinner.getItemAtPosition(k);
+			while (k < spinner.getCount()-1 && !selected.equals(item)) {
+				++k;
+				item = (String) spinner.getItemAtPosition(k);				
+			}
+			if (k < spinner.getCount())
+				spinner.setSelection(k);
+			else
+				spinner.setSelection(0);
+		}
+		else{
+			spinner.setSelection(0);
+		}
+	}
+	
+	public static void setDistroSpinner(Spinner spinner, ContentValues contentValues, String attribute){
+		String selected = AttributeManager.getMapping(contentValues.getAsString(attribute));
 		int k = 0;
 		if(selected != null){
 			String item = (String) spinner.getItemAtPosition(k);

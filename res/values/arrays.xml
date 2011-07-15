@@ -95,8 +95,37 @@
 	<item>Pt fixe Corail Lamothe</item>
 	<item>Pt Fixe Macieux</item>	
 	<item>Pt fixe Pichon</item>		
-
 	</string-array>
+
+	<string-array name="distribution_point_values">
+		<item>HEAP-020</item>
+		<item>HEBA-017</item>
+		<item>HEAP-014</item>
+		<item>HETH-024</item>
+		<item>HECF001</item>
+		<item>HEAP-021</item>
+		<item>HEGG-019</item>
+		<item>HECF003</item>
+		<item>HETH027</item>
+		<item>HETH026</item>
+		<item>HEGG-018</item>
+		<item>HEBA006</item>
+		<item>HEBA008</item>
+		<item>HECF004</item>
+		<item>HECF002</item>
+		<item>HECF-005</item>
+		<item>HECF025</item>
+		<item>HECF024</item>
+		<item>HEAP-017</item>
+		<item>HEBA007</item>
+		<item>HEBA015</item>
+		<item>HEGG-020</item>
+		<item>HEBA-016</item>
+		<item>HEBA009</item>
+		<item>HECF023</item>
+		<item>HEBA010</item>
+	</string-array>
+	
 	
 	<string-array name="health_center_names"> 
 	<item>Centre de santé une</item>
@@ -126,37 +155,6 @@
 	<item>Plantules</item>
 	<item>Boutures</item>
 	</string-array>
-	
-<!--  TODO:  This should probably be deleted -->
-<!-- 	Distribution center list -->
-<!-- 	<string-array name="distribution_centers"> -->
-<!-- 	<item>Anse a Pitres</item> -->
-<!-- 	<item>Centre Belle-Ance</item> -->
-<!-- 	<item>Centre Platon Cedre</item> -->
-<!-- 	<item>Centre Sacre Coeur</item> -->
-<!-- 	<item>Centre St Joseph</item> -->
-<!-- 	<item>Dispensaire Banane</item> -->
-<!-- 	<item>Dispensaire Bodarie</item> -->
-<!-- 	<item>Dispensaire Boucan Belier</item> -->
-<!-- 	<item>Dispensaire de Bleck/ Mar Mirande</item> -->
-<!-- 	<item>Dispensaire de Savane Zombi</item> -->
-<!-- 	<item>Dispensaire Grand Gosier</item> -->
-<!-- 	<item>Dispensaire Mapou</item> -->
-<!-- 	<item>Dispensaire marbriole</item> -->
-<!-- 	<item>Dispensaire Ricot</item> -->
-<!-- 	<item>Dispensaire Ste rose de lima</item> -->
-<!-- 	<item>Labiche</item> -->
-<!-- 	<item>Point Fixe Ka Tousen</item> -->
-<!-- 	<item>Pt fixe Baie d_orange</item> -->
-<!-- 	<item>Pt Fixe Bel-air</item> -->
-<!-- 	<item>Pt fixe Boulay</item> -->
-<!-- 	<item>Pt fixe Calumette</item> -->
-<!-- 	<item>Pt fixe Corail Lamothe</item> -->
-<!-- 	<item>Pt Fixe Macieux</item> -->
-<!-- 	<item>Pt fixe Pichon</item> -->
-<!-- 	<item>Point Fixe de Mayette(CDF)</item> -->
-<!-- 	<item>Point fixe d\'Amazone (CDF)</item> -->
-<!-- 	</string-array> -->
 	
 	<!-- 	Change in status reasons list -->
 	<string-array name="status_change_options">
