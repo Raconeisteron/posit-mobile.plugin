@@ -1263,14 +1263,11 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE);
-			where.and();
-			where.eq(FINDS_DISTRIBUTION_POST, distrSite);
-			where.and();
-			where.eq(FINDS_Q_PRESENT, true);
-			where.and();
-			where.or(where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_PREVENTION),
-					where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_MALNOURISHED));
+			where.and(where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE),
+					where.eq(FINDS_DISTRIBUTION_POST, distrSite),
+					where.eq(FINDS_Q_PRESENT, true),
+					where.or(where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_PREVENTION),
+							where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_MALNOURISHED)));
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			list = avFindDao.query(preparedQuery);
 		} catch (SQLException e) {
@@ -1296,15 +1293,11 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE);
-			where.and();
-			where.eq(FINDS_DISTRIBUTION_POST, distrSite);
-			where.and();
-			where.eq(FINDS_Q_PRESENT, true);
-			where.and();
-			where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_NURSING);
-//			where.or(where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_EXPECTING),
-//					where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_NURSING));
+			where.and(where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE),
+					where.eq(FINDS_DISTRIBUTION_POST, distrSite),
+					where.eq(FINDS_Q_PRESENT, true),
+					where.or(where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_EXPECTING),
+							where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_NURSING)));
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			list = avFindDao.query(preparedQuery);
 		} catch (SQLException e) {
