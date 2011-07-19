@@ -68,7 +68,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 	private AcdiVocaDbHelper mDbHelper;
 	private Button mSaveButton;
 	ContentValues mSavedStateValues = null;
-	
+	int mCurrentViewId;  // Used to distinguish edit from no-edit mode. 
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -130,12 +130,15 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		Log.i(TAG, "onSaveInstanceState");
+		
+		// Don't bother saving state if we're in no-edit mode.
+		if (mCurrentViewId == R.layout.acdivoca_health_beneficiary_noedit)
+			return;
 		mSavedStateValues = this.retrieveContentFromView();
 		outState.putParcelable("savedstate", mSavedStateValues);
 		outState.putBoolean("isprobablyEdited",this.isProbablyEdited);
 		super.onSaveInstanceState(outState);
 	}
-	
 	
 	/**
 	 * 
@@ -156,7 +159,8 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 		} else {
 
 			setContentView(R.layout.acdivoca_registration);  // Should be done after locale configuration
-
+			mCurrentViewId = R.layout.acdivoca_registration;
+			
 			// Listen for clicks on radio buttons, edit texts, spinners, etc.
 			initializeListeners();
 
@@ -436,6 +440,8 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 
 		if (values != null){
 			this.setContentView(R.layout.acdivoca_health_beneficiary_noedit);
+			mCurrentViewId = R.layout.acdivoca_health_beneficiary_noedit;
+			
 			((Button)findViewById(R.id.editFind)).setOnClickListener(this);
 
 			findViewById(R.id.unedit).setVisibility(View.VISIBLE);
@@ -530,6 +536,8 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 
 		if (contentValues != null) {
 			setContentView(R.layout.acdivoca_registration);
+			mCurrentViewId = R.layout.acdivoca_registration;
+			
 			initializeListeners();
 			
 			displayText(contentValues, R.id.lastnameEdit, AcdiVocaDbHelper.FINDS_LASTNAME);

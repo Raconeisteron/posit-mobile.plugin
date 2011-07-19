@@ -70,6 +70,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 	private AcdiVocaDbHelper mDbHelper;
 	private Button mSaveButton;
 	ContentValues mSavedStateValues = null;
+	int mCurrentViewId;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -130,6 +131,11 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		Log.i(TAG, "onSaveInstanceState");
+		
+		// Don't bother saving state if we're in no-edit mode.
+		if (mCurrentViewId == R.layout.acdivoca_agri_beneficiary_noedit)
+			return;
+		
 		mSavedStateValues = this.retrieveContentFromView();
 		outState.putParcelable("savedstate", mSavedStateValues);
 		outState.putBoolean("isprobablyEdited",this.isProbablyEdited);
@@ -157,6 +163,8 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 
 			Log.i(TAG, "Before edited = " + isProbablyEdited);
 			setContentView(R.layout.acdivoca_agri_registration);  // Should be done after locale configuration
+			mCurrentViewId = R.layout.acdivoca_agri_registration;
+			
 			initializeListeners();
 
 			final Intent intent = getIntent();
@@ -319,6 +327,8 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		Log.i(TAG, "Displaying content in review mode");
 		if (values != null){
 			this.setContentView(R.layout.acdivoca_agri_beneficiary_noedit);
+			mCurrentViewId = R.layout.acdivoca_agri_beneficiary_noedit;
+
 			((Button)findViewById(R.id.editFind)).setOnClickListener(this);
 
 			findViewById(R.id.unedit).setVisibility(View.VISIBLE);
@@ -602,6 +612,8 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		Log.i(TAG, "displayContentInView");
 		if (contentValues != null){
 			setContentView(R.layout.acdivoca_agri_registration);
+			mCurrentViewId = R.layout.acdivoca_agri_registration;
+
 			initializeListeners();
 			// DISPLAY LAST NAME
 			displayText(contentValues, R.id.lastnameEdit, AcdiVocaDbHelper.FINDS_LASTNAME);
