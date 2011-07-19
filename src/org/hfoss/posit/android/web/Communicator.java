@@ -354,6 +354,7 @@ public class Communicator {
 	public boolean sendFind(Find find, String action) {
 		boolean success = false;
 		String url;
+		
 		HashMap<String, String> sendMap = find.getContentMapGuid();
 		// Log.i(TAG, "sendFind map = " + sendMap.toString());
 		cleanupOnSend(sendMap);

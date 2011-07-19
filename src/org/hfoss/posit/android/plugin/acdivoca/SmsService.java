@@ -102,54 +102,54 @@ public class SmsService extends Service {
 	 */
 	private synchronized void handleSentMessage (BroadcastReceiver receiver, 
 			int resultCode, Intent intent, String smsMsg)  {
-		String msgId = intent.getAction();  //   arg1.getStringExtra("msgid")
-		int msgIdInt = Integer.parseInt(msgId);
+		String avIdStr = intent.getAction();  //   arg1.getStringExtra("msgid")
+		int avIdInt = Integer.parseInt(avIdStr);
 		
-		Log.i(TAG, "Rcvd broadcast for msg= " + smsMsg);
+		Log.i(TAG, "Rcvd broadcast for msg: " + smsMsg);
 		AcdiVocaMessage avMsg = new AcdiVocaMessage(smsMsg);
 		AcdiVocaDbHelper db =  new AcdiVocaDbHelper(this);
 		switch (resultCode)  {
 		case Activity.RESULT_OK:
-			Log.d (TAG, "Received OK, msgid = " + msgId + " msg:" + avMsg.getSmsMessage());
-			if (msgIdInt < 0) 
+			Log.d (TAG, "Received OK, avId = " + avIdStr + " msg:" + avMsg.getSmsMessage());
+			if (avIdInt < 0) 
 				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
 			else 
-				db.updateMessageStatusForDistribUpdateMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
+				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
 			++nMsgsSent;
 			break;
 		case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-			Log.e(TAG, "Received  generic failure, msgid =  " + msgId + " msg:" + avMsg.getSmsMessage());
-			if (msgIdInt < 0) 
+			Log.e(TAG, "Received  generic failure, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
+			if (avIdInt < 0) 
 				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			else 
-				db.updateMessageStatusForDistribUpdateMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			++nMsgsPending;
 			mErrorMsg = "Generic Failure";
 			break;
 		case SmsManager.RESULT_ERROR_NO_SERVICE:
-			Log.e(TAG, "Received  No service, msgid =  " + msgId + " msg:" + avMsg.getSmsMessage());
-			if (msgIdInt < 0) 
+			Log.e(TAG, "Received  No service, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
+			if (avIdInt < 0) 
 				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			else 
-				db.updateMessageStatusForDistribUpdateMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			++nMsgsPending;
 			mErrorMsg = "No cellular service";
 			break;
 		case SmsManager.RESULT_ERROR_NULL_PDU:
-			Log.e(TAG, "Received Null PDU, msgid =  " + msgId + " msg:" + avMsg.getSmsMessage());
-			if (msgIdInt < 0) 
+			Log.e(TAG, "Received Null PDU, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
+			if (avIdInt < 0) 
 				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			else 
-				db.updateMessageStatusForDistribUpdateMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			++nMsgsPending;
 			mErrorMsg = "Null PDU error";
 			break;
 		case SmsManager.RESULT_ERROR_RADIO_OFF:
-			Log.e(TAG, "Received  Radio off, msgid =  " + msgId + " msg:" + avMsg.getSmsMessage());
-			if (msgIdInt < 0) 
+			Log.e(TAG, "Received  Radio off, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
+			if (avIdInt < 0) 
 				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			else 
-				db.updateMessageStatusForDistribUpdateMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
+				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
 			++nMsgsPending;
 			mErrorMsg = "Texting is off";
 			break;
@@ -228,11 +228,11 @@ public class SmsService extends Service {
 					@Override
 					public synchronized void onReceive(Context arg0, Intent arg1) {
 						try {
-						handleSentMessage(this, getResultCode(), arg1, message);
-						--mBroadcastsOutstanding;
-						
-						unregisterReceiver(this);
-						Log.i(TAG, "Broadcasts outstanding  = " + mBroadcastsOutstanding);
+							handleSentMessage(this, getResultCode(), arg1, message);
+							--mBroadcastsOutstanding;
+
+							unregisterReceiver(this);
+							Log.i(TAG, "Broadcasts outstanding  = " + mBroadcastsOutstanding);
 						} catch (Exception e) {
 							Log.e("BroadcastReceiver", "Error in onReceive for msgId " + arg1.getAction());
 							Log.e("BroadcastReceiver", e.getMessage());

@@ -77,8 +77,8 @@
 <!--       MCHN Strings -->
     <string name="mchn_title">Preciser Infòmasyon d\'registrement MCHN se trouvant au dessous</string>
     <string name="relatives_section">Paran Benefisyè</string>
-    <string name="responsible_if_child">Non responsab(si se timoun)</string>
-    <string name="responsible_if_mother">Reprezentan(si se fanm)</string>
+    <string name="alternate">Reprezentan</string>
+<!--     <string name="responsible_if_mother">Reprezentan(si se fanm)</string> -->
     <string name="father_if_child">Non papa (si se timoun)</string>
     <string name="husband_if_mother">Nom mari (Si se yon fanm)</string>
     
@@ -161,7 +161,7 @@
     <string name="unsent">Pas voye yo</string>
     <string name="sent">Ki voye yo</string>
     <string name="pending">An pending yo</string>
-    <string name="ack">Acknowledged</string>    
+    <string name="ack">Ack</string>     
     <string name="deleted">E passe</string>
    
 <!--         Add and List Menu -->

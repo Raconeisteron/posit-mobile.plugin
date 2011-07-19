@@ -22,6 +22,9 @@
 package org.hfoss.posit.android;
 
 
+import java.sql.SQLException;
+import java.util.List;
+
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
@@ -32,10 +35,14 @@ import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
 import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
 
 import org.hfoss.posit.android.plugin.acdivoca.SearchFilterActivity;
+
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -63,7 +70,9 @@ import android.widget.Toast;
 /**
  * Implements the main activity and the main screen for the POSIT application.
  */
-public class PositMain extends Activity implements OnClickListener { //,RWGConstants {
+public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements android.view.View.OnClickListener {
+
+//extends Activity implements OnClickListener { //,RWGConstants {
 
 	private static final String TAG = "PositMain";
 
@@ -103,6 +112,28 @@ public class PositMain extends Activity implements OnClickListener { //,RWGConst
 		mSpEditor.putString(getString(R.string.smsPhoneKey), getString(R.string.default_phone));
 		mSpEditor.commit();
 		Log.i(TAG, "Preferences= " + mSharedPrefs.getAll().toString());
+		
+		
+		// get our dao
+		Dao<AcdiVocaUser, Integer> avUserDao = null;
+		try {
+			avUserDao = getHelper().getAvUserDao();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// query for all of the data objects in the database
+		List<AcdiVocaUser> list = null;
+		try {
+			list = avUserDao.queryForAll();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// our string builder for building the content-view
+		for (AcdiVocaUser item : list) {
+			Log.i(TAG, "User= " +  item.toString());
+		}
 
 		// If this is a new install, we need to set up the Server
 //		if (mSharedPrefs.getString("SERVER_ADDRESS", "").equals("")) {

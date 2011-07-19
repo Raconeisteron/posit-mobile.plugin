@@ -23,6 +23,7 @@
 package org.hfoss.posit.android.plugin.acdivoca;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.Utils;
@@ -94,8 +95,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	private int mMessageFilter = -1;   		// Set in SearchFilterActivity result
 	private int mNMessagesDisplayed = 0;
 	private int mNFinds = 0;
-	private int mNUnsentFinds = 0;
-	
+	private boolean thereAreUnsentFinds = false;
+		
 	private boolean mMessageListDisplayed = false;
 	private String mSmsReport;
 	
@@ -108,6 +109,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		mSmsReport = smsReport;
 		showDialog(SMS_REPORT);
 	}
+	
 	/** 
 	 * Called when the Activity starts.
 	 *  @param savedInstanceState contains the Activity's previously
@@ -191,60 +193,19 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	 *  causing an error.
 	 */
 	private void fillData(String order_by) {
-		String[] columns = AcdiVocaDbHelper.list_row_data;
-		int [] views = AcdiVocaDbHelper.list_row_views;
-			
-		if (mAction.equals(Intent.ACTION_SEND)) 
-			mCursor = 
-				AcdiVocaFindDataManager.getInstance().fetchFindsByStatus(this, AcdiVocaDbHelper.FINDS_STATUS_NEW);
-		else
-			mCursor = AcdiVocaFindDataManager.getInstance().fetchFindsByProjectId(this, project_id, order_by);
-		
-		// NOTE: This should be refactored to dispense with Cursor to avoid
-		//  possible memory leaks.
-		mNFinds = mCursor.getCount();
-		if (mNFinds == 0) { // No finds
+		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+		List<AcdiVocaFind> list = db.fetchAllBeneficiaries();
+		if (list.size() == 0) {
 			setContentView(R.layout.acdivoca_list_beneficiaries);
-	        mCursor.close();
-			return;
+			return;			
 		}
-		mNUnsentFinds = calculateUnsentFinds(mCursor);
-		startManagingCursor(mCursor); // NOTE: Can't close DB while managing cursor
 
-		// CursorAdapter binds the data in 'columns' to the views in 'views' 
-		// It repeatedly calls ViewBinder.setViewValue() (see below) for each column
-		// NOTE: The columns and views are defined in MyDBHelper.  For each column
-		// there must be a view and vice versa, although the column (data) doesn't
-		// necessarily have to go with the view, as in the case of the thumbnail.
-		// See comments in MyDBHelper.
+		thereAreUnsentFinds = db.queryUnsentBeneficiaries();
 		
-		// REFACTOR:  Create our own adapter that doesn't use Cursor
-		SimpleCursorAdapter adapter = 
-			new SimpleCursorAdapter(this, R.layout.acdivoca_list_row, mCursor, columns, views);
-		adapter.setViewBinder(this);
+		BeneficiaryListAdapter<AcdiVocaFind> adapter = 
+			new BeneficiaryListAdapter(this, R.layout.acdivoca_list_row, list);
 		setListAdapter(adapter); 
-		//stopManagingCursor(mCursor);
-	}
-
-	private int calculateUnsentFinds (Cursor c) {
-		int count = 0;
-		c.moveToFirst();
-		while (!c.isAfterLast()) {  
-			int status = c.getInt(c.getColumnIndex(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS));
-			if (status == AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT 
-					|| status == AcdiVocaDbHelper.MESSAGE_STATUS_PENDING
-//					|| status == AcdiVocaDbHelper.MESSAGE_STATUS_SENT   // Temporary // to resend some sent msgs
-					);
-				++count;
-			try {
-				c.moveToNext();
-			} catch (Exception e) {
-				Log.e(TAG, "Exception, may have exceeded maximum size at row = " + count + " msg: " + e.getMessage());
-				e.printStackTrace();
-				return count;
-			}
-		}
-		return count;
+		Log.i(TAG, "There are unsent finds = " + thereAreUnsentFinds);
 	}
 
 	/**
@@ -260,11 +221,21 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		
+		TextView tv = (TextView) v.findViewById(R.id.row_id);
+		int findId = Integer.parseInt((String) tv.getText());
+		
 		//lookup the id and check the beneficiary type
 		//based on that prepare the intent
 		//Intent intent = new Intent(this, AcdiVocaFindActivity.class);
         AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-        ContentValues values = db.fetchFindDataById(id, null);
+        AcdiVocaFind avFind = db.fetchFindById(findId, null);
+        if (avFind == null) {
+        	Log.e(TAG, "Unable to lookup find with id = " + findId);
+        	return;
+        }
+        ContentValues values = avFind.toContentValues();
+        
+//        ContentValues values = db.fetchFindDataById(id, null);
         
         Log.i(TAG, "###############################################");
         Log.i(TAG, values.toString());
@@ -277,14 +248,14 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
  			intent = new Intent(this, AcdiVocaNewAgriActivity.class);
  			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_AGRI);
  		}
- 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
- 			intent = new Intent(this, AcdiVocaFindActivity.class);
- 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
- 		}
+// 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
+// 			intent = new Intent(this, AcdiVocaFindActivity.class);
+// 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
+// 		}
  		
  		intent.setAction(Intent.ACTION_EDIT);
 		if (DBG) Log.i(TAG,"id = " + id);
-		intent.putExtra(AcdiVocaDbHelper.FINDS_ID, id);
+		intent.putExtra(AcdiVocaDbHelper.FINDS_ID, (long) findId);
 
 		startActivityForResult(intent, FIND_FROM_LIST);
 	}
@@ -324,7 +295,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 			if (AppControlManager.isRegularUser()) {
 				listItem.setVisible(false);
 				syncItem.setVisible(true);
-				if (mNUnsentFinds > 0)
+				if (thereAreUnsentFinds)
 					syncItem.setEnabled(true);
 				else 
 					syncItem.setEnabled(false);
@@ -359,7 +330,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 			}
 		} else {
 			// Case where Finds are displayed
-			if (mAction.equals(Intent.ACTION_SEND) && mNUnsentFinds > 0) 
+			if (mAction.equals(Intent.ACTION_SEND) && thereAreUnsentFinds) 
 				syncItem.setEnabled(true);
 			else 
 				syncItem.setEnabled(false);
@@ -461,25 +432,25 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		showDialog(SEND_MSGS_ALERT);
 	}
 	
-	/**
-	 * Helper method to delete SMS messages. 
-	 */
-	private void deleteMessages() {
-		int nMsgs = mAdapter.getCount();
-		int nDels = 0;
-		int k = 0;
-		while (k < nMsgs) {
-			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
-			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
-			Log.i(TAG, "To Delete: " + acdiVocaMsg.getSmsMessage());
-			
-			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-			if (db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_DEL))
-				++nDels;
-			++k;
-		}
-		Toast.makeText(this, getString(R.string.toast_deleted) + nDels + getString(R.string.toast_messages), Toast.LENGTH_SHORT).show();
-	}
+//	/**
+//	 * Helper method to delete SMS messages. 
+//	 */
+//	private void deleteMessages() {
+//		int nMsgs = mAdapter.getCount();
+//		int nDels = 0;
+//		int k = 0;
+//		while (k < nMsgs) {
+//			AcdiVocaMessage acdiVocaMsg = mAdapter.getItem(k);
+//			int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+//			Log.i(TAG, "To Delete: " + acdiVocaMsg.getSmsMessage());
+//			
+//			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//			if (db.updateMessageStatus(acdiVocaMsg, AcdiVocaDbHelper.MESSAGE_STATUS_DEL))
+//				++nDels;
+//			++k;
+//		}
+//		Toast.makeText(this, getString(R.string.toast_deleted) + nDels + getString(R.string.toast_messages), Toast.LENGTH_SHORT).show();
+//	}
 	
 
 	/**                                                                                                                                                                                       
@@ -708,25 +679,25 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 							finish();
 						}
 					}).create();
-		case CONFIRM_DELETE_DIALOG:
-			return new AlertDialog.Builder(this)
-			.setIcon(R.drawable.alert_dialog_icon)
-			.setTitle(R.string.confirm_delete_messages)
-			.setPositiveButton(R.string.alert_dialog_ok, 
-					new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-					if (mMessageListDisplayed) {
-						deleteMessages();
-						mMessageFilter = -1;
-						fillData(null);
-					} 
-					dialog.cancel();  
-				}
-			}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-					/* User clicked Cancel so do nothing */
-				}
-			}).create();
+//		case CONFIRM_DELETE_DIALOG:
+//			return new AlertDialog.Builder(this)
+//			.setIcon(R.drawable.alert_dialog_icon)
+//			.setTitle(R.string.confirm_delete_messages)
+//			.setPositiveButton(R.string.alert_dialog_ok, 
+//					new DialogInterface.OnClickListener() {
+//				public void onClick(DialogInterface dialog, int whichButton) {
+//					if (mMessageListDisplayed) {
+//						deleteMessages();
+//						mMessageFilter = -1;
+//						fillData(null);
+//					} 
+//					dialog.cancel();  
+//				}
+//			}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+//				public void onClick(DialogInterface dialog, int whichButton) {
+//					/* User clicked Cancel so do nothing */
+//				}
+//			}).create();
 
 		} // switch
 
@@ -774,9 +745,51 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	}
 
 	
-	
+	/**
+	 * Adapter for displaying beneficiaries. 
+	 *
+	 * @param <AcdiVocaFind>
+	 */
+	private class BeneficiaryListAdapter<AcdiVocaFind> extends ArrayAdapter<AcdiVocaFind> {
+		private List<AcdiVocaFind> items;
+		
+		public BeneficiaryListAdapter(Context context, int textViewResourceId, List<AcdiVocaFind> items) {
+			super(context, textViewResourceId, items);
+			this.items = items;
+		}
+		
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+                View v = convertView;
+                if (v == null) {
+                    LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    v = vi.inflate(R.layout.acdivoca_list_row, null);
+                }
+                AcdiVocaFind avFind = items.get(position);
+                if (avFind != null) {
+                        TextView tv = (TextView) v.findViewById(R.id.row_id);
+                        tv.setText(""+((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).id);
+                        tv = (TextView) v.findViewById(R.id.dossierText);
+                        tv.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).dossier);
+                        tv = (TextView) v.findViewById(R.id.lastname_field);
+                        tv.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).lastname);
+                        tv = (TextView) v.findViewById(R.id.firstname_field);
+                        tv.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).firstname);
+                        tv = (TextView) v.findViewById(R.id.messageStatusText);
+                        int messageStatus = ((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).message_status;
+                        String status = AcdiVocaDbHelper.MESSAGE_STATUS_STRINGS[messageStatus];
+                        tv.setText(status);
+                }
+                return v;
+        }
+	}
 	
 
+	/**
+	 * Adapter for displaying messages.
+	 *
+	 * @param <AcdiVocaMessage>
+	 */
 	private class MessageListAdapter<AcdiVocaMessage> extends ArrayAdapter<AcdiVocaMessage> {
 
         private ArrayList<AcdiVocaMessage> items;

@@ -25,9 +25,24 @@ package org.hfoss.posit.android.plugin.acdivoca;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import org.hfoss.posit.android.R;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -42,8 +57,7 @@ import android.widget.Toast;
  *  It controls all Db access 
  *  and directly handles all Db queries.
  */
-public class AcdiVocaDbHelper {
-
+public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 
 	private static final String TAG = "DbHelper";
 
@@ -52,92 +66,181 @@ public class AcdiVocaDbHelper {
 	public static final int DATABASE_VERSION = 2;
 	public enum UserType {SUPER, ADMIN, OWNER, USER};
 
+	// the DAO objects we use to access the Db tables
+	private Dao<AcdiVocaUser, Integer> avUser = null;
+	private Dao<AcdiVocaFind, Integer> acdiVocaFind = null;
+	private Dao<AcdiVocaMessage, Integer> acdiVocaMessage = null;
+
+	private static Context mContext;   // The Activity
+	private SQLiteDatabase mDb;  // Pointer to the DB	
+	
 	/**
-	 * Private helper class for managing Db operations.
-	 * @see http://www.screaming-penguin.com/node/7742
+	 * Constructor just saves and opens the Db. The Db
+	 * is closed in the public methods.
+	 * @param context
 	 */
-	private static class OpenHelper extends SQLiteOpenHelper {
+	public AcdiVocaDbHelper(Context context) {
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		this.mContext= context;
+//		OpenHelper openHelper = new OpenHelper(this.mContext);
+//		mDb = openHelper.getWritableDatabase();
+	}
+	
+	/**
+	 * Invoked automatically if the Database does not exist.
+	 */
+	@Override
+	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
+		try {
+			Log.i(TAG, "onCreate");
+			TableUtils.createTable(connectionSource, AcdiVocaUser.class);
+			Log.i(TAG, "Created Tables in onCreate: ");
 
-		OpenHelper(Context context) {
-			super(context, DATABASE_NAME, null, DATABASE_VERSION);
-		}
-
-		/*
-		 * Add new tables here. This version creates the default SUPER
-		 * user and a default non-super user.
-		 */
-		@Override
-		public void onCreate(SQLiteDatabase db) {
-			Log.i(TAG, "Creating database tables: " 
-					+ FINDS_TABLE + "," + USER_TABLE + "," + MESSAGE_TABLE);
-			db.execSQL(CREATE_FINDS_TABLE);
-			db.execSQL(CREATE_USER_TABLE);	
-			db.execSQL(CREATE_MESSAGE_TABLE);
-
-			ContentValues values = new ContentValues();
-
-			values.put(USER_USERNAME, SUPER_USER_NAME);
-			values.put(USER_PASSWORD, SUPER_USER_PASSWORD);
-			values.put(USER_TYPE_STRING, UserType.SUPER.ordinal());
-			if (!addUser(db, values, UserType.SUPER))
+			// Create some Users
+			if (!insertUser(SUPER_USER_NAME, SUPER_USER_PASSWORD, UserType.SUPER))
 				Log.e(TAG, "Error adding user = " + SUPER_USER_NAME);
-
-			values = new ContentValues();
-			values.put(USER_USERNAME, ADMIN_USER_NAME);
-			values.put(USER_PASSWORD, ADMIN_USER_PASSWORD);
-			values.put(USER_TYPE_STRING, UserType.ADMIN.ordinal());
-			if (!addUser(db, values, UserType.ADMIN)) 
+			if (!insertUser(ADMIN_USER_NAME, ADMIN_USER_PASSWORD, UserType.ADMIN))
 				Log.e(TAG, "Error adding user = " + ADMIN_USER_NAME);
-			
-			values = new ContentValues();
-			values.put(USER_USERNAME, USER_DEFAULT_NAME);
-			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD);
-			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
-			if (!addUser(db, values, UserType.USER)) 
+			if (!insertUser(USER_DEFAULT_NAME, USER_DEFAULT_PASSWORD, UserType.USER))
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
-			
-			values = new ContentValues();
-			values.put(USER_USERNAME, USER_DEFAULT_NAME_2);
-			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD_2);
-			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
-			if (!addUser(db, values, UserType.USER)) 
+			if (!insertUser(USER_DEFAULT_NAME_2, USER_DEFAULT_PASSWORD_2, UserType.USER))
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_2);
-			
-			values = new ContentValues();
-			values.put(USER_USERNAME, USER_DEFAULT_NAME_3);
-			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD_3);
-			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
-			if (!addUser(db, values, UserType.USER)) 
+			if (!insertUser(USER_DEFAULT_NAME_3, USER_DEFAULT_PASSWORD_3, UserType.USER))
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_3);
-			
-			values = new ContentValues();
-			values.put(USER_USERNAME, USER_DEFAULT_NAME_4);
-			values.put(USER_PASSWORD, USER_DEFAULT_PASSWORD_4);
-			values.put(USER_TYPE_STRING, UserType.USER.ordinal());
-			if (!addUser(db, values, UserType.USER)) 
+			if (!insertUser(USER_DEFAULT_NAME_4, USER_DEFAULT_PASSWORD_4, UserType.USER))
 				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_4);
-		}
 
-		/**
-		 * Called when the Database requires upgrading to a new version. Not
-		 * sure how it works.
-		 */
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.i(TAG, "Upgrading database, this will drop tables and recreate.");
-			//db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-			onCreate(db);
+			Log.i(TAG, "Created new Users in onCreate: ");
+			displayUsers();
+			
+			// Beneficiary Table
+			TableUtils.createTable(connectionSource, AcdiVocaFind.class);
+			AcdiVocaFind find = new AcdiVocaFind();
+//			find.init(AcdiVocaFind.TEST_FIND);
+//			Log.i(TAG, "find = " + find.toString());
+			
+			// Message Table
+			TableUtils.createTable(connectionSource, AcdiVocaMessage.class);
+			
+		} catch (SQLException e) {
+			Log.e(TAG, "Can't create database", e);
+			throw new RuntimeException(e);
+		}
+		
+	}
+	
+	@Override
+	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
+		try {
+			Log.i(TAG, "onUpgrade");
+			TableUtils.dropTable(connectionSource, AcdiVocaUser.class, true);
+			TableUtils.dropTable(connectionSource, AcdiVocaFind.class, true);
+			TableUtils.dropTable(connectionSource, AcdiVocaMessage.class, true);
+			// after we drop the old databases, we create the new ones
+			onCreate(db, connectionSource);
+		} catch (SQLException e) {
+			Log.e(TAG, "Can't drop databases", e);
+			throw new RuntimeException(e);
 		}
 	}
-
-
+	
 	/**
-	 * The user table
+	 * Inserts new users into the database given the username, password, and type.
+	 * Uses ORMlite.
+	 * @param username
+	 * @param password
+	 * @param usertype  one of SUPER, ADMIN, USER
+	 * @return
 	 */
-	public static final String USER_TABLE = "acdi_voca_users";
-	public static final String USER_ID = "_id";
-	public static final String USER_USERNAME = "username";
-	public static final String USER_PASSWORD = "password";
+	private boolean insertUser(String username, String password, UserType usertype) {
+		Log.i(TAG, "insertUser " + username + " of type = " + usertype);
+
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("name", username);
+		
+		// Query for the username in the user table
+		Dao<AcdiVocaUser, Integer> avUserDao = null;
+		List<AcdiVocaUser> list = null;
+		try {
+			avUserDao = getAvUserDao();
+			list = avUserDao.queryForFieldValues(map);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		
+		// If the user doesn't already exist, insert it.
+		if (list.size() == 0) {
+			try {
+				avUserDao = getAvUserDao();
+				avUserDao.create(new AcdiVocaUser(username, password, usertype.ordinal()));
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Utility method to display the list of users in the Logcat.
+	 */
+	private void displayUsers() {
+		Log.i(TAG, "Displaying user table");
+		
+		Dao<AcdiVocaUser, Integer> avUserDao = null;
+		List<AcdiVocaUser> list = null;
+		try {
+			avUserDao = getAvUserDao();
+			list = avUserDao.queryForAll();
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		for (AcdiVocaUser item : list) {
+			Log.i(TAG, item.toString());
+		}
+	}
+	
+	/**
+	 * Returns the Database Access Object (DAO) for the AvUser class. 
+	 * It will create it or just give the cached value.
+	 */
+	public Dao<AcdiVocaUser, Integer> getAvUserDao() throws SQLException {
+		if (avUser == null) {
+			avUser = getDao(AcdiVocaUser.class);
+		}
+		return avUser;
+	}
+	
+	
+	/**
+	 * Returns the Database Access Object (DAO) for the AcdiVocaFind class. 
+	 * It will create it or just give the cached value.
+	 */
+	public Dao<AcdiVocaFind, Integer> getAcdiVocaFindDao() throws SQLException {
+		if (acdiVocaFind == null) {
+			acdiVocaFind = getDao(AcdiVocaFind.class);
+		}
+		return acdiVocaFind;
+	}
+	
+	/**
+	 * Returns the Database Access Object (DAO) for the AcdiVocaFind class. 
+	 * It will create it or just give the cached value.
+	 */
+	public Dao<AcdiVocaMessage, Integer> getAcdiVocaMessageDao() throws SQLException {
+		if (acdiVocaMessage == null) {
+			acdiVocaMessage = getDao(AcdiVocaMessage.class);
+		}
+		return acdiVocaMessage;
+	}
+	
+	/**
+	 * For the user table
+	 */
 	public static final String USER_DEFAULT_NAME = "b";      // For testing purposes
 	public static final String USER_DEFAULT_PASSWORD = "b";
 	public static final String USER_DEFAULT_NAME_2 = "auxil2";      // For testing purposes
@@ -154,20 +257,16 @@ public class AcdiVocaDbHelper {
 	public static final String USER_TYPE_KEY= "UserLoginType";
 
 
-	private static final String CREATE_USER_TABLE = "CREATE TABLE IF NOT EXISTS "
-		+ USER_TABLE + "(" + USER_ID + " integer primary key autoincrement, "
-		+ USER_USERNAME + " text, "
-		+ USER_PASSWORD + " text, "
-		+ USER_TYPE_STRING + " integer "
-		+ ")";
-
+	/**
+	 * For the message table.
+	 */
 	public static final String MESSAGE_TABLE = "sms_message_log";
 	public static final String MESSAGE_ID = "_id";
 	public static final int UNKNOWN_ID = -9999;
 	public static final String MESSAGE_BENEFICIARY_ID = AttributeManager.MESSAGE_BENEFICIARY_ID;  // Row Id in Beneficiary table
 	public static final String MESSAGE_TEXT = AttributeManager.MESSAGE_TEXT;
 	public static final String MESSAGE_STATUS = AttributeManager.FINDS_MESSAGE_STATUS; 
-	public static final String[] MESSAGE_STATUS_STRINGS = {"Unsent", "Pending", "Sent", "Acknowledged", "Deleted"};
+	public static final String[] MESSAGE_STATUS_STRINGS = {"Unsent", "Pending", "Sent", "Ack", "Deleted"};
 	public static final int MESSAGE_STATUS_UNSENT = 0;
 	public static final int MESSAGE_STATUS_PENDING = 1;
 	public static final int MESSAGE_STATUS_SENT = 2;
@@ -177,22 +276,12 @@ public class AcdiVocaDbHelper {
 	public static final String MESSAGE_SENT_AT = AttributeManager.MESSAGE_SENT_AT;
 	public static final String MESSAGE_ACK_AT = AttributeManager.MESSAGE_ACK_AT;
 	
-	private static final String CREATE_MESSAGE_TABLE = "CREATE TABLE IF NOT EXISTS "
-		+ MESSAGE_TABLE + "(" 
-		+ MESSAGE_ID + " integer primary key autoincrement, "
-		+ MESSAGE_BENEFICIARY_ID + " integer DEFAULT 0, "  // Beneficiary's Row_id
-		+ MESSAGE_TEXT + " text, "
-		+ MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_UNSENT + ", "
-		+ MESSAGE_CREATED_AT + " timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-		+ MESSAGE_SENT_AT + " timestamp, "
-		+ MESSAGE_ACK_AT + " timestamp"
-		+ ")";
-	
 	/**
-	 *  The Beneficiary table
+	 *  For the Beneficiary table
 	 */
 	public static final String FINDS_TABLE = "acdi_voca_finds";
 	public static final String FINDS_ID = "_id";
+	public static final String FINDS_ORMLIST_ID = "id";
 	public static final String FINDS_DOSSIER = AttributeManager.FINDS_DOSSIER;
 	public static final String FINDS_PROJECT_ID = "project_id";
 	public static final String FINDS_NAME = "name";
@@ -209,7 +298,6 @@ public class AcdiVocaDbHelper {
 	public static final int FINDS_STATUS_DONTCARE = -1;  
 	public static final String[] FIND_STATUS_STRINGS = {"New", "Update"};  // For display purpose
 
-//	public static final String FINDS_MESSAGE_ID = MESSAGE_STATUS;
 	public static final String FINDS_MESSAGE_ID = AttributeManager.FINDS_MESSAGE_ID;
 	public static final String FINDS_MESSAGE_STATUS = MESSAGE_STATUS;
 
@@ -225,7 +313,6 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_HOUSEHOLD_SIZE = AttributeManager.FINDS_HOUSEHOLD_SIZE;
 
 	public static final String FINDS_DISTRIBUTION_POST = AttributeManager.FINDS_DISTRIBUTION_POST;
-//	public static final String FINDS_HEALTH_CENTER = AttributeManager.FINDS_HEALTH_CENTER;
 	public static final String FINDS_Q_MOTHER_LEADER = AttributeManager.FINDS_Q_MOTHER_LEADER; // "mother_leader";
 	public static final String FINDS_Q_VISIT_MOTHER_LEADER = AttributeManager.FINDS_Q_VISIT_MOTHER_LEADER; // "visit_mother_leader";
 	public static final String FINDS_Q_PARTICIPATING_AGRI = AttributeManager.FINDS_Q_PARTICIPATING_AGRI; // "pariticipating_agri";
@@ -242,11 +329,8 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_ZERO = "0";
 	public static final String FINDS_ONE = "1";
 
-	
-	//added to handle the agriculture registration form
+	// For the agriculture registration form
 	public static final String FINDS_LAND_AMOUNT = AttributeManager.FINDS_LAND_AMOUNT; // "amount_of_land";	
-//	public static final String FINDS_SEED_AMOUNT = "seed_amount";
-//	public static final String FINDS_UNIT = "unit";
 	public static final String FINDS_IS_FARMER = AttributeManager.FINDS_IS_FARMER; //  "is_farmer";
 	public static final String FINDS_IS_MUSO = AttributeManager.FINDS_IS_MUSO;  // "is_MUSO";
 	public static final String FINDS_IS_RANCHER = AttributeManager.FINDS_IS_RANCHER;  //  "is_rancher";
@@ -278,8 +362,6 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_PARTNER_MARDNR = AttributeManager.FINDS_PARTNER_MARDNR;// "partner_mardnr";
 	public static final String FINDS_PARTNER_OTHER = AttributeManager.FINDS_PARTNER_OTHER;// "partner_other";
 	
-	
-
 	public static final String FINDS_MALNOURISHED = AttributeManager.FINDS_MALNOURISHED;  // "MALNOURISHED";
 	public static final String FINDS_PREVENTION = AttributeManager.FINDS_PREVENTION;     // "PREVENTION";
 	public static final String FINDS_EXPECTING = AttributeManager.FINDS_EXPECTING;   // "EXPECTING";
@@ -292,7 +374,6 @@ public class AcdiVocaDbHelper {
     public static final String FINDS_TRUE = AttributeManager.FINDS_TRUE;       // "TRUE";
     public static final String FINDS_FALSE = AttributeManager.FINDS_FALSE;      // "FALSE";
     public static final String FINDS_COMMUNE_SECTION = AttributeManager.LONG_COMMUNE_SECTION;
-    
     
 	public static final String FINDS_Q_PRESENT = AttributeManager.FINDS_Q_PRESENT;   // "Present";
 	public static final String FINDS_Q_TRANSFER = AttributeManager.FINDS_Q_TRANSFER;   //"Transfer";
@@ -322,83 +403,11 @@ public class AcdiVocaDbHelper {
 	public static final String FINDS_HISTORY_TABLE = "acdi_voca_finds_history";
 	public static final String HISTORY_ID = "_id" ;
 
-	/*
-	 * Finds table creation sql statement. 
-	 */
-	private static final String CREATE_FINDS_TABLE = "CREATE TABLE IF NOT EXISTS "
-		+ FINDS_TABLE  
-		+ " (" + FINDS_ID + " integer primary key autoincrement, "
-		+ FINDS_PROJECT_ID + " integer DEFAULT 0, "
-		+ FINDS_DOSSIER + " text, "
-		+ FINDS_TYPE + " integer DEFAULT 0, "                             // MCHN or Agri                 
-		+ FINDS_STATUS + " integer , " //  DEFAULT ,"         // + FINDS_STATUS_NEW + ", "    // New or Update record
-//		+ FINDS_MESSAGE + " integer DEFAULT " + MESSAGE_STATUS_UNSENT ,"                  // Reference to Message table Id
-		+ FINDS_MESSAGE_ID + " integer DEFAULT " + 0 + ", "
-		+ FINDS_MESSAGE_STATUS + " integer DEFAULT " + MESSAGE_STATUS_UNSENT + " ,"
-//		+ FINDS_MESSAGE_TEXT + " text, "
- 		+ FINDS_NAME + " text, "
-		+ FINDS_FIRSTNAME + " text, "
-		+ FINDS_LASTNAME + " text, "
-		+ FINDS_ADDRESS + " text, "
-		+ FINDS_DOB + " date, "
-		+ FINDS_SEX + " text, "
-//		+ FINDS_AGE + " text, "
-		+ FINDS_HOUSEHOLD_SIZE + " text, "
-		+ FINDS_BENEFICIARY_CATEGORY + " text, "
-//		+ FINDS_HEALTH_CENTER + " text, "
-		+ FINDS_DISTRIBUTION_POST + " text, "
-		+ FINDS_Q_MOTHER_LEADER + " boolean, "
-		+ FINDS_Q_VISIT_MOTHER_LEADER + " boolean, "
-		+ FINDS_Q_PARTICIPATING_AGRI + " boolean, "
-		+ FINDS_Q_RELATIVE_AGRI + " boolean, "
-		+ FINDS_Q_PARTICIPATING_BENE + " boolean, "
-		+ FINDS_Q_RELATIVE_BENE + " boolean, "
-		+ FINDS_IS_FARMER + " boolean, "
-		+ FINDS_IS_MUSO + " boolean, "
-		+ FINDS_IS_RANCHER + " boolean, "
-		+ FINDS_IS_STOREOWN + " boolean, "
-		+ FINDS_IS_FISHER + " boolean, "
-		+ FINDS_IS_OTHER + " boolean, "
-		+ FINDS_IS_ARTISAN + " boolean, "
-		+ FINDS_LAND_AMOUNT+ " integer DEFAULT 0, "
-		+ FINDS_HAVE_VEGE+ " boolean, "
-		+ FINDS_HAVE_TUBER+ " boolean, "
-		+ FINDS_HAVE_CEREAL+ " boolean, "
-		+ FINDS_HAVE_TREE+ " boolean, "
-		+ FINDS_HAVE_GRAFTING+ " boolean, "
-		+ FINDS_HAVE_COFFEE + " boolean, "
-		+ FINDS_PARTNER_FAO + " boolean, "
-		+ FINDS_PARTNER_SAVE + " boolean, "
-		+ FINDS_PARTNER_CROSE + " boolean, "
-		+ FINDS_PARTNER_PLAN + " boolean, "
-		+ FINDS_PARTNER_MARDNR + " boolean, "
-		+ FINDS_PARTNER_OTHER + " boolean, "		
-		+ FINDS_COMMUNE_SECTION + " text, "
-//		+ FINDS_SEED_AMOUNT+ " integer DEFAULT 0, "
-//		+ FINDS_UNIT + " text, "
-		+ FINDS_HAVE_HOUE+ " boolean, "
-		+ FINDS_HAVE_PIOCHE+ " boolean, "
-		+ FINDS_HAVE_BROUETTE+ " boolean, "
-		+ FINDS_HAVE_MACHETTE+ " boolean, "
-		+ FINDS_HAVE_SERPETTE+ " boolean, "
-		+ FINDS_HAVE_PELLE+ " boolean, "
-		+ FINDS_HAVE_BARREAMINES+ " boolean, "
-
-		+ FINDS_RELATIVE_1 + " text, "
-		+ FINDS_RELATIVE_2 + " text, "
-		+ FINDS_Q_CHANGE + " boolean, "
-		+ FINDS_CHANGE_TYPE + " text, "
-		+ FINDS_Q_PRESENT + " boolean DEFAULT FALSE ,"
-//		+ FINDS_Q_TRANSFER + " boolean, "
-//		+ FINDS_Q_MODIFICATION + " boolean, " 
-		+ FINDS_MONTHS_REMAINING + " integer DEFAULT 0, "
-		+ FINDS_NAME_AGRI_PARTICIPANT + " text "
-		+ ");";
-
 	// Fields for reading the beneficiaries.txt file. The numbers correspond to
 	// the columns.  These might need to be changed.
-//	*No dossier,Nom,Prenom,Section Communale,Localite beneficiaire,Date entree,Date naissance,Sexe,Categorie,Poste distribution,
-//	068MP-FAT, Balthazar,Denisana,Mapou,Saint Michel,2010/08/03,1947/12/31, F,Enfant Prevention,Dispensaire Mapou,
+	// Here's the file header line (line 1)
+	//	*No dossier,Nom,Prenom,Section Communale,Localite beneficiaire,Date entree,Date naissance,Sexe,Categorie,Poste distribution,
+	//	068MP-FAT, Balthazar,Denisana,Mapou,Saint Michel,2010/08/03,1947/12/31, F,Enfant Prevention,Dispensaire Mapou,
 	private static final int FIELD_DOSSIER = 0;
 	private static final int FIELD_LASTNAME = 1;
 	private static final int FIELD_FIRSTNAME = 2;
@@ -424,110 +433,9 @@ public class AcdiVocaDbHelper {
 	private static final int AGRI_FIELD_NUM_PERSONS  = 10;
 	
 	
-	// Needed for ListFindsActivity to display a row in the list.
-	// The following two arrays go together to form a <DB value, UI View> pair
-	// except for the first DB value, which is just a filler.
-	//	 GUID commented out so that in the list of finds the ID is no longer displayed
-	//	 in an attempt to deal with the length of the new UUIDs
-	//   -->UPDATED UUID is now truncated in display 
-	public static final String[] list_row_data = { 
-		FINDS_ID,
-		FINDS_DOSSIER,  
-		FINDS_LASTNAME,
-		FINDS_FIRSTNAME,
-		FINDS_MESSAGE_STATUS,
-		FINDS_DOB,
-		FINDS_SEX,
-		FINDS_HOUSEHOLD_SIZE,
-		FINDS_BENEFICIARY_CATEGORY,
-//		FINDS_HEALTH_CENTER,
-		FINDS_DISTRIBUTION_POST
-	};
-
-	public static final int[] list_row_views = {
-		R.id.row_id,		    
-		R.id.dossierText,
-		R.id.lastname_field, 
-		R.id.firstname_field,
-		R.id.messageStatusText,
-		R.id.datepicker,
-		R.id.femaleRadio,
-		R.id.inhomeEdit,
-		R.id.expectingRadio,
-//		R.id.healthcenterSpinner,
-		R.id.distributionSpinner
-	};
-
-//	public static final String[] message_row_data = { 
-//		FINDS_ID,
-//		FINDS_DOSSIER, 
-//		MESSAGE_TEXT
-//	};
-//
-//	public static final int[] message_row_views = {
-//		R.id.row_id,		    
-//		R.id.dossierText,
-//		R.id.messageText 
-//	};
-
-
-	private static Context mContext;   // The Activity
-	private SQLiteDatabase mDb;  // Pointer to the DB	
-
-	
-	/**
-	 * Constructor just saves and opens the Db. The Db
-	 * is closed in the public methods.
-	 * @param context
-	 */
-	public AcdiVocaDbHelper(Context context) {
-		this.mContext= context;
-		OpenHelper openHelper = new OpenHelper(this.mContext);
-		mDb = openHelper.getWritableDatabase();
-	}
-
-	/**
-	 * Insert a new user into the USER_TABLE.  Will not insert duplicate users.
-	 * @param values the key/value pairs for each Db column.
-	 * @param userType the type of user, either SUPER or USER
-	 * @return true if the insertion succeeds and false otherwise
-	 */
-	public boolean addUser(ContentValues values, UserType userType) {
-		boolean result = addUser(mDb, values, userType);
-		return result;
-	}
-
-
-	/**
-	 * Helper method to insert a new user into the USER_TABLE
-	 * @param db the previously open database
-	 * @param values  the attribute/value pairs to insert into the USER_TABLE
-	 * @param the type of user, SUPER or USER.
-	 */
-	private static boolean addUser(SQLiteDatabase db, ContentValues values, UserType userType) {
-		String username = values.getAsString(USER_USERNAME);
-		String password = values.getAsString(USER_PASSWORD);
-
-		// Check against duplicates
-		String[] columns = null; //{ USER_PASSWORD };
-		Cursor c = db.query(USER_TABLE, columns, 
-				USER_USERNAME + "="+ "'" + username + "'" ,
-				null, null, null, null);
-		//Log.i(TAG, "Cursor size = " + c.getCount());
-		if (c.getCount() == 0) {
-			long rowId = db.insert(USER_TABLE, null, values);
-			//mDb.close();
-			Log.i(TAG, "addUser " + username + " at rowId=" + rowId);
-			c.close();
-			return true;
-		}	
-		c.close();
-		return false;
-	}
-
-
 	/**
 	 * Returns true iff a row containing username and password is found
+	 * TODO: Should this move to the User class?
 	 * @param username
 	 * @param password
 	 * @param userType is an enum that defines whether this is a regular or super user.
@@ -535,6 +443,7 @@ public class AcdiVocaDbHelper {
 	 */
 	public int authenicateUser(String username, String password, UserType userType) {
 		Log.i(TAG, "Authenticating user = " + username + " Access type = " + userType);
+		
 		int result = 0;
 		if (userType.equals(UserType.ADMIN)) {
 			if (! ((username.equals(ADMIN_USER_NAME) &&  password.equals(ADMIN_USER_PASSWORD)) 
@@ -551,154 +460,136 @@ public class AcdiVocaDbHelper {
 			}
 		} 
 		if (result != -1) {
-			//		String[] columns = { USER_PASSWORD, USER_TYPE_STRING };
-			Cursor c = mDb.query(USER_TABLE, null, 
-					USER_USERNAME + "="+ "'" + username + "'" + 
-					" and " + USER_PASSWORD + "=" + "'" + password + "'" , null, null, null, null);
-			c.moveToFirst();
-			Log.i(TAG, "Cursor size = " + c.getCount());
-
-			if (c.isAfterLast()) 
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("name", username);
+			map.put("password", password);
+			
+			List<AcdiVocaUser> list = null;
+			try {
+				Dao<AcdiVocaUser, Integer> avUserDao = getAvUserDao();
+				list = avUserDao.queryForFieldValues(map);
+			} catch (SQLException e) {
+				Log.e(TAG, "SQL Exception " + e.getMessage());
+				e.printStackTrace();
+			}
+			Log.i(TAG, "List size = " + list.size());
+			if (list.size() != 1) 
 				result =  -1;
 			else {
-				result = c.getInt(c.getColumnIndex(USER_TYPE_STRING));
+				AcdiVocaUser user = list.get(0);
+				result = user.type;
 			}
-			c.close();
 		}
-		mDb.close();
-		//dumpUsers();
 		return result;
 	}
 
 	/**
-	 * Utility method to display the list of users in the Logcat.
-	 */
-	private void dumpUsers() {
-		Log.i(TAG, "Dumping user table");
-		//		mDb = getReadableDatabase();
-		Cursor c = mDb.query(USER_TABLE, null, null, null, null, null, null);
-		c.moveToFirst();
-		while (!c.isAfterLast()) {
-			Log.i(TAG,this.getContentValuesFromRow(c).toString());
-			c.moveToNext();
-		}
-		c.close();
-		mDb.close();
-	}
-
-	/**
-	 * This method is called from a Beneficiary object to add its data to DB.
-	 * @param values contains the key/value pairs for each Db column,
-	 * @return the rowId of the new insert or -1 in case of error
-	 */
-	public long addNewBeneficiary(ContentValues values) {
-		Log.i(TAG, values.toString());
-		//		mDb = getWritableDatabase();  // Either create the DB or open it.
-		long rowId = mDb.insert(FINDS_TABLE, null, values);
-		Log.i(TAG, "addNewFind, rowId=" + rowId);
-		mDb.close();
-		return rowId;
-	}
-
-	
-	/**
-	 * Inserts an array of beneficiaries read from AcdiVoca Db.
+	 * Inserts an array of beneficiaries input from AcdiVoca data file.
 	 * NOTE:  The Android date picker stores months as 0..11, so
 	 *  we have to adjust dates.
+	 * TODO: Refactor, should this move to Find class?
 	 * @param beneficiaries
 	 * @return
 	 */
 	public int addAgriBeneficiaries(String[] beneficiaries) {
 		Log.i(TAG, "Adding " + beneficiaries.length + " AGRI beneficiaries");
 		String fields[] = null;
-		ContentValues values = new ContentValues();
 		int count = 0;
-
+		int result = 0;
+		
+		AcdiVocaFind avFind = null;
 		for (int k = 0; k < beneficiaries.length; k++) {
+			avFind = new AcdiVocaFind();
 
 			fields = beneficiaries[k].split(COMMA);
-//			values.put(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
-			values.put(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
-			values.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
-			values.put(AcdiVocaDbHelper.FINDS_DOSSIER,fields[AGRI_FIELD_DOSSIER]);
-			values.put(AcdiVocaDbHelper.FINDS_LASTNAME, fields[AGRI_FIELD_LASTNAME]);
-			values.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, fields[AGRI_FIELD_FIRSTNAME]);
-			//				values.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, fields[FIELD_SECTION]);
-			values.put(AcdiVocaDbHelper.FINDS_ADDRESS, fields[AGRI_FIELD_LOCALITY]);
-			String adjustedDate = adjustDateForDatePicker(fields[AGRI_FIELD_BIRTH_DATE]);
-//			Log.i(TAG, "adjusted date = " + adjustedDate);
-			values.put(AcdiVocaDbHelper.FINDS_DOB, adjustedDate);
-			String adjustedSex = adjustSexData(fields[AGRI_FIELD_SEX]);
-			values.put(AcdiVocaDbHelper.FINDS_SEX, adjustedSex);  
-			String adjustedCategory = adjustCategoryData(fields[AGRI_FIELD_CATEGORY]);
-			values.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, adjustedCategory);
-			values.put(AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE, fields[AGRI_FIELD_NUM_PERSONS]);
-
-			//Log.i(TAG, values.toString());
-			long rowId = mDb.insert(FINDS_TABLE, null, values);
-			if (rowId != -1) 
-				++count;
-
-			//addNewBeneficiary(values);
+			avFind.type =   AcdiVocaDbHelper.FINDS_TYPE_AGRI;
+			avFind.status = AcdiVocaDbHelper.FINDS_STATUS_UPDATE;
+			avFind.dossier = fields[AGRI_FIELD_DOSSIER];
+			avFind.lastname = fields[AGRI_FIELD_LASTNAME];
+			avFind.firstname =  fields[AGRI_FIELD_FIRSTNAME];
+			avFind.address = fields[AGRI_FIELD_LOCALITY];
+			String adjustedDate = translateDateForDatePicker(fields[AGRI_FIELD_BIRTH_DATE]);
+			avFind.dob = adjustedDate;
+			String adjustedSex = translateSexData(fields[AGRI_FIELD_SEX]);
+			avFind.sex = adjustedSex;
+			String adjustedCategory = translateCategoryData(fields[AGRI_FIELD_CATEGORY]);
+			avFind.beneficiary_category = adjustedCategory;
+			avFind.household_size = fields[AGRI_FIELD_NUM_PERSONS];
+			
+			Dao<AcdiVocaFind, Integer> acdiVocaFindDao;
+			try {
+				acdiVocaFindDao = getAcdiVocaFindDao();
+				result = acdiVocaFindDao.create(avFind);
+				if (result == 1) 
+					++count;
+				else 
+					Log.e(TAG, "Error creating beneficiary entry " + avFind.toString());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		mDb.close();
 		Log.i(TAG, "Inserted to Db " + count + " Beneficiaries");
 		return count;
 	}
-
 	
 	/**
-	 * Inserts an array of beneficiaries read from AcdiVoca Db.
+	 * Inserts an array of beneficiaries input from AcdiVoca data file.
 	 * NOTE:  The Android date picker stores months as 0..11, so
 	 *  we have to adjust dates.
+	 * TODO: Refactor, should this move to Find class?
 	 * @param beneficiaries
 	 * @return
 	 */
 	public int addUpdateBeneficiaries(String[] beneficiaries) {
 		Log.i(TAG, "Adding " + beneficiaries.length + " MCHN beneficiaries");
 		String fields[] = null;
-		ContentValues values = new ContentValues();
 		int count = 0;
+		int result = 0;
 
+		AcdiVocaFind avFind = null;
 		for (int k = 0; k < beneficiaries.length; k++) {
-
+			avFind = new AcdiVocaFind();
+			
 			fields = beneficiaries[k].split(COMMA);
-//			values.put(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
-			values.put(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
-			values.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_UPDATE);
-			values.put(AcdiVocaDbHelper.FINDS_DOSSIER,fields[FIELD_DOSSIER]);
-			values.put(AcdiVocaDbHelper.FINDS_LASTNAME, fields[FIELD_LASTNAME]);
-			values.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, fields[FIELD_FIRSTNAME]);
-			//				values.put(AcdiVocaDbHelper.COMMUNE_SECTION_NAME, fields[FIELD_SECTION]);
-			values.put(AcdiVocaDbHelper.FINDS_ADDRESS, fields[FIELD_LOCALITY]);
-			String adjustedDate = adjustDateForDatePicker(fields[FIELD_BIRTH_DATE]);
-//			Log.i(TAG, "adjusted date = " + adjustedDate);
-			values.put(AcdiVocaDbHelper.FINDS_DOB, adjustedDate);
-			String adjustedSex = adjustSexData(fields[FIELD_SEX]);
-			values.put(AcdiVocaDbHelper.FINDS_SEX, adjustedSex);  
-			String adjustedCategory = adjustCategoryData(fields[FIELD_CATEGORY]);
-			values.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, adjustedCategory);
-			values.put(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST, fields[FIELD_DISTRIBUTION_POST]);
+			avFind.type =  AcdiVocaDbHelper.FINDS_TYPE_MCHN;
+			avFind.status = AcdiVocaDbHelper.FINDS_STATUS_UPDATE;
+			avFind.dossier = fields[FIELD_DOSSIER];
+			avFind.lastname = fields[FIELD_LASTNAME];
+			avFind.firstname =  fields[FIELD_FIRSTNAME];
+			avFind.address = fields[FIELD_LOCALITY];
+			String adjustedDate = translateDateForDatePicker(fields[FIELD_BIRTH_DATE]);
+			avFind.dob = adjustedDate;
+			String adjustedSex = translateSexData(fields[FIELD_SEX]);
+			avFind.sex = adjustedSex;
+			String adjustedCategory = translateCategoryData(fields[FIELD_CATEGORY]);
+			avFind.beneficiary_category = adjustedCategory;
+			avFind.distribution_post = fields[FIELD_DISTRIBUTION_POST];
 
-			//Log.i(TAG, values.toString());
-			long rowId = mDb.insert(FINDS_TABLE, null, values);
-			if (rowId != -1) 
-				++count;
-
-			//addNewBeneficiary(values);
+			Dao<AcdiVocaFind, Integer> acdiVocaFindDao;
+			try {
+				acdiVocaFindDao = getAcdiVocaFindDao();
+				result = acdiVocaFindDao.create(avFind);
+				if (result == 1) 
+					++count;
+				else 
+					Log.e(TAG, "Error creating beneficiary entry " + avFind.toString());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		mDb.close();
 		Log.i(TAG, "Inserted to Db " + count + " Beneficiaries");
 		return count;
 	}
 
 	/**
-	 * Beneficiaries.txt represents categories in Haitian.  We represent them in 
-	 * English.
+	 * Translates attribute name from Haitian to English.  Beneficiaries.txt 
+	 * 	data file represents categories in Haitian.  
 	 * @param date
 	 * @return
 	 */
-	private String adjustCategoryData(String category) {
+	private String translateCategoryData(String category) {
 		if (category.equals(AttributeManager.FINDS_MALNOURISHED_HA))
 			return AttributeManager.FINDS_MALNOURISHED;
 		else if (category.equals(AttributeManager.FINDS_EXPECTING_HA))
@@ -716,7 +607,7 @@ public class AcdiVocaDbHelper {
 	 * @param date
 	 * @return
 	 */
-	private String adjustSexData(String sex) {
+	private String translateSexData(String sex) {
 		if (sex.equals(AttributeManager.ABBREV_FEMALE))
 			return AttributeManager.FINDS_FEMALE;
 		else if (sex.equals(AttributeManager.ABBREV_MALE))
@@ -724,14 +615,14 @@ public class AcdiVocaDbHelper {
 		else return sex;
 	}
 	
-	
 	/**
-	 * The Android date picker stores dates as 0..11.
+	 * The Android date picker stores dates as 0..11. Weird.
+	 * So we have to adjust dates input from data file.
 	 * @param date
 	 * @return
 	 */
 	@SuppressWarnings("finally")
-	private String adjustDateForDatePicker(String date) {
+	private String translateDateForDatePicker(String date) {
 		try {
 			String[] yrmonday = date.split("/");
 			date =  yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
@@ -749,7 +640,7 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	@SuppressWarnings("finally")
-	private String adjustDateForSmsReader(String date) {
+	public static String adjustDateForSmsReader(String date) {
 		try { 
 			String[] yrmonday = date.split("/");
 			date =  yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) + 1) + "/" + yrmonday[2];	
@@ -775,49 +666,44 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	private boolean recordAcknowledgedBulkMessage(AcdiVocaMessage acdiVocaMsg) {
-		int msgId = acdiVocaMsg.getMessageId();
-		Log.i(TAG, "Recording Bulk ACK, msg_id = " + msgId);
-
-		Cursor c = null;
-			c = mDb.query(MESSAGE_TABLE, null, 
-					MESSAGE_ID + "=" + msgId, 
-					null, null, null, null);
-			
+		int msg_id = acdiVocaMsg.getMessageId();
+		int beneId = acdiVocaMsg.getBeneficiaryId();
 		int rows = 0;
+		int count = 0;
+		Log.i(TAG, "Recording Bulk ACK, msg_id = " + msg_id);
 		
-		// Should just be one row in cursor
-		if (c.getCount() != 0) {
-			c.moveToFirst();
-			String msg = c.getString(c.getColumnIndex(MESSAGE_TEXT));
-			String dossiers[] = msg.split(AttributeManager.LIST_SEPARATOR);
-			ContentValues args = new ContentValues();
-			args.put(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_ACK);
+		// Update the message status
+		boolean result = updateMessageStatus(beneId, msg_id,MESSAGE_STATUS_ACK);
+		
+		Dao<AcdiVocaMessage, Integer> avMsgDao = null;
+		AcdiVocaMessage avMsg = null;
+		try {
+			avMsgDao = getAcdiVocaMessageDao();
+			avMsg = avMsgDao.queryForId(msg_id);  // Retrieve the message
+			if (avMsg != null) {
 
-			// For each dossier number in the message, update the FINDS table.
-			for (int k = 0; k < dossiers.length; k++) {
-				//Log.i(TAG, "Updating FINDS table for dossier = " + dossiers[k]);
-				rows += mDb.update(FINDS_TABLE, 
-						args, 
-						FINDS_DOSSIER + " = " + "'" + dossiers[k] + "'",
-						null); 
-			}			
-			Log.i(TAG, "Bulk Acknowleddge, rows = " + rows);
-			
-			// Finally, update the message table
-			Log.i(TAG, "Updating MESSAGE table for msg = " + msgId);
-			args = new ContentValues();
-			args.put(MESSAGE_STATUS, MESSAGE_STATUS_ACK);
-			rows += mDb.update(MESSAGE_TABLE, 
-					args, 
-					MESSAGE_ID + " = " + msgId,
-					null); 
-		} else {
-			Log.i(TAG, "Failed to find message with id = " + msgId);
+				// Update each beneficiary
+				Dao<AcdiVocaFind, Integer> avFindDao = getAcdiVocaFindDao();
+				AcdiVocaFind avFind = null;
+				String msg = avMsg.smsMessage;
+				String dossiers[] = msg.split(AttributeManager.LIST_SEPARATOR);
+				for (int k = 0; k < dossiers.length; k++) {
+					avFind = fetchBeneficiaryByDossier(dossiers[k], null);
+					avFind.message_status = MESSAGE_STATUS_ACK;
+					rows = avFindDao.update(avFind);
+					if (rows == 1) 
+						++count;
+				}
+			} else {
+				Log.e(TAG, "Error, unable to retrieve message id = " + msg_id);
+			}
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
 		}
-		c.close();
-		mDb.close();
-		return rows > 0;
+		return count > 0;
 	}
+
 	
 	/**
 	 * Record an incoming ACK from the modem. For normal messages, the modem 
@@ -832,43 +718,38 @@ public class AcdiVocaDbHelper {
 	 */
 	public boolean recordAcknowledgedMessage(AcdiVocaMessage acdiVocaMsg) {
 		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
-		Log.i(TAG, "Recording ACK, bene_id = " + acdiVocaMsg.getBeneficiaryId());
+		int msg_id = acdiVocaMsg.messageId;
+		Log.i(TAG, "Recording ACK, bene_id = " + acdiVocaMsg.getBeneficiaryId() + " msg_id " + msg_id);
 
+		AcdiVocaFind avFind = null; 
 		boolean result = false;
-		
-		// Beneficiary IDs are negative for  ACKs of Bulk messages.
-		if (beneficiary_id < 0) {
-			result = recordAcknowledgedBulkMessage(acdiVocaMsg);
-			mDb.close();
-			return result;
+
+		// Update the Beneficiary table for this message
+		if (beneficiary_id < 0) {  // This is an ACK for a bulk message, msg_id is -beneficiary_id
+			return recordAcknowledgedBulkMessage(acdiVocaMsg);
+		} else {  // In this case, beneficiary id is known and message Id must be looked up
+			avFind = fetchFindById(beneficiary_id, null);
+			if (avFind != null) {
+				msg_id = avFind.message_id;
+				result = updateBeneficiaryMessageStatus(beneficiary_id, msg_id,MESSAGE_STATUS_ACK);
+				if (result) {
+					Log.d(TAG, "Updated ACK, for beneficiary_id = " +  beneficiary_id);
+					result = updateMessageStatus(beneficiary_id, msg_id, MESSAGE_STATUS_ACK);
+					if (result) {
+						Log.d(TAG, "Updated ACK, for msg_id = " +  msg_id);
+					} else {
+						Log.e(TAG, "Unable to process ACK, for msg_id = " +  msg_id);	
+					}
+				} else {
+					Log.e(TAG, "Unable to process ACK, for beneficiary_id = " +  beneficiary_id);
+				}
+			} else {
+				Log.e(TAG, "Error retrieving beneficiary_id = " +  beneficiary_id);
+			}
 		}
-		
-		// Look up the beneficiary record and extract the message id
-		Cursor c = null;
-		c = mDb.query(FINDS_TABLE, null, 
-				FINDS_ID + " = " + beneficiary_id, 
-					null, null, null, null);
-		
-		int msg_id = UNKNOWN_ID;
-		if (c.getCount() != 0) {
-			Log.i(TAG, "Found beneficiary, id = " + beneficiary_id);
-			c.moveToFirst();
-			msg_id = c.getInt(c.getColumnIndex(FINDS_MESSAGE_ID));  // We should change the name of this.
-		} else {
-			Log.i(TAG, "Unable to find beneficiary, id = " + beneficiary_id);
-		}
-		c.close();
-		
-		acdiVocaMsg.setMessageId(msg_id);
-		if (msg_id != UNKNOWN_ID) {
-			result = updateMessageStatus(acdiVocaMsg, MESSAGE_STATUS_ACK);
-		} else {
-			Log.i(TAG, "Unable to find id for beneficiary id = " + beneficiary_id);
-			result = false;
-		}
-		mDb.close();
 		return result;
 	}
+
 	
 	/**
 	 * Updates beneficiary table for bulk dossier numbers -- i.e. n1&n2&...&nM.
@@ -876,23 +757,27 @@ public class AcdiVocaDbHelper {
 	 * @param acdiVocaMsg
 	 * @return
 	 */
-	private synchronized int updateBeneficiaryTableForBulkIds(AcdiVocaMessage acdiVocaMsg, long msgId, int status) {
+	private synchronized int updateBeneficiaryTableForBulkIds(AcdiVocaMessage acdiVocaMsg, int msgId, int status) {
 		String msg = acdiVocaMsg.getSmsMessage();
 		Log.i(TAG, "updateBeneficiary Table, sms = " + msg);
+		boolean result = false;
 		int rows = 0;
 		String dossiers[] = msg.split(AttributeManager.LIST_SEPARATOR);
+	
 		for (int k = 0; k < dossiers.length; k++) {
-			// Update the FINDS table to point to the message
-			ContentValues args = new ContentValues();
-			args.put(FINDS_MESSAGE_ID, msgId);
-			args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
-										
-			rows += mDb.update(FINDS_TABLE, 
-					args, 
-					FINDS_DOSSIER + " = " + "'" + dossiers[k] + "'",
-					null); 
+			
+			AcdiVocaFind avFind = fetchBeneficiaryByDossier(dossiers[k], null);
+			if (avFind != null) {
+				result = updateBeneficiaryMessageStatus(avFind.id, msgId, status);
+				if (result) {
+					Log.d(TAG, "Updated beneficiary id = " + avFind.id + " to status = " + status);
+					++rows;
+				}
+				else
+					Log.e(TAG, "Unable to update beneficiary id = " + avFind.id + " to status = " + status);
+
+			} 
 		}
-		mDb.close();
 		return rows;
 	}
 
@@ -907,92 +792,15 @@ public class AcdiVocaDbHelper {
 	 */
 	public boolean updateMessageStatusForBulkMsg(AcdiVocaMessage acdiVocaMsg, int status) {
 		Log.i(TAG, "Updating, msg_id " + acdiVocaMsg.getMessageId() + 
-				" bene_id = " + acdiVocaMsg.getBeneficiaryId() + " to status = " + status);
-		boolean result = false;
-		long row_id;
-		int rows = 0;
-
-		int msg_id = acdiVocaMsg.getMessageId();
-		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
-		if (msg_id != UNKNOWN_ID) {
-			rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);
-
-			if (rows == 0) {
-				result = false;
-				Log.i(TAG, "Unable to update message id= " + msg_id);  
-			} else {
-				result = true;
-				Log.i(TAG, "Updated message table for message id= " + msg_id);  
-				
-				rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, msg_id, status);
-				Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
-				if (rows == 0) 
-					result = false;
-				else 
-					result = true;
-			}
-		} else {
-			Log.i(TAG, "Oops, for bulk messages, msg_id should not = " + msg_id);
-			result = false;
-		}
-		mDb.close();
-		return result;
+				" bene_id = " +  " to status = " + status);
 		
-	}
-	
-	/**
-	 * Updates the message status in the message table and Finds table for
-	 * distribution update messages.  In this case the msg_id is UNKNOWN and
-	 * the beneficiary is KNOWN.
-	 * @param message the SMS message
-	 * @param status the new status
-	 * @return
-	 */
-	public boolean updateMessageStatus(AcdiVocaMessage acdiVocaMsg, int status) {
-		Log.i(TAG, "Updating, msg_id " + acdiVocaMsg.getMessageId() + 
-				" bene_id = " + acdiVocaMsg.getBeneficiaryId() + " to status = " + status);
-		boolean result = false;
-		long row_id;
-		int rows = 0;
-		int msg_id = acdiVocaMsg.getMessageId();
-		String query = "";
 		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
-		
-		rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);
-
-		if (rows == 0) {
-			result = false;
-			Log.e(TAG, "Unable to update message id= " + msg_id);  
-		} else {
-			result = true;
-			Log.i(TAG, "Updated message id= " + msg_id);  
-		}
-
-		// Update FINDS TABLE
-		ContentValues args = new ContentValues();
-		args.put(FINDS_MESSAGE_ID, msg_id);
-		args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
-													
-		rows = mDb.update(FINDS_TABLE, 
-				args, 
-				FINDS_ID + " = " + beneficiary_id,
-				null); 
-
-		if (rows == 0) {
-			result = false;
-			Log.e(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
-
+		int msg_id = acdiVocaMsg.getMessageId();
+		int rows = 0;
+		boolean result = updateMessageStatus(beneficiary_id, msg_id, status );
+		if (result) {
 			rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, msg_id, status);
-			Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
-
-		} else {
-			result = true;
-			Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
-
-			// Update the message table with the new message
-			rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);					
 		}
-		mDb.close();
 		return result;
 	}
 	
@@ -1004,201 +812,156 @@ public class AcdiVocaDbHelper {
 	 * @param status the new status
 	 * @return
 	 */
-	public boolean updateMessageStatusForDistribUpdateMessage(AcdiVocaMessage acdiVocaMsg, int status) {
+	public boolean updateMessageStatusForNonBulkMessage(AcdiVocaMessage acdiVocaMsg, int status) {
 		Log.i(TAG, "Updating, msg_id " + acdiVocaMsg.getMessageId() + 
 				" bene_id = " + acdiVocaMsg.getBeneficiaryId() + " to status = " + status);
-		boolean result = false;
-		long row_id;
-		int rows = 0;
-		int msg_id = acdiVocaMsg.getMessageId(); // Should be -9999 (UNKNOWN)
-		String query = "";
-		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
 		
-		if (beneficiary_id != UNKNOWN_ID) {
-			// Update FINDS TABLE
-			ContentValues args = new ContentValues();
-			//args.put(FINDS_MESSAGE_ID, msg_id);
-			args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
-														
-			rows = mDb.update(FINDS_TABLE, 
-					args, 
-					FINDS_ID + " = " + beneficiary_id,
-					null); 
-
-			if (rows == 0) {
-				result = false;
-				Log.e(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
-			} else {
-				Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
-
-				// Update the message table with the new message but first get the message id
-				
-				Cursor c = mDb.query(FINDS_TABLE, null, 
-						FINDS_ID + " = " + beneficiary_id,
-						null, null, null, null);
-				if (c.getCount() == 0) {
-					result = false;
-					Log.e(TAG, "Unable to query FINDS Table for beneficiary, id= " + beneficiary_id ); 
-				} else {
-					c.moveToFirst();
-					msg_id =  c.getInt(c.getColumnIndex(FINDS_MESSAGE_ID));
-					c.close();
-				}
-				if (msg_id == UNKNOWN_ID) {
-					result = false;
-					Log.e(TAG, "Unable to get msg_id for beneficiary, id= " + beneficiary_id ); 
-				} else {
-					rows = updateMessageTable(acdiVocaMsg, beneficiary_id, msg_id, status);	
-					if (rows == 0) {
-						Log.e(TAG, "Unable to update message table for beneficiary id= " + beneficiary_id ); 
-						result = false;
-					} else {
-						Log.i(TAG, "Updated message table for beneficiary id= " + beneficiary_id ); 
-						result = true;
-					}	
-				}
-			}
-		} else {
-			Log.i(TAG, "Oops, for bulk messages, msg_id should not = " + msg_id);
-			result = false;
+		int beneficiary_id = acdiVocaMsg.getBeneficiaryId();
+		int msg_id = acdiVocaMsg.getMessageId();
+		
+		boolean result = updateBeneficiaryMessageStatus(beneficiary_id, msg_id, status);
+		if (result) {
+			result = updateMessageStatus(beneficiary_id, msg_id, status);
 		}
-		mDb.close();
 		return result;
 	}
+
+	/**
+	 * Updates Beneficiary table for processed message.
+	 * @param beneficiary_id
+	 * @param msg_id
+	 * @param msgStatus
+	 * @return
+	 */
+	public boolean updateBeneficiaryMessageStatus(int beneficiary_id, int msg_id, int msgStatus) {
+		Log.i(TAG, "Updating beneficiary = " + beneficiary_id + " for message " + msg_id + " status=" + msgStatus);
+
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		AcdiVocaFind avFind = null;
+		int result = 0;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			avFind = avFindDao.queryForId(beneficiary_id);  // Retrieve the beneficiary
+			if (avFind != null) {
+				avFind.message_status = msgStatus;
+				avFind.message_id = msg_id;
+				result = avFindDao.update(avFind);
+			} else {
+				Log.e(TAG, "Unable to retrieve beneficiary id = " + beneficiary_id ); 
+			}
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		if (result == 1) 
+			Log.d(TAG, "Updated beneficiary id = " + beneficiary_id + " for message " + msg_id + " status=" + msgStatus); 
+		return result == 1;
+	}
+	
 	
 	/**
-	 * Helper method to create a new entry in the message table and update the FINDS
+	 * Creates a new entry in the message table and update the FINDS
 	 * table to point to the message.
 	 * @return
 	 */
-	public long createNewMessageTableEntry(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, int status) {
-		Log.i(TAG, "createNewMessage for beneficiary = " + beneficiary_id + " status= " + status);
+	public long createNewMessageTableEntry(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, int msgStatus) {
+		Log.i(TAG, "createNewMessage for beneficiary = " + beneficiary_id + " status= " + msgStatus);
 
-		// Create a new message in the message table
-		ContentValues args = new ContentValues();
-		args.put(MESSAGE_BENEFICIARY_ID, beneficiary_id);
-		args.put(MESSAGE_STATUS, status);
-		args.put(MESSAGE_TEXT, acdiVocaMsg.getSmsMessage());
+		Date now = new Date(System.currentTimeMillis());
 
-		long row_id = mDb.insert(MESSAGE_TABLE, null, args);
-
-		if (row_id == -1) {
-			Log.i(TAG, "Unable to insert NEW message, id= " + row_id);
-		} else {
-			Log.i(TAG, "Inserted NEW message, id= " + row_id + " bene_id=" + beneficiary_id); 
-
-			int rows = 0;
-			if (beneficiary_id == UNKNOWN_ID) {  // BULK Message
-				rows = updateBeneficiaryTableForBulkIds(acdiVocaMsg, row_id, status);
-				Log.i(TAG, "Updated FINDS TABLE for bulk ids, rows = " + rows);
-			} else {
-
-				// Update the FINDS table to point to the message
-				args = new ContentValues();
-				args.put(FINDS_MESSAGE_ID, row_id);
-				args.put(FINDS_MESSAGE_STATUS, status);  // Both Find and Message table have message status
-
-				rows = mDb.update(FINDS_TABLE, 
-						args, 
-						FINDS_ID + " = " + beneficiary_id,
-						null); 
-
-				if (rows == 0) {
-					Log.i(TAG, "Unable to update FINDS Table for beneficiary, id= " + beneficiary_id ); 
-
-				} else {
-					Log.i(TAG, "Updated FINDS Table for beneficiary, id= " + beneficiary_id); 
-
-					// Update the message table with the new message
-					rows = updateMessageTable(acdiVocaMsg, beneficiary_id, row_id, status);					
-				}
-			}
-		}
-		mDb.close();
-		return row_id;
-	}
-	
-	/**
-	 * Helper method to update the message table for an existing message.
-	 * @return
-	 */
-	private synchronized int updateMessageTable(AcdiVocaMessage acdiVocaMsg, int beneficiary_id, long msg_id, int status ) {
-		ContentValues args = new ContentValues();
-		args.put(this.MESSAGE_BENEFICIARY_ID, beneficiary_id);
-		args.put(MESSAGE_STATUS, status);
-		
-		String now = new Date(System.currentTimeMillis()).toString()
-		+ " " + new Time(System.currentTimeMillis()).toString();
-		Log.i(TAG, "Time now = " + now);
-
-		if (status == MESSAGE_STATUS_SENT) {
-			args.put(MESSAGE_SENT_AT, now );
-		} else if (status == MESSAGE_STATUS_ACK) 
-			args.put(MESSAGE_ACK_AT, now );
-
-		int rows = mDb.update(MESSAGE_TABLE, 
-				args, 
-				MESSAGE_ID + " = " + msg_id,
-				null); 
-		if (rows > 0) {
-			Log.i(TAG, "Updated the message table for beneficiary id  = " + beneficiary_id);
-		}
-		//mDb.close();  Don't close -- helper method
-		return rows;
-	}
-	
-	/**
-	 * Updates a Find using it primary key, id. This should increment its
-	 *  revision number.
-	 * @param rowId  The Find's primary key.
-	 * @param args   The key/value pairs for each column of the table.
-	 * @return
-	 */
-	public boolean updateFind(long id, ContentValues args) {
-		boolean success = false;
-		if (args == null)
-			return false;
-		//		mDb = getWritableDatabase();  // Either create or open the DB.
-
+		Dao<AcdiVocaMessage, Integer> avAvMsgDao = null;
+		int result = 0;
 		try {
-			Log.i(TAG, "updateFind id = " + id);
-			
-			// Update the Finds table with the new data
-			success = mDb.update(FINDS_TABLE, args, FINDS_ID + "=" + id, null) > 0;
-			Log.i(TAG,"updateFind result = "+success);  
-		} catch (Exception e){
-			Log.i("Error in update Find transaction", e.toString());
-		} finally {
-			mDb.close();
+			avAvMsgDao = getAcdiVocaMessageDao();
+			acdiVocaMsg.message_created_at = now;
+			result = avAvMsgDao.create(acdiVocaMsg);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
 		}
-		return success;
+		if (result != 1) {
+			Log.i(TAG, "Unable to insert NEW message for beneficiary id= " + beneficiary_id);
+		} else {
+			Log.i(TAG, "Inserted NEW message, id= " + acdiVocaMsg.id + " bene_id=" + beneficiary_id); 
+			if (!updateBeneficiaryMessageStatus(beneficiary_id, acdiVocaMsg.id, msgStatus))
+				Log.e(TAG, "Unable to update beneficiary id = " + beneficiary_id + " for message " + acdiVocaMsg.id);
+		} 
+		return acdiVocaMsg.id;  // Return the message Id.
 	}
-	
-	/** 
-	 * SUSPECT:  PositDbHelper should not return a Cursor -- causes memory leaks: 
-	 * Returns a Cursor with rows for all Finds of a given project.
+
+	/**
+	 * Updates the message table for an existing message.
 	 * @return
 	 */
-	public Cursor fetchFindsByProjectId(int project_id, String order_by) {
-		//		mDb = getReadableDatabase(); // Either open or create the DB.
-		Cursor c = mDb.query(FINDS_TABLE,null, 
-				FINDS_PROJECT_ID +"="+project_id, null, null, null, order_by);
-		Log.i(TAG,"fetchFindsByProjectId " + FINDS_PROJECT_ID + "=" + project_id + " count=" + c.getCount());
-		mDb.close();
-		return c;
+	public boolean updateMessageStatus(int beneficiary_id, int msg_id, int status ) {
+		Log.i(TAG, "Updating message, bene_id = " + beneficiary_id + " message = " + msg_id + " status=" + status);
+
+		int result = 0;
+		Date now = new Date(System.currentTimeMillis());
+//		String now = new Date(System.currentTimeMillis()).toString()
+//		+ " " + new Time(System.currentTimeMillis()).toString();
+		Log.i(TAG, "Time now = " + now);
+		
+		Dao<AcdiVocaMessage, Integer> avMsgDao = null;
+		AcdiVocaMessage avMsg = null;
+		try {
+			avMsgDao = getAcdiVocaMessageDao();
+			avMsg = avMsgDao.queryForId(msg_id);  // Retrieve the message
+			if (avMsg != null) {
+				avMsg.setMsgStatus(status);
+				avMsg.setBeneficiaryId(beneficiary_id);
+				if (status == MESSAGE_STATUS_SENT) {
+					avMsg.message_sent_at = now;
+				} else if (status == MESSAGE_STATUS_ACK) 
+					avMsg.message_ack_at = now;
+				result = avMsgDao.update(avMsg);
+			} else {
+				Log.e(TAG, "Unable to retrieve message id = " + msg_id ); 	
+			}
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		if (result == 1) 
+			Log.d(TAG, "Updated message id = " + msg_id + " for message " + msg_id + " status=" + status);
+		return result == 1;
 	}
 	
-	/** 
-	 * SUSPECT:  PositDbHelper should not return a Cursor -- causes memory leaks: 
-	 * Returns a Cursor with rows for all Finds of a given project.
+	/**
+	 * Updates the Beneficiary's row in the Beneficiary Table.
+	 * @param avFind
 	 * @return
 	 */
-	public Cursor fetchFindsByStatus(int status) {
-		Cursor c = mDb.query(FINDS_TABLE,null,
-				FINDS_STATUS + " = " + status, null, null, null, null);
-		Log.i(TAG,"fetchFindsByStatus " + FINDS_STATUS + "=" + status + " count=" + c.getCount());
-		mDb.close();
-		return c;
+	public boolean updateBeneficiary(AcdiVocaFind avFind) {
+		Log.i(TAG, "Updating beneficiary " + avFind.id);
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		int result = 0;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			result = avFindDao.update(avFind);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return result == 1;
+	}
+	
+	/**
+	 * Inserts a new Beneficiary's row in the Beneficiary Table.
+	 * @param avFind
+	 * @return
+	 */
+	public boolean insertBeneficiary(AcdiVocaFind avFind) {
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		int result = 0;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			result = avFindDao.create(avFind);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return result == 1;
 	}
 
 	/**
@@ -1207,30 +970,33 @@ public class AcdiVocaDbHelper {
 	 * @param columns an array of column names, can be left null
 	 * @return
 	 */
-	public ContentValues fetchBeneficiaryByDossier(String dossier, String[] columns) {
-		//		mDb = getReadableDatabase();  // Either open or create the DB    	
-		String[] selectionArgs = null;
-		String groupBy = null, having = null, orderBy = null;
-		Cursor c = mDb.query(FINDS_TABLE, columns, 
-				FINDS_DOSSIER + "= '" + dossier + "'", 
-				selectionArgs, groupBy, having, orderBy);
-		c.moveToFirst();
-		ContentValues values = null;
-		if (c.getCount() != 0)
-			values = this.getContentValuesFromRow(c);
-		c.close();
-		mDb.close();
-		return values;
+	public AcdiVocaFind fetchBeneficiaryByDossier(String dossier, String[] columns) {		
+		Log.i(TAG, "Fetching beneficiary, dossier = " + dossier);
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		List<AcdiVocaFind> list = null;
+		AcdiVocaFind avFind = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(FINDS_DOSSIER, dossier);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			avFind = avFindDao.queryForFirst(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return avFind;
 	}
 	
 	/**
-	 * Helper method performs the query and returns the Cursor. Data are
-	 * pulled from the MESSAGE_TABLE.
+	 * Helper method to retrieve selected messages from message table. 
 	 * @param filter
 	 * @param order_by
 	 * @return
 	 */
-	private Cursor lookupMessages(int filter, int bene_status, String order_by) {
+	private List<AcdiVocaMessage> lookupMessages(int filter, int bene_status, String order_by) {
 		int msg_status = 0;
 		// Map the select result to the message status
 		switch (filter) {
@@ -1247,26 +1013,29 @@ public class AcdiVocaDbHelper {
 			break;
 		}
 		
-		String whereClause = "";
-		if (bene_status == FINDS_STATUS_DONTCARE) 
-			whereClause = MESSAGE_STATUS + " = " +  msg_status;
-		else 
-			whereClause = MESSAGE_STATUS + " = " + msg_status 
-			+ " AND EXISTS (SELECT * FROM " + FINDS_TABLE + " WHERE "
-			+ MESSAGE_TABLE + "." + MESSAGE_BENEFICIARY_ID + " = " + FINDS_TABLE + "." + FINDS_ID
-			+ " AND " + FINDS_TABLE + "." + FINDS_STATUS + " = " + bene_status + ")";
-		String fromClause = MESSAGE_TABLE + "," + FINDS_TABLE;
-		Cursor c = null;
-
-		if (filter == SearchFilterActivity.RESULT_SELECT_ALL) // All messages
-			c = mDb.query(true, MESSAGE_TABLE, null, null, null, null, null, order_by,null);
-		else 
-			c = mDb.query(true, MESSAGE_TABLE, null, whereClause,null, null, null, order_by,null);
-		return c;
+		Dao<AcdiVocaMessage, Integer> avMessageDao = null;
+		List<AcdiVocaMessage> list = null;
+		AcdiVocaMessage avMsg = null;
+		try {
+			avMessageDao = getAcdiVocaMessageDao();
+			QueryBuilder<AcdiVocaMessage, Integer> queryBuilder =
+				avMessageDao.queryBuilder();
+			if (msg_status != 0) {
+				Where<AcdiVocaMessage, Integer> where = queryBuilder.where();
+				where.eq("msgStatus", msg_status);
+			}
+			PreparedQuery<AcdiVocaMessage> preparedQuery = queryBuilder.prepare();
+			list = avMessageDao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return list;
 	}
+
 		
 	/**
-	 * Helper method performs the query and returns the Cursor. Data are
+	 * Helper method to retrieve selected beneficiarys from table. Data are
 	 * pulled from the FINDS_TABLE.  This method is called by createMessages()
 	 * retrieve those beneficiaries for whom SMS messages will be sent.  For
 	 * NEW beneficiaries all beneficiaries whose messages are UNSENT are returned.
@@ -1276,30 +1045,37 @@ public class AcdiVocaDbHelper {
 	 * @param order_by
 	 * @return
 	 */
-	private Cursor lookupBeneficiaryRecords(int filter, String order_by, String distrCtr) {
-		Cursor c = null;
-		if (filter == SearchFilterActivity.RESULT_SELECT_NEW)
-			c = mDb.query(FINDS_TABLE, null, 
-					FINDS_STATUS + " = " + FINDS_STATUS_NEW  
-					+ " AND " 
-					+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT,
-					null, null, null, order_by);
-		
-		// Select all UPDATE Beneficiaries whose status has changed
-		else if (filter == SearchFilterActivity.RESULT_SELECT_UPDATE)
-			c = mDb.query(FINDS_TABLE, null, 
-					FINDS_STATUS + " = " + FINDS_STATUS_UPDATE 
-					+ " AND " 
-					+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT
-					//+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_SENT
-					+ " AND " 
-					+ FINDS_DISTRIBUTION_POST + "=" + "'" + distrCtr + "'" 
-					+ " AND "  
-					+ FINDS_Q_CHANGE + "=" +  "'" + FINDS_TRUE + "'",
-					null, null, null, order_by);
-		return c;
+	private List<AcdiVocaFind> lookupBeneficiaryRecords(int filter, String order_by, String distrCtr) {
+		Log.i(TAG, "lookupBeneficiaryRecords filter = " + filter);
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		List<AcdiVocaFind> list = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			if (filter == SearchFilterActivity.RESULT_SELECT_NEW) {
+				where.eq(FINDS_STATUS, FINDS_STATUS_NEW);
+				where.and();
+				where.eq( FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
+			} else if (filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {
+				where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE);
+				where.and();
+				where.eq(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
+				where.and();
+				where.eq(FINDS_DISTRIBUTION_POST, distrCtr);
+				where.and();
+				where.eq(FINDS_Q_CHANGE, true);
+			}
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = avFindDao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return list;
 	}
-	
 	
 	/**
 	 * Returns an array of AcdiVocaMessages for new or updated beneficiaries. 
@@ -1310,95 +1086,83 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	public ArrayList<AcdiVocaMessage> createMessagesForBeneficiaries(int filter, String order_by, String distrCtr) {
-		Cursor c = lookupBeneficiaryRecords(filter, order_by, distrCtr);
-		Log.i(TAG,"createMessagesForBeneficiaries " +  " count=" + c.getCount() + " filter= " + filter);
-
-		// Construct the messages and return as a String array
+		List<AcdiVocaFind> list = lookupBeneficiaryRecords(filter, order_by, distrCtr);
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
-		if (c.getCount() != 0) {
-			
-			//Log.i(TAG, "Columns=" + c.getColumnNames().toString());
-			//acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
-			c.moveToFirst();
-			int k = 0;
-			String smsMessage = null;
-			String msgHeader = null;
-			int msg_id = AcdiVocaDbHelper.UNKNOWN_ID;
-			int beneficiary_id = AcdiVocaDbHelper.UNKNOWN_ID;
-			int beneficiary_status = -1;
-			int message_status = -1;
-			String columns[] = null;
-			
-			// For debugging
-//			columns = c.getColumnNames();   // The Db columns represent the attribute names
-//			for (int j = 0; j < columns.length; j++) 
-//				Log.i(TAG, columns[j] + "=" + c.getString(c.getColumnIndex(columns[j])));
-			
-			String rawMessage = "";
-			String statusStr = "";
+		if (list != null) {
+			Log.i(TAG,"createMessagesForBeneficiaries " +  " count=" + list.size() + " filter= " + filter);
+		
+		// Construct the messages and return as a String array
+			Iterator<AcdiVocaFind> it = list.iterator();
 
-			while (!c.isAfterLast()) {
-				beneficiary_id = c.getInt(c.getColumnIndex(FINDS_ID));
-				beneficiary_status = c.getInt(c.getColumnIndex(FINDS_STATUS));
-				message_status = c.getInt(c.getColumnIndex(FINDS_MESSAGE_ID));
-				//Log.i(TAG, "message_status = " )
-				//statusStr = MESSAGE_STATUS_STRINGS[message_status];
-
-				columns = c.getColumnNames();
-				rawMessage = "";
-
-				// Construct the raw message with full attribute names
-				// For each column (attribute), put an attr=val pair in the string
-				String prn = "";
-				for (int i=0; i < columns.length; i++){
-					prn += columns[i]+" , ";
-				}
-				Log.i(TAG,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-				Log.i(TAG,prn);
-				String empty= "";
-				for (int j = 0; j < columns.length; j++) {
-					String val = c.getString(c.getColumnIndex(columns[j]));
-					if (val != null){
-					if ((!columns[j].equals(MESSAGE_TEXT)) && (!val.equals(empty))) {
-						rawMessage += 
-							columns[j] +  "=" +
-							c.getString(c.getColumnIndex(columns[j])) + ",";
-					}
-					}
-				}
-
-				// Now abbreviate the message
-				smsMessage = abbreviateBeneficiaryStringForSms(rawMessage);
-				if (beneficiary_status == FINDS_STATUS_NEW)  {
-					smsMessage = AttributeManager.encodeBinaryFields(smsMessage, 
-							AttributeManager.isAFields, 
-							AttributeManager.ABBREV_ISA);
-					smsMessage = AttributeManager.encodeBinaryFields(smsMessage, 
-							AttributeManager.hasAFields,
-							AttributeManager.ABBREV_HASA);
-				}
-
-				// Add a header (length and status) to message
-				msgHeader = "MsgId:" + msg_id + ", Len:" + smsMessage.length() +  ", " + statusStr 
-				+ " Bid = " + beneficiary_id;
-
-				acdiVocaMsgs.add(new AcdiVocaMessage(msg_id, 
-						beneficiary_id, 
-						MESSAGE_STATUS_UNSENT,
-						rawMessage, smsMessage, msgHeader,!AcdiVocaMessage.EXISTING));
-				c.moveToNext();
-				++k;
+			while (it.hasNext()) {
+				AcdiVocaFind avFind = it.next();   // Process the next beneficiary
+				AcdiVocaMessage avMessage = avFind.toSmsMessage();
+				acdiVocaMsgs.add(avMessage);
 			}
 		}
-		mDb.close();
-		c.close();
 		return acdiVocaMsgs;		
 	}
 
+	/**
+	 * Deletes all rows from the Beneficiary Table.
+	 * @return
+	 */
 	public int clearBeneficiaryTable() {
-		int rows = mDb.delete(FINDS_TABLE, null, null);
-		mDb.close();
-		return rows;
+		Log.i(TAG, "Clearing Beneficiary Table");
+		int count = 0;
+		Dao<AcdiVocaFind, Integer> avFind = null;
+		List<AcdiVocaFind> list = null;
+		try {
+			avFind = getAcdiVocaFindDao();
+			DeleteBuilder<AcdiVocaFind, Integer> deleteBuilder =
+				avFind.deleteBuilder();
+			// Delete all rows -- no where clause
+			count = avFind.delete(deleteBuilder.prepare());
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	/**
+	 * Deletes all rows from the Beneficiary Table.
+	 * @return
+	 */
+	public int clearMessageTable() {
+		Log.i(TAG, "Clearing Message Table");
+		int count = 0;
+		Dao<AcdiVocaMessage, Integer> avMsg = null;
+		List<AcdiVocaMessage> list = null;
+		try {
+			avMsg = getAcdiVocaMessageDao();
+			DeleteBuilder<AcdiVocaMessage, Integer> deleteBuilder =
+				avMsg.deleteBuilder();
+			// Delete all rows -- no where clause
+			count = avMsg.delete(deleteBuilder.prepare());
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return count;
+	}
+	
+	/**
+	 * Returns a list of all beneficiaries in the Db.
+	 * @return
+	 */
+	public List<AcdiVocaFind> fetchAllBeneficiaries() {
+		Log.i(TAG, "Fetching all beneficiaries");
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		List<AcdiVocaFind> list = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			list = avFindDao.queryForAll();
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return list;
 	}
 	
 	/**
@@ -1411,38 +1175,41 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	public ArrayList<AcdiVocaMessage> createBulkUpdateMessages(String distrCtr) {
+		Log.i(TAG, "Creating bulk update messages distribution center = " + distrCtr);
+		
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
 
-		Cursor c = mDb.query(FINDS_TABLE, null, 
-				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
-				+ " AND " 
-				+ FINDS_MESSAGE_STATUS + " = " + MESSAGE_STATUS_UNSENT
-				+ " AND " 
-				+ FINDS_DISTRIBUTION_POST + " = " + "'" + distrCtr  + "'"
-				+ " AND " 
-				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_FALSE + "'"
-				,
-				null, null, null, null);
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		AcdiVocaFind avFind = null;
+		List<AcdiVocaFind> list = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(FINDS_STATUS,  FINDS_STATUS_UPDATE);
+			where.and();
+			where.eq(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
+			where.and();
+			where.eq(FINDS_DISTRIBUTION_POST, distrCtr);
+			where.and();
+			where.eq(FINDS_Q_PRESENT, false);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = avFindDao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
 
-		Log.i(TAG,"fetchBulkUpdateMessages " +  " count=" + c.getCount() + " distrPost " + distrCtr);
+		Log.i(TAG,"fetchBulkUpdateMessages " +  " count=" + list.size() + " distrPost " + distrCtr);
 		
-		if (c.getCount() != 0) {
-			
+		if (list.size() != 0) {
+			Iterator<AcdiVocaFind> it = list.iterator();
 			String smsMessage = "";
-			c.moveToFirst();
-			
-			int k = 0;
-
-			while (!c.isAfterLast()) {
+			while (it.hasNext()) {
+				avFind = it.next();
+				smsMessage += avFind.dossier + AttributeManager.LIST_SEPARATOR;
 				
-//				// For debugging
-//				String[] columns = c.getColumnNames();   // The Db columns represent the attribute names
-//				for (int j = 0; j < columns.length; j++) 
-//					Log.i(TAG, columns[j] + "=" + c.getString(c.getColumnIndex(columns[j])));
-				
-				String dossier_no = c.getString(c.getColumnIndex(FINDS_DOSSIER));
-				smsMessage += dossier_no + AttributeManager.LIST_SEPARATOR;
-
 				if (smsMessage.length() > 120) {
 					// Add a header (length and status) to message
 					String msgHeader = "MsgId: bulk, Len:" + smsMessage.length();
@@ -1453,22 +1220,11 @@ public class AcdiVocaDbHelper {
 							"", smsMessage, msgHeader, 
 							!AcdiVocaMessage.EXISTING));
 					smsMessage = "";
-					
-				}				
-				c.moveToNext();
-				++k;
+				}
 			}
-			acdiVocaMsgs.add (new AcdiVocaMessage(UNKNOWN_ID, UNKNOWN_ID, MESSAGE_STATUS_UNSENT,
-					"", smsMessage, 
-					"MsgId: bulk, Len:" + smsMessage.length(), 
-					!AcdiVocaMessage.EXISTING));
 		}
-		mDb.close();
-		c.close();
-
-		return acdiVocaMsgs;		
+		return acdiVocaMsgs;
 	}
-
 	
 	/** 
 	 * Returns an array of Strings where each String represents an SMS
@@ -1477,145 +1233,116 @@ public class AcdiVocaDbHelper {
 	 * @return an array of SMS strings
 	 */
 	public ArrayList<AcdiVocaMessage> fetchSmsMessages(int filter, int bene_status, String order_by) {
-		Cursor c = lookupMessages(filter, bene_status, order_by);
-		Log.i(TAG,"fetchSmsMessages " +  " count=" + c.getCount() + " filter= " + filter);
+		List<AcdiVocaMessage> list = lookupMessages(filter, bene_status, order_by);
 
-		// Construct the messages and store in a String array
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
-		if (c.getCount() != 0) {
-			
-			//acdiVocaMsgs = new ArrayList<AcdiVocaMessage>();
-			c.moveToFirst();
-			
-			int k = 0;
 
-			while (!c.isAfterLast()) {
-				
-				// For debugging
-//				String[] columns = c.getColumnNames();   // The Db columns represent the attribute names
-//				for (int j = 0; j < columns.length; j++) 
-//					Log.i(TAG, columns[j] + "=" + c.getString(c.getColumnIndex(columns[j])));
-				
-				
-				int msg_id = c.getInt(c.getColumnIndex(MESSAGE_ID));
-				int beneficiary_id = c.getInt(c.getColumnIndex(MESSAGE_BENEFICIARY_ID));
-				int msg_status = c.getInt(c.getColumnIndex(MESSAGE_STATUS));
-				String smsMessage = c.getString(c.getColumnIndex(MESSAGE_TEXT));
-				String statusStr = MESSAGE_STATUS_STRINGS[msg_status];
-
-				String msgHeader = "MsgId:" + msg_id + " Stat:" + statusStr + " Len:" + smsMessage.length()
-					+ " Bid = " + beneficiary_id;
-				acdiVocaMsgs.add (new AcdiVocaMessage(msg_id, beneficiary_id, 
-						msg_status,
-						"", smsMessage, 
-						msgHeader,
-						AcdiVocaMessage.EXISTING));
-				c.moveToNext();
-				++k;
-			}
+		Iterator<AcdiVocaMessage> it = list.iterator();
+		while (it.hasNext()) {
+			AcdiVocaMessage msg = it.next();
+			String header = "MsgId:" + msg.id + " Stat:" + msg.msgStatus + " Len:" 
+				+ msg.smsMessage.length() + " Bid = " + msg.beneficiaryId;
+			msg.setMsgHeader(header);
+			acdiVocaMsgs.add(msg);
 		}
-		mDb.close();
-		c.close();
+		
 		return acdiVocaMsgs;
 	}
-	
-	
-	/**
-	 * Converts a String representing a beneficiary string into an abbreviated
-	 * string. If the String already contains an SMS message in its 'message_text'
-	 * field, then no need to construct it again.
-	 * @param beneficiary a string of the form attr1-value1,attr2=value2...
-	 * @return a String of the form a1=v1, ..., aN=vN
-	 */
-	private String abbreviateBeneficiaryStringForSms(String beneficiary) {
-        String message = "";
-        String abbrev = "";
-        String[] pair = null;
-        
-        String[] attr_val_pairs = beneficiary.split(",");
-        String attr = "";
-        String val = "";
-        for (int k = 0; k < attr_val_pairs.length; k++) {
-            //Log.i(TAG, "Pair-" + k + " = " + attr_val_pairs[k]);
-            pair = attr_val_pairs[k].split("=");
-            if (pair.length == 0) {
-                attr = "";
-                val = "";
-            } else if (pair.length == 1) {
-                attr = pair[0].trim();
-                val = "";
-            } else {
-                attr = pair[0].trim();
-                val = pair[1].trim();
-            }
-
-            if (!attr.equals(FINDS_ID) 
-                    && !attr.equals(FINDS_PROJECT_ID) 
-                    //&& !attr.equals(FINDS_MESSAGE_TEXT) 
-                    && !val.equals("null")
-                    ) {
-                if(attr.equals(FINDS_DOB))
-                    abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, adjustDateForSmsReader(val));
-                if(attr.equals(FINDS_DISTRIBUTION_POST)) //new code to manage codes already in DB
-                    abbrev = AttributeManager.getMapping(FINDS_DISTRIBUTION_POST) + AttributeManager.ATTR_VAL_SEPARATOR + val;
-                else
-                    abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
-                //abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
-                if (!abbrev.equals(""))
-                    message += abbrev + ",";
-            }
-        }
-        return message;
-    }
-
-
 	
 	/**
 	 * Returns the number of babies in prevention or malnouri processed.
 	 * @return
 	 */
 	public int queryNDistributionChildrenProcessed(String distrSite) {
-		Cursor c = mDb.query(FINDS_TABLE, null, 
-				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
-				+ " AND " 
-				+ FINDS_DISTRIBUTION_POST + " = " + "'" + distrSite  + "'"
-				+ " AND " 
-				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_TRUE + "'"
-				+ " AND (" 
-				+ FINDS_BENEFICIARY_CATEGORY + "=" +  "'" + this.FINDS_PREVENTION + "'"
-				+ " OR " 
-				+ FINDS_BENEFICIARY_CATEGORY + "=" +  "'" + this.FINDS_MALNOURISHED + "' )"
-				,
-				null, null, null, null);
-		int count = c.getCount();
-		c.close();
-		mDb.close();
-		return count;
+		Log.i(TAG,"Querying number of children processed");
+		
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		List<AcdiVocaFind> list = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE);
+			where.and();
+			where.eq(FINDS_DISTRIBUTION_POST, distrSite);
+			where.and();
+			where.eq(FINDS_Q_PRESENT, true);
+			where.and();
+			where.or(where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_PREVENTION),
+					where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_MALNOURISHED));
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = avFindDao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		if (list != null)
+			return list.size();
+		return 0;	
 	}
 
-	
-	
 	/**
-	 * Returns the number of expectant of lactating mothers processed.
+	 * Returns the number of expectant or lactating mothers processed.
 	 * @return
 	 */
 	public int queryNDistributionWomenProcessed(String distrSite) {
-		Cursor c = mDb.query(FINDS_TABLE, null, 
-				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
-				+ " AND " 
-				+ FINDS_DISTRIBUTION_POST + " = " + "'" + distrSite  + "'"
-				+ " AND " 
-				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_TRUE + "'"
-				+ " AND (" 
-				+ FINDS_BENEFICIARY_CATEGORY + "=" +  "'" + this.FINDS_EXPECTING + "'"
-				+ " OR " 
-				+ FINDS_BENEFICIARY_CATEGORY + "=" +  "'" + this.FINDS_NURSING + "' )"
-				,
-				null, null, null, null);
-		int count = c.getCount();
-		c.close();
-		mDb.close();
-		return count;
+		Log.i(TAG,"Querying number of women processed");
+		
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		List<AcdiVocaFind> list = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE);
+			where.and();
+			where.eq(FINDS_DISTRIBUTION_POST, distrSite);
+			where.and();
+			where.eq(FINDS_Q_PRESENT, true);
+			where.and();
+			where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_NURSING);
+//			where.or(where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_EXPECTING),
+//					where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_NURSING));
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = avFindDao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		if (list != null)
+			return list.size();
+		return 0;
+	}
+
+	
+	/**
+	 * Returns the number of beneficiaries for whom messages are not sent.
+	 * @return
+	 */
+	public boolean queryUnsentBeneficiaries() {
+		Log.i(TAG,"Querying number of unsent beneficiaries");
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
+		
+		// Query for the username in the user table
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		AcdiVocaFind result = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.or(where.eq(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT),
+					where.eq(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING));
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			result = avFindDao.queryForFirst(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return result != null;
 	}
 	
 	/**
@@ -1624,18 +1351,29 @@ public class AcdiVocaDbHelper {
 	 * @return
 	 */
 	public int queryNDistributionAbsentees(String distrSite) {
-		Cursor c = mDb.query(FINDS_TABLE, null, 
-				FINDS_STATUS + " = " + FINDS_STATUS_UPDATE  
-				+ " AND " 
-				+ FINDS_DISTRIBUTION_POST + " = " + "'" + distrSite  + "'"
-				+ " AND " 
-				+ FINDS_Q_PRESENT + "=" +  "'" + FINDS_FALSE + "'"
-				,
-				null, null, null, null);
-		int count = c.getCount();
-		c.close();
-		mDb.close();
-		return count;
+		Log.i(TAG,"Querying number of absentees");
+		
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		List<AcdiVocaFind> list = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE);
+			where.and();
+			where.eq(FINDS_DISTRIBUTION_POST, distrSite);
+			where.and();
+			where.eq(FINDS_Q_PRESENT, false);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = avFindDao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		if (list != null)
+			return list.size();
+		return 0;
 	}
 	
 	/** 
@@ -1644,24 +1382,30 @@ public class AcdiVocaDbHelper {
 	 * @return an array of N strings or null if no beneficiaries are found
 	 */
 	public String[] fetchAllBeneficiaryIdsByDistributionSite(String distribSite) {
-		//		mDb = getReadableDatabase(); // Either open or create the DB.
-		Cursor c = mDb.query(FINDS_TABLE,null, 
-				FINDS_DISTRIBUTION_POST + "=" + "'" + distribSite + "'" , null, null, null,null);
-		Log.i(TAG,"fetchAllBeneficiaryIds count=" + c.getCount());
-
-		mDb.close();
-		String dossiers[] = null;
-		if (c.getCount() != 0) {
-			dossiers = new String[c.getCount()];
-			c.moveToFirst();
-			int k = 0;
-			while (!c.isAfterLast()) {
-				dossiers[k] = c.getString(c.getColumnIndex(AcdiVocaDbHelper.FINDS_DOSSIER));
-				c.moveToNext();
-				++k;
-			}
+		Log.i(TAG, "fetchBeneficiaries DistributionSite = " + distribSite);
+		
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		List<AcdiVocaFind> list = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(FINDS_DISTRIBUTION_POST, distribSite);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = avFindDao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
 		}
-		c.close();
+		String dossiers[] = new String[list.size()];
+		Iterator<AcdiVocaFind> it = list.iterator();
+		int k = 0;
+		while (it.hasNext()) {
+			dossiers[k] = it.next().dossier;
+			Log.i(TAG, "dossier = " + dossiers[k]);
+			++k;
+		}
 		return dossiers;
 	}
 
@@ -1672,41 +1416,20 @@ public class AcdiVocaDbHelper {
 	 * @param columns an array of column names, can be left null
 	 * @return
 	 */
-	public ContentValues fetchFindDataById(long id, String[] columns) {
-		//		mDb = getReadableDatabase();  // Either open or create the DB    	
-
-		String[] selectionArgs = null;
-		String groupBy = null, having = null, orderBy = null;
-		Cursor c = mDb.query(FINDS_TABLE, columns, 
-				FINDS_ID+"="+id, selectionArgs, groupBy, having, orderBy);
-		//WHERE_NOT_DELETED + " AND " + FINDS_ID+"="+id, selectionArgs, groupBy, having, orderBy);
-		c.moveToFirst();
-		ContentValues values = null;
-		if (c.getCount() != 0)
-			values = this.getContentValuesFromRow(c);
-		c.close();
-		mDb.close();
-		return values;
-	}
-	/**
-	 * This helper method is passed a cursor, which points to a row of the DB.
-	 *  It extracts the names of the columns and the values in the columns,
-	 *  puts them into a ContentValues hash table, and returns the table.
-	 * @param cursor is an object that manipulates DB tables. 
-	 * @return
-	 */
-	private ContentValues getContentValuesFromRow(Cursor c) {
-		ContentValues values = new ContentValues();
-		c.moveToFirst();
-		for (String column : c.getColumnNames()) {
-
-			if (DBG && !column.equals(USER_PASSWORD)) 
-				Log.i(TAG, "getContentValuesFromRow, Column " + column + " = " + 
-					c.getString(c.getColumnIndexOrThrow(column)));
-			values.put(column, c.getString(c.getColumnIndexOrThrow(column)));
+	public AcdiVocaFind fetchFindById(int id, String[] columns) {
+		Log.i(TAG, "Fetch find = " + id);
+		
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		AcdiVocaFind avFind = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			avFind = avFindDao.queryForId(id);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
 		}
-		c.close();
-		return values;
+
+		return avFind;
 	}
 
 }

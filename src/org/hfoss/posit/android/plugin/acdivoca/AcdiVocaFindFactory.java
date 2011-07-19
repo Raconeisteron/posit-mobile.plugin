@@ -45,14 +45,17 @@ public class AcdiVocaFindFactory extends FindFactory {
 	}
 	
 	public Find createNewFind(Context context){
-		return new AcdiVocaFind(context);
+		return null;
+//		return new AcdiVocaFind(context);
 	}
 	
 	public Find createNewFind(Context context, long id){
-		return new AcdiVocaFind(context, id);
+		return null;
+//		return new AcdiVocaFind(context, id);
 	}
 	
 	public Find createNewFind(Context context, String guid){
-		return new AcdiVocaFind(context, guid);
+		return null;
+//		return new AcdiVocaFind(context, guid);
 	}
 }

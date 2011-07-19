@@ -439,7 +439,9 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		int rows = db.clearBeneficiaryTable();
 		Log.i(TAG, "Deleted rows in beneficiary table = " + rows);
-
+		rows = db.clearMessageTable();
+		Log.i(TAG, "Deleted rows in message table = " + rows);
+		
 		long nImports = 0;
 		Log.i(TAG, "Beneficiary type to be loaded = " + beneficiaryType);
 		if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {

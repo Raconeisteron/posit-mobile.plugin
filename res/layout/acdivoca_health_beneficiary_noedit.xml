@@ -52,11 +52,7 @@
 						android:layout_width="fill_parent" android:textSize="15dp"
 						android:layout_height="wrap_content" />
 
-					<TextView android:id="@+id/child_label" android:text="@string/responsible_if_child"
-						android:textColor="#ffffff" android:layout_width="fill_parent"
-						android:textSize="15dp" android:layout_height="wrap_content" />
-
-					<TextView android:id="@+id/mother_label" android:text="@string/responsible_if_mother"
+					<TextView android:id="@+id/alternate_collector" android:text="@string/alternate"
 						android:textColor="#ffffff" android:layout_width="fill_parent"
 						android:textSize="15dp" android:layout_height="wrap_content" />
 
@@ -69,29 +65,14 @@
 						android:textSize="15dp" android:layout_height="wrap_content" />
 
 					<TextView android:id="@+id/participating_agri"
-						android:text="@string/participating_acdivoca"
+						android:text="@string/participating_agri"
 						android:textColor="#ffffff"
 						android:visibility="visible" android:layout_width="fill_parent"
 						android:layout_height="wrap_content" />
 						
-					<TextView android:id="@+id/participating_self_label"
-						android:textColor="#ffffff" android:layout_width="fill_parent"
-						android:layout_marginLeft="15px" 
-						android:textSize="15dp" android:layout_height="wrap_content" />
-						
-<!-- 					<TextView android:id="@+id/relative_participating_agri" -->
-<!-- 						android:text="@string/relative_participating_acdivoca" -->
-<!-- 						android:textColor="#ffffff" -->
-<!-- 						android:visibility="visible" android:layout_width="fill_parent" -->
-<!-- 						android:layout_height="wrap_content" /> -->
 
-					<TextView android:id="@+id/participating_relative_label"
-						android:text="@string/participating_beneficiary_agri"
-						android:textColor="#ffffff" android:layout_width="fill_parent"
-						android:layout_marginLeft="15px" 
-						android:textSize="15dp" android:layout_height="wrap_content" />
-						
 					<TextView android:id="@+id/participating_relative_name"
+						android:text="@string/participating_beneficiary_agri"
 						android:textColor="#ffffff" android:layout_width="fill_parent"
 						android:layout_marginLeft="15px" 
 						android:textSize="15dp" android:layout_height="wrap_content" />
