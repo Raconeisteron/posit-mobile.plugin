@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.Utils;
+//import org.hfoss.posit.android.Utils;
 import org.hfoss.posit.android.api.ListFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 
@@ -152,8 +152,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 //		} else 
 		if (!mMessageListDisplayed) {
 			fillData(null);
-			NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-			nm.cancel(Utils.NOTIFICATION_ID);
+//			NotificationManager nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+//			nm.cancel(Utils.NOTIFICATION_ID);
 		}
 	}
 

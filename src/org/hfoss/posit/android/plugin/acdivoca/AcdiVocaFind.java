@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.hfoss.posit.android.api.Find;
-import org.hfoss.posit.android.provider.PositDbHelper;
+//import org.hfoss.posit.android.provider.PositDbHelper;
 
 import com.j256.ormlite.field.DatabaseField;
 
