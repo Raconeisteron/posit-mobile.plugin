@@ -56,7 +56,7 @@ import android.widget.DatePicker.OnDateChangedListener;
  * Handles Finds for AcdiVoca Mobile App.
  * 
  */
-public class AcdiVocaUpdateActivity extends FindActivity implements OnDateChangedListener, 
+public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateChangedListener, 
     TextWatcher, OnItemSelectedListener { //, OnKeyListener {
     public static final String TAG = "AcdiVocaUpdateActivity";
 

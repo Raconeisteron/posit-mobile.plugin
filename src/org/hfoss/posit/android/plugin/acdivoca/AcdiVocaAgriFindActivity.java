@@ -58,7 +58,7 @@ import android.widget.Toast;
  * Handles Finds for AcdiVoca Mobile App.
  * 
  */
-public class AcdiVocaNewAgriActivity extends FindActivity implements OnDateChangedListener, 
+public class AcdiVocaAgriFindActivity extends FindActivity implements OnDateChangedListener, 
 TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 	public static final String TAG = "AcdiVocaAddAgriActivity";
 
@@ -609,7 +609,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 			displayText(contentValues, R.id.firstnameEdit, AcdiVocaDbHelper.FINDS_FIRSTNAME);
 			// COMMUNE SECTION SPINNER
 			Spinner spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-			AcdiVocaFindActivity.setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_COMMUNE_SECTION);
+			AcdiVocaMchnFindActivity.setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_COMMUNE_SECTION);
 			// ADDRESS
 			displayText(contentValues, R.id.addressEdit, AcdiVocaDbHelper.FINDS_ADDRESS);
 			// DOB
