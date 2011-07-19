@@ -31,7 +31,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.hfoss.posit.android.Log;
+//import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FilePickerActivity;
 import org.hfoss.posit.android.api.FindActivityProvider;
@@ -55,6 +55,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
