@@ -227,7 +227,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 						// Message for normal messages, where IDs > 0 and represent beneficiary IDs
 						avMsg = new AcdiVocaMessage(
 								AcdiVocaDbHelper.UNKNOWN_ID,  // Message Id is unknown -- Modem sends back Beneficiary Id
-								ackId,  // For non-acks, ackId is Beneficiary Id
+								ackId,  // For non-bulks, ackId is Beneficiary Id
 								AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
 								attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
 								"",   // SmsMessage N/A
@@ -277,14 +277,6 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		mContext = context;
 		
 		Log.i(TAG, "sendMessages,  n =" + acdiVocaMsgs.size());
-		
-//		mAcdiVocaPhone = PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.smsPhoneKey), "");
-//		Log.i(TAG, "Phone number = " + mAcdiVocaPhone);
-//		if (!isValidPhoneString(mAcdiVocaPhone)) {
-//			Log.e(TAG, "Invalid phone number " + mAcdiVocaPhone);
-//			mErrorMsg = "Invalid phone number = " + mAcdiVocaPhone;
-//			return;			
-//		}
 
 		// Build a list of messages (with updates to the Db) to pass
 		// to the Service.  Do it in a separate thread.
@@ -335,7 +327,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 //			Log.i(TAG, "To Send: " + acdiVocaMsg.getSmsMessage());
 			
 			if (!acdiVocaMsg.isExisting()) {
-				Log.i(TAG,"This is an existing message");
+				Log.i(TAG,"This is a NEW message");
 				AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
 				int msgId = (int)db.createNewMessageTableEntry(acdiVocaMsg,beneficiary_id,AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT);
 				acdiVocaMsg.setMessageId(msgId);
@@ -357,7 +349,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	}
 	
 	/**
-	 * Thread to handle import of data from external file. 
+	 * Thread to build text messages. 
 	 *
 	 */
 	class BuildMessagesThread extends Thread {
@@ -379,7 +371,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			ArrayList<String> messagesToSend = getMessagesAsArray(mContext, mAcdiVocaMsgs);
 
 			Log.i(TAG, "Starting background service");
-			smsService.putExtra("messages", messagesToSend);
+			smsService.putExtra("messages", messagesToSend);  // These messages know their msgIds
 			smsService.putExtra("phonenumber", mAcdiVocaPhone);
 			mContext.startService(smsService);
 			mHandler.sendEmptyMessage(AcdiVocaAdminActivity.DONE);

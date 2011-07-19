@@ -993,6 +993,30 @@ Dispensaire de Bleck/ Mar Mirande	HETH027
 			return s;
 	}
 	
+	/**
+	 * Utility mapping from long attribute or value String to short.
+	 * @param s
+	 * @return
+	 */
+	public static String mapToShort(String s){
+		String str = mappings.get(s);
+		if (str != null)
+			return str;
+		else 
+			return s;
+	}
+	
+	/**
+	 * Utility mapping from boolean to T/F.
+	 * @param b
+	 * @return
+	 */
+	public static String mapToShort(boolean b){
+		if (b)
+			return "T";
+		else 
+			return "F";
+	}
 	
 	/**
 	 * Mobile side method. 
@@ -1083,7 +1107,7 @@ Dispensaire de Bleck/ Mar Mirande	HETH027
 			} else if (attrval.length == 1) {
 				attr = attrval[0];
 			}
-			//System.out.println(TAG + "attr = " + attr + " val = " + val);
+			System.out.println(TAG + "attr = " + attr + " val = " + val);
 
 			// If the attribute (eg 'fa') is contained in the attributes array
 			// its value represents 2^x where x is its index in the array. Add
@@ -1093,14 +1117,20 @@ Dispensaire de Bleck/ Mar Mirande	HETH027
 			int valInt = 0;
 			if (x != -1) {
 				try {
-					valInt = Integer.parseInt(val);   // Shouldn't happen
+					if (val.equals("true"))
+						valInt = 1;
+					else if (val.equals("false"))
+						valInt = 0;
+					else 
+						valInt = Integer.parseInt(val);   // Shouldn't happen
 				} catch (NumberFormatException e) {
 					Log.e(TAG, "NumberFormatException on " + val);
 				}
 				if (valInt == 1)
 					sum += Math.pow(2, x);              // Compute a running total
 			} else {
-				result += attr + ATTR_VAL_SEPARATOR + val + PAIRS_SEPARATOR;
+				if (attr.length() != 0)
+					result += attr + ATTR_VAL_SEPARATOR + val + PAIRS_SEPARATOR;
 			}
 		}
 		result += newAttr + ATTR_VAL_SEPARATOR + sum;	

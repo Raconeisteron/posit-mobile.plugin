@@ -4,7 +4,7 @@
 	<!--  Acdi Voca Strings -->
 	
 	<!--  Admin Menu Stuff -->
-	<string name="default_phone">39971563</string>
+	<string name="default_phone">8602451248</string>
 	<string name="default_preference_string">default_null_value</string>
 	<string name="admin_menu">Admin</string>
 	<string name="admin_welcome">Admin Functions\nChoose from the Menu</string>
@@ -82,8 +82,8 @@
     <!--   MCHN Strings -->
     <string name="mchn_title">Provide information for the MCHN registration below.</string>
     <string name="relatives_section">Beneficiary relatives</string>
-    <string name="responsible_if_child">Alternate collector (if child)</string>
-    <string name="responsible_if_mother">Alternate collector (if mother)</string>
+    <string name="alternate">Alternate collector</string>
+<!--     <string name="responsible_if_mother">Alternate collector (if mother)</string> -->
     <string name="father_if_child">Father (if child)</string>
     <string name="husband_if_mother">Husband (if mother)</string>
     
@@ -94,15 +94,15 @@
     <string name="mchn_questions">Questions</string>
     <string name="mother_leader">Are you a mother leader?</string>
     <string name="visit_mother_leader">Have you received a visit from a mother leader?</string>
-<!--     <string name="relative_participating_acdivoca">Is someone in your family participating in ACDI/VOCA Agriculture program?</string> -->
-    <string name="participating_acdivoca">Are you or is someone in your home receiving aid from ACDI/VOCA Agriculture Program?</string>
+    <string name="participating_agri">Are you or is someone in your home receiving aid from ACDI/VOCA Agriculture Program?</string>
 	<string name="participating_beneficiary_agri">Agri participant</string>
 	<string name="participating_beneficiary_mchn">Mchn participant</string>
     <string name="give_name">If so, give name</string>
     <string name="Yes">Yes</string>
     <string name="No">No</string>
 <!--     <string name="participating_bene">Is someone in your family participating in ACDI/VOCA Beneficiary program?</string> -->
-    <string name="participating_bene_same">Are you or is someone in your home participating in ACDI/VOCA Health Program?</string>
+<!--     <string name="participating_bene_same">Are you or is someone in your home participating in ACDI/VOCA Health Program?</string> -->
+     <string name="participating_mchn">Are you or is someone in your home participating in ACDI/VOCA Health Program?</string>
     
     
    
@@ -170,7 +170,7 @@
     <string name="unsent">Unsent</string>
     <string name="sent">Sent</string>
     <string name="pending">Pending</string>
-    <string name="ack">Acknowledged</string>
+    <string name="ack">Ack</string>
     <string name="deleted">Deleted</string>
    
         <!-- Add and List Menu -->
@@ -200,7 +200,7 @@
  	
  	
  	<!-- New string constants for agriculture registration form -->
-	<string name="amount_of_land">Amount of Land (carreau))</string>
+	<string name="amount_of_land">Amount of Land (carreau)</string>
 	<string name="Ex:1over16"></string>
     <string name="seed_group">Seed Types</string>
     <string name="unit_of_measurement">Unit of Measurement</string>

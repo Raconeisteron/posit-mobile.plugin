@@ -79,8 +79,8 @@
     
     <!--   MCHN Strings -->
     <string name="relatives_section">Parent Beneficiaire</string>
-    <string name="responsible_if_child">Nom responsable (si enfant)</string>
-    <string name="responsible_if_mother">Representant (si femme)</string>
+    <string name="alternate">Representant</string>
+<!--     <string name="responsible_if_mother">Representant (si femme)</string> -->
     <string name="father_if_child">Nom Pere (si enfant)</string>
     <string name="husband_if_mother">Nom mari (Si femme)</string>
     
@@ -163,7 +163,7 @@
     <string name="unsent">Pas unvoyes</string>
     <string name="sent">Envoyes</string>
     <string name="pending">En pending</string>
-    <string name="ack">Acknowledged</string>
+    <string name="ack">Ack</string>
     <string name="deleted">Deleted</string>
     
    
