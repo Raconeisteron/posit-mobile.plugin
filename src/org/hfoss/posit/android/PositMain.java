@@ -80,18 +80,12 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 
 	public static final int LOGIN_CANCELED = 3;
 	public static final int LOGIN_SUCCESSFUL = 4;
-	private static final int REGISTRATION_ACTIVITY = 11;
 
 
 	private SharedPreferences mSharedPrefs;
 	private Editor mSpEditor;
 
-	private String mAuthKey;
-	public static WifiManager wifiManager;
-	public Intent rwg;
 	
-	NotificationManager mNotificationManager;
-
 	/**
 	 * Called when the activity is first created. Sets the UI layout, adds the
 	 * buttons, checks whether the phone is registered with a POSIT server.
@@ -101,48 +95,48 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 		super.onCreate(savedInstanceState);
 		Log.i(TAG,"Creating");
 
-		// initialize plugins
+		// Initialize plugins and managers
 		FindPluginManager.initInstance(this);
 		AcdiVocaSmsManager.initInstance(this);
 		AttributeManager.init();
 
-		// A newly installed POSIT should have no shared prefs
+		// A newly installed POSIT should have no shared prefs. Set the default phone pref if
+		// it is not already set.
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		mSpEditor = mSharedPrefs.edit();
-		mSpEditor.putString(getString(R.string.smsPhoneKey), getString(R.string.default_phone));
-		mSpEditor.commit();
-		Log.i(TAG, "Preferences= " + mSharedPrefs.getAll().toString());
-		
-		
-		// get our dao
-		Dao<AcdiVocaUser, Integer> avUserDao = null;
 		try {
-			avUserDao = getHelper().getAvUserDao();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			String phone = mSharedPrefs.getString(getString(R.string.smsPhoneKey),"");
+			if (phone.equals("")) {
+				mSpEditor = mSharedPrefs.edit();
+				mSpEditor.putString(getString(R.string.smsPhoneKey), getString(R.string.default_phone));
+				mSpEditor.commit();
+			}
+			Log.i(TAG, "Preferences= " + mSharedPrefs.getAll().toString());
+		} catch (ClassCastException e) {
+			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
-		// query for all of the data objects in the database
-		List<AcdiVocaUser> list = null;
-		try {
-			list = avUserDao.queryForAll();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// our string builder for building the content-view
-		for (AcdiVocaUser item : list) {
-			Log.i(TAG, "User= " +  item.toString());
-		}
-
-		// If this is a new install, we need to set up the Server
-//		if (mSharedPrefs.getString("SERVER_ADDRESS", "").equals("")) {
-//			mSpEditor.putString("SERVER_ADDRESS", getString(R.string.defaultServer));
-//			mSpEditor.commit();
+		
+//		// get our dao
+//		Dao<AcdiVocaUser, Integer> avUserDao = null;
+//		try {
+//			avUserDao = getHelper().getAvUserDao();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
 //		}
-
-		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
+//		
+//		// Query for all of the data objects in the database
+//		List<AcdiVocaUser> list = null;
+//		try {
+//			list = avUserDao.queryForAll();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		// our string builder for building the content-view
+//		for (AcdiVocaUser item : list) {
+//			Log.i(TAG, "User= " +  item.toString());
+//		}
 		
 		// Run login activity, if necessary
 		
@@ -153,16 +147,6 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 			intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.USER.ordinal());
 			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 		}
-
-//		// Give the user the tutorial if they haven't yet had it. 
-//		if (!mSharedPrefs.getBoolean("tutorialComplete", false)) {
-//			Intent i = new Intent(this, TutorialActivity.class);
-//			startActivity(i);
-//		} else { 
-//			startPOSIT();
-//		}
-
-//		Toast.makeText(this, "Server: "  + mSharedPrefs.getString("SERVER_ADDRESS", ""), Toast.LENGTH_SHORT).show();
 	}
 
 
@@ -176,7 +160,7 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 
 			setContentView(R.layout.main);
 			
-//			// Change visibility of buttons based on UserType
+			// Change visibility of buttons based on UserType
 
 			Log.i(TAG, "POSIT Start, distrStage = " + AppControlManager.displayDistributionStage(this));
 						
@@ -386,8 +370,14 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+		// Re-inflate to force localization.
+		menu.clear();
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.positmain_menu, menu);
+		
 		MenuItem  adminMenu = menu.findItem(R.id.admin_menu_item);
-
+		
 		Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
 		
 		// Hide the ADMIN menu from regular users
@@ -395,8 +385,9 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 			adminMenu.setVisible(false);
 		else 
 			adminMenu.setVisible(true);
-
+		
 		return super.onPrepareOptionsMenu(menu);
+
 	}
 
 	/**
