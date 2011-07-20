@@ -458,7 +458,35 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 			return null;
 		}
 	}
+	
+	
  
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		super.onPrepareDialog(id, dialog);
+		AlertDialog d = (AlertDialog) dialog;
+		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		switch (id) {
+		case CONFIRM_EXIT:
+					d.setTitle(R.string.exit);
+					d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// User clicked OK so do some stuff
+							finish();
+						}
+					} );
+					d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.alert_dialog_cancel), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							/* User clicked Cancel so do nothing */
+						}
+					} );
+					break;
+		}
+	}
+
+
 	/**
 	 * Makes sure RWG is stopped before exiting the Activity
 	 * 

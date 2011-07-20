@@ -25,6 +25,7 @@ import org.hfoss.posit.android.api.SettingsActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -70,6 +71,21 @@ public class AboutActivity extends Activity{
 //			break;
 		}
 		return true;
+	}
+	
+	
+	/**
+	 * Localizes already created menu items.
+	 */
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+		// Re-inflate to force localization.
+		menu.clear();
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.about_copyright_menu, menu);
+		return super.onPrepareOptionsMenu(menu);
+
 	}
 
 	@Override
