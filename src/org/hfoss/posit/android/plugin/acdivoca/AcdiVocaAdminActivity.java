@@ -170,6 +170,11 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+		menu.clear();
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.acdi_voca_admin_menu, menu);
+		
 		MenuItem loadAgriItem = menu.findItem(R.id.load_agri_data);
 		MenuItem loadMchnItem = menu.findItem(R.id.load_beneficiary_data);
 		MenuItem listFindsItem = menu.findItem(R.id.admin_list_beneficiaries);
@@ -312,10 +317,14 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		int nChildren = db.queryNDistributionChildrenProcessed(distributionCtr);
 
 		mSummaryItems = new String[3];
-		mDistributionSummaryReport = "Distribution Summary";
-		mSummaryItems[0] = "nAbsentees = " + nAbsentees;
-		mSummaryItems[1] = "nMothers = " + nWomen;
-		mSummaryItems[2] = "nChildren = " + nChildren;
+//		mDistributionSummaryReport = "Distribution Summary";
+//		mSummaryItems[0] = "nAbsentees = " + nAbsentees;
+//		mSummaryItems[1] = "nMothers = " + nWomen;
+//		mSummaryItems[2] = "nChildren = " + nChildren;
+		mDistributionSummaryReport = getString(R.string.distribution_summary);
+		mSummaryItems[0] = getString(R.string.nabsentees) + " " + nAbsentees;
+		mSummaryItems[1] = getString(R.string.nmothers) + " "  + nWomen;
+		mSummaryItems[2] = getString(R.string.nchildren) + " "  + nChildren;
 		showDialog(DISTRIBUTION_SUMMARY);
 	}
 	
@@ -428,7 +437,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		mBeneficiaries = loadBeneficiaryData(filename, mDistrCtr, beneficiaryType);
 		
 		if (mBeneficiaries.length == 0) {
-			mImportDataReport = "Beneficiaries imported : " + mBeneficiaries.length;
+			mImportDataReport = getString(R.string.beneficiaries_imported2) + " " + mBeneficiaries.length;
 			return ZERO_BENEFICIARIES_READ;
 		} else if (mBeneficiaries.length == 1) {
 			if (Integer.parseInt(mBeneficiaries[0]) == IO_EXCEPTION)
@@ -454,7 +463,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			nImports = db.addAgriBeneficiaries(mBeneficiaries);
 		}
 
-		mImportDataReport = "Beneficiaries imported : " + nImports;
+		mImportDataReport = getString(R.string.beneficiaries_imported2) + " " + nImports;
 		Log.i(TAG, "Inserted to database " + nImports + " Beneficiaries");	
 		
 		// Move to the next stage of the distribution event process
@@ -612,9 +621,11 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			Log.i(TAG, "phonenumber = " + phoneNumber); 
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.about2).setTitle(
-							"#: " + phoneNumber
-							+ "\n" + mAcdiVocaMsgs.size() 
-							+ " " + getString(R.string.send_dist_rep))
+//							"#: " + phoneNumber
+//							+ "\n" + mAcdiVocaMsgs.size() 
+//							+ " " + getString(R.string.send_dist_rep))
+							mAcdiVocaMsgs.size() + " " + getString(R.string.send_dist_rep2)
+							+ " #: " + phoneNumber)
 							.setPositiveButton(R.string.alert_dialog_ok,
 									new DialogInterface.OnClickListener() {								
 								public void onClick(DialogInterface dialog,
@@ -651,12 +662,15 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		switch (id) {
 		case SEND_DIST_REP:
 			Log.i(TAG, "onPrepareDialog id= " + id);
-			dialog.setTitle("#: " + phoneNumber
-					+ "\n" +  mAcdiVocaMsgs.size() 
-					+ " " + mContext.getString(R.string.send_dist_rep));
+//			dialog.setTitle("#: " + phoneNumber
+//					+ "\n" +  mAcdiVocaMsgs.size() 
+//					+ " " + mContext.getString(R.string.send_dist_rep));
+			dialog.setTitle(mAcdiVocaMsgs.size() + " " + getString(R.string.send_dist_rep2)
+			+ " #: " + phoneNumber);
 			break;
 		case SMS_REPORT:
-			dialog.setTitle( mAcdiVocaMsgs.size() + " messages being sent to " + phoneNumber);
+			dialog.setTitle( mAcdiVocaMsgs.size() + " " + getString(R.string.being_sent_to) +
+			" # : " + phoneNumber);
 		}
 	}
 	

@@ -86,6 +86,21 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 	}
 	
 	/**
+	 * Localizes already created menu items.
+	 */
+	@Override	
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+		// Re-inflate to force localization.
+		Log.i(TAG, "onPrepareOptionsMenu");
+		menu.clear();
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.acdi_voca_lookup_menu, menu);
+		
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	/**
 	 * Manages the selection of menu items.
 	 * 
 	 * @see android.app.Activity#onMenuItemSelected(int, android.view.MenuItem)

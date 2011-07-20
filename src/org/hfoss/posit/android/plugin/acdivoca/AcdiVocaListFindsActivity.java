@@ -281,6 +281,13 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		Log.i(TAG, "Prepare Menus, N messages = " + mNMessagesDisplayed);
 
+		// Re-inflate to force localization.
+		Log.i(TAG, "onPrepareOptionsMenu");
+		menu.clear();
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.acdi_voca_list_finds_menu, menu);
+		
+		
 		MenuItem listItem = menu.findItem(R.id.list_messages);
 		MenuItem syncItem = menu.findItem(R.id.sync_messages);
 		MenuItem deleteItem = menu.findItem(R.id.delete_messages_menu);
@@ -625,19 +632,21 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		case SEND_MSGS_ALERT:
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mActivity);
 			final String phoneNumber = sp.getString(mActivity.getString(R.string.smsPhoneKey),"");
-
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.about2).setTitle(
-							"#: " + phoneNumber
-							+ "\n" + mAcdiVocaMsgs.size() 
-							+ " " + getString(R.string.send_dist_rep))
+//							"#: " + phoneNumber
+//							+ "\n" + mAcdiVocaMsgs.size() 
+//							+ " " + getString(R.string.send_dist_rep))
+							mAcdiVocaMsgs.size() + " " + getString(R.string.send_dist_rep2)
+							+ " #: " + phoneNumber)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {								
 								public void onClick(DialogInterface dialog,
 										int which) {
 									AcdiVocaSmsManager mgr = AcdiVocaSmsManager.getInstance(mActivity);
 									mgr.sendMessages(mActivity, mAcdiVocaMsgs);
-									mSmsReport = "Sending to " + phoneNumber + " # : " + mAcdiVocaMsgs.size();
+			//						mSmsReport = "Sending to " + phoneNumber + " # : " + mAcdiVocaMsgs.size();
+									mSmsReport =  mAcdiVocaMsgs.size() + " " + getString(R.string.being_sent_to) + " # : " + phoneNumber;
 									showDialog(SMS_REPORT);
 									//finish();
 								}
@@ -649,7 +658,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		
 		case NO_MSGS_ALERT:
 			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.about2).setTitle("There are no messages to send.")
+					R.drawable.about2).setTitle(R.string.no_messages_to_send)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {								
 								public void onClick(DialogInterface dialog,
@@ -659,7 +668,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		
 			
 		case INVALID_PHONE_NUMBER:
-			String title = "Invalid phone number: " + AcdiVocaSmsManager.getPhoneNumber(mActivity);
+//			String title = "Invalid phone number: " + AcdiVocaSmsManager.getPhoneNumber(mActivity);
+			String title = getString(R.string.invalid_phone_number) + " " + AcdiVocaSmsManager.getPhoneNumber(mActivity);
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.about2).setTitle(title)
 					.setPositiveButton(R.string.alert_dialog_ok,
@@ -737,9 +747,11 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 			final String phoneNumber = sp.getString(mActivity.getString(R.string.smsPhoneKey),"");
 			Log.i(TAG, "phonenumber = " + phoneNumber); 
 			dialog.setTitle(
-					"#: " + phoneNumber
-					+ "\n" + mAcdiVocaMsgs.size() 
-					+ " " + getString(R.string.send_dist_rep));
+//					"#: " + phoneNumber
+//					+ "\n" + mAcdiVocaMsgs.size() 
+//					+ " " + getString(R.string.send_dist_rep));
+					mAcdiVocaMsgs.size() + " " + getString(R.string.send_dist_rep2) + " #: "
+					+ phoneNumber);
 			break;
 		}
 	}

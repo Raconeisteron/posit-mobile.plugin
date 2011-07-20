@@ -93,6 +93,21 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		inflater.inflate(R.menu.acdivoca_menu_add, menu);
 		return true;
 	}
+	
+	/**
+	 * Localizes already created menu items.
+	 */
+	@Override	
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+		// Re-inflate to force localization.
+		Log.i(TAG, "onPrepareOptionsMenu");
+		menu.clear();
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.acdivoca_menu_add, menu);
+		
+		return super.onPrepareOptionsMenu(menu);
+	}
 
 	/**
 	 * Implements the requested action when user selects a menu item.
