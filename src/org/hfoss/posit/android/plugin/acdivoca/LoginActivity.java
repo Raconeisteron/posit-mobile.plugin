@@ -30,7 +30,7 @@ import java.util.Set;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -77,7 +77,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		mBeneficiaryType = extras.getInt(AcdiVocaDbHelper.FINDS_TYPE);
 		Log.i(TAG, "onCreate, beneficiary type = " + mBeneficiaryType);
 
-		mUserTypeOrdinal = extras.getInt(AcdiVocaDbHelper.USER_TYPE_STRING);
+		mUserTypeOrdinal = extras.getInt(AcdiVocaUser.USER_TYPE_STRING);
 		if (mUserTypeOrdinal == UserType.USER.ordinal()) {
 			mUserType = UserType.USER;
 		} else if (mUserTypeOrdinal == UserType.SUPER.ordinal()) {
@@ -175,8 +175,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 	 * @return
 	 */
 	private int authenticateUser(String username, String password, UserType userType) {
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		return db.authenicateUser(username, password, userType);
+		return AcdiVocaUser.authenicateUser(this, username, password, userType);
+		
+//		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//		return db.authenicateUser(username, password, userType);
 	}
 
 }

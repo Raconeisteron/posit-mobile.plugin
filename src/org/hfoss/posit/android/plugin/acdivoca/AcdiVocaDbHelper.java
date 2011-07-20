@@ -33,6 +33,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -64,7 +65,6 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	private static final boolean DBG = false;
 	private static final String DATABASE_NAME ="posit";
 	public static final int DATABASE_VERSION = 2;
-	public enum UserType {SUPER, ADMIN, OWNER, USER};
 
 	// the DAO objects we use to access the Db tables
 	private Dao<AcdiVocaUser, Integer> avUser = null;
@@ -93,25 +93,9 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		try {
 			Log.i(TAG, "onCreate");
-			TableUtils.createTable(connectionSource, AcdiVocaUser.class);
-			Log.i(TAG, "Created Tables in onCreate: ");
+			Log.i(TAG, "Creating Tables in onCreate: ");
 
-			// Create some Users
-			if (!insertUser(SUPER_USER_NAME, SUPER_USER_PASSWORD, UserType.SUPER))
-				Log.e(TAG, "Error adding user = " + SUPER_USER_NAME);
-			if (!insertUser(ADMIN_USER_NAME, ADMIN_USER_PASSWORD, UserType.ADMIN))
-				Log.e(TAG, "Error adding user = " + ADMIN_USER_NAME);
-			if (!insertUser(USER_DEFAULT_NAME, USER_DEFAULT_PASSWORD, UserType.USER))
-				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
-			if (!insertUser(USER_DEFAULT_NAME_2, USER_DEFAULT_PASSWORD_2, UserType.USER))
-				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_2);
-			if (!insertUser(USER_DEFAULT_NAME_3, USER_DEFAULT_PASSWORD_3, UserType.USER))
-				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_3);
-			if (!insertUser(USER_DEFAULT_NAME_4, USER_DEFAULT_PASSWORD_4, UserType.USER))
-				Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_4);
-
-			Log.i(TAG, "Created new Users in onCreate: ");
-			displayUsers();
+			AcdiVocaUser.init(connectionSource, getAvUserDao());
 			
 			// Beneficiary Table
 			TableUtils.createTable(connectionSource, AcdiVocaFind.class);
@@ -143,69 +127,10 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			throw new RuntimeException(e);
 		}
 	}
+		
 	
 	/**
-	 * Inserts new users into the database given the username, password, and type.
-	 * Uses ORMlite.
-	 * @param username
-	 * @param password
-	 * @param usertype  one of SUPER, ADMIN, USER
-	 * @return
-	 */
-	private boolean insertUser(String username, String password, UserType usertype) {
-		Log.i(TAG, "insertUser " + username + " of type = " + usertype);
-
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("name", username);
-		
-		// Query for the username in the user table
-		Dao<AcdiVocaUser, Integer> avUserDao = null;
-		List<AcdiVocaUser> list = null;
-		try {
-			avUserDao = getAvUserDao();
-			list = avUserDao.queryForFieldValues(map);
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-		
-		// If the user doesn't already exist, insert it.
-		if (list.size() == 0) {
-			try {
-				avUserDao = getAvUserDao();
-				avUserDao.create(new AcdiVocaUser(username, password, usertype.ordinal()));
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * Utility method to display the list of users in the Logcat.
-	 */
-	private void displayUsers() {
-		Log.i(TAG, "Displaying user table");
-		
-		Dao<AcdiVocaUser, Integer> avUserDao = null;
-		List<AcdiVocaUser> list = null;
-		try {
-			avUserDao = getAvUserDao();
-			list = avUserDao.queryForAll();
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-
-		for (AcdiVocaUser item : list) {
-			Log.i(TAG, item.toString());
-		}
-	}
-	
-	/**
-	 * Returns the Database Access Object (DAO) for the AvUser class. 
+	 * Returns the Database Access Object (DAO) for the AcdiVocaUser class. 
 	 * It will create it or just give the cached value.
 	 */
 	public Dao<AcdiVocaUser, Integer> getAvUserDao() throws SQLException {
@@ -214,6 +139,21 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 		}
 		return avUser;
 	}
+	
+//	public int authenicateUser(String username, String password, UserType userType) {
+//		
+//		Dao<AcdiVocaUser, Integer> avUserDao = null;
+//		try {
+//			avUserDao = getAvUserDao();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		if (avUserDao != null)
+//			return AcdiVocaUser.authenicateUser(avUserDao, username, password, userType);
+//		else 
+//			return -1;
+//	}
+
 	
 	
 	/**
@@ -238,23 +178,6 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 		return acdiVocaMessage;
 	}
 	
-	/**
-	 * For the user table
-	 */
-	public static final String USER_DEFAULT_NAME = "b";      // For testing purposes
-	public static final String USER_DEFAULT_PASSWORD = "b";
-	public static final String USER_DEFAULT_NAME_2 = "auxil2";      // For testing purposes
-	public static final String USER_DEFAULT_PASSWORD_2 = "acdivoca";	
-	public static final String USER_DEFAULT_NAME_3 = "auxil3";      // For testing purposes
-	public static final String USER_DEFAULT_PASSWORD_3 = "acdivoca";	
-	public static final String USER_DEFAULT_NAME_4 = "auxil4";      // For testing purposes
-	public static final String USER_DEFAULT_PASSWORD_4 = "acdivoca";		
-	public static final String ADMIN_USER_NAME = "r";
-	public static final String ADMIN_USER_PASSWORD = "a";
-	public static final String SUPER_USER_NAME = "s";
-	public static final String SUPER_USER_PASSWORD = "a";	
-	public static final String USER_TYPE_STRING = "UserType";
-	public static final String USER_TYPE_KEY= "UserLoginType";
 
 
 	/**
@@ -433,55 +356,6 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	private static final int AGRI_FIELD_NUM_PERSONS  = 10;
 	
 	
-	/**
-	 * Returns true iff a row containing username and password is found
-	 * TODO: Should this move to the User class?
-	 * @param username
-	 * @param password
-	 * @param userType is an enum that defines whether this is a regular or super user.
-	 * @return
-	 */
-	public int authenicateUser(String username, String password, UserType userType) {
-		Log.i(TAG, "Authenticating user = " + username + " Access type = " + userType);
-		
-		int result = 0;
-		if (userType.equals(UserType.ADMIN)) {
-			if (! ((username.equals(ADMIN_USER_NAME) &&  password.equals(ADMIN_USER_PASSWORD)) 
-				|| (username.equals(SUPER_USER_NAME) && password.equals(SUPER_USER_PASSWORD)) )) {
-				Log.i(TAG, "Sorry you must be ADMIN USER to do this.");
-				Toast.makeText(mContext,mContext.getString(R.string.toast_adminuser), Toast.LENGTH_SHORT);
-				result = -1;
-			}
-		} else if (userType.equals(UserType.SUPER)) {
-			if (!username.equals(SUPER_USER_NAME) ||  !password.equals(SUPER_USER_PASSWORD)) {
-				Log.i(TAG, "Sorry you must be SUPER USER to do this.");
-				Toast.makeText(mContext, mContext.getString(R.string.toast_superuser), Toast.LENGTH_SHORT);
-				result = -1;
-			}
-		} 
-		if (result != -1) {
-			Map<String,Object> map = new HashMap<String,Object>();
-			map.put("name", username);
-			map.put("password", password);
-			
-			List<AcdiVocaUser> list = null;
-			try {
-				Dao<AcdiVocaUser, Integer> avUserDao = getAvUserDao();
-				list = avUserDao.queryForFieldValues(map);
-			} catch (SQLException e) {
-				Log.e(TAG, "SQL Exception " + e.getMessage());
-				e.printStackTrace();
-			}
-			Log.i(TAG, "List size = " + list.size());
-			if (list.size() != 1) 
-				result =  -1;
-			else {
-				AcdiVocaUser user = list.get(0);
-				result = user.type;
-			}
-		}
-		return result;
-	}
 
 	/**
 	 * Inserts an array of beneficiaries input from AcdiVoca data file.

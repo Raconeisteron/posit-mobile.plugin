@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
 import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.xmlpull.v1.XmlPullParser;
@@ -258,7 +259,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
         // NOTE: This seems to throw an exception for non-string preference values.
         // Initialize the summary strings
         
-        int userTypeOrdinal = sp.getInt(AcdiVocaDbHelper.USER_TYPE_KEY, -1);
+        int userTypeOrdinal = sp.getInt(AcdiVocaUser.USER_TYPE_KEY, -1);
         Log.i(TAG, "Control settings, UserTypeKey = " + userTypeOrdinal);
 
         Map<String,?> prefs = sp.getAll();
@@ -343,7 +344,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
      */
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
         try {
-            if (!key.equals(AcdiVocaDbHelper.USER_TYPE_KEY)) {
+            if (!key.equals(AcdiVocaUser.USER_TYPE_KEY)) {
 
                 Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
                         " value = " + sp.getString(key, ""));
