@@ -3,7 +3,7 @@ package org.hfoss.posit.android.plugin.acdivoca;
 
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import android.content.Context;
 import android.content.SharedPreferences;

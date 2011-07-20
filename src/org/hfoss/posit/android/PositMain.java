@@ -30,7 +30,6 @@ import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
@@ -144,7 +143,7 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
 		if (loginActivity != null) {
 			intent.setClass(this, loginActivity);
-			intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.USER.ordinal());
+			intent.putExtra(AcdiVocaUser.USER_TYPE_STRING, AcdiVocaUser.UserType.USER.ordinal());
 			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 		}
 	}

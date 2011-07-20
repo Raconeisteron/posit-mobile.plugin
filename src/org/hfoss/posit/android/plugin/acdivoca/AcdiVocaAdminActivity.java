@@ -37,7 +37,6 @@ import org.hfoss.posit.android.api.FilePickerActivity;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper.UserType;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -263,7 +262,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
 			if (loginActivity != null) {
 				intent.setClass(this, loginActivity);
-				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
+				intent.putExtra(AcdiVocaUser.USER_TYPE_STRING, AcdiVocaUser.UserType.ADMIN.ordinal());
 				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
@@ -274,7 +273,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			loginActivity = FindActivityProvider.getLoginActivityClass();
 			if (loginActivity != null) {
 				intent.setClass(this, loginActivity);
-				intent.putExtra(AcdiVocaDbHelper.USER_TYPE_STRING, AcdiVocaDbHelper.UserType.ADMIN.ordinal());
+				intent.putExtra(AcdiVocaUser.USER_TYPE_STRING, AcdiVocaUser.UserType.ADMIN.ordinal());
 				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
