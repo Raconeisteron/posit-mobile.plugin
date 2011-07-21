@@ -1302,6 +1302,12 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			Log.e(TAG, "SQL Exception " + e.getMessage());
 			e.printStackTrace();
 		}
+		if(list == null) {
+			return null;
+		}
+		else if(list.size() == 0){
+			return null;
+		}		
 		String dossiers[] = new String[list.size()];
 		Iterator<AcdiVocaFind> it = list.iterator();
 		int k = 0;
