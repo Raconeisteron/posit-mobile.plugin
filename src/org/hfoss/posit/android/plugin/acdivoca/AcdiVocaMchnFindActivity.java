@@ -812,6 +812,27 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 		}
 	}
 	
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		super.onPrepareDialog(id, dialog);
+		AlertDialog d = (AlertDialog) dialog;
+		Button needsabutton;
+		switch (id) {
+		case CONFIRM_EXIT:
+					d.setTitle(R.string.acdivoca_exit_findactivity);
+
+					needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
+					needsabutton.setText(R.string.Yes);
+					needsabutton.invalidate();
+					
+					needsabutton = d.getButton(DialogInterface.BUTTON_NEGATIVE);
+					needsabutton.setText(R.string.alert_dialog_cancel);
+					needsabutton.invalidate();
+					
+					break;
+		}
+	}
+	
 
 	public void onDateChanged(DatePicker view, int year, int monthOfYear,
 			int dayOfMonth) {

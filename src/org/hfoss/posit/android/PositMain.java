@@ -386,7 +386,7 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 		MenuItem  adminMenu = menu.findItem(R.id.admin_menu_item);
 		
 		Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
-		
+		Log.i(TAG, "distribution stage = " + AppControlManager.getDistributionStage());
 		// Hide the ADMIN menu from regular users
 		if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser())
 			adminMenu.setVisible(false);
@@ -472,26 +472,36 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		super.onPrepareDialog(id, dialog);
 		AlertDialog d = (AlertDialog) dialog;
+		Button needsabutton;
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		switch (id) {
 		case CONFIRM_EXIT:
 					d.setTitle(R.string.exit);
-					d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							// User clicked OK so do some stuff
-							finish();
-						}
-					} );
-					d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.alert_dialog_cancel), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							/* User clicked Cancel so do nothing */
-						}
-					} );
+//					d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
+//						public void onClick(DialogInterface dialog,
+//								int whichButton) {
+//							// User clicked OK so do some stuff
+//							finish();
+//						}
+//					} );
+//					d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.alert_dialog_cancel), new DialogInterface.OnClickListener() {
+//						public void onClick(DialogInterface dialog,
+//								int whichButton) {
+//							/* User clicked Cancel so do nothing */
+//						}
+//					} );
+					needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
+					needsabutton.setText(R.string.alert_dialog_ok);
+					needsabutton.invalidate();
+					
+					needsabutton = d.getButton(DialogInterface.BUTTON_NEGATIVE);
+					needsabutton.setText(R.string.alert_dialog_cancel);
+					needsabutton.invalidate();
+					
 					break;
 		}
 	}
+
 
 
 	/**

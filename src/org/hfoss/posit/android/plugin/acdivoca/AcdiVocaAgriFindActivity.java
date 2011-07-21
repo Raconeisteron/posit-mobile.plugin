@@ -34,6 +34,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -885,6 +886,27 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 
 		default:
 			return null;
+		}
+	}
+	
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		super.onPrepareDialog(id, dialog);
+		AlertDialog d = (AlertDialog) dialog;
+		Button needsabutton;
+		switch (id) {
+		case CONFIRM_EXIT:
+					d.setTitle(R.string.acdivoca_exit_findactivity);
+
+					needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
+					needsabutton.setText(R.string.Yes);
+					needsabutton.invalidate();
+					
+					needsabutton = d.getButton(DialogInterface.BUTTON_NEGATIVE);
+					needsabutton.setText(R.string.alert_dialog_cancel);
+					needsabutton.invalidate();
+					
+					break;
 		}
 	}
 

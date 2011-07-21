@@ -270,7 +270,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                 Preference p =  findPreference(key);
                 String value = sp.getString(key, null);
                 if (p!= null && value != null) {
-                    if (key.equals(getString(R.string.distribution_point))){ // New code for distribution points
+                    if (key.equals(getString(R.string.distribution_point_key))){ // New code for distribution points
                         p.setSummary(AttributeManager.getMapping(value));  // 7/15/11
                     }
                         
@@ -281,7 +281,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
 //                    if (userTypeOrdinal == UserType.USER.ordinal() 
                     if ((AppControlManager.isRegularUser() || AppControlManager.isAgriUser())
                             && (key.equals(getString(R.string.smsPhoneKey))
-                            || key.equals(getString(R.string.distribution_point))
+                            || key.equals(getString(R.string.distribution_point_key))
                             || key.equals(getString(R.string.distribution_event_key)))) {
                         p.setEnabled(false);
                         //this.getPreferenceScreen().removePreference(p); Doesn't work here
@@ -352,7 +352,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                 Preference p =  this.findPreference(key);
                 String value = sp.getString(key, null);
                 if (p != null && value != null)
-                    if (key.equals(getString(R.string.distribution_point))){ // New code for distribution points
+                    if (key.equals(getString(R.string.distribution_point_key))){ // New code for distribution points
                         p.setSummary(AttributeManager.getMapping(value));    // 7/15/11
                     }
                         
@@ -361,13 +361,13 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                     }
 
                 // If the ADMIN user changes the distribution point preference, initiate a distribution event.
-                if (key.equals(getString(R.string.distribution_point)) && value != null) {
+                if (key.equals(getString(R.string.distribution_point_key)) && value != null) {
                     AppControlManager.initDistributionEvent(this);
                 }
                 
                 // IF SUPER user aborts the distribution event
                 if (key.equals(getString(R.string.distribution_event_key)) 
-                		&& value != null && value.equals(R.string.abort_distribution_event))
+                		&& value != null && value.equals(getString(R.string.abort_distribution_event)))
                 	AppControlManager.abortDistributionEvent(this);
 
             }

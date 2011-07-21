@@ -62,6 +62,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -315,7 +316,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	 */
 	private void displayDistributionSummary() {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String distrKey = this.getResources().getString(R.string.distribution_point);
+		String distrKey = this.getResources().getString(R.string.distribution_point_key);
 		String distributionCtr = sharedPrefs.getString(distrKey, "");
 		Log.i(TAG, distrKey +"="+ distributionCtr);
 		
@@ -350,7 +351,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		}
 
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String distrKey = this.getResources().getString(R.string.distribution_point);
+		String distrKey = this.getResources().getString(R.string.distribution_point_key);
 		String distributionCtr = sharedPrefs.getString(distrKey, "");
 		Log.i(TAG, distrKey +"="+ distributionCtr);
 
@@ -388,7 +389,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 
 					// Get this phone's Distribution Center
 					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-					mDistrCtr = prefs.getString(this.getResources().getString(R.string.distribution_point), null);
+					mDistrCtr = prefs.getString(this.getResources().getString(R.string.distribution_point_key), null);
 
 					if (mDistrCtr == null) {
 						Log.i(TAG, "Aborting loadBeneficiaryData, No distribution post selected");
@@ -675,6 +676,8 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		super.onPrepareDialog(id, dialog, args);
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
 		String phoneNumber = sp.getString(mContext.getString(R.string.smsPhoneKey),"");
+		Button needsabutton;
+		AlertDialog d = (AlertDialog) dialog;
 		Log.i(TAG, "phonenumber = " + phoneNumber); 
 		switch (id) {
 		case SEND_DIST_REP:
@@ -682,12 +685,30 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 //			dialog.setTitle("#: " + phoneNumber
 //					+ "\n" +  mAcdiVocaMsgs.size() 
 //					+ " " + mContext.getString(R.string.send_dist_rep));
-			dialog.setTitle(mAcdiVocaMsgs.size() + " " + getString(R.string.send_dist_rep2)
+			d.setTitle(mAcdiVocaMsgs.size() + " " + getString(R.string.send_dist_rep2)
 			+ " #: " + phoneNumber);
+			
+			needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
+			needsabutton.setText(R.string.alert_dialog_ok);
+			needsabutton.invalidate();
+			
+			needsabutton = d.getButton(DialogInterface.BUTTON_NEGATIVE);
+			needsabutton.setText(R.string.alert_dialog_cancel);
+			needsabutton.invalidate();
+			
 			break;
+			
+
 		case SMS_REPORT:
-			dialog.setTitle( mAcdiVocaMsgs.size() + " " + getString(R.string.being_sent_to) +
+			d.setTitle( mAcdiVocaMsgs.size() + " " + getString(R.string.being_sent_to) +
 			" # : " + phoneNumber);
+			
+			needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
+			needsabutton.setText(R.string.alert_dialog_ok);
+			needsabutton.invalidate();
+
+			break;
+
 		}
 	}
 	

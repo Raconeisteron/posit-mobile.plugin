@@ -180,12 +180,13 @@
 	<item>@string/abort_distribution_event</item>
 	</string-array>
 
-	<integer-array name="distribution_event_values">
-	<item>0</item>
+	<integer-array name="distribution_event_stage_values">
 	<item>1</item>
 	<item>2</item>
 	<item>3</item>
 	<item>4</item>
+	<item>5</item>
+	<item>6</item>
 	</integer-array>	
 
 	
