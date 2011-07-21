@@ -1080,13 +1080,14 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 		if (list.size() != 0) {
 			Iterator<AcdiVocaFind> it = list.iterator();
 			String smsMessage = "";
+			String msgHeader = "";
 			while (it.hasNext()) {
 				avFind = it.next();
 				smsMessage += avFind.dossier + AttributeManager.LIST_SEPARATOR;
 				
 				if (smsMessage.length() > 120) {
 					// Add a header (length and status) to message
-					String msgHeader = "MsgId: bulk, Len:" + smsMessage.length();
+					msgHeader = "MsgId: bulk, Len:" + smsMessage.length();
 
 					acdiVocaMsgs.add(new AcdiVocaMessage(UNKNOWN_ID, 
 							UNKNOWN_ID, 
@@ -1095,6 +1096,14 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 							!AcdiVocaMessage.EXISTING));
 					smsMessage = "";
 				}
+			}
+			if (!smsMessage.equals("")) {
+				msgHeader = "MsgId: bulk, Len:" + smsMessage.length();
+				acdiVocaMsgs.add(new AcdiVocaMessage(UNKNOWN_ID, 
+							UNKNOWN_ID, 
+							MESSAGE_STATUS_UNSENT,
+							"", smsMessage, msgHeader, 
+							!AcdiVocaMessage.EXISTING));
 			}
 		}
 		return acdiVocaMsgs;
