@@ -22,12 +22,14 @@
 	<string name="messages_being_sent">Messages being sent:</string>
 	<string name="beneficiaries_imported">Beneficiaries imported:</string>
 
+	<string name="distribution_point_key">distr_point_key</string>
 	<string name="distribution_event_key">distr_event_stage</string>
 	<string name="distribution_event_stage">Distribution Event Stage</string>
 	<string name="select_distr_point">Select distribution point</string>
 	<string name="import_beneficiary_file">Import beneficiary file</string>
 	<string name="start_distribution_event">Start distribution event</string>
 	<string name="stop_distribution_event">Stop distribution event</string>
+	<string name="abort_distribution_event">Abort distribution event</string>
 	
 	
 	<string name="manage_event_directions">
