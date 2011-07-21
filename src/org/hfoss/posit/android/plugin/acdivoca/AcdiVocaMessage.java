@@ -111,11 +111,11 @@ public class AcdiVocaMessage {
 			existing = true;
 		} 
 		
-		// NOTE: We skip the first 2 pairs in constructing the actual SMS 
-		// that was sent.  The first two pairs represent PREFIX information,
-		// namely, AV=mid,N:m, ...
+		// NOTE: We skip the first 3 pairs in constructing the actual SMS 
+		// that was sent.  The first three pairs represent PREFIX information,
+		// namely, AV=mid,N:m,mi=msgid ...
 		//
-		for (int k = 2; k < msgparts.length; k++) {
+		for (int k = 3; k < msgparts.length; k++) {
 //			Log.i(TAG, "msgpart " + k + " :" + msgparts[k]);
 			smsMessage += msgparts[k] + AttributeManager.PAIRS_SEPARATOR;
 		}
