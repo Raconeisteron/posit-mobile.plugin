@@ -133,7 +133,6 @@
     <string name="toast_id">No dossier= </string>
     <string name="toast_admin_beneficiary_data">Importer donnees beneficiaire:</string>
     <string name="toast_distribution_post">Poste distribution non encore selectionnee</string>
-    <string name="toast_incorrect">Desolez. Incorrect username or password.</string>
 	<string name="toast_superuser">Désolez, vous devez etre un utilisateur avancé pour faire ce travail.</string>
     <string name="toast_fillform_agricultural">Veuillez remplir la forme pour cette personne faisant partie du volet agriculture.</string>
     <string name="toast_sent">Envoyer </string>
@@ -163,7 +162,6 @@
     <string name="unsent">Pas unvoyes</string>
     <string name="sent">Envoyes</string>
     <string name="pending">En pending</string>
-    <string name="ack">Ack</string>
     <string name="deleted">Deleted</string>
     
    
@@ -261,13 +259,9 @@
     <string name="settings">Parametres</string>
     <string name="aboutItem">A Propos</string>
     <string name="exit">Etes vous sure de vouloir quitter?</string>
-    <string name="aboutCopyright2">Outils portable d’identification et de recherche\n
-	</string>
-	<string name="aboutDescription"> Developpé par Humanitarian FOSS project
-	</string>
+    <string name="aboutCopyright2">Outils portable d’identification et de recherche\n</string>
 	<string name="loading_data">Chargement des donnees</string>
 	<string name="please_wait">Patientez svp.</string>
-	<string name="beneficiary_dossier">no dossier du benefiicaire: </string>
 	<string name="alert_dialog_cancel">Annuler</string>
 	<string name="cancelLabel">Annuler</string>
 	
@@ -276,7 +270,6 @@
 	<string name="update_transfer_prevention">Transferer de lactating to preventionn</string>
 	<string name="update_transfer_location">Transferer a un\'autre point de distribution</string>
 	<string name="update_edit_beneficiary">Changé l\'information de beneficiare</string>
-	<string name="update_transfer_abortion">Abortion</string>
 	<string name="update_deceased">Decede</string>
 	<string name="update_fraud">Fraud</string>
 	<string name="update_completed">Cycle complet</string>
@@ -293,5 +286,37 @@
 	<string name="general">Generale</string>
 	<string name="send_message">Envoye message est en cours</string> 
 	<string name="check_saving">Sauvegarder les donnees avant de retourner?</string>
+	
+	
+	<!-- Random translations of toasts and other strings  -->
+	<string name="toast_admin_login_required">Admin Login requis pour importer des données.</string>
+	<string name="ack">Reconnu</string>
+    <string name="no_messages_to_send">Il n\'y a pas d\'envoyer des messages.</string>	
+	<string name="beneficiary_dossier">No dossier du bénéficiaire: </string>
+	<string name="agri_title">Fournir des informations pour l\'enregistrement agriculture ci-dessous.</string>
+	<string name="distribution_summary">Résumé de Distribution</string>
+	<string name="nabsentees">Absents = </string>
+	<string name="nmothers">Mères = </string>
+	<string name="nchildren">Enfants = </string>
+	<string name="beneficiaries_imported2">Bénéficiaires importés : </string>
+	<string name="send_dist_rep2"> messages à envoyer. OK? </string>
+	<string name="invalid_phone_number">Numéro de téléphone invalide: </string>
+	<string name="being_sent_to">messages envoyés à </string>
+	<string name="aboutCopyright1">POSIT</string>
+	<!-- <string name="aboutCopyright2">Portable Open Search and Identification Tool\n </string> -->
+	<string name="aboutDescription">Développé par le projet FOSS Humanitaire au Trinity College</string>
+	<string name="acdivocaDescription1">ACDI/VOCA mobiles d\'enregistrement bénéficiaire sur téléphone et système de mise à jour</string>
+	<string name="acdivocaDescription2">(POSIT-Haiti)</string>
+	<string name="organizationDescription">Parrainé par la NSF, USAID et ACDI/VOCA</string>
+	<string name="toast_incorrect">Désolé. Nom d\'utilisateur incorrect ou mot de passe.</string>
+	<string name="mchn_title">Fournir des informations pour l\'enregistrement MCHN ci-dessous.</string>
+	<string name="agri_relative_text">Fournir des informations pour les membres de votre famille au programme AGRICULTURE.</string>
+	<string name="mchn_relative_text">Fournir des informations pour les membres de votre famille au programme BÉNÉFICIAIRE.</string>
+	<string name="update_transfer_abortion">Avortement</string>
+	<string name="send_dist_rep"> messages à envoyer. OK?</string>
+	<string name="io_exc">Oops! Vous ne trouvez pas </string>
+	<string name="string_exc">Exception cordes</string>
+	
+	
 	
 </resources>
