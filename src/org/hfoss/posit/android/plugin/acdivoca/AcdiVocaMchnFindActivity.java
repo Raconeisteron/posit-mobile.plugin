@@ -428,7 +428,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 //		else if (val==null && label != R.string.participating_acdivoca && label != R.string.give_name)
 //			tv.setText(getString(label) + ": " + "");	
 		else
-			tv.setText(": "+"");
+			tv.setText(getString(label)+": "+"");
 	}
 	/**
 	 * setDistoTextView method

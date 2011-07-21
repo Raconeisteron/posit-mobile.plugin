@@ -306,7 +306,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 			tv.setText(getString(label) + ": " +  val);
 		else
 //			tv.setText(": "+val);
-			tv.setText(": ");
+			tv.setText(getString(label)+": ");
 	}
 	/**
 	 * setArrayView method
@@ -538,7 +538,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		// Add Partner GROUPS -- also parallel arrays (see above)
 
 		int[] partnerIds = {R.id.faoCheckBox,R.id.saveCheckBox, R.id.croseCheckBox,
-				R.id.planCheckBox,R.id.mardnrCheckBox,R.id.otherCheckBox};
+				R.id.planCheckBox,R.id.mardnrCheckBox,R.id.otherPartnerCheckBox};
 		String[] partnerArr = {AcdiVocaDbHelper.FINDS_PARTNER_FAO,AcdiVocaDbHelper.FINDS_PARTNER_SAVE,
 				AcdiVocaDbHelper.FINDS_PARTNER_CROSE,AcdiVocaDbHelper.FINDS_PARTNER_PLAN,
 				AcdiVocaDbHelper.FINDS_PARTNER_MARDNR,AcdiVocaDbHelper.FINDS_PARTNER_OTHER};
