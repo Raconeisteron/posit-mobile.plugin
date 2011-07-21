@@ -24,7 +24,7 @@
 				android:negativeButtonText="@string/cancelLabel" />
 				
 			    <ListPreference 
-                android:key="@string/distribution_point" 
+                android:key="@string/distribution_point_key" 
                 android:title="@string/distribution_point"
                 android:entries="@array/distribution_point_names"
                 android:entryValues="@array/distribution_point_values"

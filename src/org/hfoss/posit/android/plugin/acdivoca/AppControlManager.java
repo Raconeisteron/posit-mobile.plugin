@@ -123,6 +123,11 @@ public class AppControlManager {
 		setSharedPreference(context, sDistributionStage);
 	}
 	
+	public static void abortDistributionEvent(Context context) {
+		sDistributionStage = END_DISTRIBUTION_STAGE;
+		setSharedPreference(context, sDistributionStage);
+	}
+
 	public static void setDistributionStage(Context context, int stage) {
 		sDistributionStage = stage;
 		setSharedPreference(context, stage);

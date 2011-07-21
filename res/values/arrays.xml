@@ -14,15 +14,15 @@
 	<item>fr</item>
 	</string-array>	
 
-	<string-array name="commune_names"> 
-	<item>Anse a Pitres</item>
-	<item>Thiotte</item>
-	<item>Grand Gosier</item>
-	<item>Belle Anse</item>
-	<item>La vallee</item>
-	<item>Bainet</item>
-	<item>Cote de fer</item>
-	</string-array>
+<!-- 	<string-array name="commune_names">  -->
+<!-- 	<item>Anse a Pitres</item> -->
+<!-- 	<item>Thiotte</item> -->
+<!-- 	<item>Grand Gosier</item> -->
+<!-- 	<item>Belle Anse</item> -->
+<!-- 	<item>La vallee</item> -->
+<!-- 	<item>Bainet</item> -->
+<!-- 	<item>Cote de fer</item> -->
+<!-- 	</string-array> -->
 
 	<string-array name="commune_section_names">
 		<item>11eme La vallee</item>
@@ -127,13 +127,13 @@
 	</string-array>
 	
 	
-	<string-array name="health_center_names"> 
-	<item>Centre de santé une</item>
-	<item>Centre de santé deux</item>
-	<item>Centre de santé trois</item>
-	<item>Centre de santé quatre</item>
-	<item>Centre de santé cinq</item>
-	</string-array>
+<!-- 	<string-array name="health_center_names">  -->
+<!-- 	<item>Centre de santé une</item> -->
+<!-- 	<item>Centre de santé deux</item> -->
+<!-- 	<item>Centre de santé trois</item> -->
+<!-- 	<item>Centre de santé quatre</item> -->
+<!-- 	<item>Centre de santé cinq</item> -->
+<!-- 	</string-array> -->
 
 
 <!--  Preferences that start activities in SettingsActivity -->
@@ -147,14 +147,14 @@
 	<item>org.hfoss.posit.android.AboutActivity</item>
 	</string-array>
 	
-	<string-array name="types_of_units">
-	<item>Livre</item>
-	<item>Marmites</item>
-	<item>Pote</item>
-	<item>Kg</item>
-	<item>Plantules</item>
-	<item>Boutures</item>
-	</string-array>
+<!-- 	<string-array name="types_of_units"> -->
+<!-- 	<item>Livre</item> -->
+<!-- 	<item>Marmites</item> -->
+<!-- 	<item>Pote</item> -->
+<!-- 	<item>Kg</item> -->
+<!-- 	<item>Plantules</item> -->
+<!-- 	<item>Boutures</item> -->
+<!-- 	</string-array> -->
 	
 	<!-- 	Change in status reasons list -->
 	<string-array name="status_change_options">
@@ -177,6 +177,7 @@
 	<item>@string/start_distribution_event</item>
 	<item>@string/stop_distribution_event</item>
 	<item>@string/send_distribution_report</item>
+	<item>@string/abort_distribution_event</item>
 	</string-array>
 
 	<integer-array name="distribution_event_values">

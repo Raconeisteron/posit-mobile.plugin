@@ -364,6 +364,11 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                 if (key.equals(getString(R.string.distribution_point)) && value != null) {
                     AppControlManager.initDistributionEvent(this);
                 }
+                
+                // IF SUPER user aborts the distribution event
+                if (key.equals(getString(R.string.distribution_event_key)) 
+                		&& value != null && value.equals(R.string.abort_distribution_event))
+                	AppControlManager.abortDistributionEvent(this);
 
             }
         } catch (ClassCastException e) {
