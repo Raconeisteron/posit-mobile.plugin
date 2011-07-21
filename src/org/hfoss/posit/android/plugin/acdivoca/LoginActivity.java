@@ -84,8 +84,14 @@ public class LoginActivity extends Activity implements OnClickListener {
 			mUserType = UserType.SUPER;
 		} else if (mUserTypeOrdinal == UserType.ADMIN.ordinal()) {
 			mUserType = UserType.ADMIN;
+		} else if (mUserTypeOrdinal == UserType.AGRON.ordinal()) {
+			mUserType = UserType.AGRON;
+		} else if (mUserTypeOrdinal == UserType.AGRI.ordinal()) {
+			mUserType = UserType.AGRI;
+		} else {
+			Log.e(TAG, "Invalid user type passed to LoginActivity");
 		}
-	}
+ 	}
 
 
 	@Override

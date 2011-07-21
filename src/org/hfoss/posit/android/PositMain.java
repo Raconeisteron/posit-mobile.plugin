@@ -180,8 +180,9 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 					addFindButton.setOnClickListener(this);
 				}
 				
-				// Button is gone for USER users during distribution events
-				if (AppControlManager.isDuringDistributionEvent()  && AppControlManager.isRegularUser()) {
+				// Button is gone for AGRI and AGRON users and for USER users during distribution events
+				if ( (AppControlManager.isAgriUser()  || AppControlManager.isAgronUser())
+						|| (AppControlManager.isRegularUser() && AppControlManager.isDuringDistributionEvent())) {
 					addFindButton.setVisibility(View.GONE);
 				} else {
 					addFindButton.setVisibility(View.VISIBLE);
@@ -197,8 +198,11 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 					listFindButton.setOnClickListener(this);
 				}
 				
-				// Button is gone for USER user during distribution events
-				if (AppControlManager.isDuringDistributionEvent()  && AppControlManager.isRegularUser()) {
+				// Button is gone for USER and AGRI users during distribution events
+				if (AppControlManager.isDuringDistributionEvent()  
+						&& (AppControlManager.isRegularUser() 
+								|| AppControlManager.isAgriUser() 
+								|| AppControlManager.isAgronUser() )) {
 					listFindButton.setVisibility(View.GONE);
 				} else {
 					listFindButton.setVisibility(View.VISIBLE);
@@ -227,7 +231,8 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 						extraButton.setEnabled(true);
 					else
 						extraButton.setEnabled(false);
-				}
+				} else if (AppControlManager.isAgriUser() || AppControlManager.isAgronUser())
+					extraButton.setVisibility(View.GONE);
 			}
 
 			// New agriculture beneficiary
@@ -240,9 +245,12 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 					extraButton.setOnClickListener(this);
 				}
 				
-				// Button is gone for USER users during distribution events
+				// Button is gone for USER users and (AGRI users during distribution events)
 				Log.i(TAG, "Distr Stage = " +  AppControlManager.displayDistributionStage(this));
-				if (AppControlManager.isDuringDistributionEvent() && AppControlManager.isRegularUser()) {
+				if (AppControlManager.isRegularUser() 
+						|| AppControlManager.isAdminUser()
+						|| (AppControlManager.isAgriUser() && AppControlManager.isDuringDistributionEvent())
+						|| (AppControlManager.isAgronUser() && AppControlManager.isDuringDistributionEvent())) {
 					extraButton.setVisibility(View.GONE);
 				} else {
 					extraButton.setVisibility(View.VISIBLE);
@@ -380,7 +388,7 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 		Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
 		
 		// Hide the ADMIN menu from regular users
-		if (AppControlManager.isRegularUser())
+		if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser())
 			adminMenu.setVisible(false);
 		else 
 			adminMenu.setVisible(true);

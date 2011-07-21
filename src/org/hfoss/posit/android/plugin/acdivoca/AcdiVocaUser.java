@@ -47,7 +47,7 @@ import com.j256.ormlite.table.TableUtils;
 public class AcdiVocaUser {
 	public static final String TAG = "AcdiVocaUser";
 	
-	public enum UserType {SUPER, ADMIN, AGRI, USER};
+	public enum UserType {SUPER, ADMIN, AGRON, AGRI, USER};
 
 	/**
 	 * Default user accounts.
@@ -64,6 +64,8 @@ public class AcdiVocaUser {
 	public static final String USER_DEFAULT_PASSWORD_4 = "acdivoca";		
 	public static final String ADMIN_USER_NAME = "r";
 	public static final String ADMIN_USER_PASSWORD = "a";
+	public static final String AGRON_USER_NAME = "aa";
+	public static final String AGRON_USER_PASSWORD = "aa";
 	public static final String SUPER_USER_NAME = "s";
 	public static final String SUPER_USER_PASSWORD = "a";	
 	public static final String USER_TYPE_STRING = "UserType";
@@ -120,6 +122,8 @@ public class AcdiVocaUser {
 		if (!insertUser(avUserDao, USER_DEFAULT_NAME_4, USER_DEFAULT_PASSWORD_4, UserType.USER))
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_4);
 		if (!insertUser(avUserDao, AGRI_DEFAULT_NAME, AGRI_DEFAULT_PASSWORD, UserType.AGRI))
+			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
+		if (!insertUser(avUserDao, AGRON_USER_NAME, AGRON_USER_PASSWORD, UserType.AGRON))
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
 		
 		
@@ -209,6 +213,13 @@ public class AcdiVocaUser {
 				Toast.makeText(context, context.getString(R.string.toast_adminuser), Toast.LENGTH_SHORT);
 				result = -1;
 			}
+		} else if (userType.equals(UserType.AGRON)) {
+			if (! ((username.equals(AGRON_USER_NAME) &&  password.equals(AGRON_USER_PASSWORD)) 
+					|| (username.equals(SUPER_USER_NAME) && password.equals(SUPER_USER_PASSWORD)) )) {
+					Log.i(TAG, "Sorry you must be ADMIN USER to do this.");
+					Toast.makeText(context, context.getString(R.string.toast_adminuser), Toast.LENGTH_SHORT);
+					result = -1;
+				}	
 		} else if (userType.equals(UserType.SUPER)) {
 			if (!username.equals(SUPER_USER_NAME) ||  !password.equals(SUPER_USER_PASSWORD)) {
 				Log.i(TAG, "Sorry you must be SUPER USER to do this.");
