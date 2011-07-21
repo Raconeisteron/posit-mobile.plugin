@@ -195,9 +195,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		
 		int beneficiary_type = -1;
 		UserType userType = AppControlManager.getUserType();
-		if (userType.equals(UserType.ADMIN))
+		if (userType.equals(UserType.ADMIN) || userType.equals(UserType.USER))
 			beneficiary_type = AcdiVocaDbHelper.FINDS_TYPE_MCHN;
-		else if (userType.equals(UserType.AGRON))
+		else if (userType.equals(UserType.AGRON) || userType.equals(UserType.AGRI))
 			beneficiary_type = AcdiVocaDbHelper.FINDS_TYPE_AGRI;
 		else if (userType.equals(UserType.SUPER))
 			beneficiary_type = AcdiVocaDbHelper.FINDS_TYPE_BOTH;
