@@ -9,7 +9,7 @@
 <string name="load_beneficiary_data">Impòte done Benefysyè yo</string>
 <string name="load_agri_data">Impòte mwayen poul viv Done</string>
 <string name="manage_distribution">Gere evenman distribisyon an</string>
-<!-- 	<string name="distribution_point">P√≤s distribisyon</string> -->
+	<string name="distribution_point">Pwon distribisyon</string>
 	<string name="password_alert_message">Non itilizate ou mo de pas la pa bon.</string>
 	<string name="start_stop_distribution">Demare/Stope distribisyon an</string>
 	<string name="start_distribution">Demare distribisyon</string>

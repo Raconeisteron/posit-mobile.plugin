@@ -17,7 +17,7 @@
 				android:key="@string/localeKey"
 				android:title="@string/locale" 
 				android:persistent="true"
-				android:defaultValue="English" 
+				android:defaultValue="en" 
 				android:summary="@string/locale"
 				android:entries="@array/locales" 
 				android:entryValues="@array/locale_values"

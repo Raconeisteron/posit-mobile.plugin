@@ -10,7 +10,7 @@
 	<string name="load_agri_data">Données Livelihood importation</string>
 	
 	<string name="manage_distribution">Gerer evenements de distribution</string>
-<!-- 	<string name="distribution_point">Point de distribution</string> -->
+	<string name="distribution_point">Point de distribution</string>
 	<string name="password_alert_message">Nom utilisateur ou Mot de passe incorrecte.</string>
 	<string name="start_stop_distribution">Demarrer/Stopper distribution</string>
 	<string name="start_distribution">Demarrer distribution</string>

@@ -51,6 +51,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -511,7 +512,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				mMessageFilter = resultCode;   
 //				Toast.makeText(this, "Ok " + resultCode, Toast.LENGTH_SHORT).show();
 				SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-				String distrKey = this.getResources().getString(R.string.distribution_point);
+				String distrKey = this.getResources().getString(R.string.distribution_point_key);
 				String distributionCtr = sharedPrefs.getString(distrKey, "");
 
 				displayMessageList(resultCode, distributionCtr);	
@@ -750,18 +751,30 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
 		super.onPrepareDialog(id, dialog, args);
+		AlertDialog d = (AlertDialog) dialog;
+		Button needsabutton; //button added
 		switch (id) {
 		case SEND_MSGS_ALERT:
 			Log.i(TAG, "onPrepareDialog id= " + id);
 			SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mActivity);
 			final String phoneNumber = sp.getString(mActivity.getString(R.string.smsPhoneKey),"");
 			Log.i(TAG, "phonenumber = " + phoneNumber); 
-			dialog.setTitle(
+			
+			d.setTitle(
 //					"#: " + phoneNumber
 //					+ "\n" + mAcdiVocaMsgs.size() 
 //					+ " " + getString(R.string.send_dist_rep));
 					mAcdiVocaMsgs.size() + " " + getString(R.string.send_dist_rep2) + " #: "
 					+ phoneNumber);
+			
+			needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
+			needsabutton.setText(R.string.alert_dialog_ok);
+			needsabutton.invalidate();
+			
+			needsabutton = d.getButton(DialogInterface.BUTTON_NEGATIVE);
+			needsabutton.setText(R.string.alert_dialog_cancel);
+			needsabutton.invalidate();
+			
 			break;
 		}
 	}
