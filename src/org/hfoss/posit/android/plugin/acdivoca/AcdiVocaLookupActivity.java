@@ -55,7 +55,7 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 
 	private Spinner lookupSpinner;
 	private ArrayAdapter<String> mAdapter;
-	private String dossiers[] = new String[100];
+	private String dossiers[];
 	private EditText eText;
 	
 	/** Called when the activity is first created. */
@@ -218,6 +218,9 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 
 
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		if(dossiers == null){
+			return;
+		}
 		int k = 0;
 		String prefix = s.toString();
 		Log.i(TAG, "Prefix = " + prefix);
