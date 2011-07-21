@@ -66,16 +66,16 @@
 					android:layout_height="wrap_content">
 				</DatePicker>	
 			
-			<TextView android:text="@string/health_center" android:textColor="#ffffff"
-				android:layout_width="fill_parent" 
-				android:layout_marginLeft="10px" 
-				android:visibility="gone"
-				android:layout_height="wrap_content" />
-			<Spinner android:id="@+id/healthcenterSpinner" 
-				android:visibility="gone"
-				android:layout_marginLeft="20px" android:layout_marginRight="30px"
-				android:entries="@+array/health_center_names"
-				android:layout_width="fill_parent" android:layout_height="wrap_content" />				
+<!-- 			<TextView android:text="@string/health_center" android:textColor="#ffffff" -->
+<!-- 				android:layout_width="fill_parent"  -->
+<!-- 				android:layout_marginLeft="10px"  -->
+<!-- 				android:visibility="gone" -->
+<!-- 				android:layout_height="wrap_content" /> -->
+<!-- 			<Spinner android:id="@+id/healthcenterSpinner"  -->
+<!-- 				android:visibility="gone" -->
+<!-- 				android:layout_marginLeft="20px" android:layout_marginRight="30px" -->
+<!-- 				android:entries="@+array/health_center_names" -->
+<!-- 				android:layout_width="fill_parent" android:layout_height="wrap_content" />				 -->
 			
 			
 			<TextView android:text="@string/distribution_post" android:textColor="#ffffff"
@@ -263,16 +263,16 @@
 				android:visibility="gone"
 				android:layout_height="wrap_content" android:paddingLeft="20px" 
 				android:minWidth ="48dp"/>
-			<TextView android:text="@string/unit_of_measurement" android:textColor="#ffffff"
-				android:layout_width="fill_parent" 
-				android:layout_marginLeft="10px" 
-				android:visibility="gone"
-				android:layout_height="wrap_content" />
-			<Spinner android:id="@+id/unitSpinner" 
-				android:layout_marginLeft="20px" android:layout_marginRight="30px"
-				android:entries="@+array/types_of_units"
-				android:visibility="gone"
-				android:layout_width="fill_parent" android:layout_height="wrap_content" />	
+<!-- 			<TextView android:text="@string/unit_of_measurement" android:textColor="#ffffff" -->
+<!-- 				android:layout_width="fill_parent"  -->
+<!-- 				android:layout_marginLeft="10px"  -->
+<!-- 				android:visibility="gone" -->
+<!-- 				android:layout_height="wrap_content" /> -->
+<!-- 			<Spinner android:id="@+id/unitSpinner"  -->
+<!-- 				android:layout_marginLeft="20px" android:layout_marginRight="30px" -->
+<!-- 				android:entries="@+array/types_of_units" -->
+<!-- 				android:visibility="gone" -->
+<!-- 				android:layout_width="fill_parent" android:layout_height="wrap_content" />	 -->
 				
 				<TextView android:text="@string/tools" android:textColor="#ffffff"
 				android:layout_width="fill_parent" 

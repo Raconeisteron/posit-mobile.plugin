@@ -267,9 +267,9 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 				calendar.get(Calendar.DAY_OF_MONTH), this);
 
 		//Spinner listeners
-		((Spinner)findViewById(R.id.healthcenterSpinner)).setOnItemSelectedListener(this);
+//		((Spinner)findViewById(R.id.healthcenterSpinner)).setOnItemSelectedListener(this);
 		((Spinner)findViewById(R.id.distributionSpinner)).setOnItemSelectedListener(this);
-		((Spinner)findViewById(R.id.unitSpinner)).setOnItemSelectedListener(this);		
+//		((Spinner)findViewById(R.id.unitSpinner)).setOnItemSelectedListener(this);		
 	}
 
 	/**
