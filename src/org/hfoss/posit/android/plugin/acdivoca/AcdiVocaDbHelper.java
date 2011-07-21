@@ -1040,6 +1040,34 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	}
 	
 	/**
+	 * Returns a list of all beneficiaries in the Db by type (MCHN, AGRI)
+	 * @return
+	 */
+	public List<AcdiVocaFind> fetchAllBeneficiaries(int beneficiary_type) {
+		Log.i(TAG, "Fetching all beneficiaries of type " + beneficiary_type);
+		
+		if (beneficiary_type == FINDS_TYPE_BOTH)
+			return fetchAllBeneficiaries();
+		
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		List<AcdiVocaFind> list = null;
+		
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(FINDS_TYPE, beneficiary_type);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = avFindDao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	/**
 	 * Creates an array list of messages each of which consists of a list of the
 	 * dossier numbers of beneficiaries who did not show up at the distribution event.
 	 * Beneficiaries who did show up and who have changes are updated with individual

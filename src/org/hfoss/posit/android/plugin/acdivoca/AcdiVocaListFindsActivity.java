@@ -28,6 +28,7 @@ import java.util.List;
 import org.hfoss.posit.android.R;
 //import org.hfoss.posit.android.Utils;
 import org.hfoss.posit.android.api.ListFindsActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -82,7 +83,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	private Activity mActivity;
 	private ArrayList<AcdiVocaMessage> mAcdiVocaMsgs;
 	
-	private int project_id;
+//	private int project_id;
     private static final boolean DBG = false;
 	//private ArrayAdapter<String> mAdapter;
     
@@ -126,7 +127,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		Log.i(TAG,"onCreate(), action = " + mAction);
 
 //		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		project_id = 0; //sp.getInt("PROJECT_ID", 0);
+//		project_id = 0; //sp.getInt("PROJECT_ID", 0);
 	}
 
 	/** 
@@ -142,7 +143,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 //		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		project_id = 0; //sp.getInt("PROJECT_ID", 0);
+//		project_id = 0; //sp.getInt("PROJECT_ID", 0);
 		
 //		if (mAction.equals(Intent.ACTION_SEND)) {
 //			displayMessageList(mStatusFilter, null);  // Null distribution center = all New finds
@@ -191,7 +192,19 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	 */
 	private void fillData(String order_by) {
 		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		List<AcdiVocaFind> list = db.fetchAllBeneficiaries();
+		
+		int beneficiary_type = -1;
+		UserType userType = AppControlManager.getUserType();
+		if (userType.equals(UserType.ADMIN))
+			beneficiary_type = AcdiVocaDbHelper.FINDS_TYPE_MCHN;
+		else if (userType.equals(UserType.AGRON))
+			beneficiary_type = AcdiVocaDbHelper.FINDS_TYPE_AGRI;
+		else if (userType.equals(UserType.SUPER))
+			beneficiary_type = AcdiVocaDbHelper.FINDS_TYPE_BOTH;
+		else 
+			Log.e(TAG, "Error: Unexpected user type in List Finds");
+
+		List<AcdiVocaFind> list = db.fetchAllBeneficiaries(beneficiary_type);
 		if (list.size() == 0) {
 			setContentView(R.layout.acdivoca_list_beneficiaries);
 			return;			
