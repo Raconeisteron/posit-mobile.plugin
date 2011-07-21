@@ -54,7 +54,11 @@ public class AppControlManager {
 			return UserType.SUPER;
 		else if (sLoggedInUserTypeOrdinal == UserType.ADMIN.ordinal())
 			return UserType.ADMIN;
-		else 
+		else if (sLoggedInUserTypeOrdinal == UserType.AGRON.ordinal())
+			return UserType.AGRON;
+		else if (sLoggedInUserTypeOrdinal == UserType.AGRI.ordinal())
+			return UserType.AGRI;
+		else
 			return UserType.USER;
 	}
 	
@@ -77,6 +81,13 @@ public class AppControlManager {
 		return sLoggedInUserTypeOrdinal == UserType.USER.ordinal();
 	}
 	
+	public static boolean isAgriUser() {
+		return sLoggedInUserTypeOrdinal == UserType.AGRI.ordinal();
+	}
+	
+	public static boolean isAgronUser() {
+		return sLoggedInUserTypeOrdinal == UserType.AGRON.ordinal();
+	}
 	
 	// ----------------   Distribution Event Controls  ------------------
 	// Static utility methods used to control menus and buttons based on user type.
@@ -179,7 +190,7 @@ public class AppControlManager {
 	}
 	
 	public static boolean isDuringDistributionEvent() {
-		return sDistributionStage > NOT_DISTRIBUTION_STAGE && sDistributionStage < END_DISTRIBUTION_STAGE;
+		return sDistributionStage > SELECT_DISTRIBUTION_POINT && sDistributionStage < END_DISTRIBUTION_STAGE;
 	}
 	
 }

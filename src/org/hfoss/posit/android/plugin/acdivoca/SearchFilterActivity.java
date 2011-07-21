@@ -23,6 +23,8 @@
 package org.hfoss.posit.android.plugin.acdivoca;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -78,6 +80,12 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		setContentView(R.layout.acdivoca_search_filter);  // Should be done after locale configuration
+		
+		Log.i(TAG, "User mode = " + mUserMode);
+		if (AppControlManager.getUserType().equals(UserType.AGRON)){
+			 ((RadioButton)findViewById(R.id.update_messages)).setVisibility(View.GONE);
+			 ((RadioButton)findViewById(R.id.update_bulk_messages)).setVisibility(View.GONE);
+		}
 		
 		((Button)findViewById(R.id.search_filter_select_button)).setOnClickListener(this);
 		((Button)findViewById(R.id.cancel_select_filter_button)).setOnClickListener(this);

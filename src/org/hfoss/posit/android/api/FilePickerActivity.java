@@ -27,7 +27,9 @@ public class FilePickerActivity extends ListActivity {
 	public static final int ACTION_CHOOSER = 1;
 	public static final int RESULT_OK = 1;
 	public static final String HOME_DIRECTORY = "/sdcard/acdivoca";
-	
+	public static final String HOME_DIRECTORY_MCHN = "/sdcard/acdivoca/mchn";
+	public static final String HOME_DIRECTORY_AGRI = "/sdcard/acdivoca/agri";
+
 	private File currentDir;
 	private FileArrayAdapter adapter;
 	private int mBeneficiaryType; 
@@ -45,6 +47,10 @@ public class FilePickerActivity extends ListActivity {
 				return;
 			}
 		mBeneficiaryType= extras.getInt(AcdiVocaDbHelper.FINDS_TYPE);
+		if (mBeneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) 
+			currentDir = new File(HOME_DIRECTORY_MCHN);
+		else 
+			currentDir = new File(HOME_DIRECTORY_AGRI);
 		
 		File files[] = currentDir.listFiles();
 		List<String> datafiles = new ArrayList<String>();

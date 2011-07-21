@@ -166,7 +166,7 @@ public class SmsService extends Service {
 		try
 		{
 			File file = new File(Environment.getExternalStorageDirectory() 
-					+ "/" + AcdiVocaAdminActivity.DEFAULT_DIRECTORY + "/" 
+					+ "/" + AcdiVocaAdminActivity.DEFAULT_LOG_DIRECTORY + "/" 
 					+ AcdiVocaAdminActivity.SMS_LOG_FILE);
 
 			//FileWriter writer = new FileWriter(file);

@@ -279,7 +279,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                     }
                     
 //                    if (userTypeOrdinal == UserType.USER.ordinal() 
-                    if (AppControlManager.isRegularUser() 
+                    if ((AppControlManager.isRegularUser() || AppControlManager.isAgriUser())
                             && (key.equals(getString(R.string.smsPhoneKey))
                             || key.equals(getString(R.string.distribution_point))
                             || key.equals(getString(R.string.distribution_event_key)))) {
@@ -288,7 +288,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                         Log.i(TAG, "Disabling USER setting for key = " + key);
                     }
 //                    if (userTypeOrdinal == UserType.ADMIN.ordinal() 
-                    if (AppControlManager.isAdminUser() 
+                    if ((AppControlManager.isAdminUser() || AppControlManager.isAgronUser())
                             && key.equals(getString(R.string.distribution_event_key))) {
                         p.setEnabled(false);
                         //this.getPreferenceScreen().removePreference(p); Doesn't work here

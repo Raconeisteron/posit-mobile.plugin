@@ -82,6 +82,9 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	public static final int MAX_BENEFICIARIES = 20000;  // Max readable
 	
 	public static final String DEFAULT_DIRECTORY = "acdivoca";
+	public static final String DEFAULT_MCHN_DIRECTORY = "acdivoca/mchn";
+	public static final String DEFAULT_AGRI_DIRECTORY = "acdivoca/agri";
+	public static final String DEFAULT_LOG_DIRECTORY = "acdivoca/super";
 	public static final String SMS_LOG_FILE = "smslog.txt";
 	public static final String DEFAULT_BENEFICIARY_FILE = "Beneficiare.csv";
 	public static final String DEFAULT_LIVELIHOOD_FILE = "Livelihood.csv";
@@ -177,6 +180,8 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		MenuItem loadAgriItem = menu.findItem(R.id.load_agri_data);
 		MenuItem loadMchnItem = menu.findItem(R.id.load_beneficiary_data);
 		MenuItem listFindsItem = menu.findItem(R.id.admin_list_beneficiaries);
+		MenuItem startStopDistr = menu.findItem(R.id.start_stop_distribution);
+		MenuItem sendDistrReport = menu.findItem(R.id.send_distribution_report);
 		
 		// Is the app in Distribution mode?
 		Log.i(TAG, "Distribution Stage = " + AppControlManager.displayDistributionStage(this));
@@ -191,15 +196,21 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			listFindsItem.setVisible(true);
 		}
 		
-		// SUPER and ADMIN users can import livelihood data
+		// Only SUPER and AGRON users can import livelihood data
 		if ( !AppControlManager.isDuringDistributionEvent() 
-				&& (AppControlManager.isSuperUser() || AppControlManager.isAdminUser())) {
+				&& (AppControlManager.isSuperUser() || AppControlManager.isAgronUser())) {
 			loadAgriItem.setVisible(true);
 			loadAgriItem.setEnabled(true);
 		} else {
 			loadAgriItem.setVisible(false);
 			loadAgriItem.setEnabled(false);
-
+		}
+		
+		// AGRON users don't see distribution event menus
+		if (AppControlManager.isAgronUser()) {
+			loadMchnItem.setVisible(false);
+			startStopDistr.setVisible(false);
+			sendDistrReport.setVisible(false);
 		}
 
 		Log.i(TAG, "onPrepareMenuOptions, " 
@@ -273,7 +284,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			loginActivity = FindActivityProvider.getLoginActivityClass();
 			if (loginActivity != null) {
 				intent.setClass(this, loginActivity);
-				intent.putExtra(AcdiVocaUser.USER_TYPE_STRING, AcdiVocaUser.UserType.ADMIN.ordinal());
+				intent.putExtra(AcdiVocaUser.USER_TYPE_STRING, AcdiVocaUser.UserType.AGRON.ordinal());
 				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
@@ -480,9 +491,16 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 	private String[] loadBeneficiaryData(String filename, String distrCtr, int beneficiaryType) {
 		String[] data = null;
 		
-		File file = new File(Environment.getExternalStorageDirectory() 
-				+ "/" + DEFAULT_DIRECTORY + "/" 
+		File file = null;
+		if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN)
+			file = new File(Environment.getExternalStorageDirectory() 
+				+ "/" + DEFAULT_MCHN_DIRECTORY + "/" 
 				+ filename);
+		else 
+			file = new File(Environment.getExternalStorageDirectory() 
+					+ "/" + DEFAULT_AGRI_DIRECTORY + "/" 
+					+ filename);
+			
 
 		BufferedReader br = null;
 		String line = null;

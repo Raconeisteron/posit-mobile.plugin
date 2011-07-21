@@ -296,7 +296,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 			Log.i(TAG, "UserType = " + AppControlManager.getUserType());
 
 			// Normal USER -- just show the Send menu
-			if (AppControlManager.isRegularUser()) {
+			if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser()) {
 				listItem.setVisible(false);
 				syncItem.setVisible(true);
 				if (thereAreUnsentFinds)
@@ -390,7 +390,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 				mAcdiVocaMsgs = db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
 				Log.i(TAG, "Created messages, n = " + mAcdiVocaMsgs.size());
-				if (AppControlManager.isRegularUser()) {
+				if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser()) {
 					db = new AcdiVocaDbHelper(this);
 					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
 							AcdiVocaDbHelper.FINDS_STATUS_NEW, null));
