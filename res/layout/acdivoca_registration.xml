@@ -145,19 +145,19 @@
 
 				<EditText android:id="@+id/responsibleIfChildEdit"
 					android:visibility="gone" android:hint="@string/alternate"
-					android:inputType="textCapSentences" android:layout_width="fill_parent"
+					android:inputType="textCapWords" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:layout_marginLeft="30px"
 					android:layout_marginRight="30px" />
 
 				<EditText android:id="@+id/fatherIfChildEdit"
 					android:visibility="gone" android:hint="@string/father_if_child"
-					android:inputType="textCapSentences" android:layout_width="fill_parent"
+					android:inputType="textCapWords" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:layout_marginLeft="30px"
 					android:layout_marginRight="30px" />
 
 				<EditText android:id="@+id/responsibleIfMotherEdit"
 					android:visibility="gone" android:hint="@string/alternate"
-					android:inputType="textCapSentences" android:layout_width="fill_parent"
+					android:inputType="textCapWords" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:layout_marginLeft="30px"
 					android:layout_marginRight="30px" />
 
@@ -179,19 +179,19 @@
 
 				<EditText android:id="@+id/fatherIfChildEdit"
 					android:visibility="gone" android:hint="@string/father_if_child"
-					android:inputType="textCapSentences" android:layout_width="fill_parent"
+					android:inputType="textCapWords" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:layout_marginLeft="30px"
 					android:layout_marginRight="30px" />
 
 				<EditText android:id="@+id/responsibleIfMotherEdit"
 					android:visibility="gone" android:hint="@string/alternate"
-					android:inputType="textCapSentences" android:layout_width="fill_parent"
+					android:inputType="textCapWords" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:layout_marginLeft="30px"
 					android:layout_marginRight="30px" />
 
 				<EditText android:id="@+id/husbandIfMotherEdit"
 					android:visibility="gone" android:hint="@string/husband_if_mother"
-					android:inputType="textCapSentences" android:layout_width="fill_parent"
+					android:inputType="textCapWords" android:layout_width="fill_parent"
 					android:layout_height="wrap_content" android:layout_marginLeft="30px"
 					android:layout_marginRight="30px" />
 
