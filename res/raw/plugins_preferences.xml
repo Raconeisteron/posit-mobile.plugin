@@ -14,7 +14,7 @@
 			main_add_button_label="add_beneficiary_label"
 			main_extra_button_label="update_beneficiary_label"
 			main_extra_button_label2="new_agri_beneficiary_label"
-			main_icon="acdivoca_logo" />
+			main_icon="acdivoca_logo_lg" />
 
 <!-- 			list_finds_activity_class="AcdiVocaSendSmsActivity" -->
 
