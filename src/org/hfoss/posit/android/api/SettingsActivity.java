@@ -295,7 +295,8 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                     if ((AppControlManager.isRegularUser() || AppControlManager.isAgriUser() || AppControlManager.isAgronUser())
                             && (key.equals(getString(R.string.smsPhoneKey))
                             || key.equals(getString(R.string.distribution_point_key))
-                            || key.equals(getString(R.string.distribution_event_key)))) {
+                            || key.equals(getString(R.string.distribution_event_key))
+                            || key.equals(getString(R.string.commune_section_key)))) {
                         p.setEnabled(false);
                         //this.getPreferenceScreen().removePreference(p); Doesn't work here
                         Log.i(TAG, "Disabling USER setting for key = " + key);

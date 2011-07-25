@@ -385,18 +385,33 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 				
 				Log.i(TAG, "File picker file = " + filename + " Beneficiary type = " + beneficiaryType);
 
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 				if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {
 
 					// Get this phone's Distribution Center
-					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 					mDistrCtr = prefs.getString(this.getResources().getString(R.string.distribution_point_key), null);
 
-					if (mDistrCtr == null) {
-						Log.i(TAG, "Aborting loadBeneficiaryData, No distribution post selected");
-						Toast.makeText(this, getString(R.string.toast_distribution_post), Toast.LENGTH_SHORT);
-						return;
+
+						if (mDistrCtr == null) {	
+							Log.i(TAG, "Aborting loadBeneficiaryData, No distribution post selected");
+							Toast.makeText(this, getString(R.string.toast_distribution_post), Toast.LENGTH_SHORT);
+							return;
+
+						}
 					}
-				}
+				if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_AGRI) {
+
+					// Get this phone's commune section
+					mDistrCtr = prefs.getString(this.getResources().getString(R.string.commune_section_key), null);
+
+
+						if (mDistrCtr == null) {	
+							Log.i(TAG, "Aborting loadBeneficiaryData for Livelihood data, No commune section selected");
+	//						Toast.makeText(this, getString(R.string.toast_distribution_post), Toast.LENGTH_SHORT);
+							return;
+						}
+					}
 				
 				mProgressDialog = ProgressDialog.show(this, getString(R.string.loading_data),
 						getString(R.string.please_wait), true, true);
@@ -478,7 +493,9 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		Log.i(TAG, "Inserted to database " + nImports + " Beneficiaries");	
 		
 		// Move to the next stage of the distribution event process
+		if(beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {
 		AppControlManager.moveToNextDistributionStage(this);
+		}
 		return DONE;
 	}
 	
@@ -533,7 +550,8 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 				while (line != null)  {
 					//				Log.i(TAG, line);
 					if (line.length() > 0 && line.charAt(0) != '*')  {
-						if (!line.contains("No_dossier")) {
+//						if (!line.contains("No_dossier")) {
+						if (line.contains(distrCtr)) {						
 							data[k] = line;
 							k++;
 						}
