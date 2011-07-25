@@ -41,8 +41,10 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
@@ -270,6 +272,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                 Preference p =  findPreference(key);
                 String value = sp.getString(key, null);
                 if (p!= null && value != null) {
+                    Log.i(TAG, "Preference = " + p.toString());
                     if (key.equals(getString(R.string.distribution_point_key))){ // New code for distribution points
                         p.setSummary(AttributeManager.getMapping(value));  // 7/15/11
                     }
@@ -278,8 +281,18 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                         p.setSummary(value);
                     }
                     
+                    if (key.equals(getString(R.string.distribution_point_key))) {
+                    	if (AppControlManager.isAgronUser()) {
+                    		ListPreference listDistrPoint = (ListPreference) findPreference(getString(R.string.distribution_point_key));
+                    		Log.i(TAG, "List Preference = " + listDistrPoint);
+                    		PreferenceCategory mCategory = (PreferenceCategory) findPreference(getString(R.string.acdivocaprefs));
+                    		if (mCategory.removePreference(listDistrPoint)) 
+                    			Log.i(TAG, "Should have removed preference = " + listDistrPoint);
+                    	}
+                    }
+                    
 //                    if (userTypeOrdinal == UserType.USER.ordinal() 
-                    if ((AppControlManager.isRegularUser() || AppControlManager.isAgriUser())
+                    if ((AppControlManager.isRegularUser() || AppControlManager.isAgriUser() || AppControlManager.isAgronUser())
                             && (key.equals(getString(R.string.smsPhoneKey))
                             || key.equals(getString(R.string.distribution_point_key))
                             || key.equals(getString(R.string.distribution_event_key)))) {
@@ -291,6 +304,9 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
                     if ((AppControlManager.isAdminUser() || AppControlManager.isAgronUser())
                             && key.equals(getString(R.string.distribution_event_key))) {
                         p.setEnabled(false);
+                        
+
+
                         //this.getPreferenceScreen().removePreference(p); Doesn't work here
                         Log.i(TAG, "Disabling ADMIN setting for key = " + key);
                     }

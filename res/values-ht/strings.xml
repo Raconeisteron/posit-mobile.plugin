@@ -166,6 +166,8 @@
 <!--         Add and List Menu -->
     <string name="refresh">Netwaye</string>
     <string name="delete_find">Efase</string> 
+    <string name="search">Rechercher</string>
+    <string name="search_prompt">Recherche par Siyati</string>
     <string name="list_messages">Jere Mesage SMS</string>
     <string name="sync_messages">Voye Mesage SMS</string>
   

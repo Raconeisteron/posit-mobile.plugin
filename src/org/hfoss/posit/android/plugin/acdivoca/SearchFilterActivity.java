@@ -35,7 +35,9 @@ import android.widget.Button;
 import android.widget.RadioButton;
 
 /**
- * Handles Login for ACDI/VOCA application.
+ * Allows the user either to create messages for different new beneficiaries
+ * or for updated beneficiaries and no-shows following a distribution or displays
+ * various category of message (sent, ack, pending, all) 
  * 
  */
 public class SearchFilterActivity extends Activity implements OnClickListener {
