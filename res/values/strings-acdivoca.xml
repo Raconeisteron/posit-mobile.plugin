@@ -330,7 +330,9 @@
 	<string name="acdivocaDescription1">ACDI/VOCA Mobile Phone-Based Beneficiary Registration and Update System</string>
 	<string name="acdivocaDescription2">(POSIT-Haiti)</string>
 	<string name="organizationDescription">Sponsored by the NSF, USAID, and ACDI/VOCA</string>
-    
+	
+	<!-- 7/25/11 --> 
+     <string name="commune_section_key">commune_section_key</string> <!-- Do not translate -->
     
     
     
