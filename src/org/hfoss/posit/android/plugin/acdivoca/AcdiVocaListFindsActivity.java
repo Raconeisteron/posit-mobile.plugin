@@ -244,31 +244,67 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
         	Log.e(TAG, "Unable to lookup find with id = " + findId);
         	return;
         }
-        ContentValues values = avFind.toContentValues();
         
-//        ContentValues values = db.fetchFindDataById(id, null);
-        
-        Log.i(TAG, "###############################################");
-        Log.i(TAG, values.toString());
-        Intent intent = null;
- 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_MCHN){
- 			intent = new Intent(this, AcdiVocaMchnFindActivity.class);
- 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_MCHN);
- 		}
- 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
- 			intent = new Intent(this, AcdiVocaAgriFindActivity.class);
- 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_AGRI);
- 		}
-// 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
-// 			intent = new Intent(this, AcdiVocaFindActivity.class);
-// 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
+        startDisplayFindActivity(avFind);
+//        ContentValues values = avFind.toContentValues();
+//        
+////        ContentValues values = db.fetchFindDataById(id, null);
+//        
+//        Log.i(TAG, "###############################################");
+//        Log.i(TAG, values.toString());
+//        Intent intent = null;
+// 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_MCHN){
+// 			intent = new Intent(this, AcdiVocaMchnFindActivity.class);
+// 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_MCHN);
 // 		}
- 		
- 		intent.setAction(Intent.ACTION_EDIT);
-		if (DBG) Log.i(TAG,"id = " + id);
+// 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
+// 			intent = new Intent(this, AcdiVocaAgriFindActivity.class);
+// 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_AGRI);
+// 		}
+//// 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
+//// 			intent = new Intent(this, AcdiVocaFindActivity.class);
+//// 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
+//// 		}
+// 		
+// 		intent.setAction(Intent.ACTION_EDIT);
+//		if (DBG) Log.i(TAG,"id = " + id);
+//		intent.putExtra(AcdiVocaDbHelper.FINDS_ID, (long) findId);
+//
+//		startActivityForResult(intent, FIND_FROM_LIST);
+	}
+	
+	/**
+	 * Helper method that takes a Find and starts the appropriate display activity.
+	 * @param avFind
+	 */
+	private void startDisplayFindActivity(AcdiVocaFind avFind) {
+        ContentValues values = avFind.toContentValues();
+        int findId = avFind.id;
+        
+//      ContentValues values = db.fetchFindDataById(id, null);
+      
+      Log.i(TAG, "###############################################");
+      Log.i(TAG, values.toString());
+      Intent intent = null;
+		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_MCHN){
+			intent = new Intent(this, AcdiVocaMchnFindActivity.class);
+			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_MCHN);
+		}
+		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
+			intent = new Intent(this, AcdiVocaAgriFindActivity.class);
+			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_AGRI);
+		}
+//		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
+//			intent = new Intent(this, AcdiVocaFindActivity.class);
+//			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
+//		}
+		
+		intent.setAction(Intent.ACTION_EDIT);
+		if (DBG) Log.i(TAG,"id = " + findId);
 		intent.putExtra(AcdiVocaDbHelper.FINDS_ID, (long) findId);
 
 		startActivityForResult(intent, FIND_FROM_LIST);
+
 	}
 
 	 
@@ -298,37 +334,45 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.acdi_voca_list_finds_menu, menu);
 		
-		
 		MenuItem listItem = menu.findItem(R.id.list_messages);
 		MenuItem syncItem = menu.findItem(R.id.sync_messages);
 		MenuItem deleteItem = menu.findItem(R.id.delete_messages_menu);
-		deleteItem.setVisible(false);
+		deleteItem.setVisible(false);  // Always invisible for now
+		MenuItem searchItem = menu.findItem(R.id.search_finds_menu);
 
 		// If invoked from main view Button, rather than Admin Menu (ACTION_SEND) then 
-		//  the Finds are displayed initially so just show the USER the SEND menu item
+		//  the Finds are displayed initially so just show the USER, SEND, and SEARCH menu items
 		if (mAction.equals(Intent.ACTION_SEND)) {
 			Log.i(TAG, "UserType = " + AppControlManager.getUserType());
 
 			// Normal USER -- just show the Send menu
 			if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser()) {
 				listItem.setVisible(false);
+				searchItem.setVisible(false);
 				syncItem.setVisible(true);
 				if (thereAreUnsentFinds)
 					syncItem.setEnabled(true);
 				else 
 					syncItem.setEnabled(false);
 			} else {  // SUPER or ADMIN USER, also show the manage messages menu
-				adjustAdminMenuOptions(menu, syncItem, deleteItem);
+				adjustAdminMenuOptions(menu, syncItem, deleteItem, searchItem);
 			}
 			return super.onPrepareOptionsMenu(menu);
 		} else {
-			adjustAdminMenuOptions(menu, syncItem, deleteItem);
+			adjustAdminMenuOptions(menu, syncItem, deleteItem, searchItem);
 		}
 
 		return super.onPrepareOptionsMenu(menu);
 	}
 	
-	private void adjustAdminMenuOptions(Menu menu, MenuItem syncItem, MenuItem deleteItem) {
+	/**
+	 * Helper method to control menu options for Admin users. 
+	 * @param menu
+	 * @param syncItem
+	 * @param deleteItem
+	 * @param searchItem
+	 */
+	private void adjustAdminMenuOptions(Menu menu, MenuItem syncItem, MenuItem deleteItem, MenuItem searchItem) {
 		// In this case the Menu also applies to a list of MESSAGES, not FINDS
 		// and this should apply only to SUPER or ADMIN users
 		Log.i(TAG, "Prepare Menus, nMsgs = " + mNMessagesDisplayed);
@@ -361,6 +405,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		} else {
 			deleteItem.setEnabled(false);
 		}	
+		
+		searchItem.setVisible(true);
 
 	}
 
@@ -375,6 +421,13 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		Log.i(TAG, "UserType = " + AppControlManager.getUserType());
 		
 		switch (item.getItemId()) {	
+		
+		// Invoked only when Finds (not messages) are displayed
+		case R.id.search_finds_menu:
+			intent = new Intent();
+			intent.setClass(this, SearchFindsActivity.class);
+			this.startActivityForResult(intent, SearchFindsActivity.ACTION_SEARCH);
+			break;
 		
 		// Start a SearchFilterActivity for result
 		case R.id.list_messages:
@@ -517,6 +570,22 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 
 				displayMessageList(resultCode, distributionCtr);	
 			} 
+			break;
+		case SearchFindsActivity.ACTION_SEARCH:
+			if (resultCode == RESULT_CANCELED) {
+				break;
+			} else {
+				String lastNameSearch = data.getStringExtra(SearchFindsActivity.LAST_NAME);
+				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+				AcdiVocaFind avFind = db.fetchBeneficiaryByLastname(lastNameSearch);
+				if (avFind != null)
+					startDisplayFindActivity(avFind);
+				else {
+					Log.e(TAG, "Sorry unable to find " + lastNameSearch);
+					Toast.makeText(this, "Sorry unable to find " + lastNameSearch, Toast.LENGTH_SHORT).show();
+				}
+			}
+			break;
 		
 		default:
 			super.onActivityResult(requestCode, resultCode, data);

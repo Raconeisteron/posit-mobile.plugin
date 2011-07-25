@@ -839,8 +839,8 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	}
 
 	/**
-	 * Returns key/value pairs for selected columns with row selected by guId 
-	 * @param guId the Find's globally unique Id
+	 * Retrieves a Find object by its dossier number.
+	 * @param dossier the Find's dossier number
 	 * @param columns an array of column names, can be left null
 	 * @return
 	 */
@@ -863,6 +863,32 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 		}
 		return avFind;
 	}
+	
+	/**
+	 * Retrieves a Find object by its last name.
+	 * @param lastname 
+	 * @return
+	 */
+	public AcdiVocaFind fetchBeneficiaryByLastname(String lastname) {		
+		Log.i(TAG, "Fetching beneficiary, lastname = " + lastname);
+		Dao<AcdiVocaFind, Integer> avFindDao = null;
+		List<AcdiVocaFind> list = null;
+		AcdiVocaFind avFind = null;
+		try {
+			avFindDao = getAcdiVocaFindDao();
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+				avFindDao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(FINDS_LASTNAME, lastname);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			avFind = avFindDao.queryForFirst(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return avFind;
+	}
+	
 	
 	/**
 	 * Helper method to retrieve selected messages from message table. 

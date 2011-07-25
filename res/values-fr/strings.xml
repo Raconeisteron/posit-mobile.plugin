@@ -168,6 +168,9 @@
         <!-- Add and List Menu -->
     <string name="refresh">Netoyer</string>
     <string name="delete_find">Supprimer</string> 
+    <string name="search">Rechercher</string>
+    <string name="search_prompt">Recherche par nom de famille</string>
+    
     <string name="list_messages">Gérer Messages SMS</string>
     <string name="sync_messages">Envoyer Messages SMS</string>
   

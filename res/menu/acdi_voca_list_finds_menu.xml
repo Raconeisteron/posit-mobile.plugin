@@ -16,5 +16,12 @@
 		android:enabled="false"
 		android:icon="@android:drawable/ic_menu_delete">
 	</item>
+	
+	<item 
+		android:title="@string/search" 
+		android:id="@+id/search_finds_menu"
+		android:enabled="true"
+		android:icon="@android:drawable/ic_menu_search">
+	</item>
 </menu>
 

@@ -1,5 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="@string/acdivocaprefs">
+	<PreferenceCategory 
+		android:key="@string/acdivocaprefs"
+		android:title="@string/acdivocaprefs">
 
 		<PreferenceScreen android:title="@string/acdivocaprefs">
 			<EditTextPreference 
