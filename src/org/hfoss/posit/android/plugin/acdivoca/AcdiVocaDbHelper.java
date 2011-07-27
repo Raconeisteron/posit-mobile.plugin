@@ -96,10 +96,10 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			Log.i(TAG, "Creating Tables in onCreate: ");
 
 			AcdiVocaUser.init(connectionSource, getAvUserDao());
-			
+			AcdiVocaFind.init(connectionSource, getAcdiVocaFindDao());
 			// Beneficiary Table
-			TableUtils.createTable(connectionSource, AcdiVocaFind.class);
-			AcdiVocaFind find = new AcdiVocaFind();
+//			TableUtils.createTable(connectionSource, AcdiVocaFind.class);
+//			AcdiVocaFind find = new AcdiVocaFind();
 //			find.init(AcdiVocaFind.TEST_FIND);
 //			Log.i(TAG, "find = " + find.toString());
 			
@@ -188,7 +188,7 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	public static final int UNKNOWN_ID = -9999;
 	public static final String MESSAGE_BENEFICIARY_ID = AttributeManager.MESSAGE_BENEFICIARY_ID;  // Row Id in Beneficiary table
 	public static final String MESSAGE_TEXT = AttributeManager.MESSAGE_TEXT;
-	public static final String MESSAGE_STATUS = AttributeManager.FINDS_MESSAGE_STATUS; 
+	public static final String MESSAGE_STATUS = AcdiVocaFind.MESSAGE_STATUS; 
 	public static final String[] MESSAGE_STATUS_STRINGS = {"Unsent", "Pending", "Sent", "Ack", "Deleted"};
 	public static final int MESSAGE_STATUS_UNSENT = 0;
 	public static final int MESSAGE_STATUS_PENDING = 1;
@@ -199,128 +199,10 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	public static final String MESSAGE_SENT_AT = AttributeManager.MESSAGE_SENT_AT;
 	public static final String MESSAGE_ACK_AT = AttributeManager.MESSAGE_ACK_AT;
 	
-	/**
-	 *  For the Beneficiary table
-	 */
-	public static final String FINDS_TABLE = "acdi_voca_finds";
-	public static final String FINDS_ID = "_id";
-	public static final String FINDS_ORMLIST_ID = "id";
-	public static final String FINDS_DOSSIER = AttributeManager.FINDS_DOSSIER;
-	public static final String FINDS_PROJECT_ID = "project_id";
-	public static final String FINDS_NAME = "name";
-	
-	public static final String FINDS_TYPE = AttributeManager.FINDS_TYPE;    
-	public static final int FINDS_TYPE_MCHN = 0;
-	public static final int FINDS_TYPE_AGRI = 1;
-	public static final int FINDS_TYPE_BOTH = 2;
-	public static final String[] FIND_TYPE_STRINGS = {"MCHN", "AGRI", "BOTH"};  // For display purpose
-
-	public static final String FINDS_STATUS = AttributeManager.FINDS_STATUS;
-	public static final int FINDS_STATUS_NEW = 0;      // New registration, no Dossier ID
-	public static final int FINDS_STATUS_UPDATE = 1;   // Update, imported from TBS, with Dossier ID
-	public static final int FINDS_STATUS_DONTCARE = -1;  
-	public static final String[] FIND_STATUS_STRINGS = {"New", "Update"};  // For display purpose
-
-	public static final String FINDS_MESSAGE_ID = AttributeManager.FINDS_MESSAGE_ID;
-	public static final String FINDS_MESSAGE_STATUS = MESSAGE_STATUS;
-
-	public static final String FINDS_FIRSTNAME = AttributeManager.FINDS_FIRSTNAME;
-	public static final String FINDS_LASTNAME = AttributeManager.FINDS_LASTNAME;
-
-	public static final String FINDS_ADDRESS = AttributeManager.FINDS_ADDRESS;
-	public static final String FINDS_DOB = AttributeManager.FINDS_DOB;
-	public static final String FINDS_SEX = AttributeManager.FINDS_SEX;
-	public static final String FINDS_AGE = "age";
-
-	public static final String FINDS_BENEFICIARY_CATEGORY = AttributeManager.FINDS_BENEFICIARY_CATEGORY;
-	public static final String FINDS_HOUSEHOLD_SIZE = AttributeManager.FINDS_HOUSEHOLD_SIZE;
-
-	public static final String FINDS_DISTRIBUTION_POST = AttributeManager.FINDS_DISTRIBUTION_POST;
-	public static final String FINDS_Q_MOTHER_LEADER = AttributeManager.FINDS_Q_MOTHER_LEADER; // "mother_leader";
-	public static final String FINDS_Q_VISIT_MOTHER_LEADER = AttributeManager.FINDS_Q_VISIT_MOTHER_LEADER; // "visit_mother_leader";
-	public static final String FINDS_Q_PARTICIPATING_AGRI = AttributeManager.FINDS_Q_PARTICIPATING_AGRI; // "pariticipating_agri";
-	public static final String FINDS_Q_RELATIVE_AGRI = AttributeManager.FINDS_Q_RELATIVE_AGRI; // "pariticipating_agri";
-	public static final String FINDS_Q_PARTICIPATING_BENE = AttributeManager.FINDS_Q_PARTICIPATING_BENE; // "pariticipating_agri";
-	public static final String FINDS_Q_RELATIVE_BENE = AttributeManager.FINDS_Q_RELATIVE_BENE; // "pariticipating_agri";
-	
-	public static final String FINDS_NAME_AGRI_PARTICIPANT = AttributeManager.FINDS_NAME_AGRI_PARTICIPANT; // "name_agri_paricipant";
-
-	
-	public static final String FINDS_GUID = "guid";    // Globally unique ID
-
-
-	public static final String FINDS_ZERO = "0";
-	public static final String FINDS_ONE = "1";
-
-	// For the agriculture registration form
-	public static final String FINDS_LAND_AMOUNT = AttributeManager.FINDS_LAND_AMOUNT; // "amount_of_land";	
-	public static final String FINDS_IS_FARMER = AttributeManager.FINDS_IS_FARMER; //  "is_farmer";
-	public static final String FINDS_IS_MUSO = AttributeManager.FINDS_IS_MUSO;  // "is_MUSO";
-	public static final String FINDS_IS_RANCHER = AttributeManager.FINDS_IS_RANCHER;  //  "is_rancher";
-	public static final String FINDS_IS_STOREOWN = AttributeManager.FINDS_IS_STOREOWN; //  "is_store_owner";
-	public static final String FINDS_IS_FISHER = AttributeManager.FINDS_IS_FISHER;  // "is_fisher";
-	public static final String FINDS_IS_OTHER = AttributeManager.FINDS_IS_OTHER;  // "is_other";
-	public static final String FINDS_IS_ARTISAN = AttributeManager.FINDS_IS_ARTISAN; // "is_artisan";
-	
-	public static final String FINDS_HAVE_VEGE = AttributeManager.FINDS_HAVE_VEGE; //  "have_vege";
-	public static final String FINDS_HAVE_CEREAL = AttributeManager.FINDS_HAVE_CEREAL;  //  "have_cereal";
-	public static final String FINDS_HAVE_TUBER = AttributeManager.FINDS_HAVE_TUBER;  // "have_tuber";
-	public static final String FINDS_HAVE_TREE = AttributeManager.FINDS_HAVE_TREE; // "have_tree";
-	public static final String FINDS_HAVE_GRAFTING = AttributeManager.FINDS_HAVE_GRAFTING; // "have_grafting";
-	public static final String FINDS_HAVE_HOUE = AttributeManager.FINDS_HAVE_HOUE;  //  "have_houe";
-	public static final String FINDS_HAVE_PIOCHE = AttributeManager.FINDS_HAVE_PIOCHE;  // "have_pioche";
-	public static final String FINDS_HAVE_BROUETTE = AttributeManager.FINDS_HAVE_BROUETTE; // "have_brouette";
-	public static final String FINDS_HAVE_MACHETTE = AttributeManager.FINDS_HAVE_MACHETTE; //  "have_machette";
-	public static final String FINDS_HAVE_SERPETTE = AttributeManager.FINDS_HAVE_SERPETTE;  // "have_serpette";
-	public static final String FINDS_HAVE_PELLE = AttributeManager.FINDS_HAVE_PELLE;  // "have_pelle";
-	public static final String FINDS_HAVE_BARREAMINES = AttributeManager.FINDS_HAVE_BARREAMINES; // "have_barreamines";
-	public static final String FINDS_RELATIVE_1 = AttributeManager.FINDS_RELATIVE_1;  // "relative_1";
-	public static final String FINDS_RELATIVE_2 = AttributeManager.FINDS_RELATIVE_2;  // "relative_2";
-	public static final String FINDS_HAVE_COFFEE = AttributeManager.FINDS_HAVE_COFFEE; //  "have_vege";
-
-	public static final String FINDS_PARTNER_FAO = AttributeManager.FINDS_PARTNER_FAO;// "partner_fao";
-	public static final String FINDS_PARTNER_SAVE = AttributeManager.FINDS_PARTNER_SAVE;// "partner_save";
-	public static final String FINDS_PARTNER_CROSE = AttributeManager.FINDS_PARTNER_CROSE;// "partner_crose";
-	public static final String FINDS_PARTNER_PLAN = AttributeManager.FINDS_PARTNER_PLAN;// "partner_plan";
-	public static final String FINDS_PARTNER_MARDNR = AttributeManager.FINDS_PARTNER_MARDNR;// "partner_mardnr";
-	public static final String FINDS_PARTNER_OTHER = AttributeManager.FINDS_PARTNER_OTHER;// "partner_other";
-	
-	public static final String FINDS_MALNOURISHED = AttributeManager.FINDS_MALNOURISHED;  // "MALNOURISHED";
-	public static final String FINDS_PREVENTION = AttributeManager.FINDS_PREVENTION;     // "PREVENTION";
-	public static final String FINDS_EXPECTING = AttributeManager.FINDS_EXPECTING;   // "EXPECTING";
-	public static final String FINDS_NURSING = AttributeManager.FINDS_NURSING;      // "NURSING";
-	
-    public static final String FINDS_MALE = AttributeManager.FINDS_MALE;          // "MALE";
-    public static final String FINDS_FEMALE = AttributeManager.FINDS_FEMALE;        // "FEMALE";
-    public static final String FINDS_YES = AttributeManager.FINDS_YES;           // "YES";
-    public static final String FINDS_NO = AttributeManager.FINDS_NO;            // "NO";
-    public static final String FINDS_TRUE = AttributeManager.FINDS_TRUE;       // "TRUE";
-    public static final String FINDS_FALSE = AttributeManager.FINDS_FALSE;      // "FALSE";
-    public static final String FINDS_COMMUNE_SECTION = AttributeManager.LONG_COMMUNE_SECTION;
-    
-	public static final String FINDS_Q_PRESENT = AttributeManager.FINDS_Q_PRESENT;   // "Present";
-	public static final String FINDS_Q_TRANSFER = AttributeManager.FINDS_Q_TRANSFER;   //"Transfer";
-	public static final String FINDS_Q_MODIFICATION = AttributeManager.FINDS_Q_MODIFICATIONS;  // "Modifications";
-	public static final String FINDS_MONTHS_REMAINING = "MonthsRemaining";
-	public static final String FINDS_Q_CHANGE = AttributeManager.FINDS_Q_CHANGE;   //"ChangeInStatus";   // Added to incorporated changes to beneficiary type
-	public static final String FINDS_CHANGE_TYPE = AttributeManager.FINDS_CHANGE_TYPE;   //"ChangeType";
-	
-	public static final String FINDS_DESCRIPTION = "description";
-	public static final String FINDS_LATITUDE = "latitude";
-	public static final String FINDS_LONGITUDE = "longitude";
-	public static final String FINDS_TIME = "timestamp";
-	public static final String FINDS_MODIFY_TIME = "modify_time";
-	public static final String FINDS_SYNCED = "synced";
-	public static final String FINDS_REVISION = "revision";
-	public static final String FINDS_IS_ADHOC = "is_adhoc";
-	public static final String FINDS_ACTION = "action";
-	public static final String FINDS_DELETED = "deleted";
-	public static final int FIND_IS_SYNCED = 1;
-	public static final int FIND_NOT_SYNCED = 0;
 
 	public static final int DELETE_FIND = 1;
 	public static final int UNDELETE_FIND = 0;
-	public static final String WHERE_NOT_DELETED = " " + FINDS_DELETED + " != " + DELETE_FIND + " ";
+	public static final String WHERE_NOT_DELETED = " " + AcdiVocaFind.DELETED + " != " + DELETE_FIND + " ";
 	public static final String DATETIME_NOW = "`datetime('now')`";
 
 	public static final String FINDS_HISTORY_TABLE = "acdi_voca_finds_history";
@@ -376,8 +258,8 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			avFind = new AcdiVocaFind();
 
 			fields = beneficiaries[k].split(COMMA);
-			avFind.type =   AcdiVocaDbHelper.FINDS_TYPE_AGRI;
-			avFind.status = AcdiVocaDbHelper.FINDS_STATUS_UPDATE;
+			avFind.type =   AcdiVocaFind.TYPE_AGRI;
+			avFind.status = AcdiVocaFind.STATUS_UPDATE;
 			avFind.dossier = fields[AGRI_FIELD_DOSSIER];
 			avFind.lastname = fields[AGRI_FIELD_LASTNAME];
 			avFind.firstname =  fields[AGRI_FIELD_FIRSTNAME];
@@ -426,8 +308,8 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			avFind = new AcdiVocaFind();
 			
 			fields = beneficiaries[k].split(COMMA);
-			avFind.type =  AcdiVocaDbHelper.FINDS_TYPE_MCHN;
-			avFind.status = AcdiVocaDbHelper.FINDS_STATUS_UPDATE;
+			avFind.type =  AcdiVocaFind.TYPE_MCHN;
+			avFind.status = AcdiVocaFind.STATUS_UPDATE;
 			avFind.dossier = fields[FIELD_DOSSIER];
 			avFind.lastname = fields[FIELD_LASTNAME];
 			avFind.firstname =  fields[FIELD_FIRSTNAME];
@@ -562,7 +444,8 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 				String msg = avMsg.smsMessage;
 				String dossiers[] = msg.split(AttributeManager.LIST_SEPARATOR);
 				for (int k = 0; k < dossiers.length; k++) {
-					avFind = fetchBeneficiaryByDossier(dossiers[k], null);
+//					avFind = fetchBeneficiaryByDossier(dossiers[k], null);
+					avFind = new AcdiVocaFind(mContext, dossiers[k]);
 					avFind.message_status = MESSAGE_STATUS_ACK;
 					rows = avFindDao.update(avFind);
 					if (rows == 1) 
@@ -602,7 +485,8 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 		if (beneficiary_id < 0) {  // This is an ACK for a bulk message, msg_id is -beneficiary_id
 			return recordAcknowledgedBulkMessage(acdiVocaMsg);
 		} else {  // In this case, beneficiary id is known and message Id must be looked up
-			avFind = fetchFindById(beneficiary_id, null);
+			avFind = new AcdiVocaFind(mContext, beneficiary_id);
+//			avFind = fetchFindById(beneficiary_id, null);
 			if (avFind != null) {
 				msg_id = avFind.message_id;
 				result = updateBeneficiaryMessageStatus(beneficiary_id, msg_id,MESSAGE_STATUS_ACK);
@@ -640,15 +524,16 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	
 		for (int k = 0; k < dossiers.length; k++) {
 			
-			AcdiVocaFind avFind = fetchBeneficiaryByDossier(dossiers[k], null);
+//			AcdiVocaFind avFind = fetchBeneficiaryByDossier(dossiers[k], null);
+			AcdiVocaFind avFind = new AcdiVocaFind(mContext, dossiers[k]);
 			if (avFind != null) {
-				result = updateBeneficiaryMessageStatus(avFind.id, msgId, status);
+				result = updateBeneficiaryMessageStatus(avFind.getId(), msgId, status);
 				if (result) {
-					Log.d(TAG, "Updated beneficiary id = " + avFind.id + " to status = " + status);
+					Log.d(TAG, "Updated beneficiary id = " + avFind.getId() + " to status = " + status);
 					++rows;
 				}
 				else
-					Log.e(TAG, "Unable to update beneficiary id = " + avFind.id + " to status = " + status);
+					Log.e(TAG, "Unable to update beneficiary id = " + avFind.getId() + " to status = " + status);
 
 			} 
 		}
@@ -801,68 +686,68 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 		return result == 1;
 	}
 	
-	/**
-	 * Updates the Beneficiary's row in the Beneficiary Table.
-	 * @param avFind
-	 * @return
-	 */
-	public boolean updateBeneficiary(AcdiVocaFind avFind) {
-		Log.i(TAG, "Updating beneficiary " + avFind.id);
-		Dao<AcdiVocaFind, Integer> avFindDao = null;
-		int result = 0;
-		try {
-			avFindDao = getAcdiVocaFindDao();
-			result = avFindDao.update(avFind);
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-		return result == 1;
-	}
-	
-	/**
-	 * Inserts a new Beneficiary's row in the Beneficiary Table.
-	 * @param avFind
-	 * @return
-	 */
-	public boolean insertBeneficiary(AcdiVocaFind avFind) {
-		Dao<AcdiVocaFind, Integer> avFindDao = null;
-		int result = 0;
-		try {
-			avFindDao = getAcdiVocaFindDao();
-			result = avFindDao.create(avFind);
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-		return result == 1;
-	}
+//	/**
+//	 * Updates the Beneficiary's row in the Beneficiary Table.
+//	 * @param avFind
+//	 * @return
+//	 */
+//	public boolean updateBeneficiary(AcdiVocaFind avFind) {
+//		Log.i(TAG, "Updating beneficiary " + avFind.getId());
+//		Dao<AcdiVocaFind, Integer> avFindDao = null;
+//		int result = 0;
+//		try {
+//			avFindDao = getAcdiVocaFindDao();
+//			result = avFindDao.update(avFind);
+//		} catch (SQLException e) {
+//			Log.e(TAG, "SQL Exception " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//		return result == 1;
+//	}
+//	
+//	/**
+//	 * Inserts a new Beneficiary's row in the Beneficiary Table.
+//	 * @param avFind
+//	 * @return
+//	 */
+//	public boolean insertBeneficiary(AcdiVocaFind avFind) {
+//		Dao<AcdiVocaFind, Integer> avFindDao = null;
+//		int result = 0;
+//		try {
+//			avFindDao = getAcdiVocaFindDao();
+//			result = avFindDao.create(avFind);
+//		} catch (SQLException e) {
+//			Log.e(TAG, "SQL Exception " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//		return result == 1;
+//	}
 
-	/**
-	 * Retrieves a Find object by its dossier number.
-	 * @param dossier the Find's dossier number
-	 * @param columns an array of column names, can be left null
-	 * @return
-	 */
-	public AcdiVocaFind fetchBeneficiaryByDossier(String dossier, String[] columns) {		
-		Log.i(TAG, "Fetching beneficiary, dossier = " + dossier);
-		Dao<AcdiVocaFind, Integer> avFindDao = null;
-		List<AcdiVocaFind> list = null;
-		AcdiVocaFind avFind = null;
-		try {
-			avFindDao = getAcdiVocaFindDao();
-			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
-				avFindDao.queryBuilder();
-			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.eq(FINDS_DOSSIER, dossier);
-			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
-			avFind = avFindDao.queryForFirst(preparedQuery);
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-		return avFind;
-	}
+//	/**
+//	 * Retrieves a Find object by its dossier number.
+//	 * @param dossier the Find's dossier number
+//	 * @param columns an array of column names, can be left null
+//	 * @return
+//	 */
+//	public AcdiVocaFind fetchBeneficiaryByDossier(String dossier, String[] columns) {		
+//		Log.i(TAG, "Fetching beneficiary, dossier = " + dossier);
+//		Dao<AcdiVocaFind, Integer> avFindDao = null;
+//		List<AcdiVocaFind> list = null;
+//		AcdiVocaFind avFind = null;
+//		try {
+//			avFindDao = getAcdiVocaFindDao();
+//			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
+//				avFindDao.queryBuilder();
+//			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+//			where.eq(AcdiVocaFind.DOSSIER, dossier);
+//			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+//			avFind = avFindDao.queryForFirst(preparedQuery);
+//		} catch (SQLException e) {
+//			Log.e(TAG, "SQL Exception " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//		return avFind;
+//	}
 	
 	/**
 	 * Retrieves a Find object by its last name.
@@ -879,7 +764,7 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.eq(FINDS_LASTNAME, lastname);
+			where.eq(AcdiVocaFind.LASTNAME, lastname);
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			avFind = avFindDao.queryForFirst(preparedQuery);
 		} catch (SQLException e) {
@@ -956,17 +841,17 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
 			if (filter == SearchFilterActivity.RESULT_SELECT_NEW) {
-				where.eq(FINDS_STATUS, FINDS_STATUS_NEW);
+				where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_NEW);
 				where.and();
-				where.eq( FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
+				where.eq( AcdiVocaFind.MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
 			} else if (filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {
-				where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE);
+				where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_UPDATE);
 				where.and();
-				where.eq(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
+				where.eq(AcdiVocaFind.MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
 				where.and();
-				where.eq(FINDS_DISTRIBUTION_POST, distrCtr);
+				where.eq(AcdiVocaFind.DISTRIBUTION_POST, distrCtr);
 				where.and();
-				where.eq(FINDS_Q_CHANGE, true);
+				where.eq(AcdiVocaFind.Q_CHANGE, true);
 			}
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			list = avFindDao.query(preparedQuery);
@@ -1072,7 +957,7 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	public List<AcdiVocaFind> fetchAllBeneficiaries(int beneficiary_type) {
 		Log.i(TAG, "Fetching all beneficiaries of type " + beneficiary_type);
 		
-		if (beneficiary_type == FINDS_TYPE_BOTH)
+		if (beneficiary_type == AcdiVocaFind.TYPE_BOTH)
 			return fetchAllBeneficiaries();
 		
 		Dao<AcdiVocaFind, Integer> avFindDao = null;
@@ -1083,7 +968,7 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.eq(FINDS_TYPE, beneficiary_type);
+			where.eq(AcdiVocaFind.TYPE, beneficiary_type);
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			list = avFindDao.query(preparedQuery);
 		} catch (SQLException e) {
@@ -1115,13 +1000,13 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.eq(FINDS_STATUS,  FINDS_STATUS_UPDATE);
+			where.eq(AcdiVocaFind.STATUS,  AcdiVocaFind.STATUS_UPDATE);
 			where.and();
-			where.eq(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
+			where.eq(AcdiVocaFind.MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
 			where.and();
-			where.eq(FINDS_DISTRIBUTION_POST, distrCtr);
+			where.eq(AcdiVocaFind.DISTRIBUTION_POST, distrCtr);
 			where.and();
-			where.eq(FINDS_Q_PRESENT, false);
+			where.eq(AcdiVocaFind.Q_PRESENT, false);
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			list = avFindDao.query(preparedQuery);
 		} catch (SQLException e) {
@@ -1200,11 +1085,11 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.and(where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE),
-					where.eq(FINDS_DISTRIBUTION_POST, distrSite),
-					where.eq(FINDS_Q_PRESENT, true),
-					where.or(where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_PREVENTION),
-							where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_MALNOURISHED)));
+			where.and(where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_UPDATE),
+					where.eq(AcdiVocaFind.DISTRIBUTION_POST, distrSite),
+					where.eq(AcdiVocaFind.Q_PRESENT, true),
+					where.or(where.eq(AcdiVocaFind.BENEFICIARY_CATEGORY, AcdiVocaFind.PREVENTION),
+							where.eq(AcdiVocaFind.BENEFICIARY_CATEGORY, AcdiVocaFind.MALNOURISHED)));
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			list = avFindDao.query(preparedQuery);
 		} catch (SQLException e) {
@@ -1230,11 +1115,11 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.and(where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE),
-					where.eq(FINDS_DISTRIBUTION_POST, distrSite),
-					where.eq(FINDS_Q_PRESENT, true),
-					where.or(where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_EXPECTING),
-							where.eq(FINDS_BENEFICIARY_CATEGORY, FINDS_NURSING)));
+			where.and(where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_UPDATE),
+					where.eq(AcdiVocaFind.DISTRIBUTION_POST, distrSite),
+					where.eq(AcdiVocaFind.Q_PRESENT, true),
+					where.or(where.eq(AcdiVocaFind.BENEFICIARY_CATEGORY, AcdiVocaFind.EXPECTING),
+							where.eq(AcdiVocaFind.BENEFICIARY_CATEGORY, AcdiVocaFind.NURSING)));
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			list = avFindDao.query(preparedQuery);
 		} catch (SQLException e) {
@@ -1254,7 +1139,7 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	public boolean queryUnsentBeneficiaries() {
 		Log.i(TAG,"Querying number of unsent beneficiaries");
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put(FINDS_MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
+		map.put(AcdiVocaFind.MESSAGE_STATUS, MESSAGE_STATUS_UNSENT);
 		
 		// Query for the username in the user table
 		Dao<AcdiVocaFind, Integer> avFindDao = null;
@@ -1264,8 +1149,8 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.or(where.eq(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT),
-					where.eq(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING));
+			where.or(where.eq(AcdiVocaFind.MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT),
+					where.eq(AcdiVocaFind.MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING));
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			result = avFindDao.queryForFirst(preparedQuery);
 		} catch (SQLException e) {
@@ -1290,11 +1175,11 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.eq(FINDS_STATUS, FINDS_STATUS_UPDATE);
+			where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_UPDATE);
 			where.and();
-			where.eq(FINDS_DISTRIBUTION_POST, distrSite);
+			where.eq(AcdiVocaFind.DISTRIBUTION_POST, distrSite);
 			where.and();
-			where.eq(FINDS_Q_PRESENT, false);
+			where.eq(AcdiVocaFind.Q_PRESENT, false);
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			list = avFindDao.query(preparedQuery);
 		} catch (SQLException e) {
@@ -1321,7 +1206,7 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
 				avFindDao.queryBuilder();
 			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.eq(FINDS_DISTRIBUTION_POST, distribSite);
+			where.eq(AcdiVocaFind.DISTRIBUTION_POST, distribSite);
 			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
 			list = avFindDao.query(preparedQuery);
 		} catch (SQLException e) {
@@ -1346,26 +1231,26 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	}
 
 
-	/**
-	 * Returns selected columns for a find by id.
-	 * @param id the Find's id
-	 * @param columns an array of column names, can be left null
-	 * @return
-	 */
-	public AcdiVocaFind fetchFindById(int id, String[] columns) {
-		Log.i(TAG, "Fetch find = " + id);
-		
-		Dao<AcdiVocaFind, Integer> avFindDao = null;
-		AcdiVocaFind avFind = null;
-		try {
-			avFindDao = getAcdiVocaFindDao();
-			avFind = avFindDao.queryForId(id);
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-
-		return avFind;
-	}
+//	/**
+//	 * Returns selected columns for a find by id.
+//	 * @param id the Find's id
+//	 * @param columns an array of column names, can be left null
+//	 * @return
+//	 */
+//	public AcdiVocaFind fetchFindById(int id, String[] columns) {
+//		Log.i(TAG, "Fetch find = " + id);
+//		
+//		Dao<AcdiVocaFind, Integer> avFindDao = null;
+//		AcdiVocaFind avFind = null;
+//		try {
+//			avFindDao = getAcdiVocaFindDao();
+//			avFind = avFindDao.queryForId(id);
+//		} catch (SQLException e) {
+//			Log.e(TAG, "SQL Exception " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//
+//		return avFind;
+//	}
 
 }

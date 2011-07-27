@@ -24,6 +24,7 @@ package org.hfoss.posit.android.plugin.acdivoca;
 
 import java.util.Calendar;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindActivity;
 import org.hfoss.posit.android.api.SettingsActivity;
 
@@ -279,10 +280,11 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 	 */
 	private void displayAsUneditable() {
 		Log.i(TAG, "doEditAction");
-		mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
+		mFindId = (int) getIntent().getLongExtra(Find.ORM_ID, 0); 
 		Log.i(TAG,"Find id = " + mFindId);
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
+//		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//		AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
+		AcdiVocaFind avFind = new AcdiVocaFind(this, mFindId);
 		ContentValues values = avFind.toContentValues();
 
 //		ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
@@ -349,11 +351,11 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 
 			findViewById(R.id.unedit).setVisibility(View.VISIBLE);
 
-			setTextView(values, R.id.first_label, R.string.firstname, AcdiVocaDbHelper.FINDS_FIRSTNAME);
-			setTextView(values, R.id.last_label, R.string.lastname, AcdiVocaDbHelper.FINDS_LASTNAME);
-			setTextView(values, R.id.address_label, R.string.address, AcdiVocaDbHelper.FINDS_ADDRESS);
+			setTextView(values, R.id.first_label, R.string.firstname, AcdiVocaFind.FIRSTNAME);
+			setTextView(values, R.id.last_label, R.string.lastname, AcdiVocaFind.LASTNAME);
+			setTextView(values, R.id.address_label, R.string.address, AcdiVocaFind.ADDRESS);
 
-			String date = values.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+			String date = values.getAsString(AcdiVocaFind.DOB);
 			Log.i(TAG,"display DOB = " + date);
 			int yr=0, mon=0, day=0;
 			day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
@@ -364,38 +366,38 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 			Log.i(TAG, dateAdj);
 			
 			((TextView) findViewById(R.id.dob_label)).setText(getString(R.string.dob) +": " + dateAdj);
-//			setTextView(values, R.id.dob_label, R.string.dob, AcdiVocaDbHelper.FINDS_DOB);
+//			setTextView(values, R.id.dob_label, R.string.dob, AcdiVocaFind.DOB);
 
-			setTextView(values, R.id.sex_label, R.string.sex, AcdiVocaDbHelper.FINDS_SEX);
-			setTextView(values, R.id.num_ppl_label, R.string.Number_of_people_in_home, AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
-			setTextView(values, R.id.commune_label, R.string.commune, AcdiVocaDbHelper.FINDS_COMMUNE_SECTION);
+			setTextView(values, R.id.sex_label, R.string.sex, AcdiVocaFind.SEX);
+			setTextView(values, R.id.num_ppl_label, R.string.Number_of_people_in_home, AcdiVocaFind.HOUSEHOLD_SIZE);
+			setTextView(values, R.id.commune_label, R.string.commune, AcdiVocaFind.COMMUNE_SECTION);
 
-			String[] arr = {AcdiVocaDbHelper.FINDS_IS_FARMER,AcdiVocaDbHelper.FINDS_IS_MUSO,AcdiVocaDbHelper.FINDS_IS_RANCHER,
-					AcdiVocaDbHelper.FINDS_IS_STOREOWN,AcdiVocaDbHelper.FINDS_IS_FISHER,
-					AcdiVocaDbHelper.FINDS_IS_ARTISAN,AcdiVocaDbHelper.FINDS_IS_OTHER};
+			String[] arr = {AcdiVocaFind.IS_FARMER,AcdiVocaFind.IS_MUSO,AcdiVocaFind.IS_RANCHER,
+					AcdiVocaFind.IS_STOREOWN,AcdiVocaFind.IS_FISHER,
+					AcdiVocaFind.IS_ARTISAN,AcdiVocaFind.IS_OTHER};
 			setCheckBoxView(values,R.id.agri_category_label, R.string.Beneficiary_Category,arr);
 
-			setTextView(values, R.id.land_label, R.string.amount_of_land, AcdiVocaDbHelper.FINDS_LAND_AMOUNT);
+			setTextView(values, R.id.land_label, R.string.amount_of_land, AcdiVocaFind.LAND_AMOUNT);
 
-			String[] seedArr = {AcdiVocaDbHelper.FINDS_HAVE_VEGE, AcdiVocaDbHelper.FINDS_HAVE_CEREAL,
-					AcdiVocaDbHelper.FINDS_HAVE_TUBER, AcdiVocaDbHelper.FINDS_HAVE_TREE,
-					AcdiVocaDbHelper.FINDS_HAVE_GRAFTING,AcdiVocaDbHelper.FINDS_HAVE_COFFEE};
+			String[] seedArr = {AcdiVocaFind.HAVE_VEGE, AcdiVocaFind.HAVE_CEREAL,
+					AcdiVocaFind.HAVE_TUBER, AcdiVocaFind.HAVE_TREE,
+					AcdiVocaFind.HAVE_GRAFTING,AcdiVocaFind.HAVE_COFFEE};
 
 			setCheckBoxView(values,R.id.seed_label, R.string.seed_group,seedArr);
 
-			String[] toolArr = {AcdiVocaDbHelper.FINDS_HAVE_HOUE, AcdiVocaDbHelper.FINDS_HAVE_PIOCHE,
-					AcdiVocaDbHelper.FINDS_HAVE_BROUETTE, AcdiVocaDbHelper.FINDS_HAVE_MACHETTE,
-					AcdiVocaDbHelper.FINDS_HAVE_SERPETTE,AcdiVocaDbHelper.FINDS_HAVE_PELLE,
-					AcdiVocaDbHelper.FINDS_HAVE_BARREAMINES};
+			String[] toolArr = {AcdiVocaFind.HAVE_HOUE, AcdiVocaFind.HAVE_PIOCHE,
+					AcdiVocaFind.HAVE_BROUETTE, AcdiVocaFind.HAVE_MACHETTE,
+					AcdiVocaFind.HAVE_SERPETTE,AcdiVocaFind.HAVE_PELLE,
+					AcdiVocaFind.HAVE_BARREAMINES};
 			setCheckBoxView(values,R.id.tool_label, R.string.tools,toolArr);
 
-			String[] partArr = {AcdiVocaDbHelper.FINDS_PARTNER_FAO, AcdiVocaDbHelper.FINDS_PARTNER_SAVE,
-					AcdiVocaDbHelper.FINDS_PARTNER_CROSE,AcdiVocaDbHelper.FINDS_PARTNER_PLAN,
-					AcdiVocaDbHelper.FINDS_PARTNER_MARDNR,AcdiVocaDbHelper.FINDS_PARTNER_OTHER};
+			String[] partArr = {AcdiVocaFind.PARTNER_FAO, AcdiVocaFind.PARTNER_SAVE,
+					AcdiVocaFind.PARTNER_CROSE,AcdiVocaFind.PARTNER_PLAN,
+					AcdiVocaFind.PARTNER_MARDNR,AcdiVocaFind.PARTNER_OTHER};
 			setCheckBoxView(values,R.id.partner_label, R.string.partners,partArr);
 
-			setTextView(values, R.id.participating_mchn, R.string.participating_mchn,AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE);
-			setTextView(values, R.id.participating_relative_name, R.string.participating_beneficiary_mchn,AcdiVocaDbHelper.FINDS_RELATIVE_2);
+			setTextView(values, R.id.participating_mchn, R.string.participating_mchn,AcdiVocaFind.Q_PARTICIPATING_BENE);
+			setTextView(values, R.id.participating_relative_name, R.string.participating_beneficiary_mchn,AcdiVocaFind.RELATIVE_2);
 		}
 	}
 
@@ -451,12 +453,12 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		for(int i = 0; i<keys.length; i++){
 			CheckBox cb = (CheckBox)findViewById(ids[i]);
 			if(cb.isChecked()){
-				c.put(keys[i], AcdiVocaDbHelper.FINDS_TRUE);
-//				c.put(keys[i], AcdiVocaDbHelper.FINDS_ONE);
+				c.put(keys[i], AcdiVocaFind.TRUE);
+//				c.put(keys[i], AcdiVocaFind.ONE);
 			}
 			else
-//				c.put(keys[i],AcdiVocaDbHelper.FINDS_ZERO);
-				c.put(keys[i],AcdiVocaDbHelper.FINDS_FALSE);
+//				c.put(keys[i],AcdiVocaFind.ZERO);
+				c.put(keys[i],AcdiVocaFind.FALSE);
 		}
 	}
 
@@ -472,14 +474,14 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		ContentValues result = new ContentValues();
 		String value = "";
 
-		result.put(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
+		result.put(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_AGRI);
 
 		EditText eText = (EditText) findViewById(R.id.lastnameEdit);
 		
 		// Retrieving  NAME, and Locality
-		putTextResult(result,R.id.firstnameEdit,AcdiVocaDbHelper.FINDS_FIRSTNAME);
-		putTextResult(result,R.id.lastnameEdit,AcdiVocaDbHelper.FINDS_LASTNAME);
-		putTextResult(result,R.id.addressEdit,AcdiVocaDbHelper.FINDS_ADDRESS);
+		putTextResult(result,R.id.firstnameEdit,AcdiVocaFind.FIRSTNAME);
+		putTextResult(result,R.id.lastnameEdit,AcdiVocaFind.LASTNAME);
+		putTextResult(result,R.id.addressEdit,AcdiVocaFind.ADDRESS);
 
 		// Retrieving DOB
 
@@ -487,30 +489,30 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		DatePicker picker = ((DatePicker)findViewById(R.id.datepicker));
 		value = picker.getYear() + "/" + picker.getMonth() + "/" + picker.getDayOfMonth();
 		Log.i(TAG, "Date = " + value);
-		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
+		result.put(AcdiVocaFind.DOB, value);
 
 		// Retrieving SEX
-		putRadioResult(result,R.id.femaleRadio,R.id.maleRadio,AcdiVocaDbHelper.FINDS_SEX, AcdiVocaDbHelper.FINDS_FEMALE, AcdiVocaDbHelper.FINDS_MALE);
+		putRadioResult(result,R.id.femaleRadio,R.id.maleRadio,AcdiVocaFind.SEX, AcdiVocaFind.FEMALE, AcdiVocaFind.MALE);
 
 		//Retrieving NUMER OF PEOPLE AT HOME
-		putTextResult(result,R.id.inhomeEdit,AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
+		putTextResult(result,R.id.inhomeEdit,AcdiVocaFind.HOUSEHOLD_SIZE);
 
 		//Retrieving Amount OF LAND 
 		eText = (EditText)findViewById(R.id.amount_of_land);
 		value = eText.getText().toString();
-		result.put(AcdiVocaDbHelper.FINDS_LAND_AMOUNT, value);
+		result.put(AcdiVocaFind.LAND_AMOUNT, value);
 
 		//PARTICIPATING IN MCHN PROGRAM
-		putRadioResult(result,R.id.radio_yes_participating_mchn,R.id.radio_no_participating_mchn,AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE,AcdiVocaDbHelper.FINDS_TRUE,AcdiVocaDbHelper.FINDS_FALSE);
+		putRadioResult(result,R.id.radio_yes_participating_mchn,R.id.radio_no_participating_mchn,AcdiVocaFind.Q_PARTICIPATING_BENE,AcdiVocaFind.TRUE,AcdiVocaFind.FALSE);
 
 		//NAME OF PERSON PARTICIPATING IN MCHN PROGRAM
 		RadioButton beneRB = (RadioButton)findViewById(R.id.radio_yes_participating_mchn);
 		if (beneRB.isChecked()) {
-			putTextResult(result,R.id.give_name,AcdiVocaDbHelper.FINDS_RELATIVE_2);
+			putTextResult(result,R.id.give_name,AcdiVocaFind.RELATIVE_2);
 		}
 		if (!beneRB.isChecked())	{
 			String none="";
-			result.put(AcdiVocaDbHelper.FINDS_RELATIVE_2, none);
+			result.put(AcdiVocaFind.RELATIVE_2, none);
 		}
 
 
@@ -521,45 +523,45 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		int[] beneIds = {R.id.farmerCheckBox,R.id.musoCheckBox,R.id.rancherCheckBox,
 				R.id.storeOwnerCheckBox,R.id.fisherCheckBox,
 				R.id.artisanCheckBox,R.id.otherCheckBox};
-		String[] beneArr = {AcdiVocaDbHelper.FINDS_IS_FARMER,AcdiVocaDbHelper.FINDS_IS_MUSO,
-				AcdiVocaDbHelper.FINDS_IS_RANCHER,AcdiVocaDbHelper.FINDS_IS_STOREOWN,
-				AcdiVocaDbHelper.FINDS_IS_FISHER,AcdiVocaDbHelper.FINDS_IS_ARTISAN,
-				AcdiVocaDbHelper.FINDS_IS_OTHER};
+		String[] beneArr = {AcdiVocaFind.IS_FARMER,AcdiVocaFind.IS_MUSO,
+				AcdiVocaFind.IS_RANCHER,AcdiVocaFind.IS_STOREOWN,
+				AcdiVocaFind.IS_FISHER,AcdiVocaFind.IS_ARTISAN,
+				AcdiVocaFind.IS_OTHER};
 		putCheckBoxResult(result,beneIds,beneArr);
 
 
 		// Add Seed types -- also parallel arrays (see above)
 		int[] seedIds = {R.id.vegeCheckBox,R.id.cerealCheckBox,R.id.tuberCheckBox,
 				R.id.treeCheckBox,R.id.graftingCheckBox,R.id.coffeeCheckBox};
-		String[] seedArr = {AcdiVocaDbHelper.FINDS_HAVE_VEGE,AcdiVocaDbHelper.FINDS_HAVE_CEREAL,
-				AcdiVocaDbHelper.FINDS_HAVE_TUBER,AcdiVocaDbHelper.FINDS_HAVE_TREE,
-				AcdiVocaDbHelper.FINDS_HAVE_GRAFTING,AcdiVocaDbHelper.FINDS_HAVE_COFFEE};
+		String[] seedArr = {AcdiVocaFind.HAVE_VEGE,AcdiVocaFind.HAVE_CEREAL,
+				AcdiVocaFind.HAVE_TUBER,AcdiVocaFind.HAVE_TREE,
+				AcdiVocaFind.HAVE_GRAFTING,AcdiVocaFind.HAVE_COFFEE};
 		putCheckBoxResult(result,seedIds, seedArr);
 
 		// Add Partner GROUPS -- also parallel arrays (see above)
 
 		int[] partnerIds = {R.id.faoCheckBox,R.id.saveCheckBox, R.id.croseCheckBox,
 				R.id.planCheckBox,R.id.mardnrCheckBox,R.id.otherPartnerCheckBox};
-		String[] partnerArr = {AcdiVocaDbHelper.FINDS_PARTNER_FAO,AcdiVocaDbHelper.FINDS_PARTNER_SAVE,
-				AcdiVocaDbHelper.FINDS_PARTNER_CROSE,AcdiVocaDbHelper.FINDS_PARTNER_PLAN,
-				AcdiVocaDbHelper.FINDS_PARTNER_MARDNR,AcdiVocaDbHelper.FINDS_PARTNER_OTHER};
+		String[] partnerArr = {AcdiVocaFind.PARTNER_FAO,AcdiVocaFind.PARTNER_SAVE,
+				AcdiVocaFind.PARTNER_CROSE,AcdiVocaFind.PARTNER_PLAN,
+				AcdiVocaFind.PARTNER_MARDNR,AcdiVocaFind.PARTNER_OTHER};
 		putCheckBoxResult(result, partnerIds, partnerArr);
 
 		// ADD TOOLS -- also parallel arrays (see above)
 		int[] toolIds = {R.id.houeCheckBox,R.id.piocheCheckBox,R.id.brouetteCheckBox,
 				R.id.machetteCheckBox, R.id.serpetteCheckBox, R.id.pelleCheckBox,
 				R.id.barreAMinesCheckBox};
-		String[] toolArr = {AcdiVocaDbHelper.FINDS_HAVE_HOUE,AcdiVocaDbHelper.FINDS_HAVE_PIOCHE,
-				AcdiVocaDbHelper.FINDS_HAVE_BROUETTE,AcdiVocaDbHelper.FINDS_HAVE_MACHETTE,
-				AcdiVocaDbHelper.FINDS_HAVE_SERPETTE,AcdiVocaDbHelper.FINDS_HAVE_PELLE,
-				AcdiVocaDbHelper.FINDS_HAVE_BARREAMINES};
+		String[] toolArr = {AcdiVocaFind.HAVE_HOUE,AcdiVocaFind.HAVE_PIOCHE,
+				AcdiVocaFind.HAVE_BROUETTE,AcdiVocaFind.HAVE_MACHETTE,
+				AcdiVocaFind.HAVE_SERPETTE,AcdiVocaFind.HAVE_PELLE,
+				AcdiVocaFind.HAVE_BARREAMINES};
 		putCheckBoxResult(result, toolIds, toolArr);
 
 		// COummune section
 		Spinner spinner = null;
 		spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
 		String communeSection = (String) spinner.getSelectedItem();
-		result.put(AcdiVocaDbHelper.FINDS_COMMUNE_SECTION, communeSection);		
+		result.put(AcdiVocaFind.COMMUNE_SECTION, communeSection);		
 
 		return result;
 	}
@@ -612,7 +614,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 			CheckBox cb = (CheckBox)findViewById(ids[i]);
 			Boolean val = c.getAsBoolean(keys[i]);
 //			String val = c.getAsString(keys[i]);
-//			if(val != null && val.equals(AcdiVocaDbHelper.FINDS_ONE)){
+//			if(val != null && val.equals(AcdiVocaFind.ONE)){
 			if(val != null && val){
 				cb.setChecked(true);
 			}
@@ -632,17 +634,17 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 
 			initializeListeners();
 			// DISPLAY LAST NAME
-			displayText(contentValues, R.id.lastnameEdit, AcdiVocaDbHelper.FINDS_LASTNAME);
+			displayText(contentValues, R.id.lastnameEdit, AcdiVocaFind.LASTNAME);
 			// DISPLAY FIRSTNAME
-			displayText(contentValues, R.id.firstnameEdit, AcdiVocaDbHelper.FINDS_FIRSTNAME);
+			displayText(contentValues, R.id.firstnameEdit, AcdiVocaFind.FIRSTNAME);
 			// COMMUNE SECTION SPINNER
 			Spinner spinner = (Spinner)findViewById(R.id.commune_sectionSpinner);
-			AcdiVocaMchnFindActivity.setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_COMMUNE_SECTION);
+			AcdiVocaMchnFindActivity.setSpinner(spinner, contentValues, AcdiVocaFind.COMMUNE_SECTION);
 			// ADDRESS
-			displayText(contentValues, R.id.addressEdit, AcdiVocaDbHelper.FINDS_ADDRESS);
+			displayText(contentValues, R.id.addressEdit, AcdiVocaFind.ADDRESS);
 			// DOB
 			DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
-			String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+			String date = contentValues.getAsString(AcdiVocaFind.DOB);
 			Log.i(TAG,"display DOB = " + date);
 			int yr=0, mon=0, day=0;
 			day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
@@ -661,19 +663,19 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 				e.printStackTrace();
 			}
 			// AMOUNT OF LAND
-			displayText(contentValues, R.id.amount_of_land, AcdiVocaDbHelper.FINDS_LAND_AMOUNT);
+			displayText(contentValues, R.id.amount_of_land, AcdiVocaFind.LAND_AMOUNT);
 			// NUMBER OF PEOPLE IN HOME
-			displayText(contentValues, R.id.inhomeEdit, AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
+			displayText(contentValues, R.id.inhomeEdit, AcdiVocaFind.HOUSEHOLD_SIZE);
 			// SEX
-			displayRadio(contentValues,R.id.femaleRadio,AcdiVocaDbHelper.FINDS_SEX,AcdiVocaDbHelper.FINDS_FEMALE);
-			displayRadio(contentValues,R.id.maleRadio,AcdiVocaDbHelper.FINDS_SEX,AcdiVocaDbHelper.FINDS_MALE);
+			displayRadio(contentValues,R.id.femaleRadio,AcdiVocaFind.SEX,AcdiVocaFind.FEMALE);
+			displayRadio(contentValues,R.id.maleRadio,AcdiVocaFind.SEX,AcdiVocaFind.MALE);
 			
 			// PARTICIPATING in MCHN
-			displayRadio(contentValues,R.id.radio_yes_participating_mchn,AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE, true);
-			displayRadio(contentValues,R.id.radio_no_participating_mchn,AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_BENE, false);
+			displayRadio(contentValues,R.id.radio_yes_participating_mchn,AcdiVocaFind.Q_PARTICIPATING_BENE, true);
+			displayRadio(contentValues,R.id.radio_no_participating_mchn,AcdiVocaFind.Q_PARTICIPATING_BENE, false);
 			// Get self or relative's name
 			if(((RadioButton)findViewById(R.id.radio_yes_participating_mchn)).isChecked()==true)
-				displayText(contentValues,R.id.give_name,AcdiVocaDbHelper.FINDS_RELATIVE_2);
+				displayText(contentValues,R.id.give_name,AcdiVocaFind.RELATIVE_2);
 
 			// The following two arrays must be in parallel with beneIds giving
 			// the resource id for the checkboxes and the beneData giving
@@ -681,40 +683,40 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 			int[] beneIds = {R.id.farmerCheckBox,R.id.musoCheckBox,R.id.rancherCheckBox,
 					R.id.storeOwnerCheckBox,R.id.fisherCheckBox,
 					R.id.artisanCheckBox,R.id.otherCheckBox};
-			String[] beneData = {AcdiVocaDbHelper.FINDS_IS_FARMER,AcdiVocaDbHelper.FINDS_IS_MUSO,
-					AcdiVocaDbHelper.FINDS_IS_RANCHER,AcdiVocaDbHelper.FINDS_IS_STOREOWN,
-					AcdiVocaDbHelper.FINDS_IS_FISHER,AcdiVocaDbHelper.FINDS_IS_ARTISAN,
-					AcdiVocaDbHelper.FINDS_IS_OTHER};
+			String[] beneData = {AcdiVocaFind.IS_FARMER,AcdiVocaFind.IS_MUSO,
+					AcdiVocaFind.IS_RANCHER,AcdiVocaFind.IS_STOREOWN,
+					AcdiVocaFind.IS_FISHER,AcdiVocaFind.IS_ARTISAN,
+					AcdiVocaFind.IS_OTHER};
 			displayCheckBox(contentValues,beneIds,beneData);
 
 
 			// Add Seed types -- also parallel arrays (see above)
 			int[] seedIds = {R.id.vegeCheckBox,R.id.cerealCheckBox,R.id.tuberCheckBox,
 					R.id.treeCheckBox,R.id.graftingCheckBox,R.id.coffeeCheckBox};
-			String[] seedData = {AcdiVocaDbHelper.FINDS_HAVE_VEGE,AcdiVocaDbHelper.FINDS_HAVE_CEREAL,
-					AcdiVocaDbHelper.FINDS_HAVE_TUBER,AcdiVocaDbHelper.FINDS_HAVE_TREE,
-					AcdiVocaDbHelper.FINDS_HAVE_GRAFTING,AcdiVocaDbHelper.FINDS_HAVE_COFFEE};
+			String[] seedData = {AcdiVocaFind.HAVE_VEGE,AcdiVocaFind.HAVE_CEREAL,
+					AcdiVocaFind.HAVE_TUBER,AcdiVocaFind.HAVE_TREE,
+					AcdiVocaFind.HAVE_GRAFTING,AcdiVocaFind.HAVE_COFFEE};
 			displayCheckBox(contentValues,seedIds, seedData);
 
 			// Add Partner GROUPS -- also parallel arrays (see above)
 
 			int[] partnerIds = {R.id.faoCheckBox,R.id.saveCheckBox, R.id.croseCheckBox,
 					R.id.planCheckBox,R.id.mardnrCheckBox,R.id.otherCheckBox};
-			String[] partnerArr = {AcdiVocaDbHelper.FINDS_PARTNER_FAO,AcdiVocaDbHelper.FINDS_PARTNER_SAVE,
-					AcdiVocaDbHelper.FINDS_PARTNER_CROSE,AcdiVocaDbHelper.FINDS_PARTNER_PLAN,
-					AcdiVocaDbHelper.FINDS_PARTNER_MARDNR,AcdiVocaDbHelper.FINDS_PARTNER_OTHER};
+			String[] partnerArr = {AcdiVocaFind.PARTNER_FAO,AcdiVocaFind.PARTNER_SAVE,
+					AcdiVocaFind.PARTNER_CROSE,AcdiVocaFind.PARTNER_PLAN,
+					AcdiVocaFind.PARTNER_MARDNR,AcdiVocaFind.PARTNER_OTHER};
 			displayCheckBox(contentValues, partnerIds, partnerArr);
 
 			// ADD TOOLS -- also parallel arrays (see above)
 			int[] toolIds = {R.id.houeCheckBox,R.id.piocheCheckBox,R.id.brouetteCheckBox,
 					R.id.machetteCheckBox, R.id.serpetteCheckBox, R.id.pelleCheckBox,
 					R.id.barreAMinesCheckBox};
-			String[] toolArr = {AcdiVocaDbHelper.FINDS_HAVE_HOUE,AcdiVocaDbHelper.FINDS_HAVE_PIOCHE,
-					AcdiVocaDbHelper.FINDS_HAVE_BROUETTE,AcdiVocaDbHelper.FINDS_HAVE_MACHETTE,
-					AcdiVocaDbHelper.FINDS_HAVE_SERPETTE,AcdiVocaDbHelper.FINDS_HAVE_PELLE,
-					AcdiVocaDbHelper.FINDS_HAVE_BARREAMINES};
+			String[] toolArr = {AcdiVocaFind.HAVE_HOUE,AcdiVocaFind.HAVE_PIOCHE,
+					AcdiVocaFind.HAVE_BROUETTE,AcdiVocaFind.HAVE_MACHETTE,
+					AcdiVocaFind.HAVE_SERPETTE,AcdiVocaFind.HAVE_PELLE,
+					AcdiVocaFind.HAVE_BARREAMINES};
 			displayCheckBox(contentValues, toolIds, toolArr);
-			Log.i(TAG, "display Beneficiary Catagory=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY));
+			Log.i(TAG, "display Beneficiary Catagory=" + contentValues.getAsString(AcdiVocaFind.BENEFICIARY_CATEGORY));
 
 		}
 	}
@@ -772,9 +774,10 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		// The Edit Button
 		int id = v.getId();
 		if (id == R.id.editFind){
-			mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
-	    	AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-	    	AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
+			mFindId = (int) getIntent().getLongExtra(AcdiVocaFind.ORM_ID, 0); 
+//	    	AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//	    	AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
+			AcdiVocaFind avFind = new AcdiVocaFind(this, mFindId);
 	    	ContentValues values = avFind.toContentValues();
 //			ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
 			//			isProbablyEdited = false;
@@ -811,23 +814,25 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 			AcdiVocaFind avFind = null; 
 
 			Log.i(TAG,"View Content: " + data.toString());
-//			data.put(AcdiVocaDbHelper.FINDS_PROJECT_ID, 0);
+//			data.put(AcdiVocaFind.PROJECT_ID, 0);
 			
 			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 			if (mAction.equals(Intent.ACTION_EDIT)) {
 //				result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
-				avFind = db.fetchFindById(mFindId, null);
-				avFind.update(data);
+//				avFind = db.fetchFindById(mFindId, null);
+				avFind = new AcdiVocaFind(this, mFindId);
+				result = avFind.update(this, data);
 				
-				Log.i(TAG,"View Beneficiary: " + avFind.toString());
-				result = db.updateBeneficiary(avFind);
+//				Log.i(TAG,"View Beneficiary: " + avFind.toString());
+//				result = db.updateBeneficiary(avFind);
 				Log.i(TAG, "Update to Db is " + result);
 			} else {
-				data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
-				data.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_NEW);
+				data.put(AcdiVocaFind.DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
+				data.put(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_NEW);
 				avFind = new AcdiVocaFind(data);
-				Log.i(TAG,"View Beneficiary: " + avFind.toString());
-				result = db.insertBeneficiary(avFind);
+				result = avFind.insert(this);
+//				Log.i(TAG,"View Beneficiary: " + avFind.toString());
+//				result = db.insertBeneficiary(avFind);
 //				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
 				Log.i(TAG, "Save to Db is " + result);
 			}

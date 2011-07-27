@@ -24,6 +24,7 @@ package org.hfoss.posit.android.plugin.acdivoca;
 
 import java.util.Calendar;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindActivity;
 
 import android.app.AlertDialog;
@@ -142,8 +143,9 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     		this.startActivityForResult(lookupIntent, ACTION_ID);
     	} else {
 
-    		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-    		AcdiVocaFind avFind = db.fetchBeneficiaryByDossier(mBeneficiaryId, null);
+//    		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//    		AcdiVocaFind avFind = db.fetchBeneficiaryByDossier(mBeneficiaryId, null);
+    		AcdiVocaFind avFind = new AcdiVocaFind(this, mBeneficiaryId);
     		mContentValues = avFind.toContentValues();
     		if (mContentValues == null) {
     			Toast.makeText(this, getString(R.string.toast_no_beneficiary) + mBeneficiaryId, Toast.LENGTH_SHORT).show();
@@ -154,7 +156,7 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     			((Button)findViewById(R.id.update_edit_button)).setOnClickListener(this);
 
     			displayContentUneditable(mContentValues);
-    			mFindId = mContentValues.getAsInteger(AcdiVocaDbHelper.FINDS_ORMLIST_ID);
+    			mFindId = mContentValues.getAsInteger(Find.ORM_ID);
     		}
     	}
     }
@@ -168,19 +170,19 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     	tv.setText(getString(R.string.beneficiary_dossier) + " " + mBeneficiaryId);
     	tv = ((TextView) findViewById(R.id.firstnameLabel));
     	tv.setText(getString(R.string.firstname) + ": " 
-    			+  values.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+    			+  values.getAsString(AcdiVocaFind.FIRSTNAME));
     	tv = ((TextView) findViewById(R.id.lastnameLabel));
     	tv.setText(getString(R.string.lastname) + ": " 
-    			+  values.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));  	
+    			+  values.getAsString(AcdiVocaFind.LASTNAME));  	
     	tv = ((TextView) findViewById(R.id.dobLabel));
     	tv.setText(getString(R.string.dob) + ": " 
-    			+  values.getAsString(AcdiVocaDbHelper.FINDS_DOB));  
+    			+  values.getAsString(AcdiVocaFind.DOB));  
     	tv = ((TextView) findViewById(R.id.sexLabel));
     	tv.setText(getString(R.string.sex) + ": " 
-    			+  values.getAsString(AcdiVocaDbHelper.FINDS_SEX));  	
+    			+  values.getAsString(AcdiVocaFind.SEX));  	
     	tv = ((TextView) findViewById(R.id.categoryLabel));
     	tv.setText(getString(R.string.Beneficiary_Category) + ": " 
-    			+  values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY)); 
+    			+  values.getAsString(AcdiVocaFind.BENEFICIARY_CATEGORY)); 
     	
     	displayUpdateQuestions(values);
     }
@@ -198,26 +200,26 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
 
     	RadioButton aRb = (RadioButton) findViewById(R.id.radio_present_yes);
   
-    	if (contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_Q_PRESENT) != null) {
-    		if (contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_Q_PRESENT))
+    	if (contentValues.getAsBoolean(AcdiVocaFind.Q_PRESENT) != null) {
+    		if (contentValues.getAsBoolean(AcdiVocaFind.Q_PRESENT))
     			aRb.setChecked(true);
     		aRb = (RadioButton) findViewById(R.id.radio_present_no);
-    		if (!contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_Q_PRESENT))
+    		if (!contentValues.getAsBoolean(AcdiVocaFind.Q_PRESENT))
     			aRb.setChecked(true);
     	}
-//    	if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT) != null) {
-//    		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT).equals(AcdiVocaDbHelper.FINDS_TRUE.toString()))
+//    	if (contentValues.getAsString(AcdiVocaFind.Q_PRESENT) != null) {
+//    		if (contentValues.getAsString(AcdiVocaFind.Q_PRESENT).equals(AcdiVocaFind.TRUE.toString()))
 //    			aRb.setChecked(true);
 //    		aRb = (RadioButton) findViewById(R.id.radio_present_no);
-//    		if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_PRESENT).equals(AcdiVocaDbHelper.FINDS_FALSE.toString()))
+//    		if (contentValues.getAsString(AcdiVocaFind.Q_PRESENT).equals(AcdiVocaFind.FALSE.toString()))
 //    			aRb.setChecked(true);
 //    	}
 
     	//  New button - 6/17/11          
 
     	Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
-//    	AcdiVocaFindActivity.setSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_CHANGE_TYPE);
-		String selected = contentValues.getAsString(AcdiVocaDbHelper.FINDS_CHANGE_TYPE); 
+//    	AcdiVocaFindActivity.setSpinner(spinner, contentValues, AcdiVocaFind.CHANGE_TYPE);
+		String selected = contentValues.getAsString(AcdiVocaFind.CHANGE_TYPE); 
 		int k = 0;  //I was unable to use the spinner function here.
 		if(selected != null){
 			while (k < spinner.getCount()-1 && !(k == Integer.parseInt(selected))) {
@@ -234,9 +236,9 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
 
     	aRb = (RadioButton) findViewById(R.id.radio_change_in_status_yes);
     	
-    	if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_Q_CHANGE) != null){
+    	if (contentValues.getAsString(AcdiVocaFind.Q_CHANGE) != null){
 
-    		if (contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_Q_CHANGE)){
+    		if (contentValues.getAsBoolean(AcdiVocaFind.Q_CHANGE)){
     			findViewById(R.id.statuschange).setVisibility(View.VISIBLE);
     			findViewById(R.id.statuschangeSpinner).setVisibility(View.VISIBLE);
     			aRb.setChecked(true);
@@ -244,7 +246,7 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     		
     		aRb = (RadioButton) findViewById(R.id.radio_change_in_status_no);
     		
-    		if (!contentValues.getAsBoolean(AcdiVocaDbHelper.FINDS_Q_CHANGE)){
+    		if (!contentValues.getAsBoolean(AcdiVocaFind.Q_CHANGE)){
     			findViewById(R.id.statuschange).setVisibility(View.GONE);
     			findViewById(R.id.statuschangeSpinner).setVisibility(View.GONE);
     			aRb.setChecked(true);
@@ -331,21 +333,23 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
      */    
     private void doEditAction() {
         Log.i(TAG, "doEditAction");
-        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-        AcdiVocaFind avFind = db.fetchBeneficiaryByDossier(mBeneficiaryId, null);
+//        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//        AcdiVocaFind avFind = db.fetchBeneficiaryByDossier(mBeneficiaryId, null);
+		AcdiVocaFind avFind = new AcdiVocaFind(this, mBeneficiaryId);
+
         ContentValues values = avFind.toContentValues();
         
-        Log.i(TAG, "################  Value of FindsID " + values.getAsString(AcdiVocaDbHelper.FINDS_ID));
-//        mFindId = (int) getIntent().getLongExtra(values.getAsString(AcdiVocaDbHelper.FINDS_ID), 0);   
-        mFindId = values.getAsInteger(AcdiVocaDbHelper.FINDS_ORMLIST_ID);   
-//        mFindId = Integer.parseInt(values.getAsString(AcdiVocaDbHelper.FINDS_ID));
+        Log.i(TAG, "################  Value of FindsID " + values.getAsString(AcdiVocaFind.ORM_ID));
+//        mFindId = (int) getIntent().getLongExtra(values.getAsString(AcdiVocaFind.ID), 0);   
+        mFindId = values.getAsInteger(Find.ORM_ID);   
+//        mFindId = Integer.parseInt(values.getAsString(AcdiVocaFind.ID));
  
         Log.i(TAG, "################  If the id is 0 something is wrong: " + mFindId);
-//        Log.i(TAG,"FINDS_ID = " + AcdiVocaDbHelper.FINDS_ID);
-//        mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); //Getting default from here  
-//        Integer.parseInt(db.AcdiVocaDbHelper.FINDS_ID);
+//        Log.i(TAG,"FINDS_ID = " + AcdiVocaFind.ID);
+//        mFindId = (int) getIntent().getLongExtra(AcdiVocaFind.ID, 0); //Getting default from here  
+//        Integer.parseInt(db.AcdiVocaFind.ID);
 //        mFindId = ben;
-//        mFindId = Integer.parseInt(AcdiVocaDbHelper.FINDS_ID.substring(AcdiVocaDbHelper.FINDS_ID.indexOf(","))); //WARNING: USED TO BE LONG CAST INTO INT ,AcdiVocaDbHelper.FINDS_ID.lastIndexOf(" ")
+//        mFindId = Integer.parseInt(AcdiVocaFind.ID.substring(AcdiVocaFind.ID.indexOf(","))); //WARNING: USED TO BE LONG CAST INTO INT ,AcdiVocaFind.ID.lastIndexOf(" ")
 //        Log.i(TAG,"Find id = " + mFindId);
 //        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 //        Log.i(TAG, db.fetchFindDataById(mFindId, null).toString()); //Need correct ID.
@@ -372,70 +376,70 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
 
 
     		String value = eText.getText().toString();
-    		result.put(AcdiVocaDbHelper.FINDS_LASTNAME, value);
+    		result.put(AcdiVocaFind.LASTNAME, value);
     		Log.i(TAG, "retrieve LAST NAME = " + value);
 
     		eText = (EditText)findViewById(R.id.firstnameEdit);
     		value = eText.getText().toString();
-    		result.put(AcdiVocaDbHelper.FINDS_FIRSTNAME, value);
+    		result.put(AcdiVocaFind.FIRSTNAME, value);
 
 //    		eText = (EditText)findViewById(R.id.monthsInProgramEdit);
 //    		value = eText.getText().toString();
-//    		result.put(AcdiVocaDbHelper.FINDS_MONTHS_REMAINING, value);
+//    		result.put(AcdiVocaFind.MONTHS_REMAINING, value);
 
     		//value = mMonth + "/" + mDay + "/" + mYear;
     		DatePicker picker = ((DatePicker)findViewById(R.id.datepicker));
     		value = picker.getYear() + "/" + picker.getMonth() + "/" + picker.getDayOfMonth();
     		Log.i(TAG, "Date = " + value);
-    		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
+    		result.put(AcdiVocaFind.DOB, value);
 
     		RadioButton sexRB = (RadioButton)findViewById(R.id.femaleRadio);
     		String sex = "";
     		if (sexRB.isChecked()) 
-    			sex = AcdiVocaDbHelper.FINDS_FEMALE;
+    			sex = AcdiVocaFind.FEMALE;
     		sexRB = (RadioButton)findViewById(R.id.maleRadio);
     		if (sexRB.isChecked()) 
-    			sex = AcdiVocaDbHelper.FINDS_MALE;
-    		result.put(AcdiVocaDbHelper.FINDS_SEX, sex);     
+    			sex = AcdiVocaFind.MALE;
+    		result.put(AcdiVocaFind.SEX, sex);     
 
     		// Set the Beneficiary's category (4 exclusive radio buttons)
     		String category = "";
     		RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
     		if (rb.isChecked()) 
-    			category = AcdiVocaDbHelper.FINDS_MALNOURISHED;
+    			category = AcdiVocaFind.MALNOURISHED;
     		rb = (RadioButton)findViewById(R.id.inpreventionRadio);
     		if (rb.isChecked())
-    			category = AcdiVocaDbHelper.FINDS_PREVENTION;
+    			category = AcdiVocaFind.PREVENTION;
 
     		rb = (RadioButton)findViewById(R.id.expectingRadio);
     		if (rb.isChecked()) 
-    			category = AcdiVocaDbHelper.FINDS_EXPECTING;
+    			category = AcdiVocaFind.EXPECTING;
     		rb = (RadioButton)findViewById(R.id.nursingRadio);
     		if (rb.isChecked())
-    			category = AcdiVocaDbHelper.FINDS_NURSING;
-    		result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, category);   
+    			category = AcdiVocaFind.NURSING;
+    		result.put(AcdiVocaFind.BENEFICIARY_CATEGORY, category);   
 
     	}
 
     	RadioButton presentRB = (RadioButton)findViewById(R.id.radio_present_yes);
     	String present = "";
     	if (presentRB.isChecked()) 
-    		present = AcdiVocaDbHelper.FINDS_TRUE;
+    		present = AcdiVocaFind.TRUE;
     	presentRB = (RadioButton)findViewById(R.id.radio_present_no);
     	if (presentRB.isChecked()) 
-    		present = AcdiVocaDbHelper.FINDS_FALSE;
-    	result.put(AcdiVocaDbHelper.FINDS_Q_PRESENT, present); 
+    		present = AcdiVocaFind.FALSE;
+    	result.put(AcdiVocaFind.Q_PRESENT, present); 
 
     	// New button - 6/17/11        
 
     	RadioButton changeRB = (RadioButton)findViewById(R.id.radio_change_in_status_yes);
     	String change = "";
     	if (changeRB.isChecked()) 
-    		change = AcdiVocaDbHelper.FINDS_TRUE;
+    		change = AcdiVocaFind.TRUE;
     	changeRB = (RadioButton)findViewById(R.id.radio_change_in_status_no);
     	if (changeRB.isChecked()) 
-    		change = AcdiVocaDbHelper.FINDS_FALSE;
-    	result.put(AcdiVocaDbHelper.FINDS_Q_CHANGE, change); 
+    		change = AcdiVocaFind.FALSE;
+    	result.put(AcdiVocaFind.Q_CHANGE, change); 
 
 //    	String spinnerStr = "";
     	int spinnerInt;
@@ -451,7 +455,7 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     		//Note: I changed how the spinner gets data. It is now based on position
     		spinnerInt = spinner.getSelectedItemPosition();
 //    		spinnerStr = strArrSpin[spinnerInt];
-    		result.put(AcdiVocaDbHelper.FINDS_CHANGE_TYPE, String.valueOf(spinnerInt));
+    		result.put(AcdiVocaFind.CHANGE_TYPE, String.valueOf(spinnerInt));
     	}
 
     	return result;
@@ -464,14 +468,14 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     private void displayContentInView(ContentValues contentValues) {
         Log.i(TAG, "displayContentInView");
         EditText eText = (EditText) findViewById(R.id.lastnameEdit);
-        eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_LASTNAME));
+        eText.setText(contentValues.getAsString(AcdiVocaFind.LASTNAME));
 
         eText = (EditText) findViewById(R.id.firstnameEdit);
-        eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
-        Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaDbHelper.FINDS_FIRSTNAME));
+        eText.setText(contentValues.getAsString(AcdiVocaFind.FIRSTNAME));
+        Log.i(TAG,"display First Name = " + contentValues.getAsString(AcdiVocaFind.FIRSTNAME));
         
         DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
-        String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+        String date = contentValues.getAsString(AcdiVocaFind.DOB);
         int yr=0, mon=0, day=0;
 		day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
 		yr = Integer.parseInt(date.substring(0,date.indexOf("/")));
@@ -488,39 +492,39 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
         }
 
 //        eText = (EditText)findViewById(R.id.monthsInProgramEdit);
-//        eText.setText(contentValues.getAsString(AcdiVocaDbHelper.FINDS_MONTHS_REMAINING));
+//        eText.setText(contentValues.getAsString(AcdiVocaFind.MONTHS_REMAINING));
 
         
         // Chris - 6/9/11 - Filling the form            
         
         RadioButton sexRB = (RadioButton)findViewById(R.id.maleRadio);
-        Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX));
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_MALE.toString()))
+        Log.i(TAG, "sex=" + contentValues.getAsString(AcdiVocaFind.SEX));
+        if (contentValues.getAsString(AcdiVocaFind.SEX).equals(AcdiVocaFind.MALE.toString()))
             sexRB.setChecked(true);
         sexRB = (RadioButton)findViewById(R.id.femaleRadio);
-        if (contentValues.getAsString(AcdiVocaDbHelper.FINDS_SEX).equals(AcdiVocaDbHelper.FINDS_FEMALE.toString())){
+        if (contentValues.getAsString(AcdiVocaFind.SEX).equals(AcdiVocaFind.FEMALE.toString())){
             sexRB.setChecked(true);
         }
         
         RadioButton motherRB = (RadioButton) findViewById(R.id.expectingRadio);
-        String cat = contentValues.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY);
+        String cat = contentValues.getAsString(AcdiVocaFind.BENEFICIARY_CATEGORY);
         if (cat != null){
-        	if (cat.equals(AcdiVocaDbHelper.FINDS_EXPECTING.toString()))
+        	if (cat.equals(AcdiVocaFind.EXPECTING.toString()))
         		motherRB.setChecked(true);
         	else
         		motherRB.setChecked(false);
         	motherRB = (RadioButton)findViewById(R.id.nursingRadio);
-        	if (cat.equals(AcdiVocaDbHelper.FINDS_NURSING.toString()))
+        	if (cat.equals(AcdiVocaFind.NURSING.toString()))
         		motherRB.setChecked(true);
         	else
         		motherRB.setChecked(false);
         	RadioButton infantRB = (RadioButton) findViewById(R.id.malnourishedRadio);
-        	if (cat.equals(AcdiVocaDbHelper.FINDS_MALNOURISHED.toString()))
+        	if (cat.equals(AcdiVocaFind.MALNOURISHED.toString()))
         		infantRB.setChecked(true);
         	else
         		motherRB.setChecked(false);
         	infantRB = (RadioButton)findViewById(R.id.inpreventionRadio);
-        	if (cat.equals(AcdiVocaDbHelper.FINDS_PREVENTION.toString()))
+        	if (cat.equals(AcdiVocaFind.PREVENTION.toString()))
         		infantRB.setChecked(true);
         	else
         		motherRB.setChecked(false);
@@ -583,11 +587,15 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     		ContentValues data = this.retrieveContentFromView(); 
     		Log.i(TAG, "Retrieved = " + data.toString());
 
-    		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-    		   	
-			AcdiVocaFind avFind = db.fetchBeneficiaryByDossier(mBeneficiaryId, null);
-			avFind.update(data);
-    		result = db.updateBeneficiary(avFind);;
+//    		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//    		   	
+//			AcdiVocaFind avFind = db.fetchBeneficiaryByDossier(mBeneficiaryId, null);
+//			avFind.update(data);
+			
+			AcdiVocaFind avFind = new AcdiVocaFind(this, mBeneficiaryId);
+			result = avFind.update(this);
+			
+//    		result = db.updateBeneficiary(avFind);;
 //    		result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
     		Log.i(TAG, "Update to Db is " + result);
     		if (result){

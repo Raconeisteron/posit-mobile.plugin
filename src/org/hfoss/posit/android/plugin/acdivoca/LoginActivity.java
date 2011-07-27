@@ -74,7 +74,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		if (extras == null) {
 			return;
 		}
-		mBeneficiaryType = extras.getInt(AcdiVocaDbHelper.FINDS_TYPE);
+		mBeneficiaryType = extras.getInt(AcdiVocaFind.TYPE);
 		Log.i(TAG, "onCreate, beneficiary type = " + mBeneficiaryType);
 
 		mUserTypeOrdinal = extras.getInt(AcdiVocaUser.USER_TYPE_STRING);
@@ -122,7 +122,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		Log.i(TAG, "onClick");
 	    Intent returnIntent = new Intent();
-	    returnIntent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, mBeneficiaryType);
+	    returnIntent.putExtra(AcdiVocaFind.TYPE, mBeneficiaryType);
 
 	
 		if (v.getId() == R.id.login_button) {

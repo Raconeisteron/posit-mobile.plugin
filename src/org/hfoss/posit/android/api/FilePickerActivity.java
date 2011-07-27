@@ -20,6 +20,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
+
 // @see http://www.dreamincode.net/forums/topic/190013-creating-simple-file-chooser/
 public class FilePickerActivity extends ListActivity {
 
@@ -46,8 +48,8 @@ public class FilePickerActivity extends ListActivity {
 			if (extras == null) {
 				return;
 			}
-		mBeneficiaryType= extras.getInt(AcdiVocaDbHelper.FINDS_TYPE);
-		if (mBeneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) 
+		mBeneficiaryType= extras.getInt(AcdiVocaFind.TYPE);
+		if (mBeneficiaryType == AcdiVocaFind.TYPE_MCHN) 
 			currentDir = new File(HOME_DIRECTORY_MCHN);
 		else 
 			currentDir = new File(HOME_DIRECTORY_AGRI);
@@ -79,7 +81,7 @@ public class FilePickerActivity extends ListActivity {
         String filename = adapter.getItem(position);
 	    Intent returnIntent = new Intent();
 	    returnIntent.putExtra(Intent.ACTION_CHOOSER, filename);
-	    returnIntent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, mBeneficiaryType);
+	    returnIntent.putExtra(AcdiVocaFind.TYPE, mBeneficiaryType);
 
 		setResult(RESULT_OK, returnIntent);
 		finish();
