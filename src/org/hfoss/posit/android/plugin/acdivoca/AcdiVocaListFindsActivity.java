@@ -124,7 +124,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		mAction = intent.getAction();
 		if (mAction == null) 
 			mAction = "";
-		mStatusFilter = intent.getIntExtra(AcdiVocaDbHelper.FINDS_STATUS, -1);
+		mStatusFilter = intent.getIntExtra(AcdiVocaFind.STATUS, -1);
 		Log.i(TAG,"onCreate(), action = " + mAction);
 
 //		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -197,11 +197,11 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		int beneficiary_type = -1;
 		UserType userType = AppControlManager.getUserType();
 		if (userType.equals(UserType.ADMIN) || userType.equals(UserType.USER))
-			beneficiary_type = AcdiVocaDbHelper.FINDS_TYPE_MCHN;
+			beneficiary_type = AcdiVocaFind.TYPE_MCHN;
 		else if (userType.equals(UserType.AGRON) || userType.equals(UserType.AGRI))
-			beneficiary_type = AcdiVocaDbHelper.FINDS_TYPE_AGRI;
+			beneficiary_type = AcdiVocaFind.TYPE_AGRI;
 		else if (userType.equals(UserType.SUPER))
-			beneficiary_type = AcdiVocaDbHelper.FINDS_TYPE_BOTH;
+			beneficiary_type = AcdiVocaFind.TYPE_BOTH;
 		else 
 			Log.e(TAG, "Error: Unexpected user type in List Finds");
 
@@ -238,8 +238,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		//lookup the id and check the beneficiary type
 		//based on that prepare the intent
 		//Intent intent = new Intent(this, AcdiVocaFindActivity.class);
-        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-        AcdiVocaFind avFind = db.fetchFindById(findId, null);
+//        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//        AcdiVocaFind avFind = db.fetchFindById(findId, null);
+        AcdiVocaFind avFind = new AcdiVocaFind(this, findId);
         if (avFind == null) {
         	Log.e(TAG, "Unable to lookup find with id = " + findId);
         	return;
@@ -253,22 +254,22 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 //        Log.i(TAG, "###############################################");
 //        Log.i(TAG, values.toString());
 //        Intent intent = null;
-// 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_MCHN){
+// 		if(values.getAsInteger(AcdiVocaFind.TYPE) == AcdiVocaFind.TYPE_MCHN){
 // 			intent = new Intent(this, AcdiVocaMchnFindActivity.class);
-// 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_MCHN);
+// 			intent.putExtra(AcdiVocaFind.TYPE,AcdiVocaFind.TYPE_MCHN);
 // 		}
-// 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
+// 		if(values.getAsInteger(AcdiVocaFind.TYPE) == AcdiVocaFind.TYPE_AGRI){
 // 			intent = new Intent(this, AcdiVocaAgriFindActivity.class);
-// 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_AGRI);
+// 			intent.putExtra(AcdiVocaFind.TYPE,AcdiVocaFind.TYPE_AGRI);
 // 		}
-//// 		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
+//// 		if(values.getAsInteger(AcdiVocaFind.TYPE) == AcdiVocaFind.TYPE_BOTH){
 //// 			intent = new Intent(this, AcdiVocaFindActivity.class);
-//// 			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
+//// 			intent.putExtra(AcdiVocaFind.TYPE,AcdiVocaFind.TYPE_BOTH);
 //// 		}
 // 		
 // 		intent.setAction(Intent.ACTION_EDIT);
 //		if (DBG) Log.i(TAG,"id = " + id);
-//		intent.putExtra(AcdiVocaDbHelper.FINDS_ID, (long) findId);
+//		intent.putExtra(AcdiVocaFind.ID, (long) findId);
 //
 //		startActivityForResult(intent, FIND_FROM_LIST);
 	}
@@ -279,29 +280,29 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	 */
 	private void startDisplayFindActivity(AcdiVocaFind avFind) {
         ContentValues values = avFind.toContentValues();
-        int findId = avFind.id;
+        int findId = avFind.getId();
         
 //      ContentValues values = db.fetchFindDataById(id, null);
       
       Log.i(TAG, "###############################################");
       Log.i(TAG, values.toString());
       Intent intent = null;
-		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_MCHN){
+		if(values.getAsInteger(AcdiVocaFind.TYPE) == AcdiVocaFind.TYPE_MCHN){
 			intent = new Intent(this, AcdiVocaMchnFindActivity.class);
-			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_MCHN);
+			intent.putExtra(AcdiVocaFind.TYPE,AcdiVocaFind.TYPE_MCHN);
 		}
-		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_AGRI){
+		if(values.getAsInteger(AcdiVocaFind.TYPE) == AcdiVocaFind.TYPE_AGRI){
 			intent = new Intent(this, AcdiVocaAgriFindActivity.class);
-			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_AGRI);
+			intent.putExtra(AcdiVocaFind.TYPE,AcdiVocaFind.TYPE_AGRI);
 		}
-//		if(values.getAsInteger(AcdiVocaDbHelper.FINDS_TYPE) == AcdiVocaDbHelper.FINDS_TYPE_BOTH){
+//		if(values.getAsInteger(AcdiVocaFind.TYPE) == AcdiVocaFind.TYPE_BOTH){
 //			intent = new Intent(this, AcdiVocaFindActivity.class);
-//			intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE,AcdiVocaDbHelper.FINDS_TYPE_BOTH);
+//			intent.putExtra(AcdiVocaFind.TYPE,AcdiVocaFind.TYPE_BOTH);
 //		}
 		
 		intent.setAction(Intent.ACTION_EDIT);
 		if (DBG) Log.i(TAG,"id = " + findId);
-		intent.putExtra(AcdiVocaDbHelper.FINDS_ID, (long) findId);
+		intent.putExtra(AcdiVocaFind.ORM_ID, (long) findId);
 
 		startActivityForResult(intent, FIND_FROM_LIST);
 
@@ -460,11 +461,11 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser()) {
 					db = new AcdiVocaDbHelper(this);
 					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
-							AcdiVocaDbHelper.FINDS_STATUS_NEW, null));
+							AcdiVocaFind.STATUS_NEW, null));
 				} else {
 					db = new AcdiVocaDbHelper(this);
 					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
-							AcdiVocaDbHelper.FINDS_STATUS_DONTCARE, null));
+							AcdiVocaFind.STATUS_DONTCARE, null));
 				}
 				
 				Log.i(TAG, "Appended pending messages, n = " + mAcdiVocaMsgs.size());
@@ -610,7 +611,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
 				|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
 			db = new AcdiVocaDbHelper(this);
-			acdiVocaMsgs = db.fetchSmsMessages(filter, AcdiVocaDbHelper.FINDS_STATUS_DONTCARE, null); 
+			acdiVocaMsgs = db.fetchSmsMessages(filter, AcdiVocaFind.STATUS_DONTCARE, null); 
 		} else if (filter == SearchFilterActivity.RESULT_BULK_UPDATE) {
 			db = new AcdiVocaDbHelper(this);
 			acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
@@ -674,11 +675,11 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	 */
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		TextView tv = null; // = (TextView) view;
-		long findIden = cursor.getLong(cursor.getColumnIndexOrThrow(AcdiVocaDbHelper.FINDS_ID));
+		long findIden = cursor.getLong(cursor.getColumnIndexOrThrow(AcdiVocaFind.ORM_ID));
 		switch (view.getId()) {
 		case R.id.messageStatusText:
 			tv = (TextView)view;
-			int msgstatus = cursor.getInt(cursor.getColumnIndex(AcdiVocaDbHelper.FINDS_MESSAGE_STATUS));
+			int msgstatus = cursor.getInt(cursor.getColumnIndex(AcdiVocaFind.MESSAGE_STATUS));
 			String text = AcdiVocaDbHelper.MESSAGE_STATUS_STRINGS[msgstatus];
 			if (text.equals("Unsent"))
 				tv.setText(R.string.unsent);
@@ -872,7 +873,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
                 AcdiVocaFind avFind = items.get(position);
                 if (avFind != null) {
                         TextView tv = (TextView) v.findViewById(R.id.row_id);
-                        tv.setText(""+((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).id);
+                        tv.setText(""+((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).getId());
                         tv = (TextView) v.findViewById(R.id.dossierText);
                         tv.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).dossier);
                         tv = (TextView) v.findViewById(R.id.lastname_field);

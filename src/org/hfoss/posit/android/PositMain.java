@@ -37,6 +37,7 @@ import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
 import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 
 import org.hfoss.posit.android.plugin.acdivoca.SearchFilterActivity;
 
@@ -330,7 +331,7 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 			case R.id.addFindButton:
 				intent.setClass(this, FindActivityProvider.getFindActivityClass());
 				intent.setAction(Intent.ACTION_INSERT);
-				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
+				intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_MCHN);
 				startActivity(intent);
 				break;
 			case R.id.listFindButton:
@@ -351,7 +352,7 @@ public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements
 			case R.id.extraButton2:
 				intent.setAction(Intent.ACTION_INSERT);
 				intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
-				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
+				intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_AGRI);
 				startActivity(intent);
 				break;			
 			}

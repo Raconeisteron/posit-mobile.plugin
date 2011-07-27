@@ -184,7 +184,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 			final Intent intent = getIntent();
 			mAction = intent.getAction();
 			if (mAction != null && mAction.equals(Intent.ACTION_EDIT)) {
-				int type = intent.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, 0);
+				int type = intent.getIntExtra(AcdiVocaFind.TYPE, 0);
 				displayAsUneditable();
 				isProbablyEdited = false; // In EDIT mode, initialize after filling in data
 				mSaveButton.setEnabled(false);
@@ -195,10 +195,10 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 				Log.i(TAG,"############################################");
 				Log.i(TAG,"you are now in insert");
 				if(intent.getExtras() != null){
-					int type = intent.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, 0);
+					int type = intent.getIntExtra(AcdiVocaFind.TYPE, 0);
 //					String doing = intent.getStringExtra(AttributeManager.FINDS_RELATIVE_AGRI);
 //					if (doing != null){
-//						if (doing.equals(AcdiVocaDbHelper.FINDS_YES)){
+//						if (doing.equals(AcdiVocaFind.YES)){
 //							findViewById(R.id.agri_rel).setVisibility(View.VISIBLE);
 //							findViewById(R.id.participating_mchn).setVisibility(View.GONE);
 //							findViewById(R.id.radio_participating_mchn).setVisibility(View.GONE);
@@ -206,7 +206,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 //					}
 //					doing = intent.getStringExtra(AttributeManager.FINDS_RELATIVE_BENE);
 //					if (doing != null){
-//						if (doing.equals(AcdiVocaDbHelper.FINDS_YES)){
+//						if (doing.equals(AcdiVocaFind.YES)){
 //							findViewById(R.id.mchn_rel).setVisibility(View.VISIBLE);
 //							findViewById(R.id.participating_agri).setVisibility(View.GONE);
 //							findViewById(R.id.radio_participating_agri).setVisibility(View.GONE);
@@ -268,14 +268,14 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 	 */
 	private void displayAsUneditable() {
 		Log.i(TAG, "doEditAction");
-		mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
+		mFindId = (int) getIntent().getLongExtra(AcdiVocaFind.ORM_ID, 0); 
 		Log.i(TAG,"Find id = " + mFindId);
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
+//		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//		AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
+		AcdiVocaFind avFind = new AcdiVocaFind(this, mFindId);
+//		Log.i(TAG, avFind.toString());
 		ContentValues values = avFind.toContentValues();
-//		ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
 		displayContentUneditable(values);
-		//displayContentInView(values);						
 	}
 
 	/**
@@ -330,14 +330,14 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 
 		// Retrieving TYPE
 		final Intent intent = getIntent();
-		int x = intent.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, 0);
-		if (x == AcdiVocaDbHelper.FINDS_TYPE_MCHN)
-			result.put(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
+		int x = intent.getIntExtra(AcdiVocaFind.TYPE, 0);
+		if (x == AcdiVocaFind.TYPE_MCHN)
+			result.put(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_MCHN);
 		
 		// Retrieving First name, last name, locality
-		putTextResult(result,R.id.firstnameEdit,AcdiVocaDbHelper.FINDS_FIRSTNAME);
-		putTextResult(result,R.id.lastnameEdit,AcdiVocaDbHelper.FINDS_LASTNAME);
-		putTextResult(result,R.id.addressEdit,AcdiVocaDbHelper.FINDS_ADDRESS);
+		putTextResult(result,R.id.firstnameEdit,AcdiVocaFind.FIRSTNAME);
+		putTextResult(result,R.id.lastnameEdit,AcdiVocaFind.LASTNAME);
+		putTextResult(result,R.id.addressEdit,AcdiVocaFind.ADDRESS);
 
 		// Retrieving DOB 
 		
@@ -345,65 +345,65 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 		DatePicker picker = ((DatePicker)findViewById(R.id.datepicker));
 		value = picker.getYear() + "/" + picker.getMonth() + "/" + picker.getDayOfMonth();
 		Log.i(TAG, "Date = " + value);
-		result.put(AcdiVocaDbHelper.FINDS_DOB, value);
+		result.put(AcdiVocaFind.DOB, value);
 		
 		// Retrieving sex, number of people in home
-		putRadioResult(result,R.id.femaleRadio,R.id.maleRadio,AcdiVocaDbHelper.FINDS_SEX, AcdiVocaDbHelper.FINDS_FEMALE, AcdiVocaDbHelper.FINDS_MALE);				
-		putTextResult(result,R.id.inhomeEdit,AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
+		putRadioResult(result,R.id.femaleRadio,R.id.maleRadio,AcdiVocaFind.SEX, AcdiVocaFind.FEMALE, AcdiVocaFind.MALE);				
+		putTextResult(result,R.id.inhomeEdit,AcdiVocaFind.HOUSEHOLD_SIZE);
 		
 		// Retrieving DISTRIBUTION POST from Spinner      
 		String spinnerStr = "";
 		Spinner spinner = (Spinner)findViewById(R.id.distributionSpinner);
 		if (spinner != null) {
 			spinnerStr = (String) spinner.getSelectedItem();
-			result.put(AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST, AttributeManager.getMapping(spinnerStr));
+			result.put(AcdiVocaFind.DISTRIBUTION_POST, AttributeManager.getMapping(spinnerStr));
 		}
 		
 		// Retrieving Alternate Collector (relative_1)
 		RadioButton rb = (RadioButton)findViewById(R.id.malnourishedRadio);
 		RadioButton rb2 = (RadioButton)findViewById(R.id.inpreventionRadio);
 		if (rb.isChecked() || rb2.isChecked()){
-			putTextResult(result,R.id.responsibleIfChildEdit,AcdiVocaDbHelper.FINDS_RELATIVE_1);
+			putTextResult(result,R.id.responsibleIfChildEdit,AcdiVocaFind.RELATIVE_1);
 		}
 		rb = (RadioButton)findViewById(R.id.expectingRadio);
 		rb2 = (RadioButton)findViewById(R.id.nursingRadio);
 		if (rb.isChecked() || rb2.isChecked()){
-			putTextResult(result,R.id.responsibleIfMotherEdit,AcdiVocaDbHelper.FINDS_RELATIVE_1);
+			putTextResult(result,R.id.responsibleIfMotherEdit,AcdiVocaFind.RELATIVE_1);
 		}
 		
 		// Retrieve the Beneficiary's category (4 exclusive radio buttons)
 		String category = "";
 		rb = (RadioButton)findViewById(R.id.malnourishedRadio);
 		if (rb.isChecked()) {
-			category = AcdiVocaDbHelper.FINDS_MALNOURISHED;
+			category = AcdiVocaFind.MALNOURISHED;
 		}
 		rb = (RadioButton)findViewById(R.id.inpreventionRadio);
 		if (rb.isChecked()){
-			category = AcdiVocaDbHelper.FINDS_PREVENTION;
+			category = AcdiVocaFind.PREVENTION;
 		}
 		rb = (RadioButton)findViewById(R.id.expectingRadio);
 		if (rb.isChecked()) {
-			category = AcdiVocaDbHelper.FINDS_EXPECTING;
+			category = AcdiVocaFind.EXPECTING;
 		}
 		rb = (RadioButton)findViewById(R.id.nursingRadio);
 		if (rb.isChecked()){
-			category = AcdiVocaDbHelper.FINDS_NURSING;
+			category = AcdiVocaFind.NURSING;
 		}
-        result.put(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY, category);
+        result.put(AcdiVocaFind.BENEFICIARY_CATEGORY, category);
         	
         // Retrieving Mother leader questions
-        putRadioResult(result,R.id.radio_motherleader_yes,R.id.radio_motherleader_no,AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER,AcdiVocaDbHelper.FINDS_TRUE,AcdiVocaDbHelper.FINDS_FALSE);
-		putRadioResult(result,R.id.radio_visit_yes, R.id.radio_visit_no,AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER,AcdiVocaDbHelper.FINDS_TRUE,AcdiVocaDbHelper.FINDS_FALSE);
-		putRadioResult(result,R.id.radio_yes_participating_agri,R.id.radio_no_participating_agri,AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI,AcdiVocaDbHelper.FINDS_TRUE,AcdiVocaDbHelper.FINDS_FALSE);
+        putRadioResult(result,R.id.radio_motherleader_yes,R.id.radio_motherleader_no,AcdiVocaFind.Q_MOTHER_LEADER,AcdiVocaFind.TRUE,AcdiVocaFind.FALSE);
+		putRadioResult(result,R.id.radio_visit_yes, R.id.radio_visit_no,AcdiVocaFind.Q_VISIT_MOTHER_LEADER,AcdiVocaFind.TRUE,AcdiVocaFind.FALSE);
+		putRadioResult(result,R.id.radio_yes_participating_agri,R.id.radio_no_participating_agri,AcdiVocaFind.Q_PARTICIPATING_AGRI,AcdiVocaFind.TRUE,AcdiVocaFind.FALSE);
 
 		// Retrieving Agri Participant (relative_2)
 		RadioButton acdiAgriRB = (RadioButton)findViewById(R.id.radio_yes_participating_agri);
 		if (acdiAgriRB.isChecked()) {
-			putTextResult(result,R.id.give_name,AcdiVocaDbHelper.FINDS_RELATIVE_2);
+			putTextResult(result,R.id.give_name,AcdiVocaFind.RELATIVE_2);
 		}
 		if (!acdiAgriRB.isChecked())	{
 			String none="";
-			result.put(AcdiVocaDbHelper.FINDS_RELATIVE_2, none);
+			result.put(AcdiVocaFind.RELATIVE_2, none);
 		}
 		
 		return result;
@@ -463,11 +463,11 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 			findViewById(R.id.unedit).setVisibility(View.VISIBLE);
 //			findViewById(R.id.form).setVisibility(View.GONE);
 
-			setTextView(values, R.id.first_label, R.string.firstname, AcdiVocaDbHelper.FINDS_FIRSTNAME);
-			setTextView(values, R.id.last_label, R.string.lastname, AcdiVocaDbHelper.FINDS_LASTNAME);	
-			setTextView(values, R.id.address_label, R.string.address, AcdiVocaDbHelper.FINDS_ADDRESS);
+			setTextView(values, R.id.first_label, R.string.firstname, AcdiVocaFind.FIRSTNAME);
+			setTextView(values, R.id.last_label, R.string.lastname, AcdiVocaFind.LASTNAME);	
+			setTextView(values, R.id.address_label, R.string.address, AcdiVocaFind.ADDRESS);
 			
-			String date = values.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+			String date = values.getAsString(AcdiVocaFind.DOB);
 			Log.i(TAG,"display DOB = " + date);
 			int yr=0, mon=0, day=0;
 			day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
@@ -479,26 +479,26 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 			
 			((TextView) findViewById(R.id.dob_label)).setText(getString(R.string.dob) +": " + dateAdj);
 			
-//			setTextView(values, R.id.dob_label, R.string.dob, AcdiVocaDbHelper.FINDS_DOB);
-			setTextView(values, R.id.sex_label, R.string.sex, AcdiVocaDbHelper.FINDS_SEX);
-			setTextView(values, R.id.num_ppl_label, R.string.Number_of_people_in_home, AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
+//			setTextView(values, R.id.dob_label, R.string.dob, AcdiVocaFind.DOB);
+			setTextView(values, R.id.sex_label, R.string.sex, AcdiVocaFind.SEX);
+			setTextView(values, R.id.num_ppl_label, R.string.Number_of_people_in_home, AcdiVocaFind.HOUSEHOLD_SIZE);
 			
 			// MCHN PART    	
 
-			setDistroTextView(values, R.id.distro_label, R.string.distribution_post, AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
-			setTextView(values, R.id.bene_category_label, R.string.Beneficiary_Category, AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY);
+			setDistroTextView(values, R.id.distro_label, R.string.distribution_post, AcdiVocaFind.DISTRIBUTION_POST);
+			setTextView(values, R.id.bene_category_label, R.string.Beneficiary_Category, AcdiVocaFind.BENEFICIARY_CATEGORY);
 
-			if (values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_MALNOURISHED) || values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_PREVENTION)){
-				setTextView(values, R.id.alternate_collector, R.string.alternate, AcdiVocaDbHelper.FINDS_RELATIVE_1);
+			if (values.getAsString(AcdiVocaFind.BENEFICIARY_CATEGORY).equals(AcdiVocaFind.MALNOURISHED) || values.getAsString(AcdiVocaFind.BENEFICIARY_CATEGORY).equals(AcdiVocaFind.PREVENTION)){
+				setTextView(values, R.id.alternate_collector, R.string.alternate, AcdiVocaFind.RELATIVE_1);
 			}
-//			if (values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_EXPECTING) || values.getAsString(AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY).equals(AcdiVocaDbHelper.FINDS_NURSING)){
-//				setTextView(values, R.id.mother_label, R.string.alternate, AcdiVocaDbHelper.FINDS_RELATIVE_1);
+//			if (values.getAsString(AcdiVocaFind.BENEFICIARY_CATEGORY).equals(AcdiVocaFind.EXPECTING) || values.getAsString(AcdiVocaFind.BENEFICIARY_CATEGORY).equals(AcdiVocaFind.NURSING)){
+//				setTextView(values, R.id.mother_label, R.string.alternate, AcdiVocaFind.RELATIVE_1);
 //			}
 
-			setTextView(values, R.id.mleader_label, R.string.mother_leader, AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER);
-			setTextView(values, R.id.visit_label, R.string.visit_mother_leader, AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER);			
-			setTextView(values, R.id.participating_agri, R.string.participating_agri, AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI);	
-			setTextView(values, R.id.participating_relative_name, R.string.participating_beneficiary_agri, AcdiVocaDbHelper.FINDS_RELATIVE_2);
+			setTextView(values, R.id.mleader_label, R.string.mother_leader, AcdiVocaFind.Q_MOTHER_LEADER);
+			setTextView(values, R.id.visit_label, R.string.visit_mother_leader, AcdiVocaFind.Q_VISIT_MOTHER_LEADER);			
+			setTextView(values, R.id.participating_agri, R.string.participating_agri, AcdiVocaFind.Q_PARTICIPATING_AGRI);	
+			setTextView(values, R.id.participating_relative_name, R.string.participating_beneficiary_agri, AcdiVocaFind.RELATIVE_2);
 
 		}
 	}
@@ -556,14 +556,14 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 			
 			initializeListeners();
 			
-			displayText(contentValues, R.id.lastnameEdit, AcdiVocaDbHelper.FINDS_LASTNAME);
+			displayText(contentValues, R.id.lastnameEdit, AcdiVocaFind.LASTNAME);
 
-			displayText(contentValues, R.id.firstnameEdit, AcdiVocaDbHelper.FINDS_FIRSTNAME);
+			displayText(contentValues, R.id.firstnameEdit, AcdiVocaFind.FIRSTNAME);
 
-			displayText(contentValues, R.id.addressEdit, AcdiVocaDbHelper.FINDS_ADDRESS);
+			displayText(contentValues, R.id.addressEdit, AcdiVocaFind.ADDRESS);
 
 			DatePicker dp = (DatePicker) findViewById(R.id.datepicker);
-			String date = contentValues.getAsString(AcdiVocaDbHelper.FINDS_DOB);
+			String date = contentValues.getAsString(AcdiVocaFind.DOB);
 			Log.i(TAG,"display DOB = " + date);
 			int yr=0, mon=0, day=0;
 			day = Integer.parseInt(date.substring(date.lastIndexOf("/")+1));
@@ -580,20 +580,20 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 				e.printStackTrace();
 			}
 
-			displayRadio(contentValues,R.id.femaleRadio,AcdiVocaDbHelper.FINDS_SEX,AcdiVocaDbHelper.FINDS_FEMALE);
-			displayRadio(contentValues,R.id.maleRadio,AcdiVocaDbHelper.FINDS_SEX,AcdiVocaDbHelper.FINDS_MALE);
+			displayRadio(contentValues,R.id.femaleRadio,AcdiVocaFind.SEX,AcdiVocaFind.FEMALE);
+			displayRadio(contentValues,R.id.maleRadio,AcdiVocaFind.SEX,AcdiVocaFind.MALE);
 
 			// SPINNERS FOR MCHN
 			Spinner spinner = (Spinner)findViewById(R.id.distributionSpinner);
-			setDistroSpinner(spinner, contentValues, AcdiVocaDbHelper.FINDS_DISTRIBUTION_POST);
+			setDistroSpinner(spinner, contentValues, AcdiVocaFind.DISTRIBUTION_POST);
 
 			// NUMBNER OF PEOPLE IN HOME
-			displayText(contentValues, R.id.inhomeEdit, AcdiVocaDbHelper.FINDS_HOUSEHOLD_SIZE);
+			displayText(contentValues, R.id.inhomeEdit, AcdiVocaFind.HOUSEHOLD_SIZE);
 
 			// MCHN CATEGORY
 
-			displayRadio(contentValues,R.id.malnourishedRadio,AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY,AcdiVocaDbHelper.FINDS_MALNOURISHED.toString());
-			displayRadio(contentValues,R.id.inpreventionRadio,AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY,AcdiVocaDbHelper.FINDS_PREVENTION.toString());
+			displayRadio(contentValues,R.id.malnourishedRadio,AcdiVocaFind.BENEFICIARY_CATEGORY,AcdiVocaFind.MALNOURISHED.toString());
+			displayRadio(contentValues,R.id.inpreventionRadio,AcdiVocaFind.BENEFICIARY_CATEGORY,AcdiVocaFind.PREVENTION.toString());
 
 			RadioButton beneRB1 = (RadioButton)findViewById(R.id.malnourishedRadio);
 			RadioButton beneRB2 = (RadioButton)findViewById(R.id.inpreventionRadio);
@@ -601,11 +601,11 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 				findViewById(R.id.relatives).setVisibility(View.VISIBLE);		
 				findViewById(R.id.responsibleIfChildEdit).setVisibility(View.VISIBLE);
 				findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.INVISIBLE);
-				displayText(contentValues, R.id.responsibleIfChildEdit, AcdiVocaDbHelper.FINDS_RELATIVE_1);
+				displayText(contentValues, R.id.responsibleIfChildEdit, AcdiVocaFind.RELATIVE_1);
 			}
 
-			displayRadio(contentValues,R.id.expectingRadio,AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY,AcdiVocaDbHelper.FINDS_EXPECTING.toString());
-			displayRadio(contentValues,R.id.nursingRadio,AcdiVocaDbHelper.FINDS_BENEFICIARY_CATEGORY,AcdiVocaDbHelper.FINDS_NURSING.toString());
+			displayRadio(contentValues,R.id.expectingRadio,AcdiVocaFind.BENEFICIARY_CATEGORY,AcdiVocaFind.EXPECTING.toString());
+			displayRadio(contentValues,R.id.nursingRadio,AcdiVocaFind.BENEFICIARY_CATEGORY,AcdiVocaFind.NURSING.toString());
 
 			RadioButton beneRB3 = (RadioButton)findViewById(R.id.expectingRadio);
 			RadioButton beneRB4 = (RadioButton)findViewById(R.id.nursingRadio);
@@ -613,25 +613,25 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 				findViewById(R.id.relatives).setVisibility(View.VISIBLE);		
 				findViewById(R.id.responsibleIfChildEdit).setVisibility(View.INVISIBLE);
 				findViewById(R.id.responsibleIfMotherEdit).setVisibility(View.VISIBLE);
-				displayText(contentValues, R.id.responsibleIfMotherEdit, AcdiVocaDbHelper.FINDS_RELATIVE_1);
+				displayText(contentValues, R.id.responsibleIfMotherEdit, AcdiVocaFind.RELATIVE_1);
 			}
 
 			// MCHN QUESTIONS
 	
 			// Are you a mother leader?
-			displayRadio(contentValues,R.id.radio_motherleader_yes,AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER,true);
-			displayRadio(contentValues,R.id.radio_motherleader_no,AcdiVocaDbHelper.FINDS_Q_MOTHER_LEADER,false);
+			displayRadio(contentValues,R.id.radio_motherleader_yes,AcdiVocaFind.Q_MOTHER_LEADER,true);
+			displayRadio(contentValues,R.id.radio_motherleader_no,AcdiVocaFind.Q_MOTHER_LEADER,false);
 			
 			// Have you received a visit from a mother leader?
-			displayRadio(contentValues,R.id.radio_visit_yes,AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER,true);
-			displayRadio(contentValues,R.id.radio_visit_no,AcdiVocaDbHelper.FINDS_Q_VISIT_MOTHER_LEADER,false);
+			displayRadio(contentValues,R.id.radio_visit_yes,AcdiVocaFind.Q_VISIT_MOTHER_LEADER,true);
+			displayRadio(contentValues,R.id.radio_visit_no,AcdiVocaFind.Q_VISIT_MOTHER_LEADER,false);
 
 			// Q: Are you participating in Agri program?
-			displayRadio(contentValues,R.id.radio_yes_participating_agri,AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI,true);
-			displayRadio(contentValues,R.id.radio_no_participating_agri,AcdiVocaDbHelper.FINDS_Q_PARTICIPATING_AGRI,false);
+			displayRadio(contentValues,R.id.radio_yes_participating_agri,AcdiVocaFind.Q_PARTICIPATING_AGRI,true);
+			displayRadio(contentValues,R.id.radio_no_participating_agri,AcdiVocaFind.Q_PARTICIPATING_AGRI,false);
 			// Get self or relative's name
 			if(((RadioButton)findViewById(R.id.radio_yes_participating_agri)).isChecked()==true)
-				displayText(contentValues,R.id.give_name,AcdiVocaDbHelper.FINDS_RELATIVE_2);
+				displayText(contentValues,R.id.give_name,AcdiVocaFind.RELATIVE_2);
 			
 			// Disable Save button until form is edited
 			isProbablyEdited = false;
@@ -691,9 +691,10 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 		// The Edit Button
 		int id = v.getId();
 		if (id == R.id.editFind){
-	    	mFindId = (int) getIntent().getLongExtra(AcdiVocaDbHelper.FINDS_ID, 0); 
-	    	AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-	    	AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
+	    	mFindId = (int) getIntent().getLongExtra(AcdiVocaFind.ORM_ID, 0); 
+//	    	AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//	    	AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
+			AcdiVocaFind avFind = new AcdiVocaFind(this, mFindId);
 	    	ContentValues values = avFind.toContentValues();
 //			ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
 			displayContentInView(values);	
@@ -736,19 +737,21 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 			ContentValues data = this.retrieveContentFromView(); 
 			AcdiVocaFind avFind = null; 
 						
-			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 			if (mAction.equals(Intent.ACTION_EDIT)) { // Editing an existing beneficiary
-				avFind = db.fetchFindById(mFindId, null);
-				avFind.update(data);
-				Log.i(TAG,"View Beneficiary: " + avFind.toString());
-				result = db.updateBeneficiary(avFind);
+				avFind = new AcdiVocaFind(this, mFindId);  // Retrieve the find by Id
+//				avFind = db.fetchFindById(mFindId, null);
+				result = avFind.update(this, data);
+//				Log.i(TAG,"View Beneficiary: " + avFind.toString());
+//				result = db.updateBeneficiary(avFind);
 				Log.i(TAG, "Update to Db is " + result);
 			} else { // New beneficiary
-				data.put(AcdiVocaDbHelper.FINDS_STATUS, AcdiVocaDbHelper.FINDS_STATUS_NEW);
-				data.put(AcdiVocaDbHelper.FINDS_DOSSIER, AttributeManager.FINDS_BENE_DOSSIER);
+				data.put(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_NEW);
+				data.put(AcdiVocaFind.DOSSIER, AttributeManager.FINDS_BENE_DOSSIER);
 				avFind = new AcdiVocaFind(data);
-				Log.i(TAG,"View Beneficiary: " + avFind.toString());
-				result = db.insertBeneficiary(avFind);
+				result = avFind.insert(this);
+//				Log.i(TAG,"View Beneficiary: " + avFind.toString());
+//				result = db.insertBeneficiary(avFind);
 				Log.i(TAG, "Save to Db is " + result);
 			}
 			if (result){

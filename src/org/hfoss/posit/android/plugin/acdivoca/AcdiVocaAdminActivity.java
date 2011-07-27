@@ -275,7 +275,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			if (loginActivity != null) {
 				intent.setClass(this, loginActivity);
 				intent.putExtra(AcdiVocaUser.USER_TYPE_STRING, AcdiVocaUser.UserType.ADMIN.ordinal());
-				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_MCHN);
+				intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_MCHN);
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
 				Toast.makeText(this, getString(R.string.toast_admin_login_required), Toast.LENGTH_LONG).show();	
@@ -286,7 +286,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			if (loginActivity != null) {
 				intent.setClass(this, loginActivity);
 				intent.putExtra(AcdiVocaUser.USER_TYPE_STRING, AcdiVocaUser.UserType.AGRON.ordinal());
-				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, AcdiVocaDbHelper.FINDS_TYPE_AGRI);
+				intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_AGRI);
 				this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 				
 				Toast.makeText(this, getString(R.string.toast_admin_login_required), Toast.LENGTH_LONG).show();	
@@ -381,12 +381,12 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 				String filename = data.getStringExtra(Intent.ACTION_CHOOSER);
 
 				// Are we loading beneficiary update data, all of type MCHN or AGRI data
-				beneficiaryType = data.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, -1);
+				beneficiaryType = data.getIntExtra(AcdiVocaFind.TYPE, -1);
 				
 				Log.i(TAG, "File picker file = " + filename + " Beneficiary type = " + beneficiaryType);
 
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-				if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {
+				if (beneficiaryType == AcdiVocaFind.TYPE_MCHN) {
 
 					// Get this phone's Distribution Center
 //					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -400,7 +400,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 
 						}
 					}
-				if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_AGRI) {
+				if (beneficiaryType == AcdiVocaFind.TYPE_AGRI) {
 
 					// Get this phone's commune section
 					mDistrCtr = prefs.getString(this.getResources().getString(R.string.commune_section_key), null);
@@ -425,9 +425,9 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			if (resultCode == RESULT_OK) {
 				
 				Intent intent = new Intent();
-				beneficiaryType = data.getIntExtra(AcdiVocaDbHelper.FINDS_TYPE, -1);
+				beneficiaryType = data.getIntExtra(AcdiVocaFind.TYPE, -1);
 				Log.i(TAG, "Logged in, beneficiary type = " + beneficiaryType);
-				intent.putExtra(AcdiVocaDbHelper.FINDS_TYPE, beneficiaryType);
+				intent.putExtra(AcdiVocaFind.TYPE, beneficiaryType);
 				intent.setClass(this, FilePickerActivity.class);
 				
 				this.startActivityForResult(intent, FilePickerActivity.ACTION_CHOOSER);
@@ -480,7 +480,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		
 		long nImports = 0;
 		Log.i(TAG, "Beneficiary type to be loaded = " + beneficiaryType);
-		if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {
+		if (beneficiaryType == AcdiVocaFind.TYPE_MCHN) {
 			db = new AcdiVocaDbHelper(this);
 			nImports = db.addUpdateBeneficiaries(mBeneficiaries);
 
@@ -493,7 +493,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		Log.i(TAG, "Inserted to database " + nImports + " Beneficiaries");	
 		
 		// Move to the next stage of the distribution event process
-		if(beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {
+		if(beneficiaryType == AcdiVocaFind.TYPE_MCHN) {
 		AppControlManager.moveToNextDistributionStage(this);
 		}
 		return DONE;
@@ -510,7 +510,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		String[] data = null;
 		
 		File file = null;
-		if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN)
+		if (beneficiaryType == AcdiVocaFind.TYPE_MCHN)
 			file = new File(Environment.getExternalStorageDirectory() 
 				+ "/" + DEFAULT_MCHN_DIRECTORY + "/" 
 				+ filename);
@@ -531,7 +531,7 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 			data = new String[MAX_BENEFICIARIES];
 			line = br.readLine();
 			//while (line != null && k < 1000)  {
-			if (beneficiaryType == AcdiVocaDbHelper.FINDS_TYPE_MCHN) {
+			if (beneficiaryType == AcdiVocaFind.TYPE_MCHN) {
 				
 				// Reading from Beneficiare.csv and filter by distrCtr
 				while (line != null)  {
