@@ -22,8 +22,12 @@
  */
 package org.hfoss.posit.android.plugin.acdivoca;
 
+import java.sql.SQLException;
+
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.SettingsActivity;
+
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -50,7 +54,7 @@ import android.widget.Toast;
  * Handles Finds for AcdiVoca Mobile App.
  * 
  */
-public class AcdiVocaLookupActivity extends Activity implements OnClickListener, TextWatcher {
+public class AcdiVocaLookupActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements OnClickListener, TextWatcher {
 	public static final String TAG = "AcdiVocaLookupActivity";
 
 	private Spinner lookupSpinner;
@@ -132,7 +136,7 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 		((Button)findViewById(R.id.cancel_lookup_button)).setOnClickListener(this);
 		lookupSpinner = ((Spinner)findViewById(R.id.lookupSpinner));
 
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String distrKey = this.getResources().getString(R.string.distribution_point_key);
 		String distributionCtr = sharedPrefs.getString(distrKey, "");
@@ -141,7 +145,14 @@ public class AcdiVocaLookupActivity extends Activity implements OnClickListener,
 		
 		((TextView)findViewById(R.id.distribution_label)).setText(AttributeManager.getMapping(distributionCtr));
 
-		dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
+//		dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
+		try {
+			dossiers = AcdiVocaFind.fetchDossiersByDistributionSite(getHelper().getAcdiVocaFindDao(), 
+					distributionCtr);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (dossiers == null) {
 			Toast.makeText(this, getString(R.string.toast_sorry_empty), Toast.LENGTH_SHORT).show();

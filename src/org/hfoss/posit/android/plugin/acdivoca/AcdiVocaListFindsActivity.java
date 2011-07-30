@@ -22,6 +22,7 @@
  */
 package org.hfoss.posit.android.plugin.acdivoca;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,8 @@ import org.hfoss.posit.android.R;
 //import org.hfoss.posit.android.Utils;
 import org.hfoss.posit.android.api.ListFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
+
+import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -192,7 +195,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	 *  causing an error.
 	 */
 	private void fillData(String order_by) {
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 		
 		int beneficiary_type = -1;
 		UserType userType = AppControlManager.getUserType();
@@ -205,13 +208,24 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		else 
 			Log.e(TAG, "Error: Unexpected user type in List Finds");
 
-		List<AcdiVocaFind> list = db.fetchAllBeneficiaries(beneficiary_type);
+//		List<AcdiVocaFind> list = db.fetchAllBeneficiaries(beneficiary_type);
+		List<AcdiVocaFind> list = null;
+		try {
+			list = AcdiVocaFind.fetchAllByType(getHelper().getAcdiVocaFindDao(), beneficiary_type);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		if (list.size() == 0) {
 			setContentView(R.layout.acdivoca_list_beneficiaries);
 			return;			
 		}
 
-		thereAreUnsentFinds = db.queryUnsentBeneficiaries();
+//		thereAreUnsentFinds = db.queryExistUnsentBeneficiaries();
+		try {
+			thereAreUnsentFinds = AcdiVocaFind.queryExistUnsentBeneficiaries(getHelper().getAcdiVocaFindDao());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		BeneficiaryListAdapter<AcdiVocaFind> adapter = 
 			new BeneficiaryListAdapter(this, R.layout.acdivoca_list_row, list);
@@ -240,13 +254,29 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		//Intent intent = new Intent(this, AcdiVocaFindActivity.class);
 //        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 //        AcdiVocaFind avFind = db.fetchFindById(findId, null);
-        AcdiVocaFind avFind = new AcdiVocaFind(this, findId);
-        if (avFind == null) {
-        	Log.e(TAG, "Unable to lookup find with id = " + findId);
-        	return;
-        }
+		
+//        AcdiVocaFind avFind = new AcdiVocaFind(this, findId);
+//        if (avFind == null) {
+//        	Log.e(TAG, "Unable to lookup find with id = " + findId);
+//        	return;
+//        }
+//        startDisplayFindActivity(avFind);
         
-        startDisplayFindActivity(avFind);
+		try {
+			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			AcdiVocaFind avFind = dao.queryForId(findId);
+			if (avFind != null) {
+		        startDisplayFindActivity(avFind);
+			} else {
+	        	Log.e(TAG, "Unable to lookup find with id = " + findId);
+	        	return;			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
+
+        
+        
+        
 //        ContentValues values = avFind.toContentValues();
 //        
 ////        ContentValues values = db.fetchFindDataById(id, null);
@@ -576,9 +606,24 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 			if (resultCode == RESULT_CANCELED) {
 				break;
 			} else {
+				Dao<AcdiVocaFind, Integer> dao = null;
+				try {
+					dao = this.getHelper().getAcdiVocaFindDao();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				String lastNameSearch = data.getStringExtra(SearchFindsActivity.LAST_NAME);
-				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-				AcdiVocaFind avFind = db.fetchBeneficiaryByLastname(lastNameSearch);
+				String firstNameSearch = data.getStringExtra(SearchFindsActivity.FIRST_NAME); // 7/25/11
+//				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+				AcdiVocaFind avFind = null;
+				if(firstNameSearch == null){
+//					avFind = db.fetchBeneficiaryByLastname(lastNameSearch);
+					avFind = AcdiVocaFind.fetchByAttributeValue(dao, AcdiVocaFind.LASTNAME, lastNameSearch);
+				}
+				if (firstNameSearch != null){
+//					avFind = db.fetchBeneficiaryByLastAndFirstname
+					avFind = AcdiVocaFind.fetchByLastAndFirstname (dao, lastNameSearch, firstNameSearch);
+				}
 				if (avFind != null)
 					startDisplayFindActivity(avFind);
 				else {

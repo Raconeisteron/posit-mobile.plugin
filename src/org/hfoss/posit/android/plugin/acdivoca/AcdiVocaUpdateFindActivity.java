@@ -22,10 +22,12 @@
  */
 package org.hfoss.posit.android.plugin.acdivoca;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindActivity;
+
+import com.j256.ormlite.dao.Dao;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -69,8 +71,6 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
 
     private boolean isProbablyEdited = false;   // Set to true if user edits a datum
     private String mAction = "";
-    private int mFindId = 0;
-    private AcdiVocaDbHelper mDbHelper;
     private ContentValues mContentValues;
     private boolean inEditableMode = false;
     
@@ -137,29 +137,44 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
 
     	Log.i(TAG, "Before edited = " + isProbablyEdited);
 
-    	if (mBeneficiaryId == "unknown") {
+    	if (mBeneficiaryId.equals("unknown")) {
     		Intent lookupIntent = new Intent();
     		lookupIntent.setClass(this, AcdiVocaLookupActivity.class);
     		this.startActivityForResult(lookupIntent, ACTION_ID);
     	} else {
-
-//    		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//    		AcdiVocaFind avFind = db.fetchBeneficiaryByDossier(mBeneficiaryId, null);
-    		AcdiVocaFind avFind = new AcdiVocaFind(this, mBeneficiaryId);
-    		mContentValues = avFind.toContentValues();
-    		if (mContentValues == null) {
-    			Toast.makeText(this, getString(R.string.toast_no_beneficiary) + mBeneficiaryId, Toast.LENGTH_SHORT).show();
-    		} else {
-    			Log.i(TAG,mContentValues.toString());
-    			setContentView(R.layout.acdivoca_update_noedit);  // Should be done after locale configuration
-    			((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
-    			((Button)findViewById(R.id.update_edit_button)).setOnClickListener(this);
-
-    			displayContentUneditable(mContentValues);
-    			mFindId = mContentValues.getAsInteger(Find.ORM_ID);
-    		}
+    		displayExistingFind();
     	}
     }
+    
+	/**
+	 * Helper method to display an existing Find after querying it from Db.
+	 */
+	private void displayExistingFind() {
+		Log.i(TAG, "Display existing Find");
+		try {
+			Dao<AcdiVocaFind, Integer>  avFindDao = this.getHelper().getAcdiVocaFindDao();
+//			AcdiVocaFind avFind = AcdiVocaFind.fetchFindByDossier(avFindDao, mBeneficiaryId);
+			AcdiVocaFind avFind = AcdiVocaFind.fetchByAttributeValue(avFindDao, AcdiVocaFind.DOSSIER, mBeneficiaryId);
+   			if (avFind != null) {
+	    		mContentValues = avFind.toContentValues();
+	    		if (mContentValues == null) {
+	    			Toast.makeText(this, getString(R.string.toast_no_beneficiary) + mBeneficiaryId, Toast.LENGTH_SHORT).show();
+	    		} else {
+	    			Log.i(TAG,mContentValues.toString());
+	    			setContentView(R.layout.acdivoca_update_noedit);  // Should be done after locale configuration
+	    			((Button)findViewById(R.id.update_to_db_button)).setOnClickListener(this);
+	    			((Button)findViewById(R.id.update_edit_button)).setOnClickListener(this);
+
+	    			displayContentUneditable(mContentValues);
+	    		}    				
+			} else {
+				Log.e(TAG, "Db Error: Unable to retrieve find, dossier = " + mBeneficiaryId);
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}	
+	}
+
     
     /**
      * Displays the content as uneditable labels -- default view.
@@ -207,18 +222,10 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     		if (!contentValues.getAsBoolean(AcdiVocaFind.Q_PRESENT))
     			aRb.setChecked(true);
     	}
-//    	if (contentValues.getAsString(AcdiVocaFind.Q_PRESENT) != null) {
-//    		if (contentValues.getAsString(AcdiVocaFind.Q_PRESENT).equals(AcdiVocaFind.TRUE.toString()))
-//    			aRb.setChecked(true);
-//    		aRb = (RadioButton) findViewById(R.id.radio_present_no);
-//    		if (contentValues.getAsString(AcdiVocaFind.Q_PRESENT).equals(AcdiVocaFind.FALSE.toString()))
-//    			aRb.setChecked(true);
-//    	}
 
     	//  New button - 6/17/11          
 
     	Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
-//    	AcdiVocaFindActivity.setSpinner(spinner, contentValues, AcdiVocaFind.CHANGE_TYPE);
 		String selected = contentValues.getAsString(AcdiVocaFind.CHANGE_TYPE); 
 		int k = 0;  //I was unable to use the spinner function here.
 		if(selected != null){
@@ -333,33 +340,25 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
      */    
     private void doEditAction() {
         Log.i(TAG, "doEditAction");
-//        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//        AcdiVocaFind avFind = db.fetchBeneficiaryByDossier(mBeneficiaryId, null);
-		AcdiVocaFind avFind = new AcdiVocaFind(this, mBeneficiaryId);
-
-        ContentValues values = avFind.toContentValues();
         
-        Log.i(TAG, "################  Value of FindsID " + values.getAsString(AcdiVocaFind.ORM_ID));
-//        mFindId = (int) getIntent().getLongExtra(values.getAsString(AcdiVocaFind.ID), 0);   
-        mFindId = values.getAsInteger(Find.ORM_ID);   
-//        mFindId = Integer.parseInt(values.getAsString(AcdiVocaFind.ID));
- 
-        Log.i(TAG, "################  If the id is 0 something is wrong: " + mFindId);
-//        Log.i(TAG,"FINDS_ID = " + AcdiVocaFind.ID);
-//        mFindId = (int) getIntent().getLongExtra(AcdiVocaFind.ID, 0); //Getting default from here  
-//        Integer.parseInt(db.AcdiVocaFind.ID);
-//        mFindId = ben;
-//        mFindId = Integer.parseInt(AcdiVocaFind.ID.substring(AcdiVocaFind.ID.indexOf(","))); //WARNING: USED TO BE LONG CAST INTO INT ,AcdiVocaFind.ID.lastIndexOf(" ")
-//        Log.i(TAG,"Find id = " + mFindId);
-//        AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//        Log.i(TAG, db.fetchFindDataById(mFindId, null).toString()); //Need correct ID.
-//        ContentValues values = db.fetchFindDataById(mFindId, null);
-        
-//        ContentValues values = (AcdiVocaFindDataManager.getInstance()).fetchFindDataById(this, mFindId, null);
-        Log.i(TAG,"ContentValues has become");
-        Log.i(TAG,values.toString());
-        displayContentInView(values);                        
-    }
+		try {
+			Dao<AcdiVocaFind, Integer>  avFindDao = this.getHelper().getAcdiVocaFindDao();
+			AcdiVocaFind avFind = AcdiVocaFind.fetchByAttributeValue(avFindDao, AcdiVocaFind.DOSSIER, mBeneficiaryId);
+   			if (avFind != null) {
+   				ContentValues values = avFind.toContentValues();
+	    		if (values == null) {
+	    			Toast.makeText(this, getString(R.string.toast_no_beneficiary) + mBeneficiaryId, Toast.LENGTH_SHORT).show();
+	    		} else {
+	    			Log.i(TAG, values.toString());
+	    	        displayContentInView(values);                        
+	    		}    				
+			} else {
+				Log.e(TAG, "Db Error: Unable to retrieve find, dossier = " + mBeneficiaryId);
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}	
+	}
 
     /**
      * Retrieves values from the View fields and stores them as <key,value> pairs in a ContentValues.
@@ -441,17 +440,10 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     		change = AcdiVocaFind.FALSE;
     	result.put(AcdiVocaFind.Q_CHANGE, change); 
 
-//    	String spinnerStr = "";
     	int spinnerInt;
     	Spinner spinner = (Spinner)findViewById(R.id.statuschangeSpinner);
-//    	String[] strArrSpin = {AttributeManager.FINDS_Q_TRANSFER_LACTATE, AttributeManager.FINDS_Q_TRANSFER_PREVENTION, 
-//    			AttributeManager.FINDS_Q_TRANSFER_LOCATION, AttributeManager.FINDS_Q_TRANSFER_ABORTION, 
-//    			AttributeManager.FINDS_Q_CHANGED_BENEFICIARY_DATA, AttributeManager.FINDS_Q_DECEASED, 
-//    			AttributeManager.FINDS_Q_FRAUD, AttributeManager.FINDS_Q_COMPLETED_PROGRAM, 
-//    			AttributeManager.FINDS_Q_OTHER};
     	if (spinner != null) {
 //    		spinnerStr = (String) spinner.getSelectedItem();
-
     		//Note: I changed how the spinner gets data. It is now based on position
     		spinnerInt = spinner.getSelectedItemPosition();
 //    		spinnerStr = strArrSpin[spinnerInt];
@@ -547,18 +539,18 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
      */
     public void onClick(View v) {
     	Log.i(TAG, "onClick");
+    	
     	// If a RadioButton was clicked, mark the form as edited.
-    	//Toast.makeText(this, "Clicked on a " + v.getClass().toString(), Toast.LENGTH_SHORT).show();
     	try {
     		if (v.getClass().equals(Class.forName("android.widget.RadioButton"))) {
     			//Toast.makeText(this, "RadioClicked", Toast.LENGTH_SHORT).show();
     			isProbablyEdited = true;
     		}
     	} catch (ClassNotFoundException e) {
-    		// TODO Auto-generated catch block
     		e.printStackTrace();
     	}
 
+    	// If the datePicker was clicked, mark the form as edited
     	int id = v.getId();
     	if (id == R.id.datepicker) 
     		isProbablyEdited = true;
@@ -580,34 +572,44 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     		setUpEditableView();
     	}
 
+    	//  Save Button
     	if(v.getId()==R.id.update_to_db_button) {
-    		boolean result = false;
-    		//           Toast.makeText(this, "Saving update to DB", Toast.LENGTH_SHORT).show();
-
+    		
+    		boolean success = false;
     		ContentValues data = this.retrieveContentFromView(); 
-    		Log.i(TAG, "Retrieved = " + data.toString());
-
-//    		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//    		   	
-//			AcdiVocaFind avFind = db.fetchBeneficiaryByDossier(mBeneficiaryId, null);
-//			avFind.update(data);
-			
-			AcdiVocaFind avFind = new AcdiVocaFind(this, mBeneficiaryId);
-			result = avFind.update(this);
-			
-//    		result = db.updateBeneficiary(avFind);;
-//    		result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
-    		Log.i(TAG, "Update to Db is " + result);
-    		if (result){
- //   			Toast.makeText(this, "Find saved to Db " + data.toString(), Toast.LENGTH_SHORT).show();
-    		}
-
-    		else 
-    			Toast.makeText(this, getString(R.string.toast_db_error), Toast.LENGTH_SHORT).show();
-
-    		finish();
+//    		Log.i(TAG, "Retrieved = " + data.toString());
+    		success = updateExistingFind(data);
     	}
     }
+    
+	/**
+	 * Helper method to update an existing Find from data extracted from the form.
+	 * @param data
+	 * @return
+	 */
+	private boolean updateExistingFind(ContentValues data) {
+		boolean success = false;
+
+		try {
+			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			AcdiVocaFind avFind = AcdiVocaFind.fetchByAttributeValue(dao, AcdiVocaFind.DOSSIER, mBeneficiaryId);
+			avFind.updateFromContentValues(data);
+			int rows = dao.update(avFind);
+			success = rows == 1;
+    		if (success){
+        		Log.i(TAG, "Updated to Db for Find with dossier = " + mBeneficiaryId);
+    		}
+    		else {
+        		Log.e(TAG, "Db Error in attempt to update Find with dossier =  " + mBeneficiaryId);
+    			Toast.makeText(this, getString(R.string.toast_db_error), Toast.LENGTH_SHORT).show();
+    		}
+    		finish();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return success;
+	}
 
     
     /**
@@ -682,7 +684,6 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
 		}
 	}
     
-
     public void onDateChanged(DatePicker view, int year, int monthOfYear,
             int dayOfMonth) {
         Log.i(TAG, "onDateChanged");
@@ -702,35 +703,12 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
      */
     public void afterTextChanged(Editable arg0) {
         Log.i(TAG, "afterTextChanged " + arg0.toString());
-        isProbablyEdited = true;
-        // TODO Auto-generated method stub
-        
+        isProbablyEdited = true;        
     }
 
     // Unused
-    public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-            int arg3) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    // Unused
-    public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-        Log.i(TAG, "onTextChanged " + arg0.toString());    
-    }
-
-    
-    
-    public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
-            long arg3) {
-        Log.i(TAG, "onItemSelected = " + arg2);
-        //isProbablyEdited = true;
-    }
-
-    // Unused
-    public void onNothingSelected(AdapterView<?> arg0) {
-        // TODO Auto-generated method stub
-        Log.i(TAG, "onNothingSelected = " + arg0);
-
-    }
+    public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
+    public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
+    public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) { }
+    public void onNothingSelected(AdapterView<?> arg0) { }
 }

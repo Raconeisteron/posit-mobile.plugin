@@ -22,11 +22,14 @@
  */
 package org.hfoss.posit.android.plugin.acdivoca;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindActivity;
 import org.hfoss.posit.android.api.SettingsActivity;
+
+import com.j256.ormlite.dao.Dao;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -35,7 +38,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -69,7 +71,6 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 	private boolean isProbablyEdited = false;   // Set to true if user edits a datum
 	private String mAction = "";
 	private int mFindId = 0;
-	private AcdiVocaDbHelper mDbHelper;
 	private Button mSaveButton;
 	ContentValues mSavedStateValues = null;
 	int mCurrentViewId;
@@ -282,13 +283,19 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		Log.i(TAG, "doEditAction");
 		mFindId = (int) getIntent().getLongExtra(Find.ORM_ID, 0); 
 		Log.i(TAG,"Find id = " + mFindId);
-//		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//		AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
-		AcdiVocaFind avFind = new AcdiVocaFind(this, mFindId);
-		ContentValues values = avFind.toContentValues();
-
-//		ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
-		displayContentUneditable(values);
+		
+		AcdiVocaFind avFind = null; // = new AcdiVocaFind(this, mFindId);
+		try {
+			avFind = this.getHelper().getAcdiVocaFindDao().queryForId(mFindId);
+			if (avFind != null) {
+				ContentValues values = avFind.toContentValues();
+				displayContentUneditable(values);
+			} else {
+				Log.e(TAG, "Error: Unable to retrieve Find, id = " + mFindId);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -721,70 +728,29 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		}
 	}
 
-
-//	/**
-//	 * Helper method to set a set of radio buttons given a "YES" or "No" value.
-//	 * @param value
-//	 * @param radioId
-//	 */
-//	private void setRadiosFromString(String value, int radioYes, int radioNo) {
-//		RadioButton yButton = (RadioButton)findViewById(radioYes);
-//		RadioButton nButton = (RadioButton)findViewById(radioNo);
-//
-//		if (value != null) {
-//			if (value.equals(AttributeManager.FINDS_YES)) {
-//				yButton.setChecked(true);
-//				yButton.setVisibility(View.VISIBLE);
-//			}
-//			else  {
-//				yButton.setChecked(false);	
-//				yButton.setVisibility(View.VISIBLE);
-//			}
-//
-//			if (value.equals(AttributeManager.FINDS_NO)) {
-//				nButton.setChecked(true);
-//				nButton.setVisibility(View.VISIBLE);
-//			}
-//			else {
-//				nButton.setChecked(false);	
-//				nButton.setVisibility(View.VISIBLE);
-//			}
-//		}
-//	}
-
-
 	/**
 	 * Required as part of OnClickListener interface. Handles button clicks.
 	 */
 	public void onClick(View v) {
 		Log.i(TAG, "onClick");
-		// If a RadioButton was clicked, mark the form as edited.
-		//Toast.makeText(this, "Clicked on a " + v.getClass().toString(), Toast.LENGTH_SHORT).show();
+
+		// If a checkbox clicked, mark the form as 'edited'
 		try {
 			if (v.getClass().equals(Class.forName("android.widget.CheckBox"))) {
-				//Toast.makeText(this, "RadioClicked", Toast.LENGTH_SHORT).show();
 				isProbablyEdited = true;
 				mSaveButton.setEnabled(true);
 			}
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		// The Edit Button
+		// If Edit button was clicked, display the Find in an editable form
 		int id = v.getId();
-		if (id == R.id.editFind){
-			mFindId = (int) getIntent().getLongExtra(AcdiVocaFind.ORM_ID, 0); 
-//	    	AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//	    	AcdiVocaFind avFind = db.fetchFindById(mFindId, null);
-			AcdiVocaFind avFind = new AcdiVocaFind(this, mFindId);
-	    	ContentValues values = avFind.toContentValues();
-//			ContentValues values = AcdiVocaFindDataManager.getInstance().fetchFindDataById(this, mFindId, null);
-			//			isProbablyEdited = false;
-			//			mSaveButton.setEnabled(false);	
-			displayContentInView(values);	
+		if (id == R.id.editFind) {
+			displayExistingFind();
 		}
 
+		//  If DatePicker was touched, mark the form as edited
 		if (id == R.id.datepicker) {
 			isProbablyEdited = true;
 			mSaveButton.setEnabled(true);	
@@ -798,54 +764,115 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 			findViewById(R.id.give_name).setVisibility(View.GONE);
 			findViewById(R.id.give_name).setEnabled(false);			}
 
-		//		// If yes, get the name
-		//		
+		// If yes, get the name	
+		
 		if (id == R.id.radio_yes_participating_mchn){
 			Log.i(TAG, "Clicked yes on MCHN or relative");
 			findViewById(R.id.give_name).setVisibility(View.VISIBLE);
 			findViewById(R.id.give_name).setEnabled(true);	
 		}
 
-
-		// TODO:  Edit this case
+		//  Save Find Button: either create a new Find or update an existing Find
+		
 		if(v.getId()==R.id.saveToDbButton) {
-			boolean result = false;
+			boolean success = false;
 			ContentValues data = this.retrieveContentFromView(); 
-			AcdiVocaFind avFind = null; 
+			int rows = 0;
 
-			Log.i(TAG,"View Content: " + data.toString());
-//			data.put(AcdiVocaFind.PROJECT_ID, 0);
-			
-			AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//			Log.i(TAG,"View Content: " + data.toString());
 			if (mAction.equals(Intent.ACTION_EDIT)) {
-//				result = AcdiVocaFindDataManager.getInstance().updateFind(this, mFindId, data);
-//				avFind = db.fetchFindById(mFindId, null);
-				avFind = new AcdiVocaFind(this, mFindId);
-				result = avFind.update(this, data);
-				
-//				Log.i(TAG,"View Beneficiary: " + avFind.toString());
-//				result = db.updateBeneficiary(avFind);
-				Log.i(TAG, "Update to Db is " + result);
+				success = updateExistingFind(data);
 			} else {
 				data.put(AcdiVocaFind.DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
 				data.put(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_NEW);
-				avFind = new AcdiVocaFind(data);
-				result = avFind.insert(this);
-//				Log.i(TAG,"View Beneficiary: " + avFind.toString());
-//				result = db.insertBeneficiary(avFind);
-//				result = AcdiVocaFindDataManager.getInstance().addNewFind(this, data);
-				Log.i(TAG, "Save to Db is " + result);
+				success = createNewFind(data);
 			}
-			if (result){
+			if (success){
 				Toast.makeText(this, getString(R.string.toast_saved_db), Toast.LENGTH_LONG).show();
 			}
 			else 
 				Toast.makeText(this, getString(R.string.toast_error_db), Toast.LENGTH_SHORT).show();
-			//this.startActivity(new Intent().setClass(this,AcdiVocaListFindsActivity.class));
 			finish();
 		}
 	}
+	
+	/**
+	 * Helper method to display an existing Find after querying it from Db.
+	 */
+	private void displayExistingFind() {
+		mFindId = (int) getIntent().getLongExtra(AcdiVocaFind.ORM_ID, 0); 
+		
+		AcdiVocaFind avFind = null; 
+		try {
+			avFind = this.getHelper().getAcdiVocaFindDao().queryForId(mFindId);
+			if (avFind != null) {
+		    	ContentValues values = avFind.toContentValues();
+				displayContentInView(values);	
+			} else {
+				Log.e(TAG, "Error: Unable to retrieve Find, id = " + mFindId);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
+	/** 
+	 * Helper method to create a new Find from the form's data values.
+	 * @param data
+	 * @return
+	 */
+	private boolean createNewFind(ContentValues data) {
+		AcdiVocaFind avFind = null; 
+		boolean success = false;
+		int rows = 0;
+		try {
+			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			avFind = new AcdiVocaFind(data);
+			avFind.updateFromContentValues(data);
+			rows = dao.create(avFind);
+			success = rows == 1;
+			if (success) {
+				Log.i(TAG, "Created Db row for a new Find");
+			} else {
+				Log.e(TAG, "Db Error attempting to create a new Find");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}		
+		return success;	
+	}
+	
+	/**
+	 * Helper method to update an existing Find from data extracted from the form.
+	 * @param data
+	 * @return
+	 */
+	private boolean updateExistingFind(ContentValues data) {
+		AcdiVocaFind avFind = null; 
+		boolean success = false;
+		int rows = 0;
+		try {
+			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			avFind = dao.queryForId(mFindId);
+			if (avFind != null) {
+				avFind.updateFromContentValues(data);
+				rows = dao.update(avFind);
+				success = rows == 1;
+				if (success) {
+					Log.i(TAG, "Updated Db for Find, id = " + mFindId);
+				} else {
+					Log.e(TAG, "Db Error for Find, id = " + mFindId);
+				}
+			} else {
+				Log.e(TAG, "Error: Unable to retrieve Find, id = " + mFindId);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
+		
+		return success;
+	}
 
 	/**
 	 * Intercepts the back key (KEYCODE_BACK) and displays a confirmation dialog
@@ -865,7 +892,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 
 
 	/**
-	 * Creates a dialog to confirm that the user wants to exit POSIT.
+	 * Creates a dialog to confirm that the user wants to exit FindActivity.
 	 */
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -894,6 +921,9 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		}
 	}
 	
+	/**
+	 * Invoked automatically before the Dialog is shown.
+	 */
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		super.onPrepareDialog(id, dialog);
@@ -915,7 +945,9 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		}
 	}
 
-
+	/**
+	 * Invoked when the DatePicker is touched.
+	 */
 	public void onDateChanged(DatePicker view, int year, int monthOfYear,
 			int dayOfMonth) {
 		Log.i(TAG, "onDateChanged");
@@ -925,11 +957,10 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 
 	//  The remaining methods are part of unused interfaces inherited from the super class.
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) { }
-	public void onLocationChanged(Location location) {	}
-	public void onProviderDisabled(String provider) {	}
-	public void onProviderEnabled(String provider) {	}
+	public void onLocationChanged(Location location) { }
+	public void onProviderDisabled(String provider) { }
+	public void onProviderEnabled(String provider) { }
 	public void onStatusChanged(String provider, int status, Bundle extras) {	}
-
 
 	/**
 	 * Sets the 'edited' flag if text has been changed in an EditText
@@ -938,34 +969,11 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		//	Log.i(TAG, "afterTextChanged " + arg0.toString());
 		isProbablyEdited = true;
 		mSaveButton.setEnabled(true);	
-		// TODO Auto-generated method stub
-
 	}
 
 	// Unused
-	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-			int arg3) {
-		// TODO Auto-generated method stub
-
-	}
-
-	// Unused
-	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-		//	Log.i(TAG, "onTextChanged " + arg0.toString());		
-	}
-
-
-
-	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
-		Log.i(TAG, "onItemSelected = " + arg2);
-		//isProbablyEdited = true;
-	}
-
-	// Unused
-	public void onNothingSelected(AdapterView<?> arg0) {
-		// TODO Auto-generated method stub
-		Log.i(TAG, "onNothingSelected = " + arg0);
-
-	}
+	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
+	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {}
+	public void onNothingSelected(AdapterView<?> arg0) {}
 }
