@@ -26,14 +26,14 @@ package org.hfoss.posit.android.plugin.acdivoca;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+//import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
-//import org.hfoss.posit.android.provider.PositDbHelper;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
@@ -45,8 +45,6 @@ import com.j256.ormlite.table.TableUtils;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.util.Log;
 
 /**
@@ -154,7 +152,35 @@ public class AcdiVocaFind extends Find {
 	public static final String Q_CHANGE = AttributeManager.FINDS_Q_CHANGE;   //"ChangeInStatus";   // Added to incorporated changes to beneficiary type
 	public static final String CHANGE_TYPE = AttributeManager.FINDS_CHANGE_TYPE;   //"ChangeType";
 
+
+	// Fields for reading the beneficiaries.txt file. The numbers correspond to
+	// the columns.  These might need to be changed.
+	// Here's the file header line (line 1)
+	//	*No dossier,Nom,Prenom,Section Communale,Localite beneficiaire,Date entree,Date naissance,Sexe,Categorie,Poste distribution,
+	//	068MP-FAT, Balthazar,Denisana,Mapou,Saint Michel,2010/08/03,1947/12/31, F,Enfant Prevention,Dispensaire Mapou,
+	private static final int FIELD_DOSSIER = 0;
+	private static final int FIELD_LASTNAME = 1;
+	private static final int FIELD_FIRSTNAME = 2;
+	private static final int FIELD_SECTION = 3;
+	private static final int FIELD_LOCALITY = 4;
+	private static final int FIELD_ENTRY_DATE = 5;
+	private static final int FIELD_BIRTH_DATE = 6;
+	private static final int FIELD_SEX = 7;
+	private static final int FIELD_CATEGORY = 8;
+	private static final int FIELD_DISTRIBUTION_POST = 9;
+	private static final String COMMA= ",";
 	
+	private static final int AGRI_FIELD_DOSSIER = 0;
+	private static final int AGRI_FIELD_LASTNAME = 1;
+	private static final int AGRI_FIELD_FIRSTNAME = 2;
+	private static final int AGRI_FIELD_COMMUNE = 3;
+	private static final int AGRI_FIELD_SECTION = 4;
+	private static final int AGRI_FIELD_LOCALITY = 5;
+	private static final int AGRI_FIELD_ENTRY_DATE = 6;
+	private static final int AGRI_FIELD_BIRTH_DATE = 7;
+	private static final int AGRI_FIELD_SEX = 8;
+	private static final int AGRI_FIELD_CATEGORY = 9;
+	private static final int AGRI_FIELD_NUM_PERSONS  = 10;
 	
 	public static final String TEST_FIND = "id=0, address=null, category=null,"
 		+ "changeType=null, communeSection=null, sex=null,"
@@ -234,59 +260,6 @@ public class AcdiVocaFind extends Find {
 		// Necessary by ormlite
 	}
 		
-
-	
-	/**
-	 * Intantiates a Find with known Id by retrieving from Db.
-	 * @param context
-	 * @param id
-	 */
-	public AcdiVocaFind (Context context, int id) {
-		Log.i(TAG, "Fetch find = " + id);
-
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
-
-		Dao<AcdiVocaFind, Integer> avFindDao = null;
-		AcdiVocaFind avFind = null;
-		try {
-			avFindDao = db.getAcdiVocaFindDao();
-			avFind = avFindDao.queryForId(id);
-			Log.i(TAG, "Retrieved Find id = " + avFind.getId());
-//			if (avFind != null)
-				copyData(avFind);
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Retrieves a Find object by its dossier number and instatiates from Db data.
-	 * @param dossier the Find's dossier number
-	 * @param columns an array of column names, can be left null
-	 * @return
-	 */
-	public AcdiVocaFind(Context context, String dossier) {
-		Log.i(TAG, "Fetching find, dossier = " + dossier);
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
-
-		Dao<AcdiVocaFind, Integer> avFindDao = null;
-		List<AcdiVocaFind> list = null;
-		AcdiVocaFind avFind = null;
-		try {
-			avFindDao = db.getAcdiVocaFindDao();
-			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =
-				avFindDao.queryBuilder();
-			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
-			where.eq(DOSSIER, dossier);
-			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
-			avFind = avFindDao.queryForFirst(preparedQuery);
-			copyData(avFind);
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
 	
 	/**
 	 * Construct an instance from a collection of ContentValues.
@@ -297,41 +270,517 @@ public class AcdiVocaFind extends Find {
 		copyData(values);
 	}
 	
+//	/**
+//	 * Static method to retrieve a Find from the Db by its Dossier number
+//	 * @param dao
+//	 * @param dossier
+//	 * @return
+//	 */
+//	public static AcdiVocaFind fetchFindByDossier(Dao<AcdiVocaFind, Integer> dao, String dossier) {
+//		AcdiVocaFind avFind = null;
+//		try {
+//			QueryBuilder<AcdiVocaFind, Integer> queryBuilder = dao.queryBuilder();
+//			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+//			where.eq(AcdiVocaFind.DOSSIER, dossier);
+//			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+//			avFind = dao.queryForFirst(preparedQuery);
+//		} catch (SQLException e) {
+//			Log.e(TAG, "SQL Exception " + e.getMessage());
+//			e.printStackTrace();
+//		}  
+//		return avFind;
+//	}
+	
 	
 	/**
-	 * Uses reflection to copy all data fields in both this from avFind to this object.
-	 * Copied data include fields from this class and its superclass.
-	 * @param avFind
+	 * Retrieves a Find object by an attribute and value where both are strings
+	 * @param lastname 
+	 * @return
 	 */
-	private void copyData(AcdiVocaFind avFind) {
-		Field[] superFields = this.getClass().getSuperclass().getDeclaredFields();
-		Field[] fields = this.getClass().getDeclaredFields();
-		Field[] allFields = new Field[superFields.length + fields.length];
-		for (int k = 0; k < superFields.length; k++)
-			allFields[k] = superFields[k];
-		for (int k = superFields.length; k < allFields.length; k++) 
-			allFields[k] = fields[k-superFields.length];
-		
-		for (Field field : allFields) {
-			if (Modifier.isStatic(field.getModifiers()))  // Just report non-static fields
-				continue;
-			try {
-				field.setAccessible(true);
-				field.set(this, field.get(avFind));
-				Log.i(TAG, "reflect field = " + field.getName() + " = " + field.get(this));
+	public static AcdiVocaFind fetchByAttributeValue (Dao<AcdiVocaFind, Integer> dao, String attr, String val) {		
+		Log.i(TAG, "Fetching beneficiary, attr/val: " + attr + "=" + val);
+		AcdiVocaFind avFind = null;
+		try {
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =  dao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.like(attr, val);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			avFind = dao.queryForFirst(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return avFind;
+	}
+	
+	
+	/**
+	 * Retrieves a Find object by partially matching its last and/or first name.
+	 * @param dao
+	 * @param lastname
+	 * @param firstname
+	 * @return
+	 */
+	public static AcdiVocaFind fetchByLastAndFirstname (Dao<AcdiVocaFind, Integer> dao, String lastname, String firstname) {		
+		Log.i(TAG, "Fetching beneficiary, lastname = " + lastname);
+		Log.i(TAG, "Fetching beneficiary, firstname = " + firstname);
+		AcdiVocaFind avFind = null;
+		try {
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder = dao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.like(AcdiVocaFind.LASTNAME, lastname);
+			where.and();
+			where.like(AcdiVocaFind.FIRSTNAME, firstname);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			avFind = dao.queryForFirst(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return avFind;
+	}
 
-			} catch (NullPointerException e) {   // data field may be null
-				e.printStackTrace();
-				
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}		
+	
+	/**
+	 * Inserts an array of beneficiaries input from AcdiVoca data file.
+	 * NOTE:  The Android date picker stores months as 0..11, so
+	 *  we have to adjust dates.
+	 * @param beneficiaries
+	 * @return
+	 */
+	public static int addAgriBeneficiaries(Dao<AcdiVocaFind, Integer> dao, String[] beneficiaries) {
+		Log.i(TAG, "Adding " + beneficiaries.length + " AGRI beneficiaries");
+		String fields[] = null;
+		int count = 0;
+//		int result = 0;
+		
+		AcdiVocaFind avFind = null;
+		for (int k = 0; k < beneficiaries.length; k++) {
+			avFind = new AcdiVocaFind();
+
+			fields = beneficiaries[k].split(AttributeManager.PAIRS_SEPARATOR);
+			avFind.type = TYPE_AGRI;
+			avFind.status = STATUS_UPDATE;
+			avFind.dossier = fields[AGRI_FIELD_DOSSIER];
+			avFind.lastname = fields[AGRI_FIELD_LASTNAME];
+			avFind.firstname =  fields[AGRI_FIELD_FIRSTNAME];
+			avFind.address = fields[AGRI_FIELD_LOCALITY];
+			String adjustedDate = translateDateForDatePicker(fields[AGRI_FIELD_BIRTH_DATE]);
+			avFind.dob = adjustedDate;
+			String adjustedSex = translateSexData(fields[AGRI_FIELD_SEX]);
+			avFind.sex = adjustedSex;
+			String adjustedCategory = translateCategoryData(fields[AGRI_FIELD_CATEGORY]);
+			avFind.beneficiary_category = adjustedCategory;
+			avFind.household_size = fields[AGRI_FIELD_NUM_PERSONS];
+			
+			count += createFind(dao, avFind);
+
+//			try {
+//				result = dao.create(avFind);
+//				if (result == 1) 
+//					++count;
+//				else 
+//					Log.e(TAG, "Error creating beneficiary entry " + avFind.toString());
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+		}
+		Log.i(TAG, "Inserted to Db " + count + " Beneficiaries");
+		return count;
+	}
+	
+	/**
+	 * Inserts an array of beneficiaries input from AcdiVoca data file.
+	 * NOTE:  The Android date picker stores months as 0..11, so
+	 *  we have to adjust dates.
+	 * TODO: Refactor, should this move to Find class?
+	 * @param beneficiaries
+	 * @return
+	 */
+	public static int addUpdateBeneficiaries(Dao<AcdiVocaFind, Integer> dao, String[] beneficiaries) {
+		Log.i(TAG, "Adding " + beneficiaries.length + " MCHN beneficiaries");
+		String fields[] = null;
+		int count = 0;
+//		int result = 0;
+
+		AcdiVocaFind avFind = null;
+		for (int k = 0; k < beneficiaries.length; k++) {
+			avFind = new AcdiVocaFind();
+			
+			fields = beneficiaries[k].split(COMMA);
+			avFind.type =  AcdiVocaFind.TYPE_MCHN;
+			avFind.status = AcdiVocaFind.STATUS_UPDATE;
+			avFind.dossier = fields[FIELD_DOSSIER];
+			avFind.lastname = fields[FIELD_LASTNAME];
+			avFind.firstname =  fields[FIELD_FIRSTNAME];
+			avFind.address = fields[FIELD_LOCALITY];
+			String adjustedDate = translateDateForDatePicker(fields[FIELD_BIRTH_DATE]);
+			avFind.dob = adjustedDate;
+			String adjustedSex = translateSexData(fields[FIELD_SEX]);
+			avFind.sex = adjustedSex;
+			String adjustedCategory = translateCategoryData(fields[FIELD_CATEGORY]);
+			avFind.beneficiary_category = adjustedCategory;
+			avFind.distribution_post = fields[FIELD_DISTRIBUTION_POST];
+
+			count += createFind(dao, avFind);
+//			
+//			try {
+//				result = dao.create(avFind);
+//				if (result == 1) 
+//					++count;
+//				else 
+//					Log.e(TAG, "Error creating beneficiary entry " + avFind.toString());
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+		}
+		Log.i(TAG, "Inserted to Db " + count + " Beneficiaries");
+		return count;
+	}
+
+	private static int createFind(Dao<AcdiVocaFind, Integer> dao, AcdiVocaFind avFind) {
+		int rows = 0;
+		try {
+			rows = dao.create(avFind);
+			if (rows == 1) 
+				Log.i(TAG, "Created beneficiary entry " + avFind.toString());
+			else {
+				Log.e(TAG, "Error creating beneficiary entry " + avFind.toString());
+				rows = 0;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return rows;
+	}
+	
+	
+	/**
+	 * Translates attribute name from Haitian to English.  Beneficiaries.txt 
+	 * 	data file represents categories in Haitian.  
+	 * @param date
+	 * @return
+	 */
+	private static String translateCategoryData(String category) {
+		if (category.equals(AttributeManager.FINDS_MALNOURISHED_HA))
+			return AttributeManager.FINDS_MALNOURISHED;
+		else if (category.equals(AttributeManager.FINDS_EXPECTING_HA))
+			return AttributeManager.FINDS_EXPECTING;
+		else if (category.equals(AttributeManager.FINDS_NURSING_HA))
+			return AttributeManager.FINDS_NURSING;		
+		else if (category.equals(AttributeManager.FINDS_PREVENTION_HA))
+			return AttributeManager.FINDS_PREVENTION;	
+		else return category;
+	}
+	
+	/**
+	 * Beneficiaries.txt represents sex as 'M' or 'F'.  We represent them as
+	 * 'FEMALE' or 'MALE'
+	 * @param date
+	 * @return
+	 */
+	private static String translateSexData(String sex) {
+		if (sex.equals(AttributeManager.ABBREV_FEMALE))
+			return AttributeManager.FINDS_FEMALE;
+		else if (sex.equals(AttributeManager.ABBREV_MALE))
+			return AttributeManager.FINDS_MALE;
+		else return sex;
+	}
+	
+	/**
+	 * The Android date picker stores dates as 0..11. Weird.
+	 * So we have to adjust dates input from data file.
+	 * @param date
+	 * @return
+	 */
+	@SuppressWarnings("finally")
+	private static String translateDateForDatePicker(String date) {
+		try {
+			String[] yrmonday = date.split("/");
+			date =  yrmonday[0] + "/" + (Integer.parseInt(yrmonday[1]) - 1) + "/" + yrmonday[2];
+		} catch (Exception e) {
+			Log.i(TAG, "Bad date = " + date + " " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			return date;
 		}
 	}
+	
+	
+	/**
+	 * Returns a list of all beneficiaries in the Db.
+	 * @return
+	 */
+	public static List<AcdiVocaFind> fetchAll (Dao<AcdiVocaFind, Integer> dao) {
+		Log.i(TAG, "Fetching all beneficiaries");
+		List<AcdiVocaFind> list = null;
+		try {
+			list = dao.queryForAll();
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	
+	/**
+	 * Returns a list of all beneficiaries in the Db by type (MCHN, AGRI)
+	 * @return
+	 */
+	public static List<AcdiVocaFind> fetchAllByType (Dao<AcdiVocaFind, Integer> dao, int beneficiary_type) {
+		Log.i(TAG, "Fetching all beneficiaries of type " + beneficiary_type);
+		
+		if (beneficiary_type == AcdiVocaFind.TYPE_BOTH)
+			return AcdiVocaFind.fetchAll(dao);
+		
+		List<AcdiVocaFind> list = null;
+		
+		try {
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder = dao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(AcdiVocaFind.TYPE, beneficiary_type);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = dao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	
+	/**
+	 * Helper method to retrieve selected beneficiarys from table. Data are
+	 * pulled from the FINDS_TABLE.  This method is called by createMessages()
+	 * retrieve those beneficiaries for whom SMS messages will be sent.  For
+	 * NEW beneficiaries all beneficiaries whose messages are UNSENT are returned.
+	 * For UPDATE beneficiaries only those for whom  there's a change in STATUS
+	 * are returned.
+	 * @param filter
+	 * @param order_by
+	 * @return
+	 */
+	public static List<AcdiVocaFind> fetchAllByMessageStatus(Dao<AcdiVocaFind, Integer> dao,
+				int filter, String order_by, String distrCtr) {
+		Log.i(TAG, "Fetching beneficiaries by filter = " + filter);
+		List<AcdiVocaFind> list = null;
+		try {
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder = dao.queryBuilder();
+			
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			if (filter == SearchFilterActivity.RESULT_SELECT_NEW) {
+				where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_NEW);
+				where.and();
+				where.eq( AcdiVocaFind.MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT);
+			} else if (filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {
+				where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_UPDATE);
+				where.and();
+				where.eq(AcdiVocaFind.MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT);
+				where.and();
+				where.eq(AcdiVocaFind.DISTRIBUTION_POST, distrCtr);
+				where.and();
+				where.eq(AcdiVocaFind.Q_CHANGE, true);
+			}
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = dao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	/** 
+	 * Returns an array of dossier numbers for all beneficiaries.
+	 * @distribSite the Distribution Site of the beneficiaries
+	 * @return an array of N strings or null if no beneficiaries are found
+	 */
+	public static String[] fetchDossiersByDistributionSite(Dao<AcdiVocaFind, Integer> dao, String distribSite) {
+		Log.i(TAG, "Fetching Beneficiary Dossiers for DistributionSite = " + distribSite);
+		
+		List<AcdiVocaFind> list = null;
+		try {
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder = dao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(AcdiVocaFind.DISTRIBUTION_POST, distribSite);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = dao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		if(list == null) {
+			return null;
+		}
+		else if(list.size() == 0){
+			return null;
+		}		
+		String dossiers[] = new String[list.size()];
+		Iterator<AcdiVocaFind> it = list.iterator();
+		int k = 0;
+		while (it.hasNext()) {
+			dossiers[k] = it.next().dossier;
+			Log.i(TAG, "dossier = " + dossiers[k]);
+			++k;
+		}
+		return dossiers;
+	}
+	
+	
+	/**
+	 * Returns true if there is at least one Beneficiary for which a 
+	 * message has not been sent or is pending.
+	 * @return
+	 */
+	public static boolean queryExistUnsentBeneficiaries(Dao<AcdiVocaFind, Integer> dao) {
+		Log.i(TAG,"Querying number of unsent beneficiaries");
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put(AcdiVocaFind.MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT);
+		
+		AcdiVocaFind result = null;
+		try {
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder = dao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.or(where.eq(AcdiVocaFind.MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT),
+					where.eq(AcdiVocaFind.MESSAGE_STATUS, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING));
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			result = dao.queryForFirst(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		return result != null;
+	}
+	
+	
+	/**
+	 * Returns the number of babies in prevention or malnouri processed.
+	 * @return
+	 */
+	public static int queryNDistributionChildrenProcessed(Dao<AcdiVocaFind, Integer> dao, String distrSite) {
+		Log.i(TAG,"Querying number of children processed");
+		
+		List<AcdiVocaFind> list = null;
+		try {
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder = dao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.and(where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_UPDATE),
+					where.eq(AcdiVocaFind.DISTRIBUTION_POST, distrSite),
+					where.eq(AcdiVocaFind.Q_PRESENT, true),
+					where.or(where.eq(AcdiVocaFind.BENEFICIARY_CATEGORY, AcdiVocaFind.PREVENTION),
+							where.eq(AcdiVocaFind.BENEFICIARY_CATEGORY, AcdiVocaFind.MALNOURISHED)));
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = dao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		if (list != null)
+			return list.size();
+		return 0;	
+	}
+
+	/**
+	 * Returns the number of expectant or lactating mothers processed.
+	 * @return
+	 */
+	public static int queryNDistributionWomenProcessed(Dao<AcdiVocaFind, Integer> dao, String distrSite) {
+		Log.i(TAG,"Querying number of women processed");
+		
+		List<AcdiVocaFind> list = null;
+		try {
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder =  dao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.and(where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_UPDATE),
+					where.eq(AcdiVocaFind.DISTRIBUTION_POST, distrSite),
+					where.eq(AcdiVocaFind.Q_PRESENT, true),
+					where.or(where.eq(AcdiVocaFind.BENEFICIARY_CATEGORY, AcdiVocaFind.EXPECTING),
+							where.eq(AcdiVocaFind.BENEFICIARY_CATEGORY, AcdiVocaFind.NURSING)));
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = dao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		if (list != null)
+			return list.size();
+		return 0;
+	}
+	
+	/**
+	 * Returns the number of beneficiaries who were absent at
+	 * the end of the distribution event.
+	 * @return
+	 */
+	public static int queryNDistributionAbsentees(Dao<AcdiVocaFind, Integer> dao, String distrSite) {
+		Log.i(TAG,"Querying number of absentees");
+		
+		List<AcdiVocaFind> list = null;
+		try {
+			QueryBuilder<AcdiVocaFind, Integer> queryBuilder = dao.queryBuilder();
+			Where<AcdiVocaFind, Integer> where = queryBuilder.where();
+			where.eq(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_UPDATE);
+			where.and();
+			where.eq(AcdiVocaFind.DISTRIBUTION_POST, distrSite);
+			where.and();
+			where.eq(AcdiVocaFind.Q_PRESENT, false);
+			PreparedQuery<AcdiVocaFind> preparedQuery = queryBuilder.prepare();
+			list = dao.query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		if (list != null)
+			return list.size();
+		return 0;
+	}
+		
+	/**
+	 * Creates the table for this class.
+	 * @param connectionSource
+	 * @param acdiVocaFindDao
+	 */
+	public static void createTable(ConnectionSource connectionSource, Dao<AcdiVocaFind, Integer> acdiVocaFindDao) {
+		try {
+			TableUtils.createTable(connectionSource, AcdiVocaFind.class);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+		
+//	/**
+//	 * Uses reflection to copy all data fields in both this from avFind to this object.
+//	 * Copied data include fields from this class and its superclass.
+//	 * @param avFind
+//	 */
+//	private void copyData(AcdiVocaFind avFind) {
+//		Field[] superFields = this.getClass().getSuperclass().getDeclaredFields();
+//		Field[] fields = this.getClass().getDeclaredFields();
+//		Field[] allFields = new Field[superFields.length + fields.length];
+//		for (int k = 0; k < superFields.length; k++)
+//			allFields[k] = superFields[k];
+//		for (int k = superFields.length; k < allFields.length; k++) 
+//			allFields[k] = fields[k-superFields.length];
+//		
+//		for (Field field : allFields) {
+//			if (Modifier.isStatic(field.getModifiers()))  // Just report non-static fields
+//				continue;
+//			try {
+//				field.setAccessible(true);
+//				field.set(this, field.get(avFind));
+//				Log.i(TAG, "reflect field = " + field.getName() + " = " + field.get(this));
+//			} catch (NullPointerException e) {   // data field may be null
+//				e.printStackTrace();	
+//			} catch (IllegalArgumentException e) {
+//				e.printStackTrace();
+//			} catch (IllegalAccessException e) {
+//				e.printStackTrace();
+//			}		
+//		}
+//	}
 	
 	/**
 	 * Uses reflection to copy data from a ContentValues object to this object.
@@ -376,10 +825,8 @@ public class AcdiVocaFind extends Find {
 					Log.i(TAG, "Set " + fieldName + "=" + s);
 				}
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ClassCastException e) {
 				Log.e(TAG, "Class cast exception on " + fieldName + "="  + obj);
@@ -388,99 +835,72 @@ public class AcdiVocaFind extends Find {
 		}
 	}
 	
-	
-	public static void init(ConnectionSource connectionSource, Dao<AcdiVocaFind, Integer> acdiVocaFindDao) {
-		try {
-			TableUtils.createTable(connectionSource, AcdiVocaFind.class);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	/**
-	 * Inserts this Find's data into the Db.  Assumes that the Find
-	 * has been instantiated with data. 
-	 * @param avFind
-	 * @return
-	 */
-	public boolean insert(Context context) {
-		Log.i(TAG, "Inserting, id = " + id);
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
-		Dao<AcdiVocaFind, Integer> avFindDao = null;
-		int result = 0;
-		try {
-			avFindDao = db.getAcdiVocaFindDao();
-			result = avFindDao.create(this);
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-		return result == 1;
+	 * Uses reflection to copy data from a ContentValues object to this object.
+	 * NOTE: This does not currently include any data from the superclass.  Should it?
+	 * @param data
+	 */	
+	public void updateFromContentValues (ContentValues data) {
+		copyData(data);
 	}
 	
-	
-	/**
-	 * Updates fields from ContentValues retrieved from View and 
-	 * save the Data to the Db.
-	 * @param values
-	 */
-	public boolean update(Context context, ContentValues values) {
-		copyData(values);
-		return update(context);
-	}
-	
-	
-	/**
-	 * Updates this Find in the Db.  Assumes that the Find
-	 * has been instantiated with data. 
-	 * @param avFind
-	 * @return
-	 */
-	public boolean update(Context context) {
-		Log.i(TAG, "Updating, id " + id);
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
-
-		Dao<AcdiVocaFind, Integer> avFindDao = null;
-		int result = 0;
-		try {
-			avFindDao = db.getAcdiVocaFindDao();
-			result = avFindDao.update(this);
-		} catch (SQLException e) {
-			Log.e(TAG, "SQL Exception " + e.getMessage());
-			e.printStackTrace();
-		}
-		return result == 1;
-	}
+//	/**
+//	 * Updates Beneficiary's message status.
+//	 * @param beneficiary_id
+//	 * @param msg_id
+//	 * @param msgStatus
+//	 * @return
+//	 */
+//	public boolean updateBeneficiaryMessageStatus(int beneficiary_id, int msg_id, int msgStatus) {
+//		Log.i(TAG, "Updating beneficiary = " + beneficiary_id + " for message " + msg_id + " status=" + msgStatus);
+//
+//		Dao<AcdiVocaFind, Integer> avFindDao = null;
+//		AcdiVocaFind avFind = null;
+//		int result = 0;
+//		try {
+//			avFindDao = AcdiVocaDbHelper.getAcdiVocaFindDao();
+//			avFind = avFindDao.queryForId(beneficiary_id);  // Retrieve the beneficiary
+//			if (avFind != null) {
+//				avFind.message_status = msgStatus;
+//				avFind.message_id = msg_id;
+//				result = avFindDao.update(avFind);
+//			} else {
+//				Log.e(TAG, "Unable to retrieve beneficiary id = " + beneficiary_id ); 
+//			}
+//		} catch (SQLException e) {
+//			Log.e(TAG, "SQL Exception " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//		if (result == 1) 
+//			Log.d(TAG, "Updated beneficiary id = " + beneficiary_id + " for message " + msg_id + " status=" + msgStatus); 
+//		return result == 1;
+//	}
 	
 	
-	/**
-	 * Sets this object's attributes from attr/value pair string.
-	 * @param attrValPairs
-	 */
-	public void init(String attrValPairs) {
-		String[] pairs = attrValPairs.split(",");
-		for (String pair:pairs) {
-			String[] attr_val = pair.split("=");
-			String attr = attr_val[0].trim();
-			String val = attr_val[1].trim();
-			Field f = null;
-			try {
-				f = getClass().getDeclaredField(attr);
-				setField(f, val);
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+//	/**
+//	 * Sets this object's attributes from attr/value pair string.
+//	 * @param attrValPairs
+//	 */
+//	public void init(String attrValPairs) {
+//		String[] pairs = attrValPairs.split(",");
+//		for (String pair:pairs) {
+//			String[] attr_val = pair.split("=");
+//			String attr = attr_val[0].trim();
+//			String val = attr_val[1].trim();
+//			Field f = null;
+//			try {
+//				f = getClass().getDeclaredField(attr);
+//				setField(f, val);
+//			} catch (SecurityException e) {
+//				e.printStackTrace();
+//			} catch (NoSuchFieldException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 	
 	private void setField(Field f, String val) {
 		try {
-			Class type = f.getType();
 			Object o = f.get(this);
 			if (o instanceof Boolean) 
 				f.setBoolean(this, (Boolean) o);
@@ -491,13 +911,12 @@ public class AcdiVocaFind extends Find {
 			else 
 				f.set(this, o);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+		
 	
 	/**
 	 * Returns the Beneficiary as a collection of ContentValues.
@@ -525,10 +944,8 @@ public class AcdiVocaFind extends Find {
 //					values.put(fieldName, (String) obj);
 				Log.i(TAG, "Field = " + fieldName + " value = " + obj);
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ClassCastException e) {
 				Log.e(TAG, "Class cast exception on " + fieldName + "="  + obj);
@@ -546,8 +963,8 @@ public class AcdiVocaFind extends Find {
 	public AcdiVocaMessage toSmsMessage() {
 		int msg_id = AcdiVocaDbHelper.UNKNOWN_ID;
 		int beneficiary_id = id;   //AcdiVocaDbHelper.UNKNOWN_ID;
-		int beneficiary_status = -1;
-		int message_status = -1;
+//		int beneficiary_status = -1;
+//		int message_status = -1;
 		String statusStr = "";
 		
 		String rawMessage = toString();
@@ -649,7 +1066,6 @@ public class AcdiVocaFind extends Find {
 		sb.append(COMMA).append(AttributeManager.ABBREV_PARTICIPATING_BENE).append(EQ).append(AttributeManager.mapToShort(participating_bene));
 		sb.append(COMMA).append(AttributeManager.ABBREV_RELATIVE_2).append(EQ).append(relative_2);
 		
-		
 		String isAFields = AttributeManager.encodeBinaryFields(getIsOrHasOrPartnerFields("is"), 
 				AttributeManager.isAFields, 
 				AttributeManager.ABBREV_ISA);
@@ -663,6 +1079,12 @@ public class AcdiVocaFind extends Find {
 	}
 	
 	
+	/**
+	 * For fields that start with "is" or "have" or "partner"  concatenate
+	 * into and return an attr=val pair string.
+	 * @param prefix
+	 * @return
+	 */
 	private String getIsOrHasOrPartnerFields(String prefix) {
 		StringBuilder sb = new StringBuilder();
 		Field[] fields = this.getClass().getDeclaredFields();
@@ -675,10 +1097,8 @@ public class AcdiVocaFind extends Find {
 				try {
 					sb.append(COMMA).append(abbrev).append(EQ).append(field.get(this));
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}		
 			}
@@ -687,76 +1107,75 @@ public class AcdiVocaFind extends Find {
 	}
 
 	
-	/**
-	 * Converts a String representing a beneficiary string into an abbreviated
-	 * string. If the String already contains an SMS message in its 'message_text'
-	 * field, then no need to construct it again.
-	 * @param beneficiary a string of the form attr1-value1,attr2=value2...
-	 * @return a String of the form a1=v1, ..., aN=vN
-	 */
-	private String abbreviateBeneficiaryStringForSms(String beneficiary) {
-        String message = "";
-        String abbrev = "";
-        String[] pair = null;
-        
-        String[] attr_val_pairs = beneficiary.split(",");
-        String attr = "";
-        String val = "";
-        for (int k = 0; k < attr_val_pairs.length; k++) {
-            //Log.i(TAG, "Pair-" + k + " = " + attr_val_pairs[k]);
-            pair = attr_val_pairs[k].split("=");
-            if (pair.length == 0) {
-                attr = "";
-                val = "";
-            } else if (pair.length == 1) {
-                attr = pair[0].trim();
-                val = "";
-            } else {
-                attr = pair[0].trim();
-                val = pair[1].trim();
-            }
-
-            if (!attr.equals(ORM_ID) 
-                    && !attr.equals(PROJECT_ID) 
-                    //&& !attr.equals(FINDS_MESSAGE_TEXT) 
-                    && !val.equals("null")
-                    ) {
-                if(attr.equals(DOB))
-                    abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, AcdiVocaDbHelper.adjustDateForSmsReader(val));
-                if(attr.equals(DISTRIBUTION_POST)) //new code to manage codes already in DB
-                    abbrev = AttributeManager.getMapping(DISTRIBUTION_POST) + AttributeManager.ATTR_VAL_SEPARATOR + val;
-                else
-                    abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
-                //abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
-                if (!abbrev.equals(""))
-                    message += abbrev + ",";
-            }
-        }
-        return message;
-    }
+//	/**
+//	 * Converts a String representing a beneficiary string into an abbreviated
+//	 * string. If the String already contains an SMS message in its 'message_text'
+//	 * field, then no need to construct it again.
+//	 * @param beneficiary a string of the form attr1-value1,attr2=value2...
+//	 * @return a String of the form a1=v1, ..., aN=vN
+//	 */
+//	private String abbreviateBeneficiaryStringForSms(String beneficiary) {
+//        String message = "";
+//        String abbrev = "";
+//        String[] pair = null;
+//        
+//        String[] attr_val_pairs = beneficiary.split(",");
+//        String attr = "";
+//        String val = "";
+//        for (int k = 0; k < attr_val_pairs.length; k++) {
+//            //Log.i(TAG, "Pair-" + k + " = " + attr_val_pairs[k]);
+//            pair = attr_val_pairs[k].split("=");
+//            if (pair.length == 0) {
+//                attr = "";
+//                val = "";
+//            } else if (pair.length == 1) {
+//                attr = pair[0].trim();
+//                val = "";
+//            } else {
+//                attr = pair[0].trim();
+//                val = pair[1].trim();
+//            }
+//
+//            if (!attr.equals(ORM_ID) 
+//                    && !attr.equals(PROJECT_ID) 
+//                    //&& !attr.equals(FINDS_MESSAGE_TEXT) 
+//                    && !val.equals("null")
+//                    ) {
+//                if(attr.equals(DOB))
+//                    abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, AcdiVocaDbHelper.adjustDateForSmsReader(val));
+//                if(attr.equals(DISTRIBUTION_POST)) //new code to manage codes already in DB
+//                    abbrev = AttributeManager.getMapping(DISTRIBUTION_POST) + AttributeManager.ATTR_VAL_SEPARATOR + val;
+//                else
+//                    abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
+//                //abbrev = AttributeManager.convertAttrValPairToAbbrev(attr, val);
+//                if (!abbrev.equals(""))
+//                    message += abbrev + ",";
+//            }
+//        }
+//        return message;
+//    }
 	
 	
 	/**
 	 * Updates Beneficiary table for processed message.
-	 * @param beneficiary_id
-	 * @param msg_id
-	 * @param msgStatus
+	 * @param beneficiary_id, the row_id
+	 * @param msg_id, the message's row_id
+	 * @param msgStatus, one of PENDING, SENT, etc.
 	 * @return
 	 */
-	public static boolean updateBeneficiaryMessageStatus(Context context, int beneficiary_id, int msg_id, int msgStatus) {
+	public static boolean updateMessageStatus(Dao<AcdiVocaFind, Integer> dao, int beneficiary_id, int msg_id, int msgStatus) {
 		Log.i(TAG, "Updating beneficiary = " + beneficiary_id + " for message " + msg_id + " status=" + msgStatus);
 
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
-		Dao<AcdiVocaFind, Integer> avFindDao = null;
 		AcdiVocaFind avFind = null;
-		int result = 0;
+		int rows = 0;
+		boolean result = false;
 		try {
-			avFindDao = db.getAcdiVocaFindDao();
-			avFind = avFindDao.queryForId(beneficiary_id);  // Retrieve the beneficiary
+			avFind = dao.queryForId(beneficiary_id);  // Retrieve the beneficiary
 			if (avFind != null) {
 				avFind.message_status = msgStatus;
 				avFind.message_id = msg_id;
-				result = avFindDao.update(avFind);
+				rows = dao.update(avFind);
+				result = rows == 1;
 			} else {
 				Log.e(TAG, "Unable to retrieve beneficiary id = " + beneficiary_id ); 
 			}
@@ -764,9 +1183,48 @@ public class AcdiVocaFind extends Find {
 			Log.e(TAG, "SQL Exception " + e.getMessage());
 			e.printStackTrace();
 		}
-		if (result == 1) 
+		if (result) 
 			Log.d(TAG, "Updated beneficiary id = " + beneficiary_id + " for message " + msg_id + " status=" + msgStatus); 
-		return result == 1;
+		else
+			Log.e(TAG, "Unable to update beneficiary id = " + beneficiary_id + " to message status = " + msgStatus);
+		return result;
+	}
+	
+	
+	/**
+	 * Updates beneficiary table for bulk dossier numbers -- i.e. n1&n2&...&nM.
+	 * Bulk messages are sent to record absentees at AcdiVoca distribution events.
+	 * @param acdiVocaMsg
+	 * @return
+	 */
+	public static int updateMessageStatusForBulkMsg(Dao<AcdiVocaFind, Integer> dao, AcdiVocaMessage acdiVocaMsg, int msgId, int msgStatus) {
+		String msg = acdiVocaMsg.getSmsMessage();
+		Log.i(TAG, "Updating for bulk message = " + msg);
+		boolean result = false;
+		int rows = 0;
+		String dossiers[] = msg.split(AttributeManager.LIST_SEPARATOR);
+	
+		for (int k = 0; k < dossiers.length; k++) {			
+			try {
+				AcdiVocaFind avFind = AcdiVocaFind.fetchByAttributeValue(dao, AcdiVocaFind.DOSSIER,  dossiers[k]);
+				if (avFind != null) {
+					avFind.message_status = msgStatus;
+					avFind.message_id = msgId;
+					rows = dao.update(avFind);
+					result = rows == 1;
+					if (result) {
+						Log.d(TAG, "Updated beneficiary id = " + avFind.getId() + " to message status = " + msgStatus);
+						++rows;
+					}
+					else
+						Log.e(TAG, "Unable to update beneficiary id = " + avFind.getId() + " to message status = " + msgStatus);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return rows;
 	}
 	
 	/**
@@ -783,10 +1241,8 @@ public class AcdiVocaFind extends Find {
 			try {
 				sb.append(", ").append(field.getName()).append("=").append(field.get(this));
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
 		}

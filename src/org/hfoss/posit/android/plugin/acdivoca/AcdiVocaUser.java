@@ -100,7 +100,7 @@ public class AcdiVocaUser {
 	 * @param connectionSource
 	 * @param avUserDao
 	 */
-	public static void init(ConnectionSource connectionSource, Dao<AcdiVocaUser, Integer> avUserDao) {
+	public static void createTable(ConnectionSource connectionSource, Dao<AcdiVocaUser, Integer> avUserDao) {
 		try {
 			TableUtils.createTable(connectionSource, AcdiVocaUser.class);
 		} catch (SQLException e) {

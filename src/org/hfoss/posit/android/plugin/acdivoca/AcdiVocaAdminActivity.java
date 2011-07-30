@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -37,6 +38,9 @@ import org.hfoss.posit.android.api.FilePickerActivity;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.SettingsActivity;
+
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -77,7 +81,7 @@ interface SmsCallBack {
 	public void smsMgrCallBack(String s);
 }
 
-public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
+public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements SmsCallBack {
 
 	public static String TAG = "AdminActivity";
 	public static final int MAX_BENEFICIARIES = 20000;  // Max readable
@@ -320,18 +324,17 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		String distributionCtr = sharedPrefs.getString(distrKey, "");
 		Log.i(TAG, distrKey +"="+ distributionCtr);
 		
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		int nAbsentees = db.queryNDistributionAbsentees(distributionCtr);
-		db = new AcdiVocaDbHelper(this);
-		int nWomen = db.queryNDistributionWomenProcessed(distributionCtr);
-		db = new AcdiVocaDbHelper(this);
-		int nChildren = db.queryNDistributionChildrenProcessed(distributionCtr);
+		Dao<AcdiVocaFind, Integer> dao = null;
+		try {
+			dao = this.getHelper().getAcdiVocaFindDao();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		int nAbsentees = AcdiVocaFind.queryNDistributionAbsentees(dao, distributionCtr);
+		int nWomen = AcdiVocaFind.queryNDistributionWomenProcessed(dao, distributionCtr);
+		int nChildren = AcdiVocaFind.queryNDistributionChildrenProcessed(dao, distributionCtr);
 
 		mSummaryItems = new String[3];
-//		mDistributionSummaryReport = "Distribution Summary";
-//		mSummaryItems[0] = "nAbsentees = " + nAbsentees;
-//		mSummaryItems[1] = "nMothers = " + nWomen;
-//		mSummaryItems[2] = "nChildren = " + nChildren;
 		mDistributionSummaryReport = getString(R.string.distribution_summary);
 		mSummaryItems[0] = getString(R.string.nabsentees) + " " + nAbsentees;
 		mSummaryItems[1] = getString(R.string.nmothers) + " "  + nWomen;
@@ -480,13 +483,14 @@ public class AcdiVocaAdminActivity extends Activity implements SmsCallBack {
 		
 		long nImports = 0;
 		Log.i(TAG, "Beneficiary type to be loaded = " + beneficiaryType);
+		try {
 		if (beneficiaryType == AcdiVocaFind.TYPE_MCHN) {
-			db = new AcdiVocaDbHelper(this);
-			nImports = db.addUpdateBeneficiaries(mBeneficiaries);
-
+			nImports = AcdiVocaFind.addUpdateBeneficiaries(this.getHelper().getAcdiVocaFindDao(),  mBeneficiaries);
 		} else  {
-			db = new AcdiVocaDbHelper(this);
-			nImports = db.addAgriBeneficiaries(mBeneficiaries);
+			nImports = AcdiVocaFind.addAgriBeneficiaries(this.getHelper().getAcdiVocaFindDao(), mBeneficiaries);
+		}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
 		mImportDataReport = getString(R.string.beneficiaries_imported2) + " " + nImports;
