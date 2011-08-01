@@ -359,13 +359,23 @@ public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper>
 		Log.i(TAG, distrKey +"="+ distributionCtr);
 
 		// First create update reports -- i.e., those beneficiaries who were present and had changes.
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		mAcdiVocaMsgs = 
-			db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_UPDATE, null, distributionCtr);
+//		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+		
+		Dao<AcdiVocaFind, Integer> dao = null;
+		try {
+			dao = this.getHelper().getAcdiVocaFindDao();
+			mAcdiVocaMsgs = AcdiVocaFind.constructMessages(dao, SearchFilterActivity.RESULT_SELECT_UPDATE, distributionCtr);
+			mAcdiVocaMsgs.addAll(AcdiVocaFind.constructBulkUpdateMessages(dao, distributionCtr));
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
 
-		// Now create bulk absences messages
-		db = new AcdiVocaDbHelper(this);
-		mAcdiVocaMsgs.addAll(db.createBulkUpdateMessages(distributionCtr));
+		// Now create bulk messages for absentees
+//		db = new AcdiVocaDbHelper(this);
+//		mAcdiVocaMsgs.addAll(db.createBulkUpdateMessages(distributionCtr));
+		
+		
 		Log.i(TAG, "nMsgs to send " + mAcdiVocaMsgs.size());
 		// Prompt the user
 		showDialog(SEND_DIST_REP);
@@ -475,11 +485,14 @@ public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper>
 				return STRING_EXCEPTION;
 		}
 		
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-		int rows = db.clearBeneficiaryTable();
-		Log.i(TAG, "Deleted rows in beneficiary table = " + rows);
-		rows = db.clearMessageTable();
-		Log.i(TAG, "Deleted rows in message table = " + rows);
+		try {
+			int rows = AcdiVocaFind.clearTable(this.getHelper().getAcdiVocaFindDao());
+			Log.i(TAG, "Deleted rows in beneficiary table = " + rows);
+			rows = AcdiVocaMessage.clearTable(this.getHelper().getAcdiVocaMessageDao());
+			Log.i(TAG, "Deleted rows in message table = " + rows);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		long nImports = 0;
 		Log.i(TAG, "Beneficiary type to be loaded = " + beneficiaryType);

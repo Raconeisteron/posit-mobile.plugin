@@ -485,17 +485,38 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				}
 				
 			
-				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-				mAcdiVocaMsgs = db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
+//				AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
+//				mAcdiVocaMsgs = db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
+				
+			try {
+				mAcdiVocaMsgs = AcdiVocaFind.constructMessages(this.getHelper().getAcdiVocaFindDao(), SearchFilterActivity.RESULT_SELECT_NEW, null);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+				
 				Log.i(TAG, "Created messages, n = " + mAcdiVocaMsgs.size());
-				if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser()) {
-					db = new AcdiVocaDbHelper(this);
-					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
-							AcdiVocaFind.STATUS_NEW, null));
-				} else {
-					db = new AcdiVocaDbHelper(this);
-					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
-							AcdiVocaFind.STATUS_DONTCARE, null));
+
+				try {
+					if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser()) {
+						//					db = new AcdiVocaDbHelper(this);
+
+						mAcdiVocaMsgs.addAll(AcdiVocaMessage.fetchAllByStatus(this.getHelper().getAcdiVocaMessageDao(), 
+								SearchFilterActivity.RESULT_SELECT_PENDING));
+
+						//					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
+						//							AcdiVocaFind.STATUS_NEW, null));
+					} else {
+						//					db = new AcdiVocaDbHelper(this);
+						mAcdiVocaMsgs.addAll(AcdiVocaMessage.fetchAllByStatus(this.getHelper().getAcdiVocaMessageDao(), 
+								SearchFilterActivity.RESULT_SELECT_PENDING));
+
+						//					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
+						//							AcdiVocaFind.STATUS_DONTCARE, null));
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				
 				Log.i(TAG, "Appended pending messages, n = " + mAcdiVocaMsgs.size());
@@ -646,29 +667,39 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		Log.i(TAG, "Display messages for filter " + filter + " for distribution center " + distributionCtr);
 		ArrayList<AcdiVocaMessage> acdiVocaMsgs = null;
 				
-		AcdiVocaDbHelper db = null;   
-		if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
-				|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {  // Second arg is order by
-			db = new AcdiVocaDbHelper(this);
-			acdiVocaMsgs = db.createMessagesForBeneficiaries(filter, null, distributionCtr);
-		} else if (filter == SearchFilterActivity.RESULT_SELECT_ALL 
-				|| filter == SearchFilterActivity.RESULT_SELECT_PENDING
-				|| filter == SearchFilterActivity.RESULT_SELECT_SENT
-				|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
-			db = new AcdiVocaDbHelper(this);
-			acdiVocaMsgs = db.fetchSmsMessages(filter, AcdiVocaFind.STATUS_DONTCARE, null); 
-		} else if (filter == SearchFilterActivity.RESULT_BULK_UPDATE) {
-			db = new AcdiVocaDbHelper(this);
-			acdiVocaMsgs = db.createBulkUpdateMessages(distributionCtr);
-		} else {
-			return;
-		}
+		
+		Dao<AcdiVocaFind, Integer> dao = null;
+		try {
+			dao = this.getHelper().getAcdiVocaFindDao();
+
+			if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
+					|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {  
 				
+				acdiVocaMsgs = AcdiVocaFind.constructMessages(dao, filter, distributionCtr);
+				
+			} else if (filter == SearchFilterActivity.RESULT_SELECT_ALL 
+					|| filter == SearchFilterActivity.RESULT_SELECT_PENDING
+					|| filter == SearchFilterActivity.RESULT_SELECT_SENT
+					|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
+				
+				acdiVocaMsgs = AcdiVocaMessage.fetchAllByStatus(this.getHelper().getAcdiVocaMessageDao(), filter);
+				
+			} else if (filter == SearchFilterActivity.RESULT_BULK_UPDATE) {
+				
+				acdiVocaMsgs = AcdiVocaFind.constructBulkUpdateMessages(dao, distributionCtr);
+				
+			} else {
+				return;
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+
 		if (acdiVocaMsgs.size() == 0) {
 			mNMessagesDisplayed = 0;
 			Log.i(TAG, "display Message List, N messages = " + mNMessagesDisplayed);
-			acdiVocaMsgs.add(new AcdiVocaMessage(AcdiVocaDbHelper.UNKNOWN_ID,
-					AcdiVocaDbHelper.UNKNOWN_ID,
+			acdiVocaMsgs.add(new AcdiVocaMessage(AcdiVocaMessage.UNKNOWN_ID,
+					AcdiVocaMessage.UNKNOWN_ID,
 					-1,"",
 					getString(R.string.no_messages),
 					"", !AcdiVocaMessage.EXISTING));
@@ -725,7 +756,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		case R.id.messageStatusText:
 			tv = (TextView)view;
 			int msgstatus = cursor.getInt(cursor.getColumnIndex(AcdiVocaFind.MESSAGE_STATUS));
-			String text = AcdiVocaDbHelper.MESSAGE_STATUS_STRINGS[msgstatus];
+			String text = AcdiVocaMessage.MESSAGE_STATUS_STRINGS[msgstatus];
 			if (text.equals("Unsent"))
 				tv.setText(R.string.unsent);
 			else if (text.equals("Sent"))
@@ -927,7 +958,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
                         tv.setText(((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).firstname);
                         tv = (TextView) v.findViewById(R.id.messageStatusText);
                         int messageStatus = ((org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind)avFind).message_status;
-                        String status = AcdiVocaDbHelper.MESSAGE_STATUS_STRINGS[messageStatus];
+                        String status = AcdiVocaMessage.MESSAGE_STATUS_STRINGS[messageStatus];
                         tv.setText(status);
                 }
                 return v;

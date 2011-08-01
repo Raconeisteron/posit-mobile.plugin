@@ -98,9 +98,8 @@ public class AcdiVocaUser {
 	 * Creates the table associated with this object.  And creates the default
 	 * users. The table's name is 'acdivocauser', same as the class name. 
 	 * @param connectionSource
-	 * @param avUserDao
 	 */
-	public static void createTable(ConnectionSource connectionSource, Dao<AcdiVocaUser, Integer> avUserDao) {
+	public static void createTable(ConnectionSource connectionSource, Dao<AcdiVocaUser, Integer> dao) {
 		try {
 			TableUtils.createTable(connectionSource, AcdiVocaUser.class);
 		} catch (SQLException e) {
@@ -109,21 +108,21 @@ public class AcdiVocaUser {
 		}
 
 		// Create some Users
-		if (!insertUser(avUserDao, SUPER_USER_NAME, SUPER_USER_PASSWORD, UserType.SUPER))
+		if (!insertUser(dao, SUPER_USER_NAME, SUPER_USER_PASSWORD, UserType.SUPER))
 			Log.e(TAG, "Error adding user = " + SUPER_USER_NAME);
-		if (!insertUser(avUserDao, ADMIN_USER_NAME, ADMIN_USER_PASSWORD, UserType.ADMIN))
+		if (!insertUser(dao, ADMIN_USER_NAME, ADMIN_USER_PASSWORD, UserType.ADMIN))
 			Log.e(TAG, "Error adding user = " + ADMIN_USER_NAME);
-		if (!insertUser(avUserDao, USER_DEFAULT_NAME, USER_DEFAULT_PASSWORD, UserType.USER))
+		if (!insertUser(dao, USER_DEFAULT_NAME, USER_DEFAULT_PASSWORD, UserType.USER))
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
-		if (!insertUser(avUserDao, USER_DEFAULT_NAME_2, USER_DEFAULT_PASSWORD_2, UserType.USER))
+		if (!insertUser(dao, USER_DEFAULT_NAME_2, USER_DEFAULT_PASSWORD_2, UserType.USER))
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_2);
-		if (!insertUser(avUserDao, USER_DEFAULT_NAME_3, USER_DEFAULT_PASSWORD_3, UserType.USER))
+		if (!insertUser(dao, USER_DEFAULT_NAME_3, USER_DEFAULT_PASSWORD_3, UserType.USER))
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_3);
-		if (!insertUser(avUserDao, USER_DEFAULT_NAME_4, USER_DEFAULT_PASSWORD_4, UserType.USER))
+		if (!insertUser(dao, USER_DEFAULT_NAME_4, USER_DEFAULT_PASSWORD_4, UserType.USER))
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME_4);
-		if (!insertUser(avUserDao, AGRI_DEFAULT_NAME, AGRI_DEFAULT_PASSWORD, UserType.AGRI))
+		if (!insertUser(dao, AGRI_DEFAULT_NAME, AGRI_DEFAULT_PASSWORD, UserType.AGRI))
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
-		if (!insertUser(avUserDao, AGRON_USER_NAME, AGRON_USER_PASSWORD, UserType.AGRON))
+		if (!insertUser(dao, AGRON_USER_NAME, AGRON_USER_PASSWORD, UserType.AGRON))
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
 		
 		
