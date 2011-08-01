@@ -31,6 +31,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.j256.ormlite.dao.Dao;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -38,6 +40,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.SQLException;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.IBinder;
@@ -106,53 +109,99 @@ public class SmsService extends Service {
 		int avIdInt = Integer.parseInt(avIdStr);
 		
 		Log.i(TAG, "Rcvd broadcast for msg: " + smsMsg);
-		AcdiVocaMessage avMsg = new AcdiVocaMessage(smsMsg);
+		// REFACTOR?  Why create a AcdiVocaMessage and below call static update rather than retrieving 
+		// the message and updating it.
+		AcdiVocaMessage avMsg = new AcdiVocaMessage(smsMsg);    // Create an AcdiVocaMsg from smsMsg
 		AcdiVocaDbHelper db =  new AcdiVocaDbHelper(this);
-		switch (resultCode)  {
-		case Activity.RESULT_OK:
-			Log.d (TAG, "Received OK, avId = " + avIdStr + " msg:" + avMsg.getSmsMessage());
-			if (avIdInt < 0) 
-				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
-			else 
-				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_SENT);
-			++nMsgsSent;
-			break;
-		case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-			Log.e(TAG, "Received  generic failure, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
-			if (avIdInt < 0) 
-				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			else 
-				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			++nMsgsPending;
-			mErrorMsg = "Generic Failure";
-			break;
-		case SmsManager.RESULT_ERROR_NO_SERVICE:
-			Log.e(TAG, "Received  No service, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
-			if (avIdInt < 0) 
-				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			else 
-				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			++nMsgsPending;
-			mErrorMsg = "No cellular service";
-			break;
-		case SmsManager.RESULT_ERROR_NULL_PDU:
-			Log.e(TAG, "Received Null PDU, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
-			if (avIdInt < 0) 
-				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			else 
-				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			++nMsgsPending;
-			mErrorMsg = "Null PDU error";
-			break;
-		case SmsManager.RESULT_ERROR_RADIO_OFF:
-			Log.e(TAG, "Received  Radio off, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
-			if (avIdInt < 0) 
-				db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			else 
-				db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaDbHelper.MESSAGE_STATUS_PENDING);
-			++nMsgsPending;
-			mErrorMsg = "Texting is off";
-			break;
+		Dao<AcdiVocaFind, Integer> daoFind = null;
+		Dao<AcdiVocaMessage, Integer> daoMsg = null;
+		
+		int beneId = avMsg.getBeneficiaryId();
+		int msgId = avMsg.getMessageId();
+		
+		try {
+			daoFind = db.getAcdiVocaFindDao();
+			daoMsg = db.getAcdiVocaMessageDao();
+
+			switch (resultCode)  {
+			case Activity.RESULT_OK:
+				Log.d (TAG, "Received OK, avId = " + avIdStr + " msg:" + avMsg.getSmsMessage());
+				if (avIdInt < 0) {
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_SENT);
+					AcdiVocaFind.updateMessageStatusForBulkMsg(daoFind, avMsg, msgId, AcdiVocaMessage.MESSAGE_STATUS_SENT);
+//					db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaMessage.MESSAGE_STATUS_SENT);
+				}
+				else {
+					// Call static updateStatus, which retrieves the message and then updates it. Refactor?
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_SENT);
+					AcdiVocaFind.updateMessageStatus(daoFind, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_SENT);
+					//					db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaMessage.MESSAGE_STATUS_SENT);
+				}
+				++nMsgsSent;
+				break;
+			case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+				Log.e(TAG, "Received  generic failure, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
+				if (avIdInt < 0) {
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+					AcdiVocaFind.updateMessageStatus(daoFind, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+//					db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+				}
+				else {
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+					AcdiVocaFind.updateMessageStatus(daoFind, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+//					db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+				}
+				++nMsgsPending;
+				mErrorMsg = "Generic Failure";
+				break;
+			case SmsManager.RESULT_ERROR_NO_SERVICE:
+				Log.e(TAG, "Received  No service, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
+				if (avIdInt < 0) {
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+					AcdiVocaFind.updateMessageStatus(daoFind, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+//					db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+				}
+				else {
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+					AcdiVocaFind.updateMessageStatus(daoFind, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+//					db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+				}
+				++nMsgsPending;
+				mErrorMsg = "No cellular service";
+				break;
+			case SmsManager.RESULT_ERROR_NULL_PDU:
+				Log.e(TAG, "Received Null PDU, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
+				if (avIdInt < 0) {
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+					AcdiVocaFind.updateMessageStatus(daoFind, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+//					db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+				}
+				else {
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+					AcdiVocaFind.updateMessageStatus(daoFind, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+//					db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+				}
+				++nMsgsPending;
+				mErrorMsg = "Null PDU error";
+				break;
+			case SmsManager.RESULT_ERROR_RADIO_OFF:
+				Log.e(TAG, "Received  Radio off, avId =  " + avIdStr + " msg:" + avMsg.getSmsMessage());
+				if (avIdInt < 0) {
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+					AcdiVocaFind.updateMessageStatus(daoFind, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+//					db.updateMessageStatusForBulkMsg(avMsg, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+				}
+				else {
+					AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+					AcdiVocaFind.updateMessageStatus(daoFind, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+//					db.updateMessageStatusForNonBulkMessage(avMsg, AcdiVocaMessage.MESSAGE_STATUS_PENDING);
+				}
+				++nMsgsPending;
+				mErrorMsg = "Texting is off";
+				break;
+			}
+		} catch (java.sql.SQLException e) {
+			e.printStackTrace();
 		}
 	}
 	

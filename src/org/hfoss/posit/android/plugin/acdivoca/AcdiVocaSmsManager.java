@@ -26,37 +26,26 @@ package org.hfoss.posit.android.plugin.acdivoca;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity.ImportDataThread;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity.ImportThreadHandler;
 
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
+import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.IntentFilter.MalformedMimeTypeException;
-import android.database.ContentObserver;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import android.widget.Toast;
 
 public class AcdiVocaSmsManager extends BroadcastReceiver {
 	
@@ -216,8 +205,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 					if (ackId < 0)  {   // Check for bulk 
 						avMsg = new AcdiVocaMessage(
 								ackId * -1,  // For Bulks, the ackId is MsgId
-								AcdiVocaDbHelper.UNKNOWN_ID,  // Beneficiary Id
-								AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
+								AcdiVocaMessage.UNKNOWN_ID,  // Beneficiary Id
+								AcdiVocaMessage.MESSAGE_STATUS_ACK,
 								attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
 								"",   // SmsMessage N/A
 								"",    // Header  N/A
@@ -226,17 +215,16 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 					} else {
 						// Message for normal messages, where IDs > 0 and represent beneficiary IDs
 						avMsg = new AcdiVocaMessage(
-								AcdiVocaDbHelper.UNKNOWN_ID,  // Message Id is unknown -- Modem sends back Beneficiary Id
+								AcdiVocaMessage.UNKNOWN_ID,  // Message Id is unknown -- Modem sends back Beneficiary Id
 								ackId,  // For non-bulks, ackId is Beneficiary Id
-								AcdiVocaDbHelper.MESSAGE_STATUS_ACK,
+								AcdiVocaMessage.MESSAGE_STATUS_ACK,
 								attr + AttributeManager.ATTR_VAL_SEPARATOR + val, // Raw message
 								"",   // SmsMessage N/A
 								"",    // Header  N/A
 								!AcdiVocaMessage.EXISTING
 						);
 					}
-					AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
-					db.recordAcknowledgedMessage(avMsg);
+					recordAckInDb(context, avMsg);   // Save the ACK in the FINDS and MESSAGES tables
 				}
 				token = t.nextToken();
 			}
@@ -245,6 +233,65 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			Log.i(TAG,"Number format exception");
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Helper method to record a received ACK for an SMS message (avMsg) in the Db.
+	 */
+	private void recordAckInDb (Context context, AcdiVocaMessage avMsg) {
+		AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
+		boolean success = false;
+		try {
+			int beneId = avMsg.getBeneficiaryId();
+			int msgId = avMsg.getMessageId();
+			Dao<AcdiVocaFind, Integer> daoFind = db.getAcdiVocaFindDao();
+			Dao<AcdiVocaMessage, Integer> daoMsg = db.getAcdiVocaMessageDao();
+			
+			if (beneId < 0) {  // This was a bulk message containing dossiers numbers of many beneficiaries
+				success = AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_ACK);
+				if (success) 
+					Log.d(TAG, "Updated ACK, for msg_id = " +  msgId);
+				else 
+					Log.e(TAG, "Unable to process ACK, for msg_id = " +  msgId);	
+				
+				AcdiVocaMessage bulkMsg = AcdiVocaMessage.fetchById(daoMsg, msgId);
+				if (bulkMsg != null) {
+					int rows = AcdiVocaFind.updateMessageStatusForBulkMsg(daoFind, bulkMsg, msgId, AcdiVocaMessage.MESSAGE_STATUS_ACK);
+					Log.i(TAG, "Updated bulk for " + rows + " beneficiaries");
+				} else {
+					Log.e(TAG, "Unable to retrieve message with id = " + msgId);
+				}
+				
+
+			} else {
+				// First retrieve the message id from the Find and update the Find
+				AcdiVocaFind avFind = AcdiVocaFind.fetchById(daoFind, beneId);
+				if (avFind != null) {
+					msgId = avFind.message_id;
+					avFind.message_status = AcdiVocaMessage.MESSAGE_STATUS_ACK;
+					int rows = daoFind.update(avFind);
+					if (rows == 1) {
+						Log.d(TAG, "Updated ACK, for beneficiary_id = " +  beneId);
+					} else {
+						Log.e(TAG, "Unable to process ACK, for beneficiary_id = " +  beneId);						
+					}
+				} else {
+					Log.e(TAG, "Unable to process ACK, for beneficiary_id = " +  beneId);		
+				}
+				
+				// Next update the message
+				success = AcdiVocaMessage.updateStatus(daoMsg, beneId, msgId, AcdiVocaMessage.MESSAGE_STATUS_ACK);
+				if (success) 
+					Log.d(TAG, "Updated ACK, for msg_id = " +  msgId);
+				else 
+					Log.e(TAG, "Unable to process ACK, for msg_id = " +  msgId);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		db.recordAcknowledgedMessage(avMsg);
+		
 	}
 	
 	/**
@@ -328,8 +375,24 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 			
 			if (!acdiVocaMsg.isExisting()) {
 				Log.i(TAG,"This is a NEW message");
-				AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
-				int msgId = (int)db.createNewMessageTableEntry(acdiVocaMsg,beneficiary_id,AcdiVocaDbHelper.MESSAGE_STATUS_UNSENT);
+				Dao<AcdiVocaMessage, Integer> daoMsg = null;
+				Dao<AcdiVocaFind, Integer> daoFind = null;
+
+				try {
+					if (mActivity instanceof OrmLiteBaseActivity<?>) {
+						daoMsg = ((OrmLiteBaseActivity<AcdiVocaDbHelper>) mActivity).getHelper().getAcdiVocaMessageDao();
+						daoFind = ((OrmLiteBaseActivity<AcdiVocaDbHelper>) mActivity).getHelper().getAcdiVocaFindDao();
+					} else if (mActivity instanceof OrmLiteBaseListActivity<?>) {
+						daoMsg = ((OrmLiteBaseListActivity<AcdiVocaDbHelper>) mActivity).getHelper().getAcdiVocaMessageDao();
+						daoFind = ((OrmLiteBaseListActivity<AcdiVocaDbHelper>) mActivity).getHelper().getAcdiVocaFindDao();
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+//				AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
+//				int msgId = (int)db.createNewMessageTableEntry(acdiVocaMsg,beneficiary_id,AcdiVocaMessage.MESSAGE_STATUS_UNSENT);
+				int msgId = AcdiVocaMessage.createMessage(daoMsg,daoFind,acdiVocaMsg,beneficiary_id,AcdiVocaMessage.MESSAGE_STATUS_UNSENT);
 				acdiVocaMsg.setMessageId(msgId);
 				acdiVocaMsg.setExisting(true);
 			}

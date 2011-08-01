@@ -5,6 +5,6 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
 import android.app.ListActivity;
 
-public abstract class ListFindsActivity extends OrmLiteBaseListActivity<AcdiVocaDbHelper> { // ListActivity {
+public abstract class ListFindsActivity extends OrmLiteBaseListActivity<AcdiVocaDbHelper> { 
 
 }
