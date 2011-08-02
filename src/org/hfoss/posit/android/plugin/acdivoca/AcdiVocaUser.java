@@ -124,6 +124,98 @@ public class AcdiVocaUser {
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
 		if (!insertUser(dao, AGRON_USER_NAME, AGRON_USER_PASSWORD, UserType.AGRON))
 			Log.e(TAG, "Error adding user = " + USER_DEFAULT_NAME);
+//		// Create some Users
+		
+//		if (!insertUser(avUserDao, "b", "b", UserType.USER))
+//			Log.e(TAG, "Error adding user = " + "b");
+//		if (!insertUser(avUserDao, "a", "a", UserType.AGRI))
+//			Log.e(TAG, "Error adding user = " + "a");
+//		if (!insertUser(avUserDao, "r", "a", UserType.ADMIN))
+//			Log.e(TAG, "Error adding user = " + "r");
+//		if (!insertUser(avUserDao, "aa", "aa", UserType.AGRON))
+//			Log.e(TAG, "Error adding user = " + "aa");
+		if (!insertUser(dao, "auxa", "abba", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxa");
+		if (!insertUser(dao, "auxb", "achy", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxb");
+		if (!insertUser(dao, "auxc", "acid", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxc");
+		if (!insertUser(dao, "auxd", "akin", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxd");
+		if (!insertUser(dao, "auxe", "arum", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxe");
+		if (!insertUser(dao, "auxf", "ares", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxf");
+		if (!insertUser(dao, "auxg", "alfa", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxg");
+		if (!insertUser(dao, "auxh", "anon", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxh");
+		if (!insertUser(dao, "auxi", "arty", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxi");
+		if (!insertUser(dao, "auxj", "awry", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxj");
+		if (!insertUser(dao, "auxk", "avid", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxk");
+		if (!insertUser(dao, "auxl", "axle", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxl");
+		if (!insertUser(dao, "auxm", "atop", UserType.USER))
+			Log.e(TAG, "Error adding user = " + "auxm");
+
+		if (!insertUser(dao, "agra", "ante", UserType.AGRI))
+			Log.e(TAG, "Error adding user = " + "agra");
+		if (!insertUser(dao, "agrb", "alls", UserType.AGRI))
+			Log.e(TAG, "Error adding user = " + "agrb");
+		if (!insertUser(dao, "agrc", "amie", UserType.AGRI))
+			Log.e(TAG, "Error adding user = " + "agrc");
+		if (!insertUser(dao, "agrd", "aloe", UserType.AGRI))
+			Log.e(TAG, "Error adding user = " + "agrd");
+		if (!insertUser(dao, "agre", "auks", UserType.AGRI))
+			Log.e(TAG, "Error adding user = " + "agre");
+		if (!insertUser(dao, "agrf", "awed", UserType.AGRI))
+			Log.e(TAG, "Error adding user = " + "agrf");		
+		if (!insertUser(dao, "agrg", "awls", UserType.AGRI))
+				Log.e(TAG, "Error adding user = " + "agrg");
+		
+		
+		if (!insertUser(dao, "admina", "bake", UserType.ADMIN))
+			Log.e(TAG, "Error adding user = " + "admina");
+		if (!insertUser(dao, "adminb", "bats", UserType.ADMIN))
+			Log.e(TAG, "Error adding user = " + "adminb");
+		if (!insertUser(dao, "adminc", "bins", UserType.ADMIN))
+			Log.e(TAG, "Error adding user = " + "adminc");
+		if (!insertUser(dao, "admind", "bops", UserType.ADMIN))
+			Log.e(TAG, "Error adding user = " + "admind");
+		if (!insertUser(dao, "bnda", "diva", UserType.ADMIN))
+			Log.e(TAG, "Error adding user = " + "bnda");
+		if (!insertUser(dao, "bndb", "dogs", UserType.ADMIN))
+			Log.e(TAG, "Error adding user = " + "bndb");
+		if (!insertUser(dao, "bndc", "dyne", UserType.ADMIN))
+			Log.e(TAG, "Error adding user = " + "bndc");
+		
+		if (!insertUser(dao, "agrona", "cabs", UserType.AGRON))
+			Log.e(TAG, "Error adding user = " + "agrona");
+		if (!insertUser(dao, "agrone", "coma", UserType.AGRON))
+			Log.e(TAG, "Error adding user = " + "agrone");
+		if (!insertUser(dao, "agroni", "cloy", UserType.AGRON))
+			Log.e(TAG, "Error adding user = " + "agroni");
+		if (!insertUser(dao, "agrono", "crab", UserType.AGRON))
+			Log.e(TAG, "Error adding user = " + "agrono");
+		if (!insertUser(dao, "agronu", "coin", UserType.AGRON))
+			Log.e(TAG, "Error adding user = " + "agronu");
+		if (!insertUser(dao, "agrony", "cues", UserType.AGRON))
+			Log.e(TAG, "Error adding user = " + "agrony");
+		if (!insertUser(dao, "agronb", "cuke", UserType.AGRON))
+			Log.e(TAG, "Error adding user = " + "agronb");
+
+		if (!insertUser(dao, "supera", "ergo", UserType.SUPER))
+			Log.e(TAG, "Error adding user = " + "supera");
+		if (!insertUser(dao, "superb", "exon", UserType.SUPER))
+			Log.e(TAG, "Error adding user = " + "superb");
+		if (!insertUser(dao, "superc", "elms", UserType.SUPER))
+			Log.e(TAG, "Error adding user = " + "superc");
+		if (!insertUser(dao, "hfoss", "hack", UserType.SUPER))
+			Log.e(TAG, "Error adding user = " + "hfoss");
+		
 		
 		
 		Log.i(TAG, "Created User Accounts");
