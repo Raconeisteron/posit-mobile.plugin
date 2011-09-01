@@ -34,9 +34,11 @@ import java.util.Iterator;
 
 //import org.hfoss.posit.android.Log;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.DbManager;
 import org.hfoss.posit.android.api.FilePickerActivity;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
+import org.hfoss.posit.android.api.LoginActivity;
 import org.hfoss.posit.android.api.SettingsActivity;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -81,9 +83,10 @@ interface SmsCallBack {
 	public void smsMgrCallBack(String s);
 }
 
-public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements SmsCallBack {
+public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<DbManager> implements SmsCallBack {
 
 	public static String TAG = "AdminActivity";
+	
 	public static final int MAX_BENEFICIARIES = 20000;  // Max readable
 	
 	public static final String DEFAULT_DIRECTORY = "acdivoca";
@@ -106,6 +109,9 @@ public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper>
 	public static final int INVALID_PHONE_NUMBER = 7;
 	public static final int DISTRIBUTION_SUMMARY = 8;
 
+	
+	private AcdiVocaDbManager dbManager;
+	
 	//private ArrayAdapter<String> adapter;
 	private String mBeneficiaries[] = null;
 	private ProgressDialog mProgressDialog;
@@ -133,6 +139,7 @@ public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper>
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
+		dbManager = (AcdiVocaDbManager)dbManager;
 	}
 
 	@Override
@@ -326,7 +333,7 @@ public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper>
 		
 		Dao<AcdiVocaFind, Integer> dao = null;
 		try {
-			dao = this.getHelper().getAcdiVocaFindDao();
+			dao = this.dbManager.getAcdiVocaFindDao();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -363,7 +370,7 @@ public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper>
 		
 		Dao<AcdiVocaFind, Integer> dao = null;
 		try {
-			dao = this.getHelper().getAcdiVocaFindDao();
+			dao = this.dbManager.getAcdiVocaFindDao();
 			mAcdiVocaMsgs = AcdiVocaFind.constructMessages(dao, SearchFilterActivity.RESULT_SELECT_UPDATE, distributionCtr);
 			mAcdiVocaMsgs.addAll(AcdiVocaFind.constructBulkUpdateMessages(dao, distributionCtr));
 		} catch (SQLException e1) {
@@ -484,11 +491,11 @@ public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper>
 			else if (Integer.parseInt(mBeneficiaries[0]) == STRING_EXCEPTION)
 				return STRING_EXCEPTION;
 		}
-		
+		AcdiVocaDbManager dbManager = (AcdiVocaDbManager)this.dbManager;
 		try {
-			int rows = AcdiVocaFind.clearTable(this.getHelper().getAcdiVocaFindDao());
+			int rows = AcdiVocaFind.clearTable(this.dbManager.getAcdiVocaFindDao());
 			Log.i(TAG, "Deleted rows in beneficiary table = " + rows);
-			rows = AcdiVocaMessage.clearTable(this.getHelper().getAcdiVocaMessageDao());
+			rows = AcdiVocaMessage.clearTable(dbManager.getAcdiVocaMessageDao());
 			Log.i(TAG, "Deleted rows in message table = " + rows);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -498,9 +505,9 @@ public class AcdiVocaAdminActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper>
 		Log.i(TAG, "Beneficiary type to be loaded = " + beneficiaryType);
 		try {
 		if (beneficiaryType == AcdiVocaFind.TYPE_MCHN) {
-			nImports = AcdiVocaFind.addUpdateBeneficiaries(this.getHelper().getAcdiVocaFindDao(),  mBeneficiaries);
+			nImports = AcdiVocaFind.addUpdateBeneficiaries(this.dbManager.getAcdiVocaFindDao(),  mBeneficiaries);
 		} else  {
-			nImports = AcdiVocaFind.addAgriBeneficiaries(this.getHelper().getAcdiVocaFindDao(), mBeneficiaries);
+			nImports = AcdiVocaFind.addAgriBeneficiaries(this.dbManager.getAcdiVocaFindDao(), mBeneficiaries);
 		}
 		} catch (SQLException e) {
 			e.printStackTrace();

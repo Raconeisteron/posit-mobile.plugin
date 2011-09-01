@@ -63,14 +63,14 @@
 			android:screenOrientation="portrait"
 			android:launchMode="singleTop" />
 		<activity android:name=".plugin.acdivoca.AcdiVocaUpdateFindActivity" 
-			android:configChanges="orientation|keyboardHidden"
+			
 			android:screenOrientation="portrait"
 			android:launchMode="singleTop" />
-		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.LoginActivity" 
+		<activity android:name="org.hfoss.posit.android.api.LoginActivity" 
 			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait"
 			android:launchMode="singleTop" />	
-		<activity android:name="org.hfoss.posit.android.plugin.acdivoca.SearchFindsActivity" 
+		<activity android:name="org.hfoss.posit.android.api.SearchFindsActivity"
 			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait"
 			android:launchMode="singleTop" />	
@@ -96,7 +96,7 @@
                 </intent-filter>
         </receiver>
 
-  	<service android:name="org.hfoss.posit.android.plugin.acdivoca.SmsService"/>
+  	<service android:name="org.hfoss.posit.android.api.SmsService"/>
 
 	
 	

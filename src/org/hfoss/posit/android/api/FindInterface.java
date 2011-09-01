@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.j256.ormlite.dao.Dao;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -25,20 +27,20 @@ public interface FindInterface {
 	 * Call delete() to delete this Find.
 	 * @return the row id or -1 if it was unsuccessful
 	 */
-	public int insert();
+	public int insert(Dao<Find, Integer> dao);
 	
 	/**
 	 * UPdates this Find object in the DB.
 	 * Call delete() to delete this Find.
 	 * @return the row id or -1 if it was unsuccessful
 	 */
-	public boolean update();
+	public int update(Dao<Find, Integer> dao, ContentValues values);
 
 	/**
 	 * Deletes this Find object form the DB, including its data
 	 * @return whether the DB operation was successful
 	 */
-	public boolean delete();
+	public int delete(Dao<Find, Integer> dao);
 	
 	/**
 	 * Syncs this Find object using the designated protocol.

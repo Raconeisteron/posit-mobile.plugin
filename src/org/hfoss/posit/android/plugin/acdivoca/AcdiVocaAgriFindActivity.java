@@ -68,6 +68,8 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 
 	private static final int CONFIRM_EXIT = 0;
 
+	private AcdiVocaDbManager dbManager;
+	
 	private boolean isProbablyEdited = false;   // Set to true if user edits a datum
 	private String mAction = "";
 	private int mFindId = 0;
@@ -83,6 +85,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 
 		// Create DB helper
 		//		mDbHelper = new AcdiVocaDbHelper(this);
+		dbManager = (AcdiVocaDbManager)dbManager;
 		isProbablyEdited = false;
 	}
 
@@ -286,7 +289,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		
 		AcdiVocaFind avFind = null; // = new AcdiVocaFind(this, mFindId);
 		try {
-			avFind = this.getHelper().getAcdiVocaFindDao().queryForId(mFindId);
+			avFind = this.dbManager.getAcdiVocaFindDao().queryForId(mFindId);
 			if (avFind != null) {
 				ContentValues values = avFind.toContentValues();
 				displayContentUneditable(values);
@@ -804,7 +807,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		
 		AcdiVocaFind avFind = null; 
 		try {
-			avFind = this.getHelper().getAcdiVocaFindDao().queryForId(mFindId);
+			avFind = this.dbManager.getAcdiVocaFindDao().queryForId(mFindId);
 			if (avFind != null) {
 		    	ContentValues values = avFind.toContentValues();
 				displayContentInView(values);	
@@ -827,7 +830,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		boolean success = false;
 		int rows = 0;
 		try {
-			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			Dao<AcdiVocaFind, Integer> dao = this.dbManager.getAcdiVocaFindDao();
 			avFind = new AcdiVocaFind(data);
 			avFind.updateFromContentValues(data);
 			rows = dao.create(avFind);
@@ -853,7 +856,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		boolean success = false;
 		int rows = 0;
 		try {
-			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			Dao<AcdiVocaFind, Integer> dao = this.dbManager.getAcdiVocaFindDao();
 			avFind = dao.queryForId(mFindId);
 			if (avFind != null) {
 				avFind.updateFromContentValues(data);

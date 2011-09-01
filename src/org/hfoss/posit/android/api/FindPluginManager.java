@@ -11,6 +11,10 @@ import javax.xml.xpath.XPathFactory;
 import org.hfoss.posit.android.R;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -26,7 +30,7 @@ public class FindPluginManager {
 	//  from here and possibly move to Plugin.java??
 	private Activity mMainActivity = null;
 	private FindFactory mFindFactory = null;
-	private FindDataManager mFindDataManager = null;
+	//private DbManager mDbManager = null;
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	private Class<Activity> mExtraActivityClass = null;
@@ -40,6 +44,18 @@ public class FindPluginManager {
 	public static String mExtraButtonLabel = null;
 	public static String mExtraButtonLabel2 = null;
 
+//	static {
+//		Class dbManager = null;
+//		try {
+//			dbManager = Class.forName("org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbManager");
+//			
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		 OpenHelperManager.setOpenHelperClass(dbManager);
+//	}
+	
 	private FindPluginManager(Activity activity){
 		mMainActivity = activity;
 	}
@@ -56,6 +72,16 @@ public class FindPluginManager {
 		return sInstance;
 	}
 	
+	public static Class getDbManagerClass() {
+		try {
+			return Class.forName("org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbManager");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void initFromResource(Context context, int plugins_xml){		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -69,7 +95,7 @@ public class FindPluginManager {
 				if(plugin_nodes.item(ii).getAttributes().getNamedItem("active").getTextContent().compareTo("true") == 0){
 					String package_name = plugin_nodes.item(ii).getAttributes().getNamedItem("package").getTextContent();
 					String find_factory_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_factory").getTextContent();
-					String find_data_manager_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_data_manager").getTextContent();
+					String db_manager_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_data_manager").getTextContent();
 					String findactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_activity_class").getTextContent();
 					String listfindsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("list_finds_activity_class").getTextContent();
 					String extra_activity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("extra_activity_class").getTextContent();
@@ -87,12 +113,12 @@ public class FindPluginManager {
 					Class new_class = Class.forName(package_name + "." + find_factory_name);
 					mFindFactory = (FindFactory)new_class.getMethod("getInstance", null).invoke(null, null);
 					
-					new_class = Class.forName(package_name + "." + find_data_manager_name);
-					mFindDataManager = (FindDataManager)new_class.getMethod("getInstance", null).invoke(null, null);
+					new_class = Class.forName(package_name + "." + db_manager_name);
+					//mDbManager = (DbManager)new_class.getMethod("getInstance", null).invoke(null, null);
 
 					mFindActivityClass = (Class<FindActivity>)Class.forName(package_name + "." + findactivity_name);
 					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(package_name + "." + listfindsactivity_name);
-					mLoginActivityClass = (Class<Activity>)Class.forName(package_name + "." + login_activity_name);
+					mLoginActivityClass = (Class<Activity>)Class.forName("org.hfoss.posit.android.api" + "." + login_activity_name); // Changed
 					mExtraActivityClass = (Class<Activity>)Class.forName(package_name + "." + extra_activity_name);
 					mExtraActivityClass2 = (Class<Activity>)Class.forName(package_name + "." + extra_activity_name2);
 						
@@ -116,10 +142,10 @@ public class FindPluginManager {
 		return mFindFactory;
 	}
 	
-	public FindDataManager getFindDataManager(){
-		return mFindDataManager;
-	}
-	
+//	public FindDataManager getFindDataManager(){
+//		return mFindDataManager;
+//	}
+//	
 	public Class<FindActivity> getFindActivityClass(){
 		return mFindActivityClass;
 	}

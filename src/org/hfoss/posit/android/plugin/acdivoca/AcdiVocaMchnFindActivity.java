@@ -65,6 +65,8 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 
 	private static final int CONFIRM_EXIT = 0;
 
+	private AcdiVocaDbManager dbManager;
+	
 	private boolean isProbablyEdited = false;   // Set to true if user edits a datum
 	private String mAction = "";
 	private int mFindId = 0;
@@ -77,6 +79,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate");
+		dbManager = (AcdiVocaDbManager)getHelper();
 		isProbablyEdited = false;
 	}
 
@@ -252,7 +255,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 
 		AcdiVocaFind avFind = null; 
 		try {
-			avFind = this.getHelper().getAcdiVocaFindDao().queryForId(mFindId);
+			avFind = this.dbManager.getAcdiVocaFindDao().queryForId(mFindId);
 			if (avFind != null) {
 				ContentValues values = avFind.toContentValues();
 				displayContentUneditable(values);
@@ -705,7 +708,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 		
 		AcdiVocaFind avFind = null; // = new AcdiVocaFind(this, mFindId);
 		try {
-			avFind = this.getHelper().getAcdiVocaFindDao().queryForId(mFindId);
+			avFind = this.dbManager.getAcdiVocaFindDao().queryForId(mFindId);
 			if (avFind != null) {
 		    	ContentValues values = avFind.toContentValues();
 				displayContentInView(values);	
@@ -727,7 +730,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 		boolean success = false;
 		int rows = 0;
 		try {
-			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			Dao<AcdiVocaFind, Integer> dao = this.dbManager.getAcdiVocaFindDao();
 			avFind = new AcdiVocaFind(data);
 			avFind.updateFromContentValues(data);
 			rows = dao.create(avFind);
@@ -754,7 +757,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 		int rows = 0;
 		
 		try {
-			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			Dao<AcdiVocaFind, Integer> dao = this.dbManager.getAcdiVocaFindDao();
 			avFind = dao.queryForId(mFindId);
 			if (avFind != null) {
 				avFind.updateFromContentValues(data);

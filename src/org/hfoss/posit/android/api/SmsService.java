@@ -21,7 +21,7 @@
  * 
  */
 
-package org.hfoss.posit.android.plugin.acdivoca;
+package org.hfoss.posit.android.api;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -30,6 +30,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbManager;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage;
+import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 
 import com.j256.ormlite.dao.Dao;
 
@@ -112,7 +118,7 @@ public class SmsService extends Service {
 		// REFACTOR?  Why create a AcdiVocaMessage and below call static update rather than retrieving 
 		// the message and updating it.
 		AcdiVocaMessage avMsg = new AcdiVocaMessage(smsMsg);    // Create an AcdiVocaMsg from smsMsg
-		AcdiVocaDbHelper db =  new AcdiVocaDbHelper(this);
+		AcdiVocaDbManager db =  new AcdiVocaDbManager(this);
 		Dao<AcdiVocaFind, Integer> daoFind = null;
 		Dao<AcdiVocaMessage, Integer> daoMsg = null;
 		

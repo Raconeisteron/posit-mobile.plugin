@@ -28,9 +28,13 @@ import java.util.List;
 
 import org.hfoss.posit.android.R;
 //import org.hfoss.posit.android.Utils;
+import org.hfoss.posit.android.api.DbManager;
 import org.hfoss.posit.android.api.ListFindsActivity;
+import org.hfoss.posit.android.api.SearchFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
@@ -87,6 +91,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 	private Activity mActivity;
 	private ArrayList<AcdiVocaMessage> mAcdiVocaMsgs;
 	
+	private AcdiVocaDbManager dbManager;
+	
 //	private int project_id;
     private static final boolean DBG = false;
 	//private ArrayAdapter<String> mAdapter;
@@ -123,6 +129,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		super.onCreate(savedInstanceState);
 		
 		mActivity = this;
+		
+		dbManager = (AcdiVocaDbManager)getHelper();
 		Intent intent = getIntent();
 		mAction = intent.getAction();
 		if (mAction == null) 
@@ -211,7 +219,8 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 //		List<AcdiVocaFind> list = db.fetchAllBeneficiaries(beneficiary_type);
 		List<AcdiVocaFind> list = null;
 		try {
-			list = AcdiVocaFind.fetchAllByType(getHelper().getAcdiVocaFindDao(), beneficiary_type);
+			//Class<? extends OrmLiteSqliteOpenHelper> dbManagerClass = Class.forName(AcdiVocaDbManager.HELPER_CLASS).asSubclass(OrmLiteSqliteOpenHelper.class);
+			list = AcdiVocaFind.fetchAllByType(dbManager.getAcdiVocaFindDao(), beneficiary_type);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -222,7 +231,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 
 //		thereAreUnsentFinds = db.queryExistUnsentBeneficiaries();
 		try {
-			thereAreUnsentFinds = AcdiVocaFind.queryExistUnsentBeneficiaries(getHelper().getAcdiVocaFindDao());
+			thereAreUnsentFinds = AcdiVocaFind.queryExistUnsentBeneficiaries(dbManager.getAcdiVocaFindDao());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -263,7 +272,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 //        startDisplayFindActivity(avFind);
         
 		try {
-			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			Dao<AcdiVocaFind, Integer> dao = dbManager.getAcdiVocaFindDao();
 			AcdiVocaFind avFind = dao.queryForId(findId);
 			if (avFind != null) {
 		        startDisplayFindActivity(avFind);
@@ -440,6 +449,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 		searchItem.setVisible(true);
 
 	}
+	
 
 	/** 
 	 * Starts the appropriate Activity when a MenuItem is selected.
@@ -489,7 +499,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 //				mAcdiVocaMsgs = db.createMessagesForBeneficiaries(SearchFilterActivity.RESULT_SELECT_NEW, null, null);
 				
 			try {
-				mAcdiVocaMsgs = AcdiVocaFind.constructMessages(this.getHelper().getAcdiVocaFindDao(), SearchFilterActivity.RESULT_SELECT_NEW, null);
+				mAcdiVocaMsgs = AcdiVocaFind.constructMessages(dbManager.getAcdiVocaFindDao(), SearchFilterActivity.RESULT_SELECT_NEW, null);
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -501,14 +511,14 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 					if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser()) {
 						//					db = new AcdiVocaDbHelper(this);
 
-						mAcdiVocaMsgs.addAll(AcdiVocaMessage.fetchAllByStatus(this.getHelper().getAcdiVocaMessageDao(), 
+						mAcdiVocaMsgs.addAll(AcdiVocaMessage.fetchAllByStatus(dbManager.getAcdiVocaMessageDao(), 
 								SearchFilterActivity.RESULT_SELECT_PENDING));
 
 						//					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
 						//							AcdiVocaFind.STATUS_NEW, null));
 					} else {
 						//					db = new AcdiVocaDbHelper(this);
-						mAcdiVocaMsgs.addAll(AcdiVocaMessage.fetchAllByStatus(this.getHelper().getAcdiVocaMessageDao(), 
+						mAcdiVocaMsgs.addAll(AcdiVocaMessage.fetchAllByStatus(dbManager.getAcdiVocaMessageDao(), 
 								SearchFilterActivity.RESULT_SELECT_PENDING));
 
 						//					mAcdiVocaMsgs.addAll(db.fetchSmsMessages(SearchFilterActivity.RESULT_SELECT_PENDING,  
@@ -629,7 +639,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 			} else {
 				Dao<AcdiVocaFind, Integer> dao = null;
 				try {
-					dao = this.getHelper().getAcdiVocaFindDao();
+					dao = dbManager.getAcdiVocaFindDao();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -669,8 +679,9 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 				
 		
 		Dao<AcdiVocaFind, Integer> dao = null;
+
 		try {
-			dao = this.getHelper().getAcdiVocaFindDao();
+			dao = dbManager.getAcdiVocaFindDao();
 
 			if (filter == SearchFilterActivity.RESULT_SELECT_NEW 
 					|| filter == SearchFilterActivity.RESULT_SELECT_UPDATE) {  
@@ -682,7 +693,7 @@ public class AcdiVocaListFindsActivity extends ListFindsActivity
 					|| filter == SearchFilterActivity.RESULT_SELECT_SENT
 					|| filter == SearchFilterActivity.RESULT_SELECT_ACKNOWLEDGED) {
 				
-				acdiVocaMsgs = AcdiVocaMessage.fetchAllByStatus(this.getHelper().getAcdiVocaMessageDao(), filter);
+				acdiVocaMsgs = AcdiVocaMessage.fetchAllByStatus(dbManager.getAcdiVocaMessageDao(), filter);
 				
 			} else if (filter == SearchFilterActivity.RESULT_BULK_UPDATE) {
 				

@@ -26,6 +26,11 @@ package org.hfoss.posit.android.plugin.acdivoca;
 
 import java.sql.SQLException;
 
+import org.hfoss.posit.android.api.DbManager;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
+
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -40,20 +45,22 @@ import android.util.Log;
  *  It controls all Db access 
  *  and directly handles all Db queries.
  */
-public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
+public class AcdiVocaDbManager extends DbManager {
 
-	private static final String TAG = "DbHelper";
 
-	private static final String DATABASE_NAME ="posit";
-	public static final int DATABASE_VERSION = 2;
-	
-	public static final int DELETE_FIND = 1;
-	public static final int UNDELETE_FIND = 0;
-	public static final String WHERE_NOT_DELETED = " " + AcdiVocaFind.DELETED + " != " + DELETE_FIND + " ";
-	public static final String DATETIME_NOW = "`datetime('now')`";
+	private static final String TAG = "AcdiVocaDbManager";
 
-	public static final String FINDS_HISTORY_TABLE = "acdi_voca_finds_history";
-	public static final String HISTORY_ID = "_id" ;	
+	public static final String HELPER_CLASS = "org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbManager";
+//	private static final String DATABASE_NAME ="posit";
+//	public static final int DATABASE_VERSION = 2;
+//	
+//	public static final int DELETE_FIND = 1;
+//	public static final int UNDELETE_FIND = 0;
+//	public static final String WHERE_NOT_DELETED = " " + AcdiVocaFind.DELETED + " != " + DELETE_FIND + " ";
+//	public static final String DATETIME_NOW = "`datetime('now')`";
+//
+//	public static final String FINDS_HISTORY_TABLE = "acdi_voca_finds_history";
+//	public static final String HISTORY_ID = "_id" ;	
 
 	// DAO objects used to access the Db tables
 	private Dao<AcdiVocaUser, Integer> avUserDao = null;
@@ -64,8 +71,8 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	 * Constructor just saves and opens the Db.
 	 * @param context
 	 */
-	public AcdiVocaDbHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+	public AcdiVocaDbManager(Context context) {
+		super(context);
 	}
 	
 	/**
@@ -73,18 +80,18 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
+	
 		try {
 			Log.i(TAG, "onCreate");
-
-			AcdiVocaUser.createTable(connectionSource, getAvUserDao());
+			//super.onCreate(db, connectionSource);
 			AcdiVocaFind.createTable(connectionSource);
 			AcdiVocaMessage.createTable(connectionSource);
+			AcdiVocaUser.createTable(connectionSource, getAvUserDao());
 			
 		} catch (SQLException e) {
 			Log.e(TAG, "Can't create database", e);
 			throw new RuntimeException(e);
 		}
-		
 	}
 	
 	@Override
@@ -101,7 +108,7 @@ public class AcdiVocaDbHelper extends OrmLiteSqliteOpenHelper  {
 			throw new RuntimeException(e);
 		}
 	}
-		
+//		
 	/**
 	 * Returns the Database Access Object (DAO) for the AcdiVocaUser class. 
 	 * It will create it or just give the cached value.

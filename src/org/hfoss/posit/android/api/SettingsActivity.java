@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.R.xml;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
 import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;

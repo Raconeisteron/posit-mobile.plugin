@@ -9,7 +9,7 @@ public class Plugin {
 	private Activity mMainActivity = null;
 	
 	private FindFactory mFindFactory = null;
-	private FindDataManager mFindDataManager = null;
+	//private FindDataManager mFindDataManager = null;
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	
@@ -30,12 +30,12 @@ public class Plugin {
 	public void setmFindFactory(FindFactory mFindFactory) {
 		this.mFindFactory = mFindFactory;
 	}
-	public FindDataManager getmFindDataManager() {
-		return mFindDataManager;
-	}
-	public void setmFindDataManager(FindDataManager mFindDataManager) {
-		this.mFindDataManager = mFindDataManager;
-	}
+//	public FindDataManager getmFindDataManager() {
+//		return mFindDataManager;
+//	}
+//	public void setmFindDataManager(FindDataManager mFindDataManager) {
+//		this.mFindDataManager = mFindDataManager;
+//	}
 	public Class<FindActivity> getmFindActivityClass() {
 		return mFindActivityClass;
 	}
