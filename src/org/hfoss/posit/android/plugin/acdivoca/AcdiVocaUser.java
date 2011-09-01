@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.DbManager;
 
 import android.content.Context;
 import android.util.Log;
@@ -287,7 +288,7 @@ public class AcdiVocaUser {
 	public static int authenicateUser(Context context, String username, String password, UserType userType) {
 		Log.i(TAG, "Authenticating user = " + username + " Access type = " + userType);		
 		
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
+		DbManager db = new DbManager(context);
 		
 		Dao<AcdiVocaUser, Integer> avUserDao = null;
 		try {

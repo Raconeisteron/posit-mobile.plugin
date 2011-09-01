@@ -25,17 +25,17 @@ package org.hfoss.posit.android;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.hfoss.posit.android.api.DbManager;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
+import org.hfoss.posit.android.api.LoginActivity;
 import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
-import org.hfoss.posit.android.plugin.acdivoca.LoginActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 
@@ -70,7 +70,7 @@ import android.widget.Toast;
 /**
  * Implements the main activity and the main screen for the POSIT application.
  */
-public class PositMain  extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements android.view.View.OnClickListener {
+public class PositMain  extends OrmLiteBaseActivity<DbManager> implements android.view.View.OnClickListener {
 
 //extends Activity implements OnClickListener { //,RWGConstants {
 

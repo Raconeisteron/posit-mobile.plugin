@@ -31,9 +31,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.DbManager;
+import org.hfoss.posit.android.api.SmsService;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
@@ -63,6 +66,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	public static final int MIN_PHONE_NUMBER_LENGTH = 5;
 	public static final int DONE = 0;
 	
+	private AcdiVocaDbManager dbManager;
+	
 	public int msgId = 0;
 	private static Context mContext = null;
 	private static AcdiVocaSmsManager mInstance = null; 
@@ -73,6 +78,7 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	private String mErrorMsg = ""; // Set to last error by BroadcastReceiver
 	
 	public AcdiVocaSmsManager()  {
+		
 	}
 	
 	public static AcdiVocaSmsManager getInstance(Activity activity){
@@ -239,7 +245,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 	 * Helper method to record a received ACK for an SMS message (avMsg) in the Db.
 	 */
 	private void recordAckInDb (Context context, AcdiVocaMessage avMsg) {
-		AcdiVocaDbHelper db = new AcdiVocaDbHelper(context);
+		AcdiVocaDbManager db = new AcdiVocaDbManager(context);
+		//AcdiVocaDbManager dbManager = (AcdiVocaDbManager)this.getHelper();
 		boolean success = false;
 		try {
 			int beneId = avMsg.getBeneficiaryId();
@@ -367,6 +374,8 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 		Iterator<AcdiVocaMessage> it = acdiVocaMsgs.iterator();
 		int count = 1;
 		int size = acdiVocaMsgs.size();
+		///OrmLiteBaseActivity ormLiteBaseActivity = 
+		dbManager = (AcdiVocaDbManager)((OrmLiteBaseActivity)context).getHelper(); 
 		while (it.hasNext()) {
 			acdiVocaMsg = it.next();
 			acdiVocaMsg.setNumberSlashBatchSize(count + AttributeManager.NUMBER_SLASH_SIZE_SEPARATOR + size);
@@ -380,11 +389,11 @@ public class AcdiVocaSmsManager extends BroadcastReceiver {
 
 				try {
 					if (mActivity instanceof OrmLiteBaseActivity<?>) {
-						daoMsg = ((OrmLiteBaseActivity<AcdiVocaDbHelper>) mActivity).getHelper().getAcdiVocaMessageDao();
-						daoFind = ((OrmLiteBaseActivity<AcdiVocaDbHelper>) mActivity).getHelper().getAcdiVocaFindDao();
+						daoMsg = dbManager.getAcdiVocaMessageDao();
+						daoFind = dbManager.getAcdiVocaFindDao();
 					} else if (mActivity instanceof OrmLiteBaseListActivity<?>) {
-						daoMsg = ((OrmLiteBaseListActivity<AcdiVocaDbHelper>) mActivity).getHelper().getAcdiVocaMessageDao();
-						daoFind = ((OrmLiteBaseListActivity<AcdiVocaDbHelper>) mActivity).getHelper().getAcdiVocaFindDao();
+						daoMsg = dbManager.getAcdiVocaMessageDao();
+						daoFind = dbManager.getAcdiVocaFindDao();
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block

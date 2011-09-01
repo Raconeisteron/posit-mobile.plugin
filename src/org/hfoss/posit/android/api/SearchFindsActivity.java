@@ -20,8 +20,9 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android.plugin.acdivoca;
+package org.hfoss.posit.android.api;
 
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 import org.hfoss.posit.android.R;
 

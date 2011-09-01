@@ -20,7 +20,7 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android.plugin.acdivoca;
+package org.hfoss.posit.android.api;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -28,8 +28,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.api.FindPluginManager;
-import org.hfoss.posit.android.api.SettingsActivity;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
+import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import android.app.Activity;

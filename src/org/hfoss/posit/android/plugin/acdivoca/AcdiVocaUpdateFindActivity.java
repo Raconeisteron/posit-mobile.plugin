@@ -67,6 +67,8 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
 
     private static final int ACTION_ID = 0;
     
+    private AcdiVocaDbManager dbManager;
+    
     private String mBeneficiaryId = "unknown";
 
     private boolean isProbablyEdited = false;   // Set to true if user edits a datum
@@ -80,6 +82,7 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	Log.i(TAG, "onCreate");
+    	dbManager = (AcdiVocaDbManager)dbManager;
     	isProbablyEdited = false;
     }
 
@@ -152,7 +155,7 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
 	private void displayExistingFind() {
 		Log.i(TAG, "Display existing Find");
 		try {
-			Dao<AcdiVocaFind, Integer>  avFindDao = this.getHelper().getAcdiVocaFindDao();
+			Dao<AcdiVocaFind, Integer>  avFindDao = this.dbManager.getAcdiVocaFindDao();
 //			AcdiVocaFind avFind = AcdiVocaFind.fetchFindByDossier(avFindDao, mBeneficiaryId);
 			AcdiVocaFind avFind = AcdiVocaFind.fetchByAttributeValue(avFindDao, AcdiVocaFind.DOSSIER, mBeneficiaryId);
    			if (avFind != null) {
@@ -342,7 +345,7 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
         Log.i(TAG, "doEditAction");
         
 		try {
-			Dao<AcdiVocaFind, Integer>  avFindDao = this.getHelper().getAcdiVocaFindDao();
+			Dao<AcdiVocaFind, Integer>  avFindDao = this.dbManager.getAcdiVocaFindDao();
 			AcdiVocaFind avFind = AcdiVocaFind.fetchByAttributeValue(avFindDao, AcdiVocaFind.DOSSIER, mBeneficiaryId);
    			if (avFind != null) {
    				ContentValues values = avFind.toContentValues();
@@ -591,7 +594,7 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
 		boolean success = false;
 
 		try {
-			Dao<AcdiVocaFind, Integer> dao = this.getHelper().getAcdiVocaFindDao();
+			Dao<AcdiVocaFind, Integer> dao = this.dbManager.getAcdiVocaFindDao();
 			AcdiVocaFind avFind = AcdiVocaFind.fetchByAttributeValue(dao, AcdiVocaFind.DOSSIER, mBeneficiaryId);
 			avFind.updateFromContentValues(data);
 			int rows = dao.update(avFind);

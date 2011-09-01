@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbHelper;
 
 import android.app.Activity;
 import android.app.ListActivity;

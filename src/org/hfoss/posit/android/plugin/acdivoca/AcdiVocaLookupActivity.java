@@ -25,6 +25,7 @@ package org.hfoss.posit.android.plugin.acdivoca;
 import java.sql.SQLException;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.DbManager;
 import org.hfoss.posit.android.api.SettingsActivity;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -54,9 +55,11 @@ import android.widget.Toast;
  * Handles Finds for AcdiVoca Mobile App.
  * 
  */
-public class AcdiVocaLookupActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper> implements OnClickListener, TextWatcher {
+public class AcdiVocaLookupActivity extends OrmLiteBaseActivity<DbManager> implements OnClickListener, TextWatcher {
 	public static final String TAG = "AcdiVocaLookupActivity";
 
+	private AcdiVocaDbManager dbManager;
+	
 	private Spinner lookupSpinner;
 	private ArrayAdapter<String> mAdapter;
 	private String dossiers[];
@@ -68,6 +71,7 @@ public class AcdiVocaLookupActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate");
 		Log.i(TAG, PreferenceManager.getDefaultSharedPreferences(this).getAll().toString());
+		dbManager = (AcdiVocaDbManager)getHelper();
 	}
 
 	@Override
@@ -147,7 +151,7 @@ public class AcdiVocaLookupActivity extends OrmLiteBaseActivity<AcdiVocaDbHelper
 
 //		dossiers = db.fetchAllBeneficiaryIdsByDistributionSite(distributionCtr);
 		try {
-			dossiers = AcdiVocaFind.fetchDossiersByDistributionSite(getHelper().getAcdiVocaFindDao(), 
+			dossiers = AcdiVocaFind.fetchDossiersByDistributionSite(dbManager.getAcdiVocaFindDao(), 
 					distributionCtr);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
