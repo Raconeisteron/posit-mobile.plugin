@@ -111,16 +111,20 @@ public class FindPluginManager {
 
 					@SuppressWarnings({ "rawtypes" })
 					Class new_class = Class.forName(package_name + "." + find_factory_name);
-					mFindFactory = (FindFactory)new_class.getMethod("getInstance", null).invoke(null, null);
+					//mFindFactory = (FindFactory)new_class.getMethod("getInstance", null).invoke(null, null);
 					
 					new_class = Class.forName(package_name + "." + db_manager_name);
 					//mDbManager = (DbManager)new_class.getMethod("getInstance", null).invoke(null, null);
 
 					mFindActivityClass = (Class<FindActivity>)Class.forName(package_name + "." + findactivity_name);
 					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(package_name + "." + listfindsactivity_name);
-					mLoginActivityClass = (Class<Activity>)Class.forName("org.hfoss.posit.android.api" + "." + login_activity_name); // Changed
-					mExtraActivityClass = (Class<Activity>)Class.forName(package_name + "." + extra_activity_name);
-					mExtraActivityClass2 = (Class<Activity>)Class.forName(package_name + "." + extra_activity_name2);
+					mLoginActivityClass = (Class<Activity>)Class.forName(package_name + "." + login_activity_name); // Changed
+					if (!extra_activity_name.equals(""))	
+						mExtraActivityClass = (Class<Activity>) Class
+								.forName(package_name + "."	+ extra_activity_name);
+					if (!extra_activity_name2.equals(""))
+						mExtraActivityClass2 = (Class<Activity>) Class
+								.forName(package_name + "."	+ extra_activity_name2);
 						
 					Log.i(TAG,"Loading preferences for Settings Activity");
 					SettingsActivity.loadPluginPreferences(mMainActivity, mPreferences);

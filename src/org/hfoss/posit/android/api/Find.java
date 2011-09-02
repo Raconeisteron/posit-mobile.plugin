@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 
-
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.support.ConnectionSource;
@@ -23,14 +22,14 @@ import android.util.Log;
  */
 
 public class Find implements FindInterface {
-	
+
 	public static final String TAG = "Find";
-	
+
 	// Db Column names
 	public static final String ORM_ID = "id";
 	public static final String GUID = "guid";
 	public static final String NAME = "name";
-	
+
 	public static final String DESCRIPTION = "description";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
@@ -43,22 +42,34 @@ public class Find implements FindInterface {
 	public static final String DELETED = "deleted";
 	public static final int IS_SYNCED = 1;
 	public static final int NOT_SYNCED = 0;
-	
+
 	// Instance variables, automatically mapped to DB columns
-	@DatabaseField(columnName = ORM_ID, generatedId = true)		protected int id;
-	@DatabaseField(columnName = GUID)  							protected String guid;
-	@DatabaseField(columnName = NAME)  							protected String name;
-	@DatabaseField(columnName = LATITUDE)  						protected double latitude;
-	@DatabaseField(columnName = LONGITUDE)  					protected double longitude;
-	@DatabaseField(columnName = TIME, canBeNull=false)  		protected Date time = new Date();
-	@DatabaseField(columnName = MODIFY_TIME)  					protected Date modify_time;
-	@DatabaseField(columnName = REVISION)  						protected int revision;
-	@DatabaseField(columnName = IS_ADHOC)  						protected int is_adhoc;
-	@DatabaseField(columnName = ACTION)  						protected int action;
-	@DatabaseField(columnName = DELETED)  						protected int deleted;
-	
+	@DatabaseField(columnName = ORM_ID, generatedId = true)
+	protected int id;
+	@DatabaseField(columnName = GUID)
+	protected String guid;
+	@DatabaseField(columnName = NAME)
+	protected String name;
+	@DatabaseField(columnName = LATITUDE)
+	protected double latitude;
+	@DatabaseField(columnName = LONGITUDE)
+	protected double longitude;
+	@DatabaseField(columnName = TIME, canBeNull = false)
+	protected Date time = new Date();
+	@DatabaseField(columnName = MODIFY_TIME)
+	protected Date modify_time;
+	@DatabaseField(columnName = REVISION)
+	protected int revision;
+	@DatabaseField(columnName = IS_ADHOC)
+	protected int is_adhoc;
+	@DatabaseField(columnName = ACTION)
+	protected int action;
+	@DatabaseField(columnName = DELETED)
+	protected int deleted;
+
 	/**
 	 * Creates the table for this class.
+	 * 
 	 * @param connectionSource
 	 */
 	public static void createTable(ConnectionSource connectionSource) {
@@ -69,49 +80,140 @@ public class Find implements FindInterface {
 			e.printStackTrace();
 		}
 	}
-	
-	protected Find(){}
-	
-	/**
-	 * This constructor is used for a new Find. Its ID will be automatically created.
-	 * @param context is the Activity
-	 */
-	public Find (Context context){}
 
-	/**
-	 * This constructor is used for an existing Find. Its id is used to retrieve it
-	 * @param context is the Activity
-	 * @param guid is a globally unique identifier, used by the server
-	 *   and other devices
-	 */
-	public Find (Context context, int id) {
-		
+	protected Find() {
 	}
-	
-	
-	
+
 	/**
-	 * This constructor is used for an existing Find. The Find's id is automagically generated
-	 * but not its GUID.
-	 * @param context is the Activity
-	 * @param guid is a globally unique identifier, used by the server
-	 *   and other devices
+	 * This constructor is used for a new Find. Its ID will be automatically
+	 * created.
+	 * 
+	 * @param context
+	 *            is the Activity
 	 */
-	public Find (Context context, String guid){}
+	public Find(Context context) {
+	}
 
+	/**
+	 * This constructor is used for an existing Find. Its id is used to retrieve
+	 * it
+	 * 
+	 * @param context
+	 *            is the Activity
+	 * @param guid
+	 *            is a globally unique identifier, used by the server and other
+	 *            devices
+	 */
+	public Find(Context context, int id) {
 
-	
+	}
+
+	/**
+	 * This constructor is used for an existing Find. The Find's id is
+	 * automagically generated but not its GUID.
+	 * 
+	 * @param context
+	 *            is the Activity
+	 * @param guid
+	 *            is a globally unique identifier, used by the server and other
+	 *            devices
+	 */
+	public Find(Context context, String guid) {
+	}
+
+	public String getGuid() {
+		return guid;
+	}
+
+	public void setGuid(String guid) {
+		this.guid = guid;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public Date getTime() {
+		return time;
+	}
+
+	public void setTime(Date time) {
+		this.time = time;
+	}
+
+	public Date getModify_time() {
+		return modify_time;
+	}
+
+	public void setModify_time(Date modify_time) {
+		this.modify_time = modify_time;
+	}
+
+	public int getRevision() {
+		return revision;
+	}
+
+	public void setRevision(int revision) {
+		this.revision = revision;
+	}
+
+	public int getIs_adhoc() {
+		return is_adhoc;
+	}
+
+	public void setIs_adhoc(int is_adhoc) {
+		this.is_adhoc = is_adhoc;
+	}
+
+	public int getAction() {
+		return action;
+	}
+
+	public void setAction(int action) {
+		this.action = action;
+	}
+
+	public int getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(int deleted) {
+		this.deleted = deleted;
+	}
+
 	public int getId() {
 		return id;
 	}
 
-	public String getguId() {
-		return guid;
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	/**
 	 * Inserts this find into the database.
-	 * @param dao the DAO object provided by the ORMLite helper class.
+	 * 
+	 * @param dao
+	 *            the DAO object provided by the ORMLite helper class.
 	 * @return the number of rows inserted.
 	 */
 
@@ -119,7 +221,7 @@ public class Find implements FindInterface {
 		int rows = 0;
 		try {
 			rows = dao.create(this);
-			if (rows == 1) 
+			if (rows == 1)
 				Log.i(TAG, "Inserted find:  " + this.toString());
 			else {
 				Log.e(TAG, "Db Error inserting find: " + this.toString());
@@ -133,8 +235,11 @@ public class Find implements FindInterface {
 
 	/**
 	 * Updates this find in the database with the given values.
-	 * @param dao the DAO provided by the ORMLite helper class.
-	 * @param values a ContentValues object containing all of the values to update.
+	 * 
+	 * @param dao
+	 *            the DAO provided by the ORMLite helper class.
+	 * @param values
+	 *            a ContentValues object containing all of the values to update.
 	 * @return the number of rows updated.
 	 */
 	public int update(Dao<Find, Integer> dao, ContentValues values) {
@@ -142,7 +247,7 @@ public class Find implements FindInterface {
 		try {
 			updateObject(values);
 			rows = dao.update(this);
-			if (rows == 1) 
+			if (rows == 1)
 				Log.i(TAG, "Updated find:  " + this.toString());
 			else {
 				Log.e(TAG, "Db Error updating find: " + this.toString());
@@ -156,14 +261,16 @@ public class Find implements FindInterface {
 
 	/**
 	 * Deletes this find.
-	 * @param dao the DAO provided by the ORMLite helper class.
+	 * 
+	 * @param dao
+	 *            the DAO provided by the ORMLite helper class.
 	 * @return the number of rows deleted.
 	 */
 	public int delete(Dao<Find, Integer> dao) {
 		int rows = 0;
 		try {
 			rows = dao.delete(this);
-			if (rows == 1) 
+			if (rows == 1)
 				Log.i(TAG, "Deleted find:  " + this.toString());
 			else {
 				Log.e(TAG, "Db Error deleting find: " + this.toString());
@@ -173,23 +280,25 @@ public class Find implements FindInterface {
 			e.printStackTrace();
 		}
 		return rows;
-		
+
 	}
 
 	public void sync(String protocol) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	/**
 	 * Uses reflection to copy data from a ContentValues object to this object.
-	 * NOTE: This does not currently include any data from the superclass.  Should it?
+	 * NOTE: This does not currently include any data from the superclass.
+	 * Should it?
+	 * 
 	 * @param data
 	 */
 	private void updateObject(ContentValues data) {
 		Field[] fields = this.getClass().getDeclaredFields();
 		for (Field field : fields) {
-			if (Modifier.isStatic(field.getModifiers()))  // Skip static fields
+			if (Modifier.isStatic(field.getModifiers())) // Skip static fields
 				continue;
 			Object obj = null;
 			String fieldName = null;
@@ -218,7 +327,7 @@ public class Find implements FindInterface {
 						i = iVal;
 					field.set(this, i);
 					Log.i(TAG, "Set " + fieldName + "=" + i);
-				} else  {
+				} else {
 					String s = data.getAsString(fieldName);
 					field.set(this, s);
 					Log.i(TAG, "Set " + fieldName + "=" + s);
@@ -228,7 +337,7 @@ public class Find implements FindInterface {
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			} catch (ClassCastException e) {
-				Log.e(TAG, "Class cast exception on " + fieldName + "="  + obj);
+				Log.e(TAG, "Class cast exception on " + fieldName + "=" + obj);
 				e.printStackTrace();
 			}
 		}
@@ -244,12 +353,13 @@ public class Find implements FindInterface {
 		sb.append(LONGITUDE).append("=").append(longitude).append(",");
 		if (time != null)
 			sb.append(TIME).append("=").append(time.toString()).append(",");
-		else 
+		else
 			sb.append(TIME).append("=").append("").append(",");
 		if (modify_time != null)
-			sb.append(MODIFY_TIME).append("=").append(modify_time.toString()).append(",");
-		else 
-			sb.append(MODIFY_TIME).append("=").append("").append(",");	
+			sb.append(MODIFY_TIME).append("=").append(modify_time.toString())
+					.append(",");
+		else
+			sb.append(MODIFY_TIME).append("=").append("").append(",");
 		sb.append(REVISION).append("=").append(revision).append(",");
 		sb.append(IS_ADHOC).append("=").append(is_adhoc).append(",");
 		sb.append(ACTION).append("=").append(action).append(",");
@@ -257,29 +367,28 @@ public class Find implements FindInterface {
 		return sb.toString();
 	}
 
-	
-//	/**
-//	 * Return attr=val, ... for all non-static attributes using Reflection.
-//	 * @return
-//	 */
-//	@Override
-//	public String toString() {
-//		StringBuilder sb = new StringBuilder(super.toString());
-//		Field[] fields = this.getClass().getDeclaredFields();
-//		for (Field field : fields) {
-//			if (Modifier.isStatic(field.getModifiers()))  //  Skip static fields
-//				continue;
-//			try {
-//				sb.append(", ").append(field.getName()).append("=").append(field.get(this));
-//			} catch (IllegalArgumentException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IllegalAccessException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}		
-//		}
-//		return sb.toString();
-//	}
-	
+	// /**
+	// * Return attr=val, ... for all non-static attributes using Reflection.
+	// * @return
+	// */
+	// @Override
+	// public String toString() {
+	// StringBuilder sb = new StringBuilder(super.toString());
+	// Field[] fields = this.getClass().getDeclaredFields();
+	// for (Field field : fields) {
+	// if (Modifier.isStatic(field.getModifiers())) // Skip static fields
+	// continue;
+	// try {
+	// sb.append(", ").append(field.getName()).append("=").append(field.get(this));
+	// } catch (IllegalArgumentException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (IllegalAccessException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	// return sb.toString();
+	// }
+
 }
