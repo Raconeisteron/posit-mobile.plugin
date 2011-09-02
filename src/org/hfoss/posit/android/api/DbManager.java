@@ -25,6 +25,7 @@ package org.hfoss.posit.android.api;
 
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage;
@@ -32,6 +33,8 @@ import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -60,7 +63,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper  {
 	public static final String HISTORY_ID = "_id" ;	
 
 	// DAO objects used to access the Db tables
-	private Dao<AcdiVocaUser, Integer> avUserDao = null;
+	private Dao<User, Integer> userDao = null;
 	private Dao<Find, Integer> findDao = null;
 	//private Dao<AcdiVocaMessage, Integer> acdiVocaMessageDao = null;
 	
@@ -80,7 +83,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper  {
 		try {
 			Log.i(TAG, "onCreate");
 
-			AcdiVocaUser.createTable(connectionSource, getAvUserDao());
+			User.createTable(connectionSource, getUserDao());
 			Find.createTable(connectionSource);
 			//AcdiVocaMessage.createTable(connectionSource);
 			
@@ -95,7 +98,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper  {
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
 		try {
 			Log.i(TAG, "onUpgrade");
-			TableUtils.dropTable(connectionSource, AcdiVocaUser.class, true);
+			TableUtils.dropTable(connectionSource, User.class, true);
 			TableUtils.dropTable(connectionSource, Find.class, true);
 			//TableUtils.dropTable(connectionSource, AcdiVocaMessage.class, true);
 			// after we drop the old databases, we create the new ones
@@ -105,16 +108,28 @@ public class DbManager extends OrmLiteSqliteOpenHelper  {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public List<Find> getAllFinds(){
+		List<Find> list = null;
+		try {
+			list = getFindDao().queryForAll();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+		
+	}
 		
 	/**
 	 * Returns the Database Access Object (DAO) for the AcdiVocaUser class. 
 	 * It will create it or just give the cached value.
 	 */
-	public Dao<AcdiVocaUser, Integer> getAvUserDao() throws SQLException {
-		if (avUserDao == null) {
-			avUserDao = getDao(AcdiVocaUser.class);
+	public Dao<User, Integer> getUserDao() throws SQLException {
+		if (userDao == null) {
+			userDao = getDao(User.class);
 		}
-		return avUserDao;
+		return userDao;
 	}
 	
 	/**
@@ -145,7 +160,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper  {
 	@Override
 	public void close() {
 		super.close();
-		avUserDao = null;
+		userDao = null;
 		findDao = null;
 		//acdiVocaMessageDao = null;
 	}

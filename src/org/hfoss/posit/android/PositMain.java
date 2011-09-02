@@ -30,6 +30,7 @@ import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.LoginActivity;
 import org.hfoss.posit.android.api.SettingsActivity;
+import org.hfoss.posit.android.api.User;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
@@ -144,7 +145,8 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
 		if (loginActivity != null) {
 			intent.setClass(this, loginActivity);
-			intent.putExtra(AcdiVocaUser.USER_TYPE_STRING, AcdiVocaUser.UserType.USER.ordinal());
+			intent.putExtra(User.USER_TYPE_STRING, User.UserType.USER.ordinal());
+			Log.i(TAG,"started activity fo rresult");
 			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 		}
 	}
@@ -157,7 +159,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 	 * places in the Android, including in onCreate() and onRestart(). 
 	 */
 	private void startPOSIT() {
-
+			Log.i(TAG, "IN STARTP OSIT WOOOO");
 			setContentView(R.layout.main);
 			
 			// Change visibility of buttons based on UserType
@@ -273,7 +275,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG,"Resuming");
+		Log.i(TAG,"Resuming LOOOOOOL");
 		
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 		startPOSIT();
@@ -310,6 +312,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 
 		case LoginActivity.ACTION_LOGIN:
 			if (resultCode == RESULT_OK) {
+				Log.i(TAG, "WE IN ON ACTIVITY RESULT");
 				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
 				break;
 			} else {

@@ -30,9 +30,9 @@ import java.util.Set;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
+import org.hfoss.posit.android.api.User;
 import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
+import org.hfoss.posit.android.api.User.UserType;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -76,20 +76,14 @@ public class LoginActivity extends Activity implements OnClickListener {
 		if (extras == null) {
 			return;
 		}
-		mBeneficiaryType = extras.getInt(AcdiVocaFind.TYPE);
-		Log.i(TAG, "onCreate, beneficiary type = " + mBeneficiaryType);
+		//mBeneficiaryType = extras.getInt(AcdiVocaFind.TYPE);
+		//Log.i(TAG, "onCreate, beneficiary type = " + mBeneficiaryType);
 
-		mUserTypeOrdinal = extras.getInt(AcdiVocaUser.USER_TYPE_STRING);
+		mUserTypeOrdinal = extras.getInt(User.USER_TYPE_STRING);
 		if (mUserTypeOrdinal == UserType.USER.ordinal()) {
 			mUserType = UserType.USER;
-		} else if (mUserTypeOrdinal == UserType.SUPER.ordinal()) {
-			mUserType = UserType.SUPER;
 		} else if (mUserTypeOrdinal == UserType.ADMIN.ordinal()) {
 			mUserType = UserType.ADMIN;
-		} else if (mUserTypeOrdinal == UserType.AGRON.ordinal()) {
-			mUserType = UserType.AGRON;
-		} else if (mUserTypeOrdinal == UserType.AGRI.ordinal()) {
-			mUserType = UserType.AGRI;
 		} else {
 			Log.e(TAG, "Invalid user type passed to LoginActivity");
 		}
@@ -112,7 +106,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
-		setContentView(R.layout.acdivoca_login);  // Should be done after locale configuration
+		setContentView(R.layout.login);  // Should be done after locale configuration
 		
 		((Button)findViewById(R.id.login_button)).setOnClickListener(this);
 		((Button)findViewById(R.id.cancel_login_button)).setOnClickListener(this);
@@ -183,7 +177,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	 * @return
 	 */
 	private int authenticateUser(String username, String password, UserType userType) {
-		return AcdiVocaUser.authenicateUser(this, username, password, userType);
+		return User.authenticateUser(this, username, password, userType);
 		
 //		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
 //		return db.authenicateUser(username, password, userType);

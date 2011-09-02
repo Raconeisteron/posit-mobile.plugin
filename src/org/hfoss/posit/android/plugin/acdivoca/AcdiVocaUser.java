@@ -288,7 +288,7 @@ public class AcdiVocaUser {
 	public static int authenicateUser(Context context, String username, String password, UserType userType) {
 		Log.i(TAG, "Authenticating user = " + username + " Access type = " + userType);		
 		
-		DbManager db = new DbManager(context);
+		AcdiVocaDbManager db = new AcdiVocaDbManager(context);
 		
 		Dao<AcdiVocaUser, Integer> avUserDao = null;
 		try {

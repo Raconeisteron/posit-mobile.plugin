@@ -20,7 +20,7 @@ public interface FindInterface {
 	/**
 	 * @return the guId
 	 */
-	public String getguId();
+	public String getGuid();
 	
 	/**
 	 * Inserts this Find object into the DB, including its data.
