@@ -159,7 +159,6 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 	 * places in the Android, including in onCreate() and onRestart(). 
 	 */
 	private void startPOSIT() {
-			Log.i(TAG, "IN STARTP OSIT WOOOO");
 			setContentView(R.layout.main);
 			
 			// Change visibility of buttons based on UserType
@@ -275,7 +274,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG,"Resuming LOOOOOOL");
+		Log.i(TAG,"Resuming");
 		
 		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 		startPOSIT();
@@ -312,7 +311,6 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 
 		case LoginActivity.ACTION_LOGIN:
 			if (resultCode == RESULT_OK) {
-				Log.i(TAG, "WE IN ON ACTIVITY RESULT");
 				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
 				break;
 			} else {

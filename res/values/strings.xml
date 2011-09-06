@@ -7,6 +7,9 @@
 	
 	<string name="defaultServer">http://turing.cs.trincoll.edu/~ram/positweb</string>
 
+	<string name="addFind">Add find</string>
+	<string name="viewFinds">View finds</string>
+
 	<string name="confirmChange">Confirm</string>
 	<string name="accountNotFoundMessage">Your email or username is incorrect</string>
 	<string name="projectNameLabel">Project Name:</string>
