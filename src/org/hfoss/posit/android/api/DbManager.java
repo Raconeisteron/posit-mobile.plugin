@@ -80,17 +80,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper  {
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
-		try {
-			Log.i(TAG, "onCreate");
-
-			User.createTable(connectionSource, getUserDao());
-			Find.createTable(connectionSource);
-			//AcdiVocaMessage.createTable(connectionSource);
-			
-		} catch (SQLException e) {
-			Log.e(TAG, "Can't create database", e);
-			throw new RuntimeException(e);
-		}
+		Log.i(TAG, "onCreate");
+		User.createTable(connectionSource, getUserDao());
+		Find.createTable(connectionSource);
 		
 	}
 	
@@ -100,7 +92,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper  {
 			Log.i(TAG, "onUpgrade");
 			TableUtils.dropTable(connectionSource, User.class, true);
 			TableUtils.dropTable(connectionSource, Find.class, true);
-			//TableUtils.dropTable(connectionSource, AcdiVocaMessage.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
 		} catch (SQLException e) {
@@ -125,9 +116,14 @@ public class DbManager extends OrmLiteSqliteOpenHelper  {
 	 * Returns the Database Access Object (DAO) for the AcdiVocaUser class. 
 	 * It will create it or just give the cached value.
 	 */
-	public Dao<User, Integer> getUserDao() throws SQLException {
+	public Dao<User, Integer> getUserDao() {
 		if (userDao == null) {
-			userDao = getDao(User.class);
+			try {
+				userDao = getDao(User.class);
+			} catch (SQLException e) {
+				Log.e(TAG,"Get user DAO failed.");
+				e.printStackTrace();
+			}
 		}
 		return userDao;
 	}
@@ -136,9 +132,14 @@ public class DbManager extends OrmLiteSqliteOpenHelper  {
 	 * Returns the Database Access Object (DAO) for the AcdiVocaFind class. 
 	 * It will create it or just give the cached value.
 	 */
-	public Dao<Find, Integer> getFindDao() throws SQLException {
+	public Dao<Find, Integer> getFindDao()  {
 		if (findDao == null) {
-			findDao = getDao(Find.class);
+			try {
+				findDao = getDao(Find.class);
+			} catch (SQLException e) {
+				Log.e(TAG,"Get find DAO failed.");
+				e.printStackTrace();
+			}
 		}
 		return findDao;
 	}

@@ -50,10 +50,14 @@ public class Find implements FindInterface {
 	protected String guid;
 	@DatabaseField(columnName = NAME)
 	protected String name;
+	@DatabaseField(columnName = DESCRIPTION)
+	protected String description;
 	@DatabaseField(columnName = LATITUDE)
 	protected double latitude;
 	@DatabaseField(columnName = LONGITUDE)
 	protected double longitude;
+	@DatabaseField(columnName = SYNCED)
+	protected int synced;
 	@DatabaseField(columnName = TIME, canBeNull = false)
 	protected Date time = new Date();
 	@DatabaseField(columnName = MODIFY_TIME)
@@ -137,6 +141,14 @@ public class Find implements FindInterface {
 		this.name = name;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public double getLatitude() {
 		return latitude;
 	}
@@ -151,6 +163,14 @@ public class Find implements FindInterface {
 
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
+	}
+
+	public int isSynced() {
+		return synced;
+	}
+
+	public void setSynced(int synced) {
+		this.synced = synced;
 	}
 
 	public Date getTime() {
