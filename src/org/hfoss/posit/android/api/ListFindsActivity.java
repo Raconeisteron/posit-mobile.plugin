@@ -1,21 +1,12 @@
 package org.hfoss.posit.android.api;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbManager;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage;
-import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
-import android.app.ListActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,9 +44,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	}
 	
 	/**
-	 * Puts the items from the DB table into the rows of the view. Note that
-	 *  once you start managing a Cursor, you cannot close the DB without 
-	 *  causing an error.
+	 * Puts the items from the DB table into the rows of the view. 
 	 */
 	private void fillList() {
 
@@ -71,9 +60,9 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	}
 	
 	/**
-	 * Adapter for displaying beneficiaries. 
+	 * Adapter for displaying finds. 
 	 *
-	 * @param <AcdiVocaFind>
+	 * @param <Find>
 	 */
 	private class FindsListAdapter extends ArrayAdapter<Find> {
 		private List<Find> items;
@@ -99,7 +88,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
                         tv = (TextView) v.findViewById(R.id.longitude);
                         tv.setText(String.valueOf(find.getLongitude()));
                         tv = (TextView) v.findViewById(R.id.id);
-                        tv.setText(find.getId());
+                        tv.setText(Integer.toString(find.getId()));
                 }
                 return v;
         }
