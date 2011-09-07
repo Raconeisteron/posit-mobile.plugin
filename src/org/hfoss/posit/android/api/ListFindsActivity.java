@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public abstract class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> { 
+public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> { 
 
 	private static final String TAG = "ListFindsActivity";
 	

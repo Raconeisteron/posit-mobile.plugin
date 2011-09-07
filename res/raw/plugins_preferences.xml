@@ -10,11 +10,11 @@
  			login_activity_class="LoginActivity"
 			find_data_manager="DbManager" 
 			preferences_xml="posit_preferences" 
-			main_list_button_label="send_sms_label"
-			main_add_button_label="add_beneficiary_label"
-			main_extra_button_label="update_beneficiary_label"
-			main_extra_button_label2="new_agri_beneficiary_label"
-			main_icon="acdivoca_logo_lg" />
+			main_list_button_label="viewFinds"
+			main_add_button_label="addFind"
+			main_extra_button_label=""
+			main_extra_button_label2=""
+			main_icon="posit" />
 	
 <!-- 		<Plugin active="true" name="AcdiVocaFind" -->
 <!-- 			package="org.hfoss.posit.android.plugin.acdivoca"  -->
