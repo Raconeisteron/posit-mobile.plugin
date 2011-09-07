@@ -31,7 +31,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
+//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage;
@@ -217,30 +217,30 @@ public class SmsService extends Service {
 	 * @param sFileName
 	 * @param msg
 	 */
-	public void logMessages(ArrayList<String> msgs){
-		try
-		{
-			File file = new File(Environment.getExternalStorageDirectory() 
-					+ "/" + AcdiVocaAdminActivity.DEFAULT_LOG_DIRECTORY + "/" 
-					+ AcdiVocaAdminActivity.SMS_LOG_FILE);
-
-			//FileWriter writer = new FileWriter(file);
-			PrintWriter writer =  new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-
-			Iterator<String> it = msgs.iterator();
-			while (it.hasNext()) {
-				String msg = it.next();
-				writer.println(msg);
-				Log.i(TAG, "Wrote to file: " + msg);
-			}
-			writer.flush();
-			writer.close();
-		}
-		catch(IOException e) {
-			Log.e(TAG, "IO Exception writing to Log " + e.getMessage());
-			e.printStackTrace();
-		}
-	}   
+//	public void logMessages(ArrayList<String> msgs){
+//		try
+//		{
+//			File file = new File(Environment.getExternalStorageDirectory() 
+//					+ "/" + AcdiVocaAdminActivity.DEFAULT_LOG_DIRECTORY + "/" 
+//					+ AcdiVocaAdminActivity.SMS_LOG_FILE);
+//
+//			//FileWriter writer = new FileWriter(file);
+//			PrintWriter writer =  new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+//
+//			Iterator<String> it = msgs.iterator();
+//			while (it.hasNext()) {
+//				String msg = it.next();
+//				writer.println(msg);
+//				Log.i(TAG, "Wrote to file: " + msg);
+//			}
+//			writer.flush();
+//			writer.close();
+//		}
+//		catch(IOException e) {
+//			Log.e(TAG, "IO Exception writing to Log " + e.getMessage());
+//			e.printStackTrace();
+//		}
+//	}   
 
 	/**
 	 * Separately threaded task to send messages.  
@@ -255,7 +255,7 @@ public class SmsService extends Service {
 		protected String doInBackground(Context... contexts) {
 			Log.i(TAG, "doInBackground");
 			this.context = contexts[0];
-			logMessages(mMessages);
+			//logMessages(mMessages);
 			transmitMessages(context, mMessages);
 			return null;
 		}

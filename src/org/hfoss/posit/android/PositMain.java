@@ -25,19 +25,19 @@ package org.hfoss.posit.android;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.hfoss.posit.android.api.AppControlManager;
 import org.hfoss.posit.android.api.DbManager;
 import org.hfoss.posit.android.api.FindActivityProvider;
 import org.hfoss.posit.android.api.FindPluginManager;
 import org.hfoss.posit.android.api.LoginActivity;
 import org.hfoss.posit.android.api.SettingsActivity;
 import org.hfoss.posit.android.api.User;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
+//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
+//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
+//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
-import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 
 import org.hfoss.posit.android.plugin.acdivoca.SearchFilterActivity;
@@ -98,7 +98,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 
 		// Initialize plugins and managers
 		FindPluginManager.initInstance(this);
-		AcdiVocaSmsManager.initInstance(this);
+		//AcdiVocaSmsManager.initInstance(this);
 		AttributeManager.init();
 
 		// A newly installed POSIT should have no shared prefs. Set the default phone pref if
@@ -163,7 +163,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 			
 			// Change visibility of buttons based on UserType
 
-			Log.i(TAG, "POSIT Start, distrStage = " + AppControlManager.displayDistributionStage(this));
+			//Log.i(TAG, "POSIT Start, distrStage = " + AppControlManager.displayDistributionStage(this));
 						
 			if (FindPluginManager.mMainIcon != null) {
 				final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
@@ -182,13 +182,13 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 					addFindButton.setOnClickListener(this);
 				}
 				
-				// Button is gone for AGRI and AGRON users and for USER users during distribution events
-				if ( (AppControlManager.isAgriUser()  || AppControlManager.isAgronUser())
-						|| (AppControlManager.isRegularUser() && AppControlManager.isDuringDistributionEvent())) {
-					addFindButton.setVisibility(View.GONE);
-				} else {
-					addFindButton.setVisibility(View.VISIBLE);
-				}
+//				// Button is gone for AGRI and AGRON users and for USER users during distribution events
+//				if ( (AppControlManager.isAgriUser()  || AppControlManager.isAgronUser())
+//						|| (AppControlManager.isRegularUser() && AppControlManager.isDuringDistributionEvent())) {
+//					addFindButton.setVisibility(View.GONE);
+//				} else {
+//					addFindButton.setVisibility(View.VISIBLE);
+//				}
 			}
 
 			// Send messages button
@@ -200,15 +200,15 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 					listFindButton.setOnClickListener(this);
 				}
 				
-				// Button is gone for USER and AGRI users during distribution events
-				if (AppControlManager.isDuringDistributionEvent()  
-						&& (AppControlManager.isRegularUser() 
-								|| AppControlManager.isAgriUser() 
-								|| AppControlManager.isAgronUser() )) {
-					listFindButton.setVisibility(View.GONE);
-				} else {
-					listFindButton.setVisibility(View.VISIBLE);
-				}
+//				// Button is gone for USER and AGRI users during distribution events
+//				if (AppControlManager.isDuringDistributionEvent()  
+//						&& (AppControlManager.isRegularUser() 
+//								|| AppControlManager.isAgriUser() 
+//								|| AppControlManager.isAgronUser() )) {
+//					listFindButton.setVisibility(View.GONE);
+//				} else {
+//					listFindButton.setVisibility(View.VISIBLE);
+//				}
 			}
 			
 			// Update button -- used during Distribution events
@@ -221,20 +221,20 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 					extraButton.setVisibility(View.VISIBLE);
 				}
 				
-				// Button is gone for USER and ADMIN users except during distribution events
-				if (AppControlManager.isRegularUser() || AppControlManager.isAdminUser()) {
-					if (AppControlManager.isDuringDistributionEvent()) 
-						extraButton.setVisibility(View.VISIBLE);
-					else
-						extraButton.setVisibility(View.GONE);
-					
-					// Enable the Button only if the event is started
-					if (AppControlManager.isDistributionStarted())
-						extraButton.setEnabled(true);
-					else
-						extraButton.setEnabled(false);
-				} else if (AppControlManager.isAgriUser() || AppControlManager.isAgronUser())
-					extraButton.setVisibility(View.GONE);
+//				// Button is gone for USER and ADMIN users except during distribution events
+//				if (AppControlManager.isRegularUser() || AppControlManager.isAdminUser()) {
+//					if (AppControlManager.isDuringDistributionEvent()) 
+//						extraButton.setVisibility(View.VISIBLE);
+//					else
+//						extraButton.setVisibility(View.GONE);
+//					
+//					// Enable the Button only if the event is started
+//					if (AppControlManager.isDistributionStarted())
+//						extraButton.setEnabled(true);
+//					else
+//						extraButton.setEnabled(false);
+//				} else if (AppControlManager.isAgriUser() || AppControlManager.isAgronUser())
+//					extraButton.setVisibility(View.GONE);
 			}
 
 			// New agriculture beneficiary
@@ -247,16 +247,16 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 					extraButton.setOnClickListener(this);
 				}
 				
-				// Button is gone for USER users and (AGRI users during distribution events)
-				Log.i(TAG, "Distr Stage = " +  AppControlManager.displayDistributionStage(this));
-				if (AppControlManager.isRegularUser() 
-						|| AppControlManager.isAdminUser()
-						|| (AppControlManager.isAgriUser() && AppControlManager.isDuringDistributionEvent())
-						|| (AppControlManager.isAgronUser() && AppControlManager.isDuringDistributionEvent())) {
-					extraButton.setVisibility(View.GONE);
-				} else {
-					extraButton.setVisibility(View.VISIBLE);
-				}
+//				// Button is gone for USER users and (AGRI users during distribution events)
+//				Log.i(TAG, "Distr Stage = " +  AppControlManager.displayDistributionStage(this));
+//				if (AppControlManager.isRegularUser() 
+//						|| AppControlManager.isAdminUser()
+//						|| (AppControlManager.isAgriUser() && AppControlManager.isDuringDistributionEvent())
+//						|| (AppControlManager.isAgronUser() && AppControlManager.isDuringDistributionEvent())) {
+//					extraButton.setVisibility(View.GONE);
+//				} else {
+//					extraButton.setVisibility(View.VISIBLE);
+//				}
 				
 				Log.i(TAG, "Extra button visibility = " + extraButton.getVisibility());
 			}
@@ -387,13 +387,13 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 		
 		MenuItem  adminMenu = menu.findItem(R.id.admin_menu_item);
 		
-		Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
-		Log.i(TAG, "distribution stage = " + AppControlManager.getDistributionStage());
-		// Hide the ADMIN menu from regular users
-		if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser())
-			adminMenu.setVisible(false);
-		else 
-			adminMenu.setVisible(true);
+//		Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
+//		Log.i(TAG, "distribution stage = " + AppControlManager.getDistributionStage());
+//		// Hide the ADMIN menu from regular users
+//		if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser())
+//			adminMenu.setVisible(false);
+//		else 
+//			adminMenu.setVisible(true);
 		
 		return super.onPrepareOptionsMenu(menu);
 
@@ -411,9 +411,9 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 		case R.id.settings_menu_item:
 			startActivity(new Intent(this, SettingsActivity.class));
 			break;
-		case R.id.admin_menu_item:
-			startActivity(new Intent(this, AcdiVocaAdminActivity.class));
-			break;
+//		case R.id.admin_menu_item:
+//			startActivity(new Intent(this, AcdiVocaAdminActivity.class));
+//			break;
 		case R.id.about_menu_item:
 			startActivity(new Intent(this, AboutActivity.class));
 			break;

@@ -31,7 +31,6 @@ import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.api.User;
-import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
 import org.hfoss.posit.android.api.User.UserType;
 
 import android.app.Activity;
@@ -64,7 +63,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		
 	private UserType mUserType;
 	private int mUserTypeOrdinal;
-	private int mBeneficiaryType;
+
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -76,8 +75,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 		if (extras == null) {
 			return;
 		}
-		//mBeneficiaryType = extras.getInt(AcdiVocaFind.TYPE);
-		//Log.i(TAG, "onCreate, beneficiary type = " + mBeneficiaryType);
 
 		mUserTypeOrdinal = extras.getInt(User.USER_TYPE_STRING);
 		if (mUserTypeOrdinal == UserType.USER.ordinal()) {
@@ -104,7 +101,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		super.onResume();
 		Log.i(TAG, "onResume");
 		
-		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+		//AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		setContentView(R.layout.login);  // Should be done after locale configuration
 		
@@ -118,8 +115,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		Log.i(TAG, "onClick");
 	    Intent returnIntent = new Intent();
-	    returnIntent.putExtra(AcdiVocaFind.TYPE, mBeneficiaryType);
-
 	
 		if (v.getId() == R.id.login_button) {
 			EditText etext = ((EditText)findViewById(R.id.usernameEdit));
@@ -170,7 +165,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 	}
 	
 	/**
-	 * Local authentication method just calls DbHelper to authenticate.
+	 * Local authentication method just calls User class to authenticate.
+	 * Override if you want to use your own custom defined User table.
 	 * @param username
 	 * @param password
 	 * @param userType
@@ -178,9 +174,6 @@ public class LoginActivity extends Activity implements OnClickListener {
 	 */
 	private int authenticateUser(String username, String password, UserType userType) {
 		return User.authenticateUser(this, username, password, userType);
-		
-//		AcdiVocaDbHelper db = new AcdiVocaDbHelper(this);
-//		return db.authenicateUser(username, password, userType);
 	}
 
 }
