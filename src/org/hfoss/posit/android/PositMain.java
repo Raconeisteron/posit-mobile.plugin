@@ -212,7 +212,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 			}
 			
 			// Update button -- used during Distribution events
-			if (FindPluginManager.mExtraButtonLabel != null) {
+			if (FindPluginManager.mExtraButtonLabel != null && !FindPluginManager.mExtraButtonLabel.equals("")) {
 				final Button extraButton = (Button) findViewById(R.id.extraButton);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel, "string", "org.hfoss.posit.android");
 				if (extraButton != null) {
@@ -238,7 +238,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 			}
 
 			// New agriculture beneficiary
-			if (FindPluginManager.mExtraButtonLabel2 != null) {
+			if (FindPluginManager.mExtraButtonLabel2 != null && !FindPluginManager.mExtraButtonLabel2.equals("")) {
 				final Button extraButton = (Button) findViewById(R.id.extraButton2);
 				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel2, "string", "org.hfoss.posit.android");
 				if (extraButton != null) {
@@ -340,7 +340,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 				intent.setAction(Intent.ACTION_SEND);
 				//intent.putExtra(AcdiVocaDbHelper.FINDS_STATUS, SearchFilterActivity.RESULT_SELECT_NEW);
 				intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
-				intent.setClass(this, AcdiVocaListFindsActivity.class);
+				//intent.setClass(this, AcdiVocaListFindsActivity.class);
 				startActivity(intent);				
 				break;
 
