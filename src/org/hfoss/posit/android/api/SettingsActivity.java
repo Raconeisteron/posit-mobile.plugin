@@ -31,7 +31,6 @@ import java.util.Map;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.R.xml;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
-import org.hfoss.posit.android.plugin.acdivoca.AppControlManager;
 import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -261,107 +260,107 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
      * @param sp
      */
     private void controlSettingsVisibility (SharedPreferences sp) {
-        // NOTE: This seems to throw an exception for non-string preference values.
-        // Initialize the summary strings
-//        SharedPreferences.Editor spe = sp.edit();  										// 7/25/11      
-
-        int userTypeOrdinal = sp.getInt(AcdiVocaUser.USER_TYPE_KEY, -1);
-        Log.i(TAG, "Control settings, UserTypeKey = " + userTypeOrdinal);
-
-        Map<String,?> prefs = sp.getAll();
-//    	PreferenceGroup spg = PreferenceGroup(this, xml.acdivoca_preferences);				// 7/25/11
-        Iterator it = prefs.keySet().iterator();
-        while (it.hasNext()) {
-            try {
-                String key = (String) it.next();
-                Preference p =  findPreference(key);
-                String value = sp.getString(key, null);
-                if (p!= null && value != null) {
-                    Log.i(TAG, "Preference = " + p.toString());
-                    if (key.equals(getString(R.string.distribution_point_key))){ // New code for distribution points
-                        p.setSummary(AttributeManager.getMapping(value));  // 7/15/11
-                    }
-                        
-                    else{    
-                        p.setSummary(value);
-                    }
-                    
-                    if (key.equals(getString(R.string.distribution_point_key))) {
-                    	if (AppControlManager.isAgronUser()) {
-                    		ListPreference listDistrPoint = (ListPreference) findPreference(getString(R.string.distribution_point_key));
-                    		Log.i(TAG, "List Preference = " + listDistrPoint);
-                    		PreferenceCategory mCategory = (PreferenceCategory) findPreference(getString(R.string.acdivocaprefs));
-                    		if (mCategory.removePreference(listDistrPoint)) 
-                    			Log.i(TAG, "Should have removed preference = " + listDistrPoint);
-                    	}
-                    }
-                    
-//                    if (userTypeOrdinal == UserType.USER.ordinal() 
-                    if ((AppControlManager.isRegularUser() || AppControlManager.isAgriUser() /*||  AppControlManager.isAgronUser() **/)
-                    		// 7/25/11 
-                            && (key.equals(getString(R.string.smsPhoneKey))
-                            || key.equals(getString(R.string.distribution_point_key))
-                            || key.equals(getString(R.string.distribution_event_key))
-                            || key.equals(getString(R.string.commune_section_key))
-                            )) {
-                        Log.i(TAG, "############################"); // 7/25/11
-                        p.setEnabled(false);
-//                        onPrepareForRemoval()
-//                        sp.remove(key);
-//                        int id = p.getLayoutResource();
-//                       findViewById(id).setVisibility(false);
-                       
-//                        PreferenceCategory mCategory = (PreferenceCategory) findPreference(getString(R.string.acdivocaprefs));
-//                        Preference mPreference = getPreferenceScreen().findPreference(key);
-//                        if(mCategory==null)
-//                        	Log.i(TAG, "Category not being found");
-//                        int id = p.getLayoutResource();
-//                        Preference mPreference = mCategory.getPreference(id);
-//                        if(mPreference==null)
-//                    	Log.i(TAG, "Preference not being found in category");
-//                        if(!mCategory.remove(mPreference))
-//                        	Log.i(TAG, "Something is wrong with mCategory.removePreference()"); //Doesn't work here
-//                        ListPreference listDistrPoint = (ListPreference) findPreference(key);     
-                        Log.i(TAG, "Disabling USER setting for key = " + key);
-                    }
-// 7/25/11 Allows Agron users to change commune section                   
-                    
-                    if ((AppControlManager.isAgronUser())
-                            && (key.equals(getString(R.string.smsPhoneKey))
-                            || key.equals(getString(R.string.distribution_point_key))
-                            || key.equals(getString(R.string.distribution_event_key))
-                            )) {
-                        p.setEnabled(false);
-                        //this.getPreferenceScreen().removePreference(p); Doesn't work here
-                        Log.i(TAG, "Disabling USER setting for key = " + key);
-                    }
-                    
-                    
-//                    if (userTypeOrdinal == UserType.ADMIN.ordinal() 
-// 8/3/11 This code prevents admin users from changing the commune section                    
-                    if ((AppControlManager.isAdminUser()
-                    		&& key.equals(getString(R.string.commune_section_key))
-                    )) {
-                p.setEnabled(false);
-                Log.i(TAG, "Disabling ADMIN setting for key = " + key);
-                    }
-                    
-                    if ((AppControlManager.isAdminUser() || AppControlManager.isAgronUser())
-                            && key.equals(getString(R.string.distribution_event_key))) {
-                        p.setEnabled(false);
-                        
-
-
-                        //this.getPreferenceScreen().removePreference(p); Doesn't work here
-                        Log.i(TAG, "Disabling ADMIN setting for key = " + key);
-                    }
-                }
-            } catch (ClassCastException e) {
-                Log.e(TAG, "Initialize summary strings ClassCastException");
-                Log.e(TAG, e.getStackTrace().toString());
-                continue;
-            }
-        }
+//        // NOTE: This seems to throw an exception for non-string preference values.
+//        // Initialize the summary strings
+////        SharedPreferences.Editor spe = sp.edit();  										// 7/25/11      
+//
+//        int userTypeOrdinal = sp.getInt(AcdiVocaUser.USER_TYPE_KEY, -1);
+//        Log.i(TAG, "Control settings, UserTypeKey = " + userTypeOrdinal);
+//
+//        Map<String,?> prefs = sp.getAll();
+////    	PreferenceGroup spg = PreferenceGroup(this, xml.acdivoca_preferences);				// 7/25/11
+//        Iterator it = prefs.keySet().iterator();
+//        while (it.hasNext()) {
+//            try {
+//                String key = (String) it.next();
+//                Preference p =  findPreference(key);
+//                String value = sp.getString(key, null);
+//                if (p!= null && value != null) {
+//                    Log.i(TAG, "Preference = " + p.toString());
+//                    if (key.equals(getString(R.string.distribution_point_key))){ // New code for distribution points
+//                        p.setSummary(AttributeManager.getMapping(value));  // 7/15/11
+//                    }
+//                        
+//                    else{    
+//                        p.setSummary(value);
+//                    }
+//                    
+//                    if (key.equals(getString(R.string.distribution_point_key))) {
+//                    	if (AppControlManager.isAgronUser()) {
+//                    		ListPreference listDistrPoint = (ListPreference) findPreference(getString(R.string.distribution_point_key));
+//                    		Log.i(TAG, "List Preference = " + listDistrPoint);
+//                    		PreferenceCategory mCategory = (PreferenceCategory) findPreference(getString(R.string.acdivocaprefs));
+//                    		if (mCategory.removePreference(listDistrPoint)) 
+//                    			Log.i(TAG, "Should have removed preference = " + listDistrPoint);
+//                    	}
+//                    }
+//                    
+////                    if (userTypeOrdinal == UserType.USER.ordinal() 
+//                    if ((AppControlManager.isRegularUser() || AppControlManager.isAgriUser() /*||  AppControlManager.isAgronUser() **/)
+//                    		// 7/25/11 
+//                            && (key.equals(getString(R.string.smsPhoneKey))
+//                            || key.equals(getString(R.string.distribution_point_key))
+//                            || key.equals(getString(R.string.distribution_event_key))
+//                            || key.equals(getString(R.string.commune_section_key))
+//                            )) {
+//                        Log.i(TAG, "############################"); // 7/25/11
+//                        p.setEnabled(false);
+////                        onPrepareForRemoval()
+////                        sp.remove(key);
+////                        int id = p.getLayoutResource();
+////                       findViewById(id).setVisibility(false);
+//                       
+////                        PreferenceCategory mCategory = (PreferenceCategory) findPreference(getString(R.string.acdivocaprefs));
+////                        Preference mPreference = getPreferenceScreen().findPreference(key);
+////                        if(mCategory==null)
+////                        	Log.i(TAG, "Category not being found");
+////                        int id = p.getLayoutResource();
+////                        Preference mPreference = mCategory.getPreference(id);
+////                        if(mPreference==null)
+////                    	Log.i(TAG, "Preference not being found in category");
+////                        if(!mCategory.remove(mPreference))
+////                        	Log.i(TAG, "Something is wrong with mCategory.removePreference()"); //Doesn't work here
+////                        ListPreference listDistrPoint = (ListPreference) findPreference(key);     
+//                        Log.i(TAG, "Disabling USER setting for key = " + key);
+//                    }
+//// 7/25/11 Allows Agron users to change commune section                   
+//                    
+//                    if ((AppControlManager.isAgronUser())
+//                            && (key.equals(getString(R.string.smsPhoneKey))
+//                            || key.equals(getString(R.string.distribution_point_key))
+//                            || key.equals(getString(R.string.distribution_event_key))
+//                            )) {
+//                        p.setEnabled(false);
+//                        //this.getPreferenceScreen().removePreference(p); Doesn't work here
+//                        Log.i(TAG, "Disabling USER setting for key = " + key);
+//                    }
+//                    
+//                    
+////                    if (userTypeOrdinal == UserType.ADMIN.ordinal() 
+//// 8/3/11 This code prevents admin users from changing the commune section                    
+//                    if ((AppControlManager.isAdminUser()
+//                    		&& key.equals(getString(R.string.commune_section_key))
+//                    )) {
+//                p.setEnabled(false);
+//                Log.i(TAG, "Disabling ADMIN setting for key = " + key);
+//                    }
+//                    
+//                    if ((AppControlManager.isAdminUser() || AppControlManager.isAgronUser())
+//                            && key.equals(getString(R.string.distribution_event_key))) {
+//                        p.setEnabled(false);
+//                        
+//
+//
+//                        //this.getPreferenceScreen().removePreference(p); Doesn't work here
+//                        Log.i(TAG, "Disabling ADMIN setting for key = " + key);
+//                    }
+//                }
+//            } catch (ClassCastException e) {
+//                Log.e(TAG, "Initialize summary strings ClassCastException");
+//                Log.e(TAG, e.getStackTrace().toString());
+//                continue;
+//            }
+//        }
     }
     
     
@@ -404,38 +403,28 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
      * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences, java.lang.String)
      */
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-        try {
-            if (!key.equals(AcdiVocaUser.USER_TYPE_KEY)) {
-
-                Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
-                        " value = " + sp.getString(key, ""));
-                Log.i(TAG, "Preferences= " + sp.getAll().toString());
-                Preference p =  this.findPreference(key);
-                String value = sp.getString(key, null);
-                if (p != null && value != null)
-                    if (key.equals(getString(R.string.distribution_point_key))){ // New code for distribution points
-                        p.setSummary(AttributeManager.getMapping(value));    // 7/15/11
-                    }
-                        
-                    else{    
-                        p.setSummary(value);
-                    }
-
-                // If the ADMIN user changes the distribution point preference, initiate a distribution event.
-                if (key.equals(getString(R.string.distribution_point_key)) && value != null) {
-                    AppControlManager.initDistributionEvent(this);
-                }
-                
-                // IF SUPER user aborts the distribution event
-                if (key.equals(getString(R.string.distribution_event_key)) 
-                		&& value != null && value.equals(getString(R.string.abort_distribution_event)))
-                	AppControlManager.abortDistributionEvent(this);
-
-            }
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Class Cast Exception on " + key);
-            e.printStackTrace();
-        }
+//        try {
+//            if (!key.equals(AcdiVocaUser.USER_TYPE_KEY)) {
+//
+//                Log.i(TAG, "onSharedPreferenceChanged, key= " + key +
+//                        " value = " + sp.getString(key, ""));
+//                Log.i(TAG, "Preferences= " + sp.getAll().toString());
+//                Preference p =  this.findPreference(key);
+//                String value = sp.getString(key, null);
+//                if (p != null && value != null)
+//                    if (key.equals(getString(R.string.distribution_point_key))){ // New code for distribution points
+//                        p.setSummary(AttributeManager.getMapping(value));    // 7/15/11
+//                    }
+//                        
+//                    else{    
+//                        p.setSummary(value);
+//                    }
+//
+//            }
+//        } catch (ClassCastException e) {
+//            Log.e(TAG, "Class Cast Exception on " + key);
+//            e.printStackTrace();
+//        }
     }
 }
 

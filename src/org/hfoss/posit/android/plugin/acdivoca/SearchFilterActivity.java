@@ -23,6 +23,7 @@
 package org.hfoss.posit.android.plugin.acdivoca;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.AppControlManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import android.app.Activity;
