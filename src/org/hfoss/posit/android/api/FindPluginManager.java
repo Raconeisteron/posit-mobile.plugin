@@ -31,12 +31,13 @@ public class FindPluginManager {
 	private Activity mMainActivity = null;
 	private FindFactory mFindFactory = null;
 	//private DbManager mDbManager = null;
+	private Class<Find> mFindClass;
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;
 	private Class<Activity> mExtraActivityClass = null;
 	private Class<Activity> mExtraActivityClass2 = null;
 	private Class<Activity> mLoginActivityClass = null;
-	
+
 	public static String mPreferences = null;  // Shared preferences XML for Settings
 	public static String mMainIcon = null;
 	public static String mAddButtonLabel = null;
@@ -96,6 +97,7 @@ public class FindPluginManager {
 					String package_name = plugin_nodes.item(ii).getAttributes().getNamedItem("package").getTextContent();
 					String find_factory_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_factory").getTextContent();
 					String db_manager_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_data_manager").getTextContent();
+					String findclass_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_class").getTextContent();
 					String findactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_activity_class").getTextContent();
 					String listfindsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("list_finds_activity_class").getTextContent();
 					String extra_activity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("extra_activity_class").getTextContent();
@@ -110,15 +112,16 @@ public class FindPluginManager {
 					mPreferences = plugin_nodes.item(ii).getAttributes().getNamedItem("preferences_xml").getTextContent();
 
 					@SuppressWarnings({ "rawtypes" })
-					Class new_class = Class.forName(package_name + "." + find_factory_name);
+					Class new_class = Class.forName(find_factory_name);
 					//mFindFactory = (FindFactory)new_class.getMethod("getInstance", null).invoke(null, null);
 					
-					new_class = Class.forName(package_name + "." + db_manager_name);
+					new_class = Class.forName(db_manager_name);
 					//mDbManager = (DbManager)new_class.getMethod("getInstance", null).invoke(null, null);
 
-					mFindActivityClass = (Class<FindActivity>)Class.forName(package_name + "." + findactivity_name);
-					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(package_name + "." + listfindsactivity_name);
-					mLoginActivityClass = (Class<Activity>)Class.forName(package_name + "." + login_activity_name); // Changed
+					mFindClass = (Class<Find>)Class.forName(findclass_name);
+					mFindActivityClass = (Class<FindActivity>)Class.forName(findactivity_name);
+					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(listfindsactivity_name);
+					mLoginActivityClass = (Class<Activity>)Class.forName(login_activity_name); // Changed
 					if (!extra_activity_name.equals(""))	
 						mExtraActivityClass = (Class<Activity>) Class
 								.forName(package_name + "."	+ extra_activity_name);
@@ -150,10 +153,16 @@ public class FindPluginManager {
 //		return mFindDataManager;
 //	}
 //	
+	
+	
 	public Class<FindActivity> getFindActivityClass(){
 		return mFindActivityClass;
 	}
 	
+	public Class<Find> getFindClass() {
+		return mFindClass;
+	}
+
 	public Class<ListFindsActivity> getListFindsActivityClass(){
 		return mListFindsActivityClass;
 	}

@@ -25,6 +25,7 @@ package org.hfoss.posit.android.plugin.acdivoca;
 import java.sql.SQLException;
 import java.util.Calendar;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindActivity;
 
 import com.j256.ormlite.dao.Dao;
@@ -369,7 +370,7 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
      * so it will be updated to the server.
      * @return The ContentValues hash table.
      */
-    private ContentValues retrieveContentFromView() {
+    protected Find retrieveContentFromView() {
     	Log.i(TAG, "retrieveContentFromView");
     	ContentValues result = new ContentValues();
 
@@ -453,7 +454,8 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     		result.put(AcdiVocaFind.CHANGE_TYPE, String.valueOf(spinnerInt));
     	}
 
-    	return result;
+    	//return result;
+    	return new AcdiVocaFind();
     }
 
     /**
@@ -579,9 +581,9 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     	if(v.getId()==R.id.update_to_db_button) {
     		
     		boolean success = false;
-    		ContentValues data = this.retrieveContentFromView(); 
-//    		Log.i(TAG, "Retrieved = " + data.toString());
-    		success = updateExistingFind(data);
+//    		ContentValues data = this.retrieveContentFromView(); 
+////    		Log.i(TAG, "Retrieved = " + data.toString());
+//    		success = updateExistingFind(data);
     	}
     }
     

@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -26,31 +28,32 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	private static final String TAG = "FindActivity";
 
-
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.add_find);
-		initializeListeners();	
+		initializeListeners();
 		Bundle extras = getIntent().getExtras();
-		if (extras != null){
-			if (getIntent().getAction().equals(Intent.ACTION_EDIT)){
+		if (extras != null) {
+			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 				Find find = getHelper().getFindById(extras.getInt(Find.GUID));
 				displayContentInView(find);
 			}
-	
+
 		}
 	}
-	
-	protected void onResume(){
+
+	protected void onResume() {
 		super.onResume();
 	}
+
 	/**
 	 * Sets listeners for various UI elements.
 	 */
-	private void initializeListeners() {
-		ImageButton saveButton = ((ImageButton)findViewById(R.id.idSaveButton));
-		saveButton.setOnClickListener(this);
+	protected void initializeListeners() {
+		Button saveButton = ((Button) findViewById(R.id.saveButton));
+		if (saveButton != null)
+			saveButton.setOnClickListener(this);
 	}
 
 	/**
@@ -60,68 +63,101 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * 
 	 * @return a new Find object with data from the view.
 	 */
-	private Find retrieveContentFromView() {
-		Find find = new Find();
-
-		EditText eText = (EditText) findViewById(R.id.nameText);
-		String value = eText.getText().toString();
-		find.setName(value);
-		eText = (EditText) findViewById(R.id.descriptionText);
-		value = eText.getText().toString();
-		find.setDescription(value);
-		eText = (EditText) findViewById(R.id.idText);
-		value = eText.getText().toString();
-		find.setGuid(value);
-
-		// Latitude/longitude disabled until decided what to do
-		TextView tView = (TextView) findViewById(R.id.longitudeText);
-		value = tView.getText().toString();
-		//find.setLongitude(Double.parseDouble(value));
-		tView = (TextView) findViewById(R.id.latitudeText);
-		value = tView.getText().toString();
-		//find.setLatitude(Double.parseDouble(value));
-		tView = (TextView) findViewById(R.id.timeText);
-		value = tView.getText().toString();
-
-		SimpleDateFormat formatter = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-		Date date = null;
+	protected Find retrieveContentFromView() {
+		// Get the appropriate find class from the plugin manager and 
+		// make an instance of it.
+		Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
+		Find find = null;
+		String value = "";
+		
 		try {
-			date = (Date) formatter.parse(value);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			find = findClass.newInstance();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
 			e.printStackTrace();
 		}
-		if (date != null)
-			find.setTime(date);
+
+
+		EditText eText = (EditText) findViewById(R.id.guidEditText);
+		if (eText != null) {
+			value = eText.getText().toString();
+			find.setGuid(value);
+		}
+		
+		eText = (EditText) findViewById(R.id.nameEditText);
+		if (eText != null) {
+			value = eText.getText().toString();
+			find.setName(value);
+		}
+
+		eText = (EditText) findViewById(R.id.descriptionEditText);
+		if (eText != null) {
+			value = eText.getText().toString();
+			find.setDescription(value);
+		}
+		eText = (EditText) findViewById(R.id.guidEditText);
+		if (eText != null) {
+			value = eText.getText().toString();
+			find.setGuid(value);
+		}
+
+		// Latitude/longitude disabled until decided what to do
+		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
+		if (tView != null) {
+			value = tView.getText().toString();
+			// find.setLongitude(Double.parseDouble(value));
+		}
+		tView = (TextView) findViewById(R.id.latitudeValueTextView);
+		if (tView != null) {
+			value = tView.getText().toString();
+			// find.setLatitude(Double.parseDouble(value));
+		}
+
+		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
+		if (datePicker != null) {
+			value = datePicker.getMonth() + "/" + datePicker.getDayOfMonth()
+					+ "/" + datePicker.getYear();
+			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			Date date = null;
+			try {
+				date = (Date) formatter.parse(value);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			if (date != null)
+				find.setTime(date);
+		}
 
 		// Mark the find unsynced TODO: Do we need this?
 		find.setSynced(Find.NOT_SYNCED);
 
 		return find;
 	}
-	
-	/**
-     * Retrieves values from a Find objectand puts them in the View.
-     * @param a Find object
-     */
-    private void displayContentInView(Find find) {
-            EditText eText = (EditText) findViewById(R.id.nameText);
-            eText.setText(find.getName());
-            eText = (EditText) findViewById(R.id.descriptionText);
-            eText.setText(find.getDescription());
-            eText = (EditText) findViewById(R.id.idText);
-            eText.setText(find.getGuid());
-            TextView tView = (TextView) findViewById(R.id.timeText);
 
-            SimpleDateFormat formatter = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
-            //if (mState == STATE_EDIT) {
-                    tView.setText(formatter.format(find.getTime()));
-            //}
-            tView = (TextView) findViewById(R.id.longitudeText);
-            tView.setText(String.valueOf(find.getLongitude()));
-            tView = (TextView) findViewById(R.id.latitudeText);
-            tView.setText(String.valueOf(find.getLatitude()));
-    }
+	/**
+	 * Retrieves values from a Find objectand puts them in the View.
+	 * 
+	 * @param a
+	 *            Find object
+	 */
+	protected void displayContentInView(Find find) {
+		EditText eText = (EditText) findViewById(R.id.nameEditText);
+		eText.setText(find.getName());
+		eText = (EditText) findViewById(R.id.descriptionEditText);
+		eText.setText(find.getDescription());
+		eText = (EditText) findViewById(R.id.guidEditText);
+		eText.setText(find.getGuid());
+		
+		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
+		datePicker.init(find.getTime().getYear(), find.getTime().getMonth(), find.getTime().getDay(),null);
+		
+		TextView tView = (TextView)findViewById(R.id.longitudeValueTextView);
+		tView.setText(String.valueOf(find.getLongitude()));
+		
+		tView = (TextView) findViewById(R.id.latitudeValueTextView);
+		tView.setText(String.valueOf(find.getLatitude()));
+	}
 
 	public void onLocationChanged(Location arg0) {
 		// TODO Auto-generated method stub
@@ -148,13 +184,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	}
 
-
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.idSaveButton:
+		case R.id.saveButton:
 			Find find = retrieveContentFromView();
 			int success = find.insert(this.getHelper().getFindDao());
-			if (success>0)
+			if (success > 0)
 				Log.i(TAG, "Find inserted successfully: " + find);
 			else
 				Log.e(TAG, "Find not inserted: " + find);
