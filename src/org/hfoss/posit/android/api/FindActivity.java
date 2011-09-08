@@ -8,6 +8,7 @@ import org.hfoss.posit.android.R;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -31,8 +32,19 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		
 		setContentView(R.layout.add_find);
 		initializeListeners();	
+		Bundle extras = getIntent().getExtras();
+		if (extras != null){
+			if (getIntent().getAction().equals(Intent.ACTION_EDIT)){
+				Find find = getHelper().getFindById(extras.getInt(Find.GUID));
+				displayContentInView(find);
+			}
+	
+		}
 	}
 	
+	protected void onResume(){
+		super.onResume();
+	}
 	/**
 	 * Sets listeners for various UI elements.
 	 */
@@ -87,6 +99,29 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		return find;
 	}
+	
+	/**
+     * Retrieves values from a Find objectand puts them in the View.
+     * @param a Find object
+     */
+    private void displayContentInView(Find find) {
+            EditText eText = (EditText) findViewById(R.id.nameText);
+            eText.setText(find.getName());
+            eText = (EditText) findViewById(R.id.descriptionText);
+            eText.setText(find.getDescription());
+            eText = (EditText) findViewById(R.id.idText);
+            eText.setText(find.getGuid());
+            TextView tView = (TextView) findViewById(R.id.timeText);
+
+            SimpleDateFormat formatter = new SimpleDateFormat("MM.dd.yyyy HH:mm:ss");
+            //if (mState == STATE_EDIT) {
+                    tView.setText(formatter.format(find.getTime()));
+            //}
+            tView = (TextView) findViewById(R.id.longitudeText);
+            tView.setText(String.valueOf(find.getLongitude()));
+            tView = (TextView) findViewById(R.id.latitudeText);
+            tView.setText(String.valueOf(find.getLatitude()));
+    }
 
 	public void onLocationChanged(Location arg0) {
 		// TODO Auto-generated method stub
