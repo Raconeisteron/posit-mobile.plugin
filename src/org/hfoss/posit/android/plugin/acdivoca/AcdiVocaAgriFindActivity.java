@@ -157,7 +157,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		if (mCurrentViewId == R.layout.acdivoca_agri_beneficiary_noedit)
 			return;
 		
-		mSavedStateValues = this.retrieveContentFromView();
+		//mSavedStateValues = this.retrieveContentFromView();
 		outState.putParcelable("savedstate", mSavedStateValues);
 		outState.putBoolean("isprobablyEdited",this.isProbablyEdited);
 		super.onSaveInstanceState(outState);
@@ -208,7 +208,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 	/**
 	 * Helper to initialize radio buttons, text edits, etc. 
 	 */
-	private void initializeListeners() {
+	protected void initializeListeners() {
 		mSaveButton = ((Button)findViewById(R.id.saveToDbButton));
 		mSaveButton.setOnClickListener(this);
 		((Button)findViewById(R.id.sendSmsButton)).setOnClickListener(this);
@@ -479,7 +479,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 	 * multiple checkBox results will be stored as the addition of the binary summation.
 	 * @return The ContentValues hash table.
 	 */
-	private ContentValues retrieveContentFromView() {
+	protected Find retrieveContentFromView() {
 		Log.i(TAG, "retrieveContentFromView");
 		ContentValues result = new ContentValues();
 		String value = "";
@@ -573,7 +573,8 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		String communeSection = (String) spinner.getSelectedItem();
 		result.put(AcdiVocaFind.COMMUNE_SECTION, communeSection);		
 
-		return result;
+		//return result;
+		return new AcdiVocaFind();
 	}
 
 
@@ -779,17 +780,17 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		
 		if(v.getId()==R.id.saveToDbButton) {
 			boolean success = false;
-			ContentValues data = this.retrieveContentFromView(); 
+			//ContentValues data = this.retrieveContentFromView(); 
 			int rows = 0;
 
 //			Log.i(TAG,"View Content: " + data.toString());
-			if (mAction.equals(Intent.ACTION_EDIT)) {
-				success = updateExistingFind(data);
-			} else {
-				data.put(AcdiVocaFind.DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
-				data.put(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_NEW);
-				success = createNewFind(data);
-			}
+//			if (mAction.equals(Intent.ACTION_EDIT)) {
+//				success = updateExistingFind(data);
+//			} else {
+//				data.put(AcdiVocaFind.DOSSIER, AttributeManager.FINDS_AGRI_DOSSIER);
+//				data.put(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_NEW);
+//				success = createNewFind(data);
+//			}
 			if (success){
 				Toast.makeText(this, getString(R.string.toast_saved_db), Toast.LENGTH_LONG).show();
 			}

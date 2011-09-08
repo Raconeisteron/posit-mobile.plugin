@@ -24,6 +24,7 @@ package org.hfoss.posit.android.plugin.acdivoca;
 import java.sql.SQLException;
 import java.util.Calendar;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindActivity;
 import org.hfoss.posit.android.api.SettingsActivity;
 
@@ -152,7 +153,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 		// Don't bother saving state if we're in no-edit mode.
 		if (mCurrentViewId == R.layout.acdivoca_health_beneficiary_noedit)
 			return;
-		mSavedStateValues = this.retrieveContentFromView();
+		//mSavedStateValues = this.retrieveContentFromView();
 		outState.putParcelable("savedstate", mSavedStateValues);
 		outState.putBoolean("isprobablyEdited",this.isProbablyEdited);
 		super.onSaveInstanceState(outState);
@@ -203,7 +204,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 	/**
 	 * Helper method to create listener for radio buttons, etc.
 	 */
-	private void initializeListeners() {
+	protected void initializeListeners() {
 		mSaveButton = ((Button)findViewById(R.id.saveToDbButton));
 		mSaveButton.setOnClickListener(this);
 
@@ -312,7 +313,7 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 	 * This method is invoked from the Save menu item.  
 	 * @return The ContentValues hash table.
 	 */
-	private ContentValues retrieveContentFromView() {
+	protected Find retrieveContentFromView() {
 		Log.i(TAG, "retrieveContentFromView");
 		ContentValues result = new ContentValues();
 		String value = "";
@@ -395,7 +396,8 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 			result.put(AcdiVocaFind.RELATIVE_2, none);
 		}
 		
-		return result;
+		//return result;
+		return new AcdiVocaFind();
 	}
 	
 	/**
@@ -677,27 +679,27 @@ public class AcdiVocaMchnFindActivity extends FindActivity implements OnDateChan
 		
 		//  Save Find Button
 		
-		if(v.getId()==R.id.saveToDbButton) {
-			boolean success = false;
-			ContentValues data = this.retrieveContentFromView(); 
-						
-			if (mAction.equals(Intent.ACTION_EDIT)) { // Editing an existing beneficiary
-				success = updateExistingFind(data);
-			} else { // New beneficiary
-				data.put(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_NEW);
-				data.put(AcdiVocaFind.DOSSIER, AttributeManager.FINDS_BENE_DOSSIER);
-				success = createNewFind(data);
-			}
-			if (success){
-				Log.i(TAG, "Save to Db returned success");
-				Toast.makeText(this, getString(R.string.toast_saved_db), Toast.LENGTH_SHORT).show();  
-			}
-			else {
-				Log.i(TAG, "Save to Db returned failure");
-				Toast.makeText(this, getString(R.string.toast_error_db), Toast.LENGTH_SHORT).show();
-			}
-			finish();
-		}
+//		if(v.getId()==R.id.saveToDbButton) {
+//			boolean success = false;
+//			ContentValues data = this.retrieveContentFromView(); 
+//						
+//			if (mAction.equals(Intent.ACTION_EDIT)) { // Editing an existing beneficiary
+//				success = updateExistingFind(data);
+//			} else { // New beneficiary
+//				data.put(AcdiVocaFind.STATUS, AcdiVocaFind.STATUS_NEW);
+//				data.put(AcdiVocaFind.DOSSIER, AttributeManager.FINDS_BENE_DOSSIER);
+//				success = createNewFind(data);
+//			}
+//			if (success){
+//				Log.i(TAG, "Save to Db returned success");
+//				Toast.makeText(this, getString(R.string.toast_saved_db), Toast.LENGTH_SHORT).show();  
+//			}
+//			else {
+//				Log.i(TAG, "Save to Db returned failure");
+//				Toast.makeText(this, getString(R.string.toast_error_db), Toast.LENGTH_SHORT).show();
+//			}
+//			finish();
+//		}
 	}
 
 	/**
