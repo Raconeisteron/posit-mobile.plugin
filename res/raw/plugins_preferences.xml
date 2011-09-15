@@ -1,26 +1,10 @@
 <PluginsPreferences>
 	<FindPlugins>
-<!-- 	<Plugin active="true" name="BasicFind" -->
-<!-- 			package="org.hfoss.posit.android.api"  -->
-<!-- 			find_factory="org.hfoss.posit.android.api.FindFactory" -->
-<!-- 			find_activity_class="org.hfoss.posit.android.api.FindActivity"  -->
-<!-- 			extra_activity_class="" -->
-<!-- 			extra_activity_class2="" -->
-<!-- 			list_finds_activity_class="org.hfoss.posit.android.api.ListFindsActivity" -->
-<!--  			login_activity_class="org.hfoss.posit.android.api.LoginActivity" -->
-<!-- 			find_data_manager="org.hfoss.posit.android.api.DbManager"  -->
-<!-- 			preferences_xml="posit_preferences"  -->
-<!-- 			main_list_button_label="viewFinds" -->
-<!-- 			main_add_button_label="addFind" -->
-<!-- 			main_extra_button_label="" -->
-<!-- 			main_extra_button_label2="" -->
-<!-- 			main_icon="posit" /> -->
-			
-	<Plugin active="true" name="OutsideInFind"
-			package="org.hfoss.posit.android.plugin.outsidein"
-			find_class = "org.hfoss.posit.android.plugin.outsidein.OutsideInFind"
+	<Plugin active="true" name="BasicFind"
+			package="org.hfoss.posit.android.api" 
+			find_class = "org.hfoss.posit.android.api.Find"
 			find_factory="org.hfoss.posit.android.api.FindFactory"
-			find_activity_class="org.hfoss.posit.android.plugin.outsidein.OutsideInFindActivity" 
+			find_activity_class="org.hfoss.posit.android.api.FindActivity" 
 			extra_activity_class=""
 			extra_activity_class2=""
 			list_finds_activity_class="org.hfoss.posit.android.api.ListFindsActivity"
@@ -32,6 +16,23 @@
 			main_extra_button_label=""
 			main_extra_button_label2=""
 			main_icon="posit" />
+			
+<!-- 	<Plugin active="true" name="OutsideInFind" -->
+<!-- 			package="org.hfoss.posit.android.plugin.outsidein" -->
+<!-- 			find_class = "org.hfoss.posit.android.plugin.outsidein.OutsideInFind" -->
+<!-- 			find_factory="org.hfoss.posit.android.api.FindFactory" -->
+<!-- 			find_activity_class="org.hfoss.posit.android.plugin.outsidein.OutsideInFindActivity"  -->
+<!-- 			extra_activity_class="" -->
+<!-- 			extra_activity_class2="" -->
+<!-- 			list_finds_activity_class="org.hfoss.posit.android.api.ListFindsActivity" -->
+<!--  			login_activity_class="org.hfoss.posit.android.api.LoginActivity" -->
+<!-- 			find_data_manager="org.hfoss.posit.android.api.DbManager"  -->
+<!-- 			preferences_xml="posit_preferences"  -->
+<!-- 			main_list_button_label="viewFinds" -->
+<!-- 			main_add_button_label="addFind" -->
+<!-- 			main_extra_button_label="" -->
+<!-- 			main_extra_button_label2="" -->
+<!-- 			main_icon="posit" /> -->
 	
 	
 <!-- 		<Plugin active="true" name="AcdiVocaFind" -->

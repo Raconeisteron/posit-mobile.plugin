@@ -64,12 +64,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * @return a new Find object with data from the view.
 	 */
 	protected Find retrieveContentFromView() {
-		// Get the appropriate find class from the plugin manager and 
+		// Get the appropriate find class from the plugin manager and
 		// make an instance of it.
 		Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
 		Find find = null;
 		String value = "";
-		
+
 		try {
 			find = findClass.newInstance();
 		} catch (IllegalAccessException e) {
@@ -78,13 +78,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			e.printStackTrace();
 		}
 
-
 		EditText eText = (EditText) findViewById(R.id.guidEditText);
 		if (eText != null) {
 			value = eText.getText().toString();
 			find.setGuid(value);
 		}
-		
+
 		eText = (EditText) findViewById(R.id.nameEditText);
 		if (eText != null) {
 			value = eText.getText().toString();
@@ -148,13 +147,14 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		eText.setText(find.getDescription());
 		eText = (EditText) findViewById(R.id.guidEditText);
 		eText.setText(find.getGuid());
-		
+
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
-		datePicker.init(find.getTime().getYear(), find.getTime().getMonth(), find.getTime().getDay(),null);
-		
-		TextView tView = (TextView)findViewById(R.id.longitudeValueTextView);
+		datePicker.init(find.getTime().getYear(), find.getTime().getMonth(),
+				find.getTime().getDay(), null);
+
+		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
 		tView.setText(String.valueOf(find.getLongitude()));
-		
+
 		tView = (TextView) findViewById(R.id.latitudeValueTextView);
 		tView.setText(String.valueOf(find.getLatitude()));
 	}
@@ -187,8 +187,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.saveButton:
+			int success = 0;
 			Find find = retrieveContentFromView();
-			int success = find.insert(this.getHelper().getFindDao());
+			success = find.insert(this.getHelper().getFindDao());
 			if (success > 0)
 				Log.i(TAG, "Find inserted successfully: " + find);
 			else
