@@ -20,7 +20,7 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android.api;
+package org.hfoss.posit.android.api.activity;
 
 
 import java.io.IOException;

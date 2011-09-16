@@ -20,7 +20,7 @@
  * 
  */
 package org.hfoss.posit.android;
-import org.hfoss.posit.android.api.SettingsActivity;
+import org.hfoss.posit.android.api.activity.SettingsActivity;
 
 import android.app.Activity;
 import android.content.Intent;

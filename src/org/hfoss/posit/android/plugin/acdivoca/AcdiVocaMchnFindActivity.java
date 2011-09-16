@@ -25,8 +25,8 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
-import org.hfoss.posit.android.api.FindActivity;
-import org.hfoss.posit.android.api.SettingsActivity;
+import org.hfoss.posit.android.api.activity.FindActivity;
+import org.hfoss.posit.android.api.activity.SettingsActivity;
 
 import com.j256.ormlite.dao.Dao;
 

@@ -1,4 +1,4 @@
-package org.hfoss.posit.android.api;
+package org.hfoss.posit.android.api.activity;
 
 import java.io.File;
 import java.io.IOException;

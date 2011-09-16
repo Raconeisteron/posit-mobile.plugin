@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.api.DbManager;
+import org.hfoss.posit.android.api.database.DbManager;
 
 import android.content.Context;
 import android.util.Log;

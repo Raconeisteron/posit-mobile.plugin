@@ -3,7 +3,7 @@
  */
 package org.hfoss.posit.android.plugin.outsidein;
 
-import org.hfoss.posit.android.api.DbManager;
+import org.hfoss.posit.android.api.database.DbManager;
 
 import android.content.Context;
 import java.sql.SQLException;

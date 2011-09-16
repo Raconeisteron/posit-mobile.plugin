@@ -1,4 +1,9 @@
-package org.hfoss.posit.android.api;
+package org.hfoss.posit.android.plugin;
+
+import org.hfoss.posit.android.api.FindFactory;
+import org.hfoss.posit.android.api.activity.FindActivity;
+import org.hfoss.posit.android.api.activity.ListFindsActivity;
+import org.hfoss.posit.android.api.activity.SettingsActivity;
 
 import android.app.Activity;
 

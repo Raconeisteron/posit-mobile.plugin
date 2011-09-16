@@ -21,11 +21,13 @@
  * 
  */
 
-package org.hfoss.posit.android.api;
+package org.hfoss.posit.android.api.database;
 
 import java.sql.SQLException;
 import java.util.List;
 
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.User;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;

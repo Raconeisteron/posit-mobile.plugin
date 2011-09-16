@@ -26,7 +26,7 @@ package org.hfoss.posit.android.plugin.acdivoca;
 
 import java.sql.SQLException;
 
-import org.hfoss.posit.android.api.DbManager;
+import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;

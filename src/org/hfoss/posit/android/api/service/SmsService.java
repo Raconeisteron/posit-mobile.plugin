@@ -21,7 +21,7 @@
  * 
  */
 
-package org.hfoss.posit.android.api;
+package org.hfoss.posit.android.api.service;
 
 import java.io.BufferedWriter;
 import java.io.File;

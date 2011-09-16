@@ -1,5 +1,7 @@
 package org.hfoss.posit.android.api;
 
+import org.hfoss.posit.android.plugin.FindPluginManager;
+
 import android.content.Context;
 
 /**
