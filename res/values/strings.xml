@@ -307,5 +307,7 @@
 	<!--  Admin -->
 	<string name="admin_directions">For Admin functions, choose an option from the menu.</string>
 	<string name="admin_login">Admin Login</string>
+	<string name="getting_longitude">Getting longitude...</string>
+	<string name="getting_latitude">Getting latitude...</string>
 	
 </resources>
