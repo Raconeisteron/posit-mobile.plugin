@@ -1,16 +1,21 @@
-package org.hfoss.posit.android.api;
+package org.hfoss.posit.android.api.activity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.plugin.FindPluginManager;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,24 +27,30 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		implements OnClickListener, OnItemClickListener, LocationListener {
 
 	private static final String TAG = "FindActivity";
 
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.add_find);
 		initializeListeners();
 		Bundle extras = getIntent().getExtras();
+		
+		// Check for a new location once a minute.
+		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+		
 		if (extras != null) {
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 				Find find = getHelper().getFindById(extras.getInt(Find.GUID));
 				displayContentInView(find);
 			}
-
 		}
 	}
 
@@ -101,18 +112,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			find.setGuid(value);
 		}
 
-		// Latitude/longitude disabled until decided what to do
-		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
-		if (tView != null) {
-			value = tView.getText().toString();
-			// find.setLongitude(Double.parseDouble(value));
-		}
-		tView = (TextView) findViewById(R.id.latitudeValueTextView);
-		if (tView != null) {
-			value = tView.getText().toString();
-			// find.setLatitude(Double.parseDouble(value));
-		}
-
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
 		if (datePicker != null) {
 			value = datePicker.getMonth() + "/" + datePicker.getDayOfMonth()
@@ -159,9 +158,15 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		tView.setText(String.valueOf(find.getLatitude()));
 	}
 
-	public void onLocationChanged(Location arg0) {
-		// TODO Auto-generated method stub
-
+	/**
+	 * When we get a fresh location, throw that data in some text fields.
+	 */
+	public void onLocationChanged(Location location) {
+		Toast.makeText(this, "Got a location!" + location, 10000);
+		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
+		tView.setText(String.valueOf(location.getLongitude()));
+		tView = (TextView) findViewById(R.id.latitudeValueTextView);
+		tView.setText(String.valueOf(location.getLatitude()));
 	}
 
 	public void onProviderDisabled(String provider) {

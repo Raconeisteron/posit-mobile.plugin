@@ -1,4 +1,4 @@
-package org.hfoss.posit.android.api;
+package org.hfoss.posit.android.plugin;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -9,6 +9,11 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.FindFactory;
+import org.hfoss.posit.android.api.activity.FindActivity;
+import org.hfoss.posit.android.api.activity.ListFindsActivity;
+import org.hfoss.posit.android.api.activity.SettingsActivity;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 

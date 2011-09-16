@@ -25,8 +25,8 @@ package org.hfoss.posit.android.plugin.acdivoca;
 import java.sql.SQLException;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.api.DbManager;
-import org.hfoss.posit.android.api.SettingsActivity;
+import org.hfoss.posit.android.api.activity.SettingsActivity;
+import org.hfoss.posit.android.api.database.DbManager;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 

@@ -85,7 +85,10 @@ public class Find implements FindInterface {
 		}
 	}
 
-	protected Find() {
+	/**
+	 * Changed to "public"--objections?
+	 */
+	public Find() {
 	}
 
 	/**

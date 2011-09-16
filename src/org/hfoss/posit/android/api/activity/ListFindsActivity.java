@@ -1,8 +1,10 @@
-package org.hfoss.posit.android.api;
+package org.hfoss.posit.android.api.activity;
 
 import java.util.List;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.database.DbManager;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 

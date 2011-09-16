@@ -1,3 +1,4 @@
+package org.hfoss.posit.android.api.database;
 //package org.hfoss.posit.android.api;
 //
 //import android.content.ContentValues;
