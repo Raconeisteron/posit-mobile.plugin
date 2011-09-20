@@ -34,18 +34,19 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	private static final String TAG = "FindActivity";
 
-	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.add_find);
 		initializeListeners();
 		Bundle extras = getIntent().getExtras();
-		
+
 		// Check for a new location once a minute.
-		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-		
+		LocationManager locationManager = (LocationManager) this
+				.getSystemService(Context.LOCATION_SERVICE);
+		locationManager.requestLocationUpdates(
+				LocationManager.NETWORK_PROVIDER, 60000, 0, this);
+
 		if (extras != null) {
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 				Find find = getHelper().getFindById(extras.getInt(Find.GUID));
@@ -56,6 +57,16 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	protected void onResume() {
 		super.onResume();
+		LocationManager locationManager = (LocationManager) this
+				.getSystemService(Context.LOCATION_SERVICE);
+		Location lastKnownLocation = locationManager
+				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		if (lastKnownLocation == null)
+			Toast.makeText(this, "GPS is disabled! Do something about it!",
+					Toast.LENGTH_LONG).show();
+		else
+			setLocationTextViews(locationManager
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
 	}
 
 	/**
@@ -65,6 +76,13 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		Button saveButton = ((Button) findViewById(R.id.saveButton));
 		if (saveButton != null)
 			saveButton.setOnClickListener(this);
+	}
+
+	protected void setLocationTextViews(Location location) {
+		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
+		tView.setText(String.valueOf(location.getLongitude()));
+		tView = (TextView) findViewById(R.id.latitudeValueTextView);
+		tView.setText(String.valueOf(location.getLatitude()));
 	}
 
 	/**
@@ -112,6 +130,18 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			find.setGuid(value);
 		}
 
+		TextView tView = (TextView) findViewById(R.id.latitudeValueTextView);
+		if (eText != null) {
+			value = tView.getText().toString();
+			find.setLatitude(Double.parseDouble(value));
+		}
+
+		tView = (TextView) findViewById(R.id.longitudeValueTextView);
+		if (eText != null) {
+			value = tView.getText().toString();
+			find.setLongitude(Double.parseDouble(value));
+		}
+
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
 		if (datePicker != null) {
 			value = datePicker.getMonth() + "/" + datePicker.getDayOfMonth()
@@ -134,7 +164,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	}
 
 	/**
-	 * Retrieves values from a Find objectand puts them in the View.
+	 * Retrieves values from a Find object and puts them in the View.
 	 * 
 	 * @param a
 	 *            Find object
@@ -163,10 +193,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 */
 	public void onLocationChanged(Location location) {
 		Toast.makeText(this, "Got a location!" + location, 10000);
-		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
-		tView.setText(String.valueOf(location.getLongitude()));
-		tView = (TextView) findViewById(R.id.latitudeValueTextView);
-		tView.setText(String.valueOf(location.getLatitude()));
+		setLocationTextViews(location);
+
 	}
 
 	public void onProviderDisabled(String provider) {
@@ -199,7 +227,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				Log.i(TAG, "Find inserted successfully: " + find);
 			else
 				Log.e(TAG, "Find not inserted: " + find);
+			finish();
 			break;
+
 		}
 
 	}
