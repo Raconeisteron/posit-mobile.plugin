@@ -11,6 +11,11 @@
 		android:icon="@drawable/admin3">
 	</item>		
 	<item 
+		android:title="@string/map" 
+		android:id="@+id/map_finds_menu_item"
+		android:icon="@android:drawable/ic_menu_mapmode">
+	</item>
+	<item 
 		android:id="@+id/about_menu_item" 
 		android:title="@string/aboutItem"
 		android:icon="@drawable/about2">

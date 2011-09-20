@@ -28,6 +28,7 @@ import java.util.List;
 import org.hfoss.posit.android.api.AppControlManager;
 import org.hfoss.posit.android.api.User;
 import org.hfoss.posit.android.api.activity.LoginActivity;
+import org.hfoss.posit.android.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.api.activity.SettingsActivity;
 import org.hfoss.posit.android.api.database.DbManager;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
@@ -410,6 +411,9 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 		switch (item.getItemId()) {
 		case R.id.settings_menu_item:
 			startActivity(new Intent(this, SettingsActivity.class));
+			break;
+		case R.id.map_finds_menu_item:
+			startActivity(new Intent(this, MapFindsActivity.class));
 			break;
 //		case R.id.admin_menu_item:
 //			startActivity(new Intent(this, AcdiVocaAdminActivity.class));
