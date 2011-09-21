@@ -33,6 +33,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		implements OnClickListener, OnItemClickListener, LocationListener {
 
 	private static final String TAG = "FindActivity";
+	private Location currentLocation;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,8 +49,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				LocationManager.NETWORK_PROVIDER, 60000, 0, this);
 
 		if (extras != null) {
+			// if (getIntent().getAction().equals(Intent.ACTION_INSERT))
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
-				Log.i(TAG, "the so-called row id is: " + extras.getInt(Find.ORM_ID));
 				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
 				displayContentInView(find);
 			}
@@ -66,8 +67,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			Toast.makeText(this, "GPS is disabled! Do something about it!",
 					Toast.LENGTH_LONG).show();
 		else
-			setLocationTextViews(locationManager
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+			currentLocation = lastKnownLocation;
 	}
 
 	/**
@@ -79,6 +79,11 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			saveButton.setOnClickListener(this);
 	}
 
+	/**
+	 * Sets the location text views. Might be removing this..
+	 * 
+	 * @param location
+	 */
 	protected void setLocationTextViews(Location location) {
 		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
 		tView.setText(String.valueOf(location.getLongitude()));
@@ -131,17 +136,21 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			find.setGuid(value);
 		}
 
-		TextView tView = (TextView) findViewById(R.id.latitudeValueTextView);
-		if (eText != null) {
-			value = tView.getText().toString();
-			find.setLatitude(Double.parseDouble(value));
-		}
+		// Removing for now.. using "currentLocation" variable instead
+		// TextView tView = (TextView) findViewById(R.id.latitudeValueTextView);
+		// if (eText != null) {
+		// value = tView.getText().toString();
+		// find.setLatitude(Double.parseDouble(value));
+		// }
+		//
+		// tView = (TextView) findViewById(R.id.longitudeValueTextView);
+		// if (eText != null) {
+		// value = tView.getText().toString();
+		// find.setLongitude(Double.parseDouble(value));
+		// }
 
-		tView = (TextView) findViewById(R.id.longitudeValueTextView);
-		if (eText != null) {
-			value = tView.getText().toString();
-			find.setLongitude(Double.parseDouble(value));
-		}
+		find.setLatitude(currentLocation.getLatitude());
+		find.setLongitude(currentLocation.getLongitude());
 
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
 		if (datePicker != null) {
@@ -179,12 +188,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		eText.setText(find.getGuid());
 
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
-		Log.i(TAG, "" +find.getTime().getYear()+1900);
-		Log.i(TAG, "" +find.getTime().getMonth());
-		Log.i(TAG, "" +find.getTime().getDay());
-		Log.i(TAG, "" +find.getTime().getDate());
-		datePicker.init(find.getTime().getYear()+1900, find.getTime().getMonth(),
-				find.getTime().getDate(), null);
+
+		datePicker.init(find.getTime().getYear() + 1900, find.getTime()
+				.getMonth(), find.getTime().getDate(), null);
 
 		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
 		tView.setText(String.valueOf(find.getLongitude()));
@@ -194,11 +200,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	}
 
 	/**
-	 * When we get a fresh location, throw that data in some text fields.
+	 * When we get a fresh location, update our class variable..
 	 */
 	public void onLocationChanged(Location location) {
-		Toast.makeText(this, "Got a location!" + location, 10000);
-		setLocationTextViews(location);
+		Toast.makeText(this, "Got a new location!" + location,
+				Toast.LENGTH_SHORT).show();
+		currentLocation = location;
 
 	}
 

@@ -24,8 +24,11 @@ public class OutsideInFindActivity extends FindActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate()");
+		//savedInstanceState.putString(FindPluginManager., value)
+		super.onCreate(savedInstanceState);
+		
+		
 
 		setContentView(R.layout.outsidein_add_find);
 		initializeListeners();
@@ -57,8 +60,19 @@ public class OutsideInFindActivity extends FindActivity {
 
 	@Override
 	protected void displayContentInView(Find find) {
-		// TODO Auto-generated method stub
-		super.displayContentInView(find);
+		OutsideInFind oiFind = (OutsideInFind)find;
+		EditText et = (EditText)findViewById(R.id.guidEditText);
+		et.setText(oiFind.getGuid());
+		
+		et = (EditText)findViewById(R.id.syringesInEditText);
+		et.setText(oiFind.getSyringesIn());
+		
+		et = (EditText)findViewById(R.id.syringesOutEditText);
+		et.setText(oiFind.getSyringesOut());
+		
+		CheckBox cb = (CheckBox)findViewById(R.id.isNewCheckBox);
+		cb.setChecked(oiFind.isNew());
+		
 	}
 
 	public void onClick(View v) {
