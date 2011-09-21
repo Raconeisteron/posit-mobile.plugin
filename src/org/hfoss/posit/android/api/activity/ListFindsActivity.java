@@ -77,7 +77,9 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				Intent intent = new Intent(parent.getContext(), FindActivity.class);
-				intent.putExtra(Find.GUID, id);
+				TextView tv = (TextView) view.findViewById(R.id.id);
+				int ormId = Integer.parseInt((String) tv.getText());
+				intent.putExtra(Find.ORM_ID, ormId);
 				intent.setAction(Intent.ACTION_EDIT);
 				startActivity(intent);
 			}
