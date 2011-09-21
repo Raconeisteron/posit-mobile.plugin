@@ -47,10 +47,6 @@ import android.util.Log;
  * The class is the interface with the Database. It controls all Db access and
  * directly handles all Db queries.
  */
-/**
- * @author rfoeckin
- *
- */
 public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	private static final String TAG = "DbHelper";
@@ -71,7 +67,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	private Dao<User, Integer> userDao = null;
 	private Dao<Find, Integer> findDao = null;
 
-	// private Dao<AcdiVocaMessage, Integer> acdiVocaMessageDao = null;
 
 	/**
 	 * Constructor just saves and opens the Db.
@@ -156,7 +151,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Returns the Database Access Object (DAO) for the AcdiVocaFind class. It
+	 * Returns the Database Access Object (DAO) for the Find class. It
 	 * will create it or just give the cached value.
 	 */
 	public Dao<Find, Integer> getFindDao() {
@@ -171,17 +166,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return findDao;
 	}
 
-	// /**
-	// * Returns the Database Access Object (DAO) for the AcdiVocaFind class.
-	// * It will create it or just give the cached value.
-	// */
-	// public Dao<AcdiVocaMessage, Integer> getAcdiVocaMessageDao() throws
-	// SQLException {
-	// if (acdiVocaMessageDao == null) {
-	// acdiVocaMessageDao = getDao(AcdiVocaMessage.class);
-	// }
-	// return acdiVocaMessageDao;
-	// }
+
 
 	/**
 	 * Close the database connections and clear any cached DAOs.
@@ -191,7 +176,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		super.close();
 		userDao = null;
 		findDao = null;
-		// acdiVocaMessageDao = null;
 	}
 
 }

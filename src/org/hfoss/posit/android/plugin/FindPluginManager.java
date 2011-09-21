@@ -14,6 +14,7 @@ import org.hfoss.posit.android.api.FindFactory;
 import org.hfoss.posit.android.api.activity.FindActivity;
 import org.hfoss.posit.android.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.api.activity.SettingsActivity;
+import org.hfoss.posit.android.api.database.DbManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -35,7 +36,8 @@ public class FindPluginManager {
 	//  from here and possibly move to Plugin.java??
 	private Activity mMainActivity = null;
 	private FindFactory mFindFactory = null;
-	//private DbManager mDbManager = null;
+	
+	private DbManager mDbManager = null;
 	private Class<Find> mFindClass;
 	private Class<FindActivity> mFindActivityClass = null;
 	private Class<ListFindsActivity> mListFindsActivityClass = null;

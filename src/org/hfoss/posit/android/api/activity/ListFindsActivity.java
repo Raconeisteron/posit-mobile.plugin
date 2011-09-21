@@ -5,6 +5,7 @@ import java.util.List;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.plugin.FindPluginManager;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
@@ -76,7 +77,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Intent intent = new Intent(parent.getContext(), FindActivity.class);
+				Intent intent = new Intent(parent.getContext(), FindPluginManager.getInstance().getFindActivityClass());
 				TextView tv = (TextView) view.findViewById(R.id.id);
 				int ormId = Integer.parseInt((String) tv.getText());
 				intent.putExtra(Find.ORM_ID, ormId);

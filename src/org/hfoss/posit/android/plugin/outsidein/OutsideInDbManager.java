@@ -15,7 +15,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 /**
- * @author rfoeckin
+ * 
  *
  */
 public class OutsideInDbManager extends DbManager {
