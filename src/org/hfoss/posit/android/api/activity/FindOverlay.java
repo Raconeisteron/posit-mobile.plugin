@@ -85,10 +85,10 @@ public class FindOverlay extends ItemizedOverlay {
 			return false;
 		Intent intent = new Intent(mContext, FindActivity.class);
 		intent.setAction(Intent.ACTION_EDIT);
-		long itemId = Long.parseLong(mOverlays.get(pIndex).getTitle());
-		Log.i(TAG, "itemID= " + itemId);
+		int id = Integer.parseInt(mOverlays.get(pIndex).getTitle());
+		Log.i(TAG, "id= " + id);
 
-		intent.putExtra(Find.GUID, itemId); // Pass the RowID to FindActivity
+		intent.putExtra(Find.ORM_ID, id); // Pass the RowID to FindActivity
 		mContext.startActivity(intent);
 		return true;
 	}

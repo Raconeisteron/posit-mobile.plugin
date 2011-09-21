@@ -238,7 +238,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	private  FindOverlay mapLayoutItems(List<Find> finds) {
 		int latitude = 0;
 		int longitude = 0;
-		String id = "";
+		int id = 0;
 
 		drawable = this.getResources().getDrawable(R.drawable.androidmarker);
 		FindOverlay mPoints = new FindOverlay(drawable, this, true);
@@ -247,12 +247,12 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 			latitude = (int) (find.getLatitude()*1E6);
 			longitude = (int) (find.getLongitude()*1E6);
 
-			id = find.getGuid();
-			String description = id + "\n" + find.getName() + "\n" + find.getDescription(); 
+			id = find.getId();
+			String description = find.getGuid() + "\n" + find.getName() + "\n" + find.getDescription(); 
 
 			Log.i(TAG, latitude + " " + longitude + " " + description);
 			
-			mPoints.addOverlay(new OverlayItem(new GeoPoint(latitude,longitude),id,description));
+			mPoints.addOverlay(new OverlayItem(new GeoPoint(latitude,longitude),String.valueOf(id),description));
 		}
 		return mPoints;
 	}

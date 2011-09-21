@@ -49,7 +49,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		if (extras != null) {
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
-				Find find = getHelper().getFindById(extras.getInt(Find.GUID));
+				Log.i(TAG, "the so-called row id is: " + extras.getInt(Find.ORM_ID));
+				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
 				displayContentInView(find);
 			}
 		}
@@ -178,8 +179,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		eText.setText(find.getGuid());
 
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
-		datePicker.init(find.getTime().getYear(), find.getTime().getMonth(),
-				find.getTime().getDay(), null);
+		Log.i(TAG, "" +find.getTime().getYear()+1900);
+		Log.i(TAG, "" +find.getTime().getMonth());
+		Log.i(TAG, "" +find.getTime().getDay());
+		Log.i(TAG, "" +find.getTime().getDate());
+		datePicker.init(find.getTime().getYear()+1900, find.getTime().getMonth(),
+				find.getTime().getDate(), null);
 
 		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
 		tView.setText(String.valueOf(find.getLongitude()));
