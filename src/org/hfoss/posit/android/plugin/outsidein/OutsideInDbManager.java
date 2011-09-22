@@ -3,10 +3,13 @@
  */
 package org.hfoss.posit.android.plugin.outsidein;
 
+import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
 
 import android.content.Context;
 import java.sql.SQLException;
+import java.util.List;
+
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -41,6 +44,7 @@ public class OutsideInDbManager extends DbManager {
 		@Override
 		public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 				Log.i(TAG, "onCreate");
+				super.onCreate(db, connectionSource);
 				OutsideInFind.createTable(connectionSource);
 		}
 		
@@ -74,6 +78,37 @@ public class OutsideInDbManager extends DbManager {
 			return outsideInFindDao;
 		}
 		
+		
+		/**
+		 * Looks up a find by its ID.
+		 * @param id the id of the find to look up
+		 * @return the find
+		 */
+		public Find getFindById(int id) {
+			OutsideInFind find = null;
+			try {
+				find = getOutsideInFindDao().queryForId(id);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return find;
+		}
+		
+		/**
+		 * Fetches all finds currently in the database.
+		 * @return A list of all the finds.
+		 */
+		public List<? extends Find> getAllFinds() {
+			List<OutsideInFind> list = null;
+			try {
+				list = getOutsideInFindDao().queryForAll();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return list;
+
+		}
 		
 		/**
 		 * Close the database connections and clear any cached DAOs.

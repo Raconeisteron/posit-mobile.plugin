@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.User;
+import org.hfoss.posit.android.plugin.FindPluginManager;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaMessage;
 import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
@@ -51,7 +52,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	private static final String TAG = "DbHelper";
 
-	private static final String DATABASE_NAME = "posit";
+	protected static final String DATABASE_NAME = "posit";
 	public static final int DATABASE_VERSION = 2;
 
 	public static final int DELETE_FIND = 1;
@@ -107,7 +108,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	 * Fetches all finds currently in the database.
 	 * @return A list of all the finds.
 	 */
-	public List<Find> getAllFinds() {
+	public List<? extends Find> getAllFinds() {
 		List<Find> list = null;
 		try {
 			list = getFindDao().queryForAll();
@@ -156,8 +157,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	 */
 	public Dao<Find, Integer> getFindDao() {
 		if (findDao == null) {
+			Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
 			try {
-				findDao = getDao(Find.class);
+				findDao = getDao(findClass);
 			} catch (SQLException e) {
 				Log.e(TAG, "Get find DAO failed.");
 				e.printStackTrace();

@@ -176,11 +176,11 @@ public class User {
 		}
 	}
 
-	public static int authenticateUser(Context context, String username, String password, UserType rqdUserType) {
+	public static int authenticateUser(Context context, String username, String password, UserType rqdUserType, Dao<User, Integer> userDao) {
 		Log.i(TAG, "Authenticating user = " + username + " Access type = " + rqdUserType);		
 		
-		DbManager db = new DbManager(context);
-		Dao<User, Integer> userDao = null;
+		//DbManager db = new DbManager(context);
+		//Dao<User, Integer> userDao = null;
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("name", username);
 		map.put("password", password);
@@ -188,7 +188,7 @@ public class User {
 		int result = 0;
 		int userType = 0;
 		try {
-			userDao = db.getUserDao();
+			//userDao = db.getUserDao();
 			list = userDao.queryForFieldValues(map);
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Exception " + e.getMessage());

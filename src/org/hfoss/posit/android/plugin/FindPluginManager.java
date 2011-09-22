@@ -29,6 +29,9 @@ public class FindPluginManager {
 	private static FindPluginManager sInstance = null; 
 	
 	private static final String TAG = "FindPluginManager";
+
+	public static final String IS_PLUGIN = "isPlugin"; //used in subclasses to indicate
+														//that in onCreate() we are in a plugin.. not sure
 	
 	private ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 	
@@ -46,6 +49,8 @@ public class FindPluginManager {
 	private Class<Activity> mLoginActivityClass = null;
 
 	public static String mPreferences = null;  // Shared preferences XML for Settings
+	
+	public static String mAddFindLayout = null;
 	public static String mMainIcon = null;
 	public static String mAddButtonLabel = null;
 	public static String mListButtonLabel = null;
@@ -80,15 +85,15 @@ public class FindPluginManager {
 		return sInstance;
 	}
 	
-	public static Class getDbManagerClass() {
-		try {
-			return Class.forName("org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbManager");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	public static Class getDbManagerClass() {
+//		try {
+//			return Class.forName("org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbManager");
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 	
 	@SuppressWarnings("unchecked")
 	public void initFromResource(Context context, int plugins_xml){		
@@ -117,6 +122,7 @@ public class FindPluginManager {
 					mExtraButtonLabel = plugin_nodes.item(ii).getAttributes().getNamedItem("main_extra_button_label").getTextContent();
 					mExtraButtonLabel2 = plugin_nodes.item(ii).getAttributes().getNamedItem("main_extra_button_label2").getTextContent();
 					mPreferences = plugin_nodes.item(ii).getAttributes().getNamedItem("preferences_xml").getTextContent();
+					mAddFindLayout = plugin_nodes.item(ii).getAttributes().getNamedItem("add_find_layout").getTextContent();
 
 					@SuppressWarnings({ "rawtypes" })
 					Class new_class = Class.forName(find_factory_name);

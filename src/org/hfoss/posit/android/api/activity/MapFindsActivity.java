@@ -221,7 +221,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		
-		List<Find> finds = this.getHelper().getAllFinds();
+		List<? extends Find> finds = this.getHelper().getAllFinds();
 		if (finds.size() <= 0) { // No finds
 			Toast.makeText(this, "No finds to display", Toast.LENGTH_SHORT).show();
 			finish();
@@ -235,7 +235,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 
 	}
 
-	private  FindOverlay mapLayoutItems(List<Find> finds) {
+	private  FindOverlay mapLayoutItems(List<? extends Find> finds) {
 		int latitude = 0;
 		int longitude = 0;
 		int id = 0;
@@ -475,7 +475,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		int latitude;
 		int longitude;
 		
-		List<Find> finds = this.getHelper().getAllFinds();
+		List<? extends Find> finds = this.getHelper().getAllFinds();
 		if (finds.size() <= 0) {
 			// No finds at all
 			mapController.setZoom(1);

@@ -11,6 +11,7 @@
 <!--  			login_activity_class="org.hfoss.posit.android.api.activity.LoginActivity" -->
 <!-- 			find_data_manager="org.hfoss.posit.android.api.database.DbManager"  -->
 <!-- 			preferences_xml="posit_preferences"  -->
+<!-- 			add_find_layout="add_find" -->
 <!-- 			main_list_button_label="viewFinds" -->
 <!-- 			main_add_button_label="addFind" -->
 <!-- 			main_extra_button_label="" -->
@@ -26,8 +27,9 @@
 			extra_activity_class2=""
 			list_finds_activity_class="org.hfoss.posit.android.api.activity.ListFindsActivity"
  			login_activity_class="org.hfoss.posit.android.api.activity.LoginActivity"
-			find_data_manager="org.hfoss.posit.android.api.database.OutsideInDbManager" 
+			find_data_manager="org.hfoss.posit.android.plugin.outsidein.OutsideInDbManager" 
 			preferences_xml="posit_preferences" 
+ 		    add_find_layout="outsidein_add_find"
 			main_list_button_label="viewFinds"
 			main_add_button_label="addFind"
 			main_extra_button_label=""

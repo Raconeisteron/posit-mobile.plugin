@@ -3,8 +3,9 @@
 	<string name="app_name">POSIT-Haiti</string>
 	<string name="version">0.5 beta</string>
 	
-	<string name="open_helper_classname">org.hfoss.posit.android.plugin.acdivoca.AcdiVocaDbManager</string>
-	
+<!-- 	<string name="open_helper_classname">org.hfoss.posit.android.plugin.outsidein.OutsideInDbManager</string> -->
+	<string name="open_helper_classname">org.hfoss.posit.android.api.database.DbManager</string>
+		
 	<string name="defaultServer">http://turing.cs.trincoll.edu/~ram/positweb</string>
 
 	<string name="addFind">Add find</string>
