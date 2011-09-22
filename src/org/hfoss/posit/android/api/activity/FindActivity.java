@@ -37,8 +37,13 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// if (savedInstanceState== null ||
+		// !savedInstanceState.getBoolean(FindPluginManager.IS_PLUGIN)) {
 
-		setContentView(R.layout.add_find);
+		//setContentView(R.layout.add_find);
+		int resId = getResources().getIdentifier(FindPluginManager.mAddFindLayout,
+			    "layout", getPackageName());
+		setContentView(resId);
 		initializeListeners();
 		Bundle extras = getIntent().getExtras();
 
@@ -56,6 +61,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			}
 		}
 	}
+
+	// }
 
 	protected void onResume() {
 		super.onResume();
@@ -235,9 +242,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			int success = 0;
 			Find find = retrieveContentFromView();
 			success = find.insert(this.getHelper().getFindDao());
-			if (success > 0)
+			if (success > 0) {
 				Log.i(TAG, "Find inserted successfully: " + find);
-			else
+			} else
 				Log.e(TAG, "Find not inserted: " + find);
 			finish();
 			break;

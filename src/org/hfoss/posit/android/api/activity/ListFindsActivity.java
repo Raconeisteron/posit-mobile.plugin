@@ -59,7 +59,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	 */
 	private void fillList() {
 
-		List<Find> list = this.getHelper().getAllFinds();
+		List<? extends Find> list = this.getHelper().getAllFinds();
 
 		if (list.size() == 0) {
 			setContentView(R.layout.list_finds);
@@ -68,9 +68,9 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 		FindsListAdapter adapter = new FindsListAdapter(this,
 				R.layout.list_row, list);
+		
 		setListAdapter(adapter);
 
-		setListAdapter(adapter);
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
 		lv.setOnItemClickListener(new OnItemClickListener() {
@@ -93,12 +93,12 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	 * @param <Find>
 	 */
 	private class FindsListAdapter extends ArrayAdapter<Find> {
-		private List<Find> items;
+		private List<? extends Find> items;
 
 		public FindsListAdapter(Context context, int textViewResourceId,
-				List<Find> items) {
-			super(context, textViewResourceId, items);
-			this.items = items;
+				List list) {
+			super(context, textViewResourceId, list);
+			this.items = list;
 		}
 
 		@Override
@@ -109,15 +109,20 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				v = vi.inflate(R.layout.list_row, null);
 			}
 			Find find = items.get(position);
+			Log.i(TAG,"the find we doing is: "+ find);
 			if (find != null) {
 				TextView tv = (TextView) v.findViewById(R.id.name);
+				Log.i(TAG,"Setting the name" + find.getName());
+			
 				tv.setText(find.getName());
 				tv = (TextView) v.findViewById(R.id.latitude);
 				tv.setText(String.valueOf(find.getLatitude()));
+				Log.i(TAG,"Setting the latitude  " + find.getLatitude());
 				tv = (TextView) v.findViewById(R.id.longitude);
 				tv.setText(String.valueOf(find.getLongitude()));
 				tv = (TextView) v.findViewById(R.id.id);
 				tv.setText(Integer.toString(find.getId()));
+				Log.i(TAG,"Setting the id  " + find.getId());
 			}
 			return v;
 		}
