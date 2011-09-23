@@ -62,53 +62,53 @@ public class OutsideInDbManager extends DbManager {
 		}
 //			
 
-		
-		/**
-		 * Returns the Database Access Object (DAO) for the OutsideInFind class. 
-		 * It will create it or just give the cached value.
-		 */
-		public Dao<OutsideInFind, Integer> getOutsideInFindDao(){
-			if (outsideInFindDao == null) {
-				try {
-					outsideInFindDao = getDao(OutsideInFind.class);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			return outsideInFindDao;
-		}
-		
-		
-		/**
-		 * Looks up a find by its ID.
-		 * @param id the id of the find to look up
-		 * @return the find
-		 */
-		public Find getFindById(int id) {
-			OutsideInFind find = null;
-			try {
-				find = getOutsideInFindDao().queryForId(id);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			return find;
-		}
-		
-		/**
-		 * Fetches all finds currently in the database.
-		 * @return A list of all the finds.
-		 */
-		public List<? extends Find> getAllFinds() {
-			List<OutsideInFind> list = null;
-			try {
-				list = getOutsideInFindDao().queryForAll();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return list;
-
-		}
+//		
+//		/**
+//		 * Returns the Database Access Object (DAO) for the OutsideInFind class. 
+//		 * It will create it or just give the cached value.
+//		 */
+//		public Dao<OutsideInFind, Integer> getOutsideInFindDao(){
+//			if (outsideInFindDao == null) {
+//				try {
+//					outsideInFindDao = getDao(OutsideInFind.class);
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			return outsideInFindDao;
+//		}
+//		
+//		
+//		/**
+//		 * Looks up a find by its ID.
+//		 * @param id the id of the find to look up
+//		 * @return the find
+//		 */
+//		public Find getFindById(int id) {
+//			OutsideInFind find = null;
+//			try {
+//				find = getOutsideInFindDao().queryForId(id);
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//			return find;
+//		}
+//		
+//		/**
+//		 * Fetches all finds currently in the database.
+//		 * @return A list of all the finds.
+//		 */
+//		public List<? extends Find> getAllFinds() {
+//			List<OutsideInFind> list = null;
+//			try {
+//				list = getOutsideInFindDao().queryForAll();
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			return list;
+//
+//		}
 		
 		/**
 		 * Close the database connections and clear any cached DAOs.

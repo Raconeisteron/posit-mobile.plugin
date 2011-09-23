@@ -17,19 +17,19 @@
 				android:layout_marginRight="70dp" android:layout_toRightOf="@id/find_image"
 				android:layout_alignParentTop="true" />
 
-			<TextView android:id="@+id/status" android:layout_width="wrap_content"
+			<TextView android:id="@+id/guid" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:textSize="13dp"
 				android:layout_alignTop="@id/name"
 				android:layout_alignParentRight="true" />
 
-			<TextView android:id="@+id/description_id"
+			<TextView android:id="@+id/syringes_in"
 				android:layout_width="fill_parent" android:layout_height="wrap_content"
 				android:layout_below="@id/name" android:singleLine="true"
 				android:textSize="13dp" android:layout_marginLeft="3dp"
 				android:layout_marginRight="50dp" android:layout_toRightOf="@id/find_image"
 				android:layout_marginBottom="3dp" />
 
-			<TextView android:id="@+id/num_photos" android:layout_width="wrap_content"
+			<TextView android:id="@+id/syringes_out" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:textSize="13dp"
 				android:layout_below="@id/status" android:layout_alignTop="@id/description_id"
 				android:layout_alignParentRight="true" android:visibility="gone" />
@@ -49,9 +49,9 @@
 			<TextView android:id="@+id/id" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:layout_alignTop="@id/longitude"
 				android:layout_alignParentRight="true" android:layout_marginRight="5dp"
-				android:textSize="13dp"  />
+				android:textSize="13dp" />
 
-			<TextView android:id="@+id/idNumberText"
+			<TextView android:id="@+id/idNumberText" android:text="lolwut"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:layout_marginLeft="2dp" android:layout_marginRight="2dp"
 				android:layout_below="@id/status" android:textSize="13dp"
