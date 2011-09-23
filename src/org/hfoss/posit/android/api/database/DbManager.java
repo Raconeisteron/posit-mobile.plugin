@@ -23,6 +23,7 @@
 
 package org.hfoss.posit.android.api.database;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -84,9 +85,13 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		Log.i(TAG, "onCreate");
+		Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
+		try {
+			findClass.getMethod("createTable", ConnectionSource.class).invoke(null, connectionSource);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 		
 		User.createTable(connectionSource, getUserDao());
-		Find.createTable(connectionSource);
-
 	}
 
 	@Override
@@ -95,7 +100,10 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		try {
 			Log.i(TAG, "onUpgrade");
 			TableUtils.dropTable(connectionSource, User.class, true);
-			TableUtils.dropTable(connectionSource, Find.class, true);
+			
+			Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
+			TableUtils.dropTable(connectionSource, findClass, true);
+			
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
 		} catch (SQLException e) {
