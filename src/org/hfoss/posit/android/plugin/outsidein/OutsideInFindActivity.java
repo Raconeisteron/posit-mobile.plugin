@@ -3,21 +3,16 @@
  */
 package org.hfoss.posit.android.plugin.outsidein;
 
-import java.sql.SQLException;
-
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.FindActivity;
-import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.plugin.FindPluginManager;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.CheckBox;
-import android.widget.Button;
+
 
 /**
  * FindActivity subclass for Outside In plugin.
@@ -30,35 +25,8 @@ public class OutsideInFindActivity extends FindActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate()");
-//		if (savedInstanceState != null)
-//			savedInstanceState.putBoolean(FindPluginManager.IS_PLUGIN, true);
-//		else {
-//			savedInstanceState = new Bundle();
-//			savedInstanceState.putBoolean(FindPluginManager.IS_PLUGIN, true);
-//		}
 		super.onCreate(savedInstanceState);
-//		Bundle extras = getIntent().getExtras();
-//		//R.layout.add_find
-//		int resId = getResources().getIdentifier("R.layout.add_find",
-//			    "id", getPackageName());
-//		setContentView(resId);
-//		if (extras != null) {
-//			// if (getIntent().getAction().equals(Intent.ACTION_INSERT))
-//			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
-//				Find find = this.getHelper().getFindById(extras.getInt(Find.ORM_ID));
-////				OutsideInDbManager manager = (OutsideInDbManager)getHelper();
-////				Find find=new Find();
-////				try {
-////					find = manager.getOutsideInFindDao().queryForId(extras.getInt(Find.ORM_ID));
-////				} catch (SQLException e) {
-////					// TODO Auto-generated catch block
-////					e.printStackTrace();
-////				}
-//				displayContentInView(find);
-//			}
-//		}
-//
-//		initializeListeners();
+
 
 	}
 
@@ -104,21 +72,6 @@ public class OutsideInFindActivity extends FindActivity {
 
 	public void onClick(View v) {
 		super.onClick(v);
-//		switch (v.getId()) {
-//		case R.id.saveButton:
-//			int success = 0;
-//			OutsideInFind find = (OutsideInFind)retrieveContentFromView();
-//			//OutsideInDbManager helper = (OutsideInDbManager)this.getHelper();
-//			//success = find.insertDumb(helper.getOutsideInFindDao());
-//			success = find.insert(this.getHelper().getFindDao());
-//			if (success > 0){
-//				Log.i(TAG, "Find inserted successfully: " + find);
-//			}
-//			else
-//				Log.e(TAG, "Find not inserted: " + find);
-//			finish();
-//			break;
-//		}
 	}
 
 }

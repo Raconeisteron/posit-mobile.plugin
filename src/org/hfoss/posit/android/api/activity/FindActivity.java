@@ -37,12 +37,11 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// if (savedInstanceState== null ||
-		// !savedInstanceState.getBoolean(FindPluginManager.IS_PLUGIN)) {
 
-		//setContentView(R.layout.add_find);
-		int resId = getResources().getIdentifier(FindPluginManager.mAddFindLayout,
-			    "layout", getPackageName());
+		// Get the custom add find layout from the plugin settings, if there is one.
+		int resId = getResources().getIdentifier(
+				FindPluginManager.mAddFindLayout, "layout", getPackageName());
+		
 		setContentView(resId);
 		initializeListeners();
 		Bundle extras = getIntent().getExtras();
@@ -54,15 +53,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				LocationManager.NETWORK_PROVIDER, 60000, 0, this);
 
 		if (extras != null) {
-			// if (getIntent().getAction().equals(Intent.ACTION_INSERT))
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
 				displayContentInView(find);
 			}
 		}
 	}
-
-	// }
 
 	protected void onResume() {
 		super.onResume();
@@ -210,8 +206,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * When we get a fresh location, update our class variable..
 	 */
 	public void onLocationChanged(Location location) {
-		Toast.makeText(this, "Got a new location!" + location,
-				Toast.LENGTH_SHORT).show();
 		currentLocation = location;
 
 	}
@@ -236,6 +230,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	}
 
+	/**
+	 * Typical onClick stuff--shouldn't need to override anything here for
+	 * the most basic functionality, but you can!
+	 * (non-Javadoc)
+	 * @see android.view.View.OnClickListener#onClick(android.view.View)
+	 */
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.saveButton:

@@ -16,9 +16,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,25 +52,34 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume()");
-
-		fillList();
+		fillList(setUpAdapter());
 	}
-
 	/**
-	 * Puts the items from the DB table into the rows of the view.
+	 * Called in onResume() and gets all of the finds in the database and puts them in an
+	 * adapter.  Override for a custom adapter/layout for this Activity.
 	 */
-	private void fillList() {
+	protected ListAdapter setUpAdapter() {
 
 		List<? extends Find> list = this.getHelper().getAllFinds();
 
-		if (list.size() == 0) {
+		int resId = getResources().getIdentifier(FindPluginManager.mListFindLayout,
+			    "layout", getPackageName());
+		
+		FindsListAdapter adapter = new FindsListAdapter(this,
+				resId, list);
+
+		return adapter;
+	}
+	/**
+	 * Puts the items from the DB table into the rows of the view.
+	 */
+	private void fillList(ListAdapter adapter) {
+
+		if (adapter.isEmpty()) {
 			setContentView(R.layout.list_finds);
 			return;
 		}
 
-		FindsListAdapter adapter = new FindsListAdapter(this,
-				R.layout.list_row, list);
-		
 		setListAdapter(adapter);
 
 		ListView lv = getListView();
@@ -77,7 +88,8 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Intent intent = new Intent(parent.getContext(), FindPluginManager.getInstance().getFindActivityClass());
+				Intent intent = new Intent(parent.getContext(),
+						FindPluginManager.getInstance().getFindActivityClass());
 				TextView tv = (TextView) view.findViewById(R.id.id);
 				int ormId = Integer.parseInt((String) tv.getText());
 				intent.putExtra(Find.ORM_ID, ormId);
@@ -92,8 +104,8 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	 * 
 	 * @param <Find>
 	 */
-	private class FindsListAdapter extends ArrayAdapter<Find> {
-		private List<? extends Find> items;
+	protected class FindsListAdapter extends ArrayAdapter<Find> {
+		protected List<? extends Find> items;
 
 		public FindsListAdapter(Context context, int textViewResourceId,
 				List list) {
@@ -106,23 +118,22 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			View v = convertView;
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.list_row, null);
+				
+				int resId = getResources().getIdentifier(FindPluginManager.mListFindLayout,
+					    "layout", getPackageName());
+				v = vi.inflate(resId, null);
 			}
 			Find find = items.get(position);
-			Log.i(TAG,"the find we doing is: "+ find);
 			if (find != null) {
 				TextView tv = (TextView) v.findViewById(R.id.name);
-				Log.i(TAG,"Setting the name" + find.getName());
-			
 				tv.setText(find.getName());
 				tv = (TextView) v.findViewById(R.id.latitude);
 				tv.setText(String.valueOf(find.getLatitude()));
-				Log.i(TAG,"Setting the latitude  " + find.getLatitude());
 				tv = (TextView) v.findViewById(R.id.longitude);
 				tv.setText(String.valueOf(find.getLongitude()));
 				tv = (TextView) v.findViewById(R.id.id);
 				tv.setText(Integer.toString(find.getId()));
-				Log.i(TAG,"Setting the id  " + find.getId());
+
 			}
 			return v;
 		}
