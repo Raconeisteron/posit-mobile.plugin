@@ -42,30 +42,6 @@ public class OutsideInFind extends Find {
 		}
 	}
 	
-	/**
-	 * Inserts this find into the database.
-	 * 
-	 * @param dao
-	 *            the DAO object provided by the ORMLite helper class.
-	 * @return the number of rows inserted.
-	 */
-
-	public int insertDumb(Dao<OutsideInFind, Integer> dao) {
-		int rows = 0;
-		try {
-			rows = dao.create(this);
-			if (rows == 1)
-				Log.i(TAG, "Inserted find:  " + this.toString());
-			else {
-				Log.e(TAG, "Db Error inserting find: " + this.toString());
-				rows = 0;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return rows;
-	}
-	
 	public int getSyringesIn() {
 		return syringesIn;
 	}
