@@ -3,19 +3,19 @@
  
 			<Preference android:key="testpositpref" 
 				android:title="@string/aboutItem"
-				activity_class="org.hfoss.posit.android.AboutActivity"
+				activity_class="org.hfoss.posit.android.experimental.AboutActivity"
 				android:summary="" />
   <!-- 
 			<Preference android:key="regDevice" 
 				android:title="@string/prefDevice"
 				android:summary="@string/registerDeviceTitle" 
-				activity_class="org.hfoss.posit.android.AboutActivity"
+				activity_class="org.hfoss.posit.android.experimental.AboutActivity"
 				/>
 
 			<Preference android:key="regUser" 
 				android:title="@string/prefUser"
 				android:summary="@string/registerUserTitle" 
-				activity_class="org.hfoss.posit.android.AboutActivity"
+				activity_class="org.hfoss.posit.android.experimental.AboutActivity"
 				/>
 
 			<EditTextPreference android:title="@string/serverPrefLabel"
@@ -23,12 +23,12 @@
   
 			<Preference android:key="PROJECT_NAME" 
 				android:title="@string/currProjectLabel" 
-				activity_class="org.hfoss.posit.android.AboutActivity"
+				activity_class="org.hfoss.posit.android.experimental.AboutActivity"
 			/>
 
 			<Preference android:key="EMAIL" 
 				android:title="@string/currUserLabel" 
-				activity_class="org.hfoss.posit.android.AboutActivity"
+				activity_class="org.hfoss.posit.android.experimental.AboutActivity"
 				/>
 
 		<PreferenceScreen android:title="POSIT Preferences">

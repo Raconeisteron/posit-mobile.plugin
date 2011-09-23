@@ -1,10 +1,10 @@
 <resources>
 	<!-- Application name and the Strings seen in the PositMain -->
-	<string name="app_name">POSIT-Haiti</string>
+	<string name="app_name">POSIT-exp</string>
 	<string name="version">0.5 beta</string>
 	
-<!-- 	<string name="open_helper_classname">org.hfoss.posit.android.plugin.outsidein.OutsideInDbManager</string> -->
-	<string name="open_helper_classname">org.hfoss.posit.android.api.database.DbManager</string>
+<!-- 	<string name="open_helper_classname">org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInDbManager</string> -->
+	<string name="open_helper_classname">org.hfoss.posit.android.experimental.api.database.DbManager</string>
 		
 	<string name="defaultServer">http://turing.cs.trincoll.edu/~ram/positweb</string>
 
