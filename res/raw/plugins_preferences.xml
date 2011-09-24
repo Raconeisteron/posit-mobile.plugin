@@ -12,6 +12,7 @@
 <!-- 			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"  -->
 <!-- 			preferences_xml="posit_preferences"  -->
 <!-- 			add_find_layout="add_find" -->
+<!--			list_find_layout="list_row" -->
 <!-- 			main_list_button_label="viewFinds" -->
 <!-- 			main_add_button_label="addFind" -->
 <!-- 			main_extra_button_label="" -->
