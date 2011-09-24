@@ -24,22 +24,24 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 public class FindPluginManager {
-	private static FindPluginManager sInstance = null; 
-	
+	private static FindPluginManager sInstance = null;
+
 	private static final String TAG = "FindPluginManager";
 
-	public static final String IS_PLUGIN = "isPlugin"; //used in subclasses to indicate
-														//that in onCreate() we are in a plugin.. not sure
-	
+	public static final String IS_PLUGIN = "isPlugin"; // used in subclasses to
+														// indicate
+	// that in onCreate() we are in a plugin.. not sure
+
 	private ArrayList<Plugin> plugins = new ArrayList<Plugin>();
-	
+
 	// NOTE: When multiple plugins are implemented these should disappear
-	//  from here and possibly move to Plugin.java??
+	// from here and possibly move to Plugin.java??
 	private Activity mMainActivity = null;
 	private FindFactory mFindFactory = null;
-	
+
 	private DbManager mDbManager = null;
 	private Class<Find> mFindClass;
 	private Class<FindActivity> mFindActivityClass = null;
@@ -48,9 +50,9 @@ public class FindPluginManager {
 	private Class<Activity> mExtraActivityClass2 = null;
 	private Class<Activity> mLoginActivityClass = null;
 
+	public static String mPreferences = null; // Shared preferences XML for
+												// Settings
 
-	public static String mPreferences = null;  // Shared preferences XML for Settings
-	
 	public static String mAddFindLayout = null;
 	public static String mListFindLayout = null;
 	public static String mMainIcon = null;
@@ -59,20 +61,19 @@ public class FindPluginManager {
 	public static String mExtraButtonLabel = null;
 	public static String mExtraButtonLabel2 = null;
 
-	
-	private FindPluginManager(Activity activity){
+	private FindPluginManager(Activity activity) {
 		mMainActivity = activity;
 	}
-	
-	public static FindPluginManager initInstance(Activity activity){
+
+	public static FindPluginManager initInstance(Activity activity) {
 		sInstance = new FindPluginManager(activity);
 		sInstance.initFromResource(activity, R.raw.plugins_preferences);
 		return sInstance;
 	}
-	
-	public static FindPluginManager getInstance(){
-		assert(sInstance != null);
-		
+
+	public static FindPluginManager getInstance() {
+		assert (sInstance != null);
+
 		return sInstance;
 	}
 
@@ -135,33 +136,32 @@ public class FindPluginManager {
 		{
 			Log.i(TAG, "Failed to load plugin");
 			Log.i(TAG, "reason: " + ex.getMessage());
-			
-			mMainActivity.finish();
+			Toast.makeText(mMainActivity, "Failed to load plugin. Please fix in plugins_preferences.xml", Toast.LENGTH_LONG).show();
+			//mMainActivity.finish();
 		}
 	}
-		
-	public FindFactory getFindFactory(){
+
+	public FindFactory getFindFactory() {
 		return mFindFactory;
 	}
-	
-//	public FindDataManager getFindDataManager(){
-//		return mFindDataManager;
-//	}
-//	
-	
-	
-	public Class<FindActivity> getFindActivityClass(){
+
+	// public FindDataManager getFindDataManager(){
+	// return mFindDataManager;
+	// }
+	//	
+
+	public Class<FindActivity> getFindActivityClass() {
 		return mFindActivityClass;
 	}
-	
+
 	public Class<Find> getFindClass() {
 		return mFindClass;
 	}
 
-	public Class<ListFindsActivity> getListFindsActivityClass(){
+	public Class<ListFindsActivity> getListFindsActivityClass() {
 		return mListFindsActivityClass;
 	}
-	
+
 	public Class<Activity> getExtraActivityClass() {
 		return mExtraActivityClass;
 	}
@@ -169,7 +169,6 @@ public class FindPluginManager {
 	public void setExtraActivityClass(Class<Activity> extraActivityClass) {
 		mExtraActivityClass = extraActivityClass;
 	}
-	
 
 	public Class<Activity> getExtraActivityClass2() {
 		return mExtraActivityClass2;
@@ -186,13 +185,9 @@ public class FindPluginManager {
 	public void setLoginActivityClass(Class<Activity> loginActivityClass) {
 		mLoginActivityClass = loginActivityClass;
 	}
-	
-	
-	public ArrayList<Plugin> getPlugins(){
+
+	public ArrayList<Plugin> getPlugins() {
 		return plugins;
 	}
 
-	
-	
-	
 }
