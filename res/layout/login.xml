@@ -37,6 +37,7 @@
 		android:layout_gravity="center"
 		android:nextFocusDown="@+id/passwordEdit"
 		android:minWidth="150px" 
+		android:singleLine="true"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" />
 		
@@ -45,7 +46,8 @@
 		android:hint="@string/password_hint"
 		android:nextFocusDown="@+id/login_button"
 		android:layout_gravity="center"
-		android:minWidth="150px" 
+		android:minWidth="150px"
+		android:singleLine="true" 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content" />	
 
