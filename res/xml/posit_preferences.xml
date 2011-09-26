@@ -1,10 +1,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="@string/general">
+	<PreferenceCategory android:title="@string/app_name">
  
 			<Preference android:key="testpositpref" 
 				android:title="@string/aboutItem"
 				activity_class="org.hfoss.posit.android.experimental.AboutActivity"
 				android:summary="" />
+				
+			<CheckBoxPreference android:title="@string/geotaggingPref"
+				android:defaultValue="true" android:summary="@string/geotaggingSummary"
+				android:key="@string/geotaggingKey" />
   <!-- 
 			<Preference android:key="regDevice" 
 				android:title="@string/prefDevice"

@@ -234,7 +234,7 @@ public class SettingsActivity extends PreferenceActivity implements OnPreference
             
             // Merge its preference with POSIT core preferences.
             String pluginFile = pluginXmlList.get(k).getPreferencesXmlFile();
-            int resID = getResources().getIdentifier(pluginFile, "xml", "org.hfoss.posit.android");
+            int resID = getResources().getIdentifier(pluginFile, "xml", "org.hfoss.posit.android.experimental");
             this.addPreferencesFromResource(resID);
             
             // For each preference that starts an Activity set its Listener

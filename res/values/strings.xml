@@ -1,6 +1,6 @@
 <resources>
 	<!-- Application name and the Strings seen in the PositMain -->
-	<string name="app_name">POSIT-exp</string>
+	<string name="app_name">POSITx</string>
 	<string name="version">0.5 beta</string>
 	
 <!-- 	<string name="open_helper_classname">org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInDbManager</string> -->
@@ -62,8 +62,7 @@
 <!-- 	<string name="aboutCopyright1">POSIT</string> -->
 <!-- 	<string name="aboutCopyright2">Portable Open Search and Identification Tool\n -->
 <!-- 	</string> -->
-<!-- 	<string name="aboutDescription"> Developed by the Humanitarian FOSS Project at Trinity College -->
-<!-- 	</string> -->
+	<string name="aboutDescription">A project of Trinity College HFOSS</string> 
 <!-- 	<string name="acdivocaDescription1">ACDI/ VOCA Mobile Phone-Based Beneficiary Registration and Update System</string> -->
 <!-- 	<string name="acdivocaDescription2">(POSIT-Haiti)</string> -->
 <!-- 	<string name="organizationDescription">Sponsored by the NSF, USAID, and ACDI/VOCA</string> -->
@@ -311,4 +310,11 @@
 	<string name="getting_longitude">Getting longitude...</string>
 	<string name="getting_latitude">Getting latitude...</string>
 	
+	<!-- Preferences -->
+	
+	<string name="aboutKey">aboutKey</string>
+	
+	<string name="geotaggingPref">Geotagging</string>
+    <string name="geotaggingSummary">Geotag all finds</string>
+    <string name="geotaggingKey">geotagKey</string>	
 </resources>
