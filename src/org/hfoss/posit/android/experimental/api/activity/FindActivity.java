@@ -38,10 +38,11 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Get the custom add find layout from the plugin settings, if there is one.
+		// Get the custom add find layout from the plugin settings, if there is
+		// one.
 		int resId = getResources().getIdentifier(
 				FindPluginManager.mAddFindLayout, "layout", getPackageName());
-		
+
 		setContentView(resId);
 		initializeListeners();
 		Bundle extras = getIntent().getExtras();
@@ -152,8 +153,13 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		// find.setLongitude(Double.parseDouble(value));
 		// }
 
-		find.setLatitude(currentLocation.getLatitude());
-		find.setLongitude(currentLocation.getLongitude());
+		if (currentLocation != null) {
+			find.setLatitude(currentLocation.getLatitude());
+			find.setLongitude(currentLocation.getLongitude());
+		} else {
+			find.setLatitude(0);
+			find.setLongitude(0);
+		}
 
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
 		if (datePicker != null) {
@@ -231,9 +237,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	}
 
 	/**
-	 * Typical onClick stuff--shouldn't need to override anything here for
-	 * the most basic functionality, but you can!
-	 * (non-Javadoc)
+	 * Typical onClick stuff--shouldn't need to override anything here for the
+	 * most basic functionality, but you can! (non-Javadoc)
+	 * 
 	 * @see android.view.View.OnClickListener#onClick(android.view.View)
 	 */
 	public void onClick(View v) {
