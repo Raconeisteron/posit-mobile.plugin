@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="unique_id">Unique ID</string>
+    <string name="outsideinprefs">OutsideIn Preferences</string>
+    <string name="outsideInAboutDescription">We help homeless youth and other marginalized people move towards improved health and self-sufficiency.</string>
+
+ 
 </resources>

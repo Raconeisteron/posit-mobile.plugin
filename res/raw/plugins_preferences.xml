@@ -29,7 +29,7 @@
 			list_finds_activity_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInListFindsActivity"
  			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity"
 			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager" 
-			preferences_xml="posit_preferences" 
+			preferences_xml="outsidein_preferences" 
  		    add_find_layout="outsidein_add_find"
  		    list_find_layout="outsidein_list_row"
 			main_list_button_label="viewFinds"

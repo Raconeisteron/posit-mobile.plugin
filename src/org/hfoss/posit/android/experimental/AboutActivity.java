@@ -34,8 +34,8 @@ import android.view.MenuItem;
  * Displays basic information about POSIT, including name,
  *  developer (HFOSS), and the names of development team members.
  */
-public class AboutActivity extends Activity{
-	//private static final String TAG = "AboutActivity";
+public class AboutActivity extends Activity {
+	private static final String TAG = "AboutActivity";
 	 
 	/**
 	 * To add a name to the development team, edit strings.xml and
@@ -45,47 +45,6 @@ public class AboutActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
 		setContentView(R.layout.about_copyright);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.about_copyright_menu, menu);
-		return true;
-	}
-
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onMenuItemSelected(int, android.view.MenuItem)
-	 */
-	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		Intent intent;
-		switch(item.getItemId()) {
-		case R.id.settings_menu_item:
-			intent = new Intent(this, SettingsActivity.class);
-			startActivity(intent);
-			break;
-//		case R.id.goback_menu_item:
-//			intent = new Intent(this,PositMain.class);
-//			startActivity(intent);
-//			break;
-		}
-		return true;
-	}
-	
-	
-	/**
-	 * Localizes already created menu items.
-	 */
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		
-		// Re-inflate to force localization.
-		menu.clear();
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.about_copyright_menu, menu);
-		return super.onPrepareOptionsMenu(menu);
-
 	}
 
 	@Override
