@@ -333,7 +333,7 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 			case R.id.addFindButton:
 				intent.setClass(this, FindActivityProvider.getFindActivityClass());
 				intent.setAction(Intent.ACTION_INSERT);
-				intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_MCHN);
+				//intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_MCHN);
 				startActivity(intent);
 				break;
 			case R.id.listFindButton:

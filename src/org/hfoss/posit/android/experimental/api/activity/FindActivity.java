@@ -11,13 +11,19 @@ import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -33,6 +39,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		implements OnClickListener, OnItemClickListener, LocationListener {
 
 	private static final String TAG = "FindActivity";
+	private static final int CONFIRM_DELETE_DIALOG = 0;
 	private Location currentLocation;
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +75,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		Location lastKnownLocation = locationManager
 				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		if (lastKnownLocation == null)
-			Toast.makeText(this, "Need a network connection to retrieve a location.",
+			Toast.makeText(this,
+					"Need a network connection to retrieve a location.",
 					Toast.LENGTH_LONG).show();
 		else
 			currentLocation = lastKnownLocation;
@@ -95,6 +103,43 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		tView.setText(String.valueOf(location.getLatitude()));
 	}
 
+	/** 
+	 * Creates the menu for this activity by inflating a menu resource file.
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.add_finds_menu, menu);
+		if(getIntent().getAction().equals(Intent.ACTION_INSERT))
+			menu.removeItem(R.id.delete_find_menu_item);
+		return true;
+	} 
+
+	/** 
+	 * Handles the various menu item actions.
+	 * @param featureId is unused
+	 * @param item is the MenuItem selected by the user
+	 */
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		Intent intent;
+		switch (item.getItemId()) {
+
+		case R.id.save_find_menu_item:
+			saveFind();			
+			break;
+
+		case R.id.delete_find_menu_item:
+			showDialog(CONFIRM_DELETE_DIALOG);
+			break;
+
+		default:
+			return false;
+		}
+		return true;
+	} // onMenuItemSelected
+
+	
 	/**
 	 * Retrieves values from the View fields and stores them in a Find instance.
 	 * This method is invoked from the Save menu item. It also marks the find
@@ -235,7 +280,107 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		// TODO Auto-generated method stub
 
 	}
+	
+	/**
+	 * This method is invoked by showDialog() when a dialog window is created. It displays
+	 *  the appropriate dialog box, currently a dialog to confirm that the user wants to 
+	 *  delete this find and a dialog to warn user that a barcode has already been entered into the system
+	 */
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case CONFIRM_DELETE_DIALOG:
+			return new AlertDialog.Builder(this)
+			.setIcon(R.drawable.alert_dialog_icon)
+			.setTitle(R.string.alert_dialog_2)
+			.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					// User clicked OK so do some stuff 
+					if (deleteFind()) 
+					{
+						Toast.makeText(FindActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
+						finish();
+					}	else 
+						Toast.makeText(FindActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
+				}
+			}
+			)
+			.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					// User clicked cancel so do nothing 
+				}
+			})
+			.create();
 
+//		case CONFIRM_EXIT:
+//			Log.i(TAG, "CONFIRM_EXIT dialog");
+//			return new AlertDialog.Builder(this)
+//			.setIcon(R.drawable.alert_dialog_icon)
+//			.setTitle(R.string.check_saving)
+//			.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+//				public void onClick(DialogInterface dialog, int whichButton) {
+//					Log.i(TAG, "CONFIRM_EXIT setOK onClick");
+//					// User clicked OK so do some stuff 
+//					ContentValues contentValues = retrieveContentFromView();
+//					doSave(contentValues);
+//				}
+//			})
+//			.setNeutralButton(R.string.closing, new DialogInterface.OnClickListener() {
+//				public void onClick(DialogInterface dialog, int whichButton) {
+//					Log.i(TAG, "CONFIRM_EXIT setNeutral onClick");
+//					finish();
+//				}
+//			})
+//			.setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+//				public void onClick(DialogInterface dialog, int whichButton) {
+//					Log.i(TAG, "CONFIRM_EXIT setCancel onClick");
+//					/* User clicked Cancel so do nothing */
+//				}
+//			})
+//			.create();
+		default:
+			return null;
+		} 
+	}
+
+	protected boolean saveFind(){
+		int rows = 0;
+		Find find = retrieveContentFromView();
+		if (getIntent().getAction().equals(Intent.ACTION_INSERT))
+			rows = find.insert(this.getHelper().getFindDao());
+		else if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
+			find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
+			rows = find.update(this.getHelper().getFindDao());
+		} else
+			rows = 0; // Something wrong with intent
+		if (rows > 0) {
+			Log.i(TAG, "Find inserted successfully: " + find);
+		} else
+			Log.e(TAG, "Find not inserted: " + find);
+		return rows > 0;
+	}
+	
+	protected boolean deleteFind() {
+		int rows = 0;
+		
+		// Get the appropriate find class from the plugin manager and
+		// make an instance of it.
+		Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
+		Find find = null;
+
+		try {
+			find = findClass.newInstance();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		
+		find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
+		rows = find.delete(this.getHelper().getFindDao());
+		return rows > 0;
+		
+	}
 	/**
 	 * Typical onClick stuff--shouldn't need to override anything here for the
 	 * most basic functionality, but you can! (non-Javadoc)
@@ -245,13 +390,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.saveButton:
-			int success = 0;
-			Find find = retrieveContentFromView();
-			success = find.insert(this.getHelper().getFindDao());
-			if (success > 0) {
-				Log.i(TAG, "Find inserted successfully: " + find);
-			} else
-				Log.e(TAG, "Find not inserted: " + find);
+			saveFind();
 			finish();
 			break;
 
