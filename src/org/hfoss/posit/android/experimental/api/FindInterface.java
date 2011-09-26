@@ -34,7 +34,7 @@ public interface FindInterface {
 	 * Call delete() to delete this Find.
 	 * @return the row id or -1 if it was unsuccessful
 	 */
-	public int update(Dao<Find, Integer> dao, ContentValues values);
+	public int update(Dao<Find, Integer> dao);
 
 	/**
 	 * Deletes this Find object form the DB, including its data

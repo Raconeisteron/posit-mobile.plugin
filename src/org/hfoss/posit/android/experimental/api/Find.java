@@ -265,10 +265,10 @@ public class Find implements FindInterface {
 	 *            a ContentValues object containing all of the values to update.
 	 * @return the number of rows updated.
 	 */
-	public int update(Dao<Find, Integer> dao, ContentValues values) {
+	public int update(Dao<Find, Integer> dao) {
 		int rows = 0;
 		try {
-			updateObject(values);
+			//updateObject(values);
 			rows = dao.update(this);
 			if (rows == 1)
 				Log.i(TAG, "Updated find:  " + this.toString());
