@@ -68,7 +68,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		Location lastKnownLocation = locationManager
 				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		if (lastKnownLocation == null)
-			Toast.makeText(this, "GPS is disabled! Do something about it!",
+			Toast.makeText(this, "Need a network connection to retrieve a location.",
 					Toast.LENGTH_LONG).show();
 		else
 			currentLocation = lastKnownLocation;
