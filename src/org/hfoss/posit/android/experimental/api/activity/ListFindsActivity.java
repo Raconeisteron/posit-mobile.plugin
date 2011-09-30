@@ -9,11 +9,15 @@ import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
@@ -98,6 +102,43 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			}
 		});
 	}
+	
+	  /**
+     * Creates the menus for this activity.
+     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.list_finds_menu, menu);
+            return true;
+    }
+	
+	/** 
+	 * Handles the various menu item actions.
+	 * @param featureId is unused
+	 * @param item is the MenuItem selected by the user
+	 */
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		Intent intent;
+		switch (item.getItemId()) {
+		case R.id.sync_finds_menu_item:
+			intent = new Intent(AccountManager.ACTION_AUTHENTICATOR_INTENT);
+			startService(intent);
+//		case R.id.save_find_menu_item:
+//			saveFind();			
+//			break;
+//
+//		case R.id.delete_find_menu_item:
+//			showDialog(CONFIRM_DELETE_DIALOG);
+//			break;
+//
+//		default:
+//			return false;
+		}
+		return true;
+	} // onMenuItemSelected
 
 	/**
 	 * Adapter for displaying finds.
