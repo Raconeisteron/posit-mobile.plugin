@@ -136,8 +136,8 @@ public class FindPluginManager {
 		{
 			Log.i(TAG, "Failed to load plugin");
 			Log.i(TAG, "reason: " + ex.getMessage());
-			Toast.makeText(mMainActivity, "Failed to load plugin. Please fix in plugins_preferences.xml", Toast.LENGTH_LONG).show();
-			//mMainActivity.finish();
+			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.", Toast.LENGTH_LONG).show();
+			mMainActivity.finish();
 		}
 	}
 
