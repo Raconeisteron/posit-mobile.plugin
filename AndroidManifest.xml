@@ -19,12 +19,20 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
 	<uses-permission android:name="android.permission.RECEIVE_SMS"></uses-permission>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
+	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+	<uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+	<uses-permission android:name="android.permission.READ_SYNC_STATS" />
+	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+	<uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+
 
 	<!-- Careful with these. They let the app delete conversation threads. -->
 
-	<application android:icon="@drawable/icon"
-		android:label="@string/app_name" android:debuggable="true"
-		 android:theme="@android:style/Theme.Black">
+	<application android:icon="@drawable/icon" android:label="@string/app_name"
+		android:debuggable="true" android:theme="@android:style/Theme.Black">
 		<uses-library android:name="com.google.android.maps" />
 
 		<activity android:name=".PositMain" android:configChanges="orientation|keyboardHidden"
@@ -40,6 +48,10 @@
 		</activity>
 		<activity android:name=".AboutActivity"
 			android:screenOrientation="portrait" />
+
+		<provider android:name=".api.database.FindContentProvider"
+			android:authorities="org.hfoss.posit" android:enabled="true"></provider>
+
 
 
 		<!-- Activities for basic POSIT plugin -->
@@ -70,7 +82,7 @@
 			android:name="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInAboutActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
-		
+
 		<!-- Activities pertaining to AcdiVocaFind plugin -->
 		<activity android:name=".plugin.acdivoca.AcdiVocaMchnFindActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
@@ -125,7 +137,29 @@
 			</intent-filter>
 		</receiver>
 
+		<activity android:name=".api.authentication.AuthenticatorActivity"
+			android:screenOrientation="portrait" android:launchMode="singleTop" />
+
 		<service android:name="org.hfoss.posit.android.api.service.SmsService" />
+
+		<service android:name="org.hfoss.posit.android.experimental.sync.SyncService"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="android.content.SyncAdapter" />
+			</intent-filter>
+
+			<meta-data android:name="android.content.SyncAdapter"
+				android:resource="@xml/sync_adapter" />
+		</service>
+
+		<service android:name=".api.authentication.AuthenticationService"
+			android:exported="true" android:process=":auth">
+			<intent-filter>
+				<action android:name="android.accounts.AccountAuthenticator" />
+			</intent-filter>
+			<meta-data android:name="android.accounts.AccountAuthenticator"
+				android:resource="@xml/authenticator" />
+		</service>
 
 
 	</application>

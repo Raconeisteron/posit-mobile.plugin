@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
+    android:contentAuthority="org.hfoss.posit"
+    android:accountType="org.hfoss.posit.account"
+    android:supportsUploading="false"
+/>
