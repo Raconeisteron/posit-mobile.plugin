@@ -150,7 +150,7 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 		String projectName = (String) projectList.get(mClickedPosition).get("name");
 		
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		int currentProjectId = sp.getInt("PROJECT_ID",0);
+		int currentProjectId = sp.getInt(getString(R.string.projectPref),0);
 		
 		if (id == currentProjectId){
 			Toast.makeText(this, "'" + projectName + "' is already the current project.", Toast.LENGTH_LONG).show();
@@ -160,8 +160,8 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 		
 		Editor editor = sp.edit();
 
-		editor.putInt("PROJECT_ID", id);
-		editor.putString("PROJECT_NAME", projectName);
+		editor.putInt(getString(R.string.projectPref), id);
+		editor.putString(getString(R.string.projectNamePref), projectName);
 		editor.commit();
 
 		showDialog(CONFIRM_PROJECT_CHANGE);

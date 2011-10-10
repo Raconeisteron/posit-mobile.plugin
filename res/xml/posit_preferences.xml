@@ -1,7 +1,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/app_name">
  
-			<Preference android:key="testpositpref" 
+ <!-- The preferences that begin with "Preference" must have activities associated with them. -->
+			<Preference android:key="@string/aboutPref" 
 				android:title="@string/aboutItem"
 				activity_class="org.hfoss.posit.android.experimental.AboutActivity"
 				android:summary="" />
@@ -10,8 +11,10 @@
 				android:defaultValue="true" android:summary="@string/geotaggingSummary"
 				android:key="@string/geotaggingKey" />
 				
-			<Preference android:key="@string/projectPref" 
+			<Preference android:key="@string/projectNamePref" 
 				android:title="@string/currProjectLabel" 
+				activity_class="org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity"
+				android:summary="Something"
 			/>
   <!-- 
 			<Preference android:key="regDevice" 

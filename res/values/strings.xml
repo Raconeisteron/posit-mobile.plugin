@@ -317,8 +317,9 @@
 	<!-- Preferences -->
 	
 	<string name="projectPref">projectKey</string>
+	<string name="projectNamePref">projectNameKey</string>
 	
-	<string name="aboutKey">aboutKey</string>
+	<string name="aboutPref">aboutKey</string>
 	
 	<string name="geotaggingPref">Geotagging</string>
     <string name="geotaggingSummary">Geotag all finds</string>
