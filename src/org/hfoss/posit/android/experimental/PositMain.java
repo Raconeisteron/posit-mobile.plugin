@@ -21,12 +21,12 @@
  */
 package org.hfoss.posit.android.experimental;
 
-
 import java.sql.SQLException;
 import java.util.List;
 
 import org.hfoss.posit.android.experimental.api.AppControlManager;
 import org.hfoss.posit.android.experimental.api.User;
+import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.experimental.api.activity.LoginActivity;
 import org.hfoss.posit.android.experimental.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
@@ -41,7 +41,6 @@ import org.hfoss.posit.android.experimental.plugin.acdivoca.SearchFilterActivity
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
-
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
@@ -72,9 +71,10 @@ import android.widget.Toast;
 /**
  * Implements the main activity and the main screen for the POSIT application.
  */
-public class PositMain  extends OrmLiteBaseActivity<DbManager> implements android.view.View.OnClickListener {
+public class PositMain extends OrmLiteBaseActivity<DbManager> implements
+		android.view.View.OnClickListener {
 
-//extends Activity implements OnClickListener { //,RWGConstants {
+	// extends Activity implements OnClickListener { //,RWGConstants {
 
 	private static final String TAG = "PositMain";
 
@@ -83,11 +83,9 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 	public static final int LOGIN_CANCELED = 3;
 	public static final int LOGIN_SUCCESSFUL = 4;
 
-
 	private SharedPreferences mSharedPrefs;
 	private Editor mSpEditor;
 
-	
 	/**
 	 * Called when the activity is first created. Sets the UI layout, adds the
 	 * buttons, checks whether the phone is registered with a POSIT server.
@@ -95,21 +93,24 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.i(TAG,"Creating");
+		Log.i(TAG, "Creating");
 
 		// Initialize plugins and managers
 		FindPluginManager.initInstance(this);
-		//AcdiVocaSmsManager.initInstance(this);
+		// AcdiVocaSmsManager.initInstance(this);
 		AttributeManager.init();
 
-		// A newly installed POSIT should have no shared prefs. Set the default phone pref if
+		// A newly installed POSIT should have no shared prefs. Set the default
+		// phone pref if
 		// it is not already set.
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		try {
-			String phone = mSharedPrefs.getString(getString(R.string.smsPhoneKey),"");
+			String phone = mSharedPrefs.getString(
+					getString(R.string.smsPhoneKey), "");
 			if (phone.equals("")) {
 				mSpEditor = mSharedPrefs.edit();
-				mSpEditor.putString(getString(R.string.smsPhoneKey), getString(R.string.default_phone));
+				mSpEditor.putString(getString(R.string.smsPhoneKey),
+						getString(R.string.default_phone));
 				mSpEditor.commit();
 			}
 			Log.i(TAG, "Preferences= " + mSharedPrefs.getAll().toString());
@@ -117,206 +118,233 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
-		
-//		// get our dao
-//		Dao<AcdiVocaUser, Integer> avUserDao = null;
-//		try {
-//			avUserDao = getHelper().getAvUserDao();
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		// Query for all of the data objects in the database
-//		List<AcdiVocaUser> list = null;
-//		try {
-//			list = avUserDao.queryForAll();
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		// our string builder for building the content-view
-//		for (AcdiVocaUser item : list) {
-//			Log.i(TAG, "User= " +  item.toString());
-//		}
-		
+
+		// // get our dao
+		// Dao<AcdiVocaUser, Integer> avUserDao = null;
+		// try {
+		// avUserDao = getHelper().getAvUserDao();
+		// } catch (SQLException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		//
+		// // Query for all of the data objects in the database
+		// List<AcdiVocaUser> list = null;
+		// try {
+		// list = avUserDao.queryForAll();
+		// } catch (SQLException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// // our string builder for building the content-view
+		// for (AcdiVocaUser item : list) {
+		// Log.i(TAG, "User= " + item.toString());
+		// }
+
 		// Run login activity, if necessary
-		
+
 		Intent intent = new Intent();
-		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
+		Class<Activity> loginActivity = FindActivityProvider
+				.getLoginActivityClass();
 		if (loginActivity != null) {
 			intent.setClass(this, loginActivity);
 			intent.putExtra(User.USER_TYPE_STRING, User.UserType.USER.ordinal());
-			Log.i(TAG,"started activity fo rresult");
+			Log.i(TAG, "started activity fo rresult");
 			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
 		}
 	}
 
-
 	/**
-	 * When POSIT starts it should either display a Registration View, if the 
-	 * phone is not registered with a POSIT server, or it should display the 
-	 * main View (ListFinds, AddFinds).  This helper method is called in various
-	 * places in the Android, including in onCreate() and onRestart(). 
+	 * When POSIT starts it should either display a Registration View, if the
+	 * phone is not registered with a POSIT server, or it should display the
+	 * main View (ListFinds, AddFinds). This helper method is called in various
+	 * places in the Android, including in onCreate() and onRestart().
 	 */
 	private void startPOSIT() {
-			setContentView(R.layout.main);
-			
-			// Change visibility of buttons based on UserType
+		setContentView(R.layout.main);
 
-			//Log.i(TAG, "POSIT Start, distrStage = " + AppControlManager.displayDistributionStage(this));
-						
-			if (FindPluginManager.mMainIcon != null) {
-				final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
-				int resID = getResources().getIdentifier(FindPluginManager.mMainIcon, "drawable", this.getPackageName());
-				mainLogo.setImageResource(resID);
-			}
-			
-			// New Beneficiary button
-			if (FindPluginManager.mAddButtonLabel != null) {
-				final Button addFindButton = (Button)findViewById(R.id.addFindButton);
-				int resid = this.getResources().getIdentifier(FindPluginManager.mAddButtonLabel, "string", getPackageName());
+		// Change visibility of buttons based on UserType
 
-				
-				if (addFindButton != null) {
-					addFindButton.setText(resid);
-					addFindButton.setOnClickListener(this);
-				}
-				
-//				// Button is gone for AGRI and AGRON users and for USER users during distribution events
-//				if ( (AppControlManager.isAgriUser()  || AppControlManager.isAgronUser())
-//						|| (AppControlManager.isRegularUser() && AppControlManager.isDuringDistributionEvent())) {
-//					addFindButton.setVisibility(View.GONE);
-//				} else {
-//					addFindButton.setVisibility(View.VISIBLE);
-//				}
+		// Log.i(TAG, "POSIT Start, distrStage = " +
+		// AppControlManager.displayDistributionStage(this));
+
+		if (FindPluginManager.mMainIcon != null) {
+			final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
+			int resID = getResources().getIdentifier(
+					FindPluginManager.mMainIcon, "drawable",
+					this.getPackageName());
+			mainLogo.setImageResource(resID);
+		}
+
+		// New Beneficiary button
+		if (FindPluginManager.mAddButtonLabel != null) {
+			final Button addFindButton = (Button) findViewById(R.id.addFindButton);
+			int resid = this.getResources().getIdentifier(
+					FindPluginManager.mAddButtonLabel, "string",
+					getPackageName());
+
+			if (addFindButton != null) {
+				addFindButton.setText(resid);
+				addFindButton.setOnClickListener(this);
 			}
 
-			// Send messages button
-			if (FindPluginManager.mListButtonLabel != null) {
-				final Button listFindButton = (Button) findViewById(R.id.listFindButton);
-				int resid = this.getResources().getIdentifier(FindPluginManager.mListButtonLabel, "string", getPackageName());
-				if (listFindButton != null) {
-					listFindButton.setText(resid);
-					listFindButton.setOnClickListener(this);
-				}
-				
-//				// Button is gone for USER and AGRI users during distribution events
-//				if (AppControlManager.isDuringDistributionEvent()  
-//						&& (AppControlManager.isRegularUser() 
-//								|| AppControlManager.isAgriUser() 
-//								|| AppControlManager.isAgronUser() )) {
-//					listFindButton.setVisibility(View.GONE);
-//				} else {
-//					listFindButton.setVisibility(View.VISIBLE);
-//				}
-			}
-			
-			// Update button -- used during Distribution events
-			if (FindPluginManager.mExtraButtonLabel != null && !FindPluginManager.mExtraButtonLabel.equals("")) {
-				final Button extraButton = (Button) findViewById(R.id.extraButton);
-				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel, "string", getPackageName());
-				if (extraButton != null) {
-					extraButton.setOnClickListener(this);
-					extraButton.setText(resid);
-					extraButton.setVisibility(View.VISIBLE);
-				}
-				
-//				// Button is gone for USER and ADMIN users except during distribution events
-//				if (AppControlManager.isRegularUser() || AppControlManager.isAdminUser()) {
-//					if (AppControlManager.isDuringDistributionEvent()) 
-//						extraButton.setVisibility(View.VISIBLE);
-//					else
-//						extraButton.setVisibility(View.GONE);
-//					
-//					// Enable the Button only if the event is started
-//					if (AppControlManager.isDistributionStarted())
-//						extraButton.setEnabled(true);
-//					else
-//						extraButton.setEnabled(false);
-//				} else if (AppControlManager.isAgriUser() || AppControlManager.isAgronUser())
-//					extraButton.setVisibility(View.GONE);
+			// // Button is gone for AGRI and AGRON users and for USER users
+			// during distribution events
+			// if ( (AppControlManager.isAgriUser() ||
+			// AppControlManager.isAgronUser())
+			// || (AppControlManager.isRegularUser() &&
+			// AppControlManager.isDuringDistributionEvent())) {
+			// addFindButton.setVisibility(View.GONE);
+			// } else {
+			// addFindButton.setVisibility(View.VISIBLE);
+			// }
+		}
+
+		// Send messages button
+		if (FindPluginManager.mListButtonLabel != null) {
+			final Button listFindButton = (Button) findViewById(R.id.listFindButton);
+			int resid = this.getResources().getIdentifier(
+					FindPluginManager.mListButtonLabel, "string",
+					getPackageName());
+			if (listFindButton != null) {
+				listFindButton.setText(resid);
+				listFindButton.setOnClickListener(this);
 			}
 
-			// New agriculture beneficiary
-			if (FindPluginManager.mExtraButtonLabel2 != null && !FindPluginManager.mExtraButtonLabel2.equals("")) {
-				final Button extraButton = (Button) findViewById(R.id.extraButton2);
-				int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel2, "string", getPackageName());
-				if (extraButton != null) {
-					extraButton.setText(resid);
-					extraButton.setVisibility(View.VISIBLE);
-					extraButton.setOnClickListener(this);
-				}
-				
-//				// Button is gone for USER users and (AGRI users during distribution events)
-//				Log.i(TAG, "Distr Stage = " +  AppControlManager.displayDistributionStage(this));
-//				if (AppControlManager.isRegularUser() 
-//						|| AppControlManager.isAdminUser()
-//						|| (AppControlManager.isAgriUser() && AppControlManager.isDuringDistributionEvent())
-//						|| (AppControlManager.isAgronUser() && AppControlManager.isDuringDistributionEvent())) {
-//					extraButton.setVisibility(View.GONE);
-//				} else {
-//					extraButton.setVisibility(View.VISIBLE);
-//				}
-				
-				Log.i(TAG, "Extra button visibility = " + extraButton.getVisibility());
+			// // Button is gone for USER and AGRI users during distribution
+			// events
+			// if (AppControlManager.isDuringDistributionEvent()
+			// && (AppControlManager.isRegularUser()
+			// || AppControlManager.isAgriUser()
+			// || AppControlManager.isAgronUser() )) {
+			// listFindButton.setVisibility(View.GONE);
+			// } else {
+			// listFindButton.setVisibility(View.VISIBLE);
+			// }
+		}
+
+		// Update button -- used during Distribution events
+		if (FindPluginManager.mExtraButtonLabel != null
+				&& !FindPluginManager.mExtraButtonLabel.equals("")) {
+			final Button extraButton = (Button) findViewById(R.id.extraButton);
+			int resid = this.getResources().getIdentifier(
+					FindPluginManager.mExtraButtonLabel, "string",
+					getPackageName());
+			if (extraButton != null) {
+				extraButton.setOnClickListener(this);
+				extraButton.setText(resid);
+				extraButton.setVisibility(View.VISIBLE);
 			}
-			
+
+			// // Button is gone for USER and ADMIN users except during
+			// distribution events
+			// if (AppControlManager.isRegularUser() ||
+			// AppControlManager.isAdminUser()) {
+			// if (AppControlManager.isDuringDistributionEvent())
+			// extraButton.setVisibility(View.VISIBLE);
+			// else
+			// extraButton.setVisibility(View.GONE);
+			//
+			// // Enable the Button only if the event is started
+			// if (AppControlManager.isDistributionStarted())
+			// extraButton.setEnabled(true);
+			// else
+			// extraButton.setEnabled(false);
+			// } else if (AppControlManager.isAgriUser() ||
+			// AppControlManager.isAgronUser())
+			// extraButton.setVisibility(View.GONE);
+		}
+
+		// New agriculture beneficiary
+		if (FindPluginManager.mExtraButtonLabel2 != null
+				&& !FindPluginManager.mExtraButtonLabel2.equals("")) {
+			final Button extraButton = (Button) findViewById(R.id.extraButton2);
+			int resid = this.getResources().getIdentifier(
+					FindPluginManager.mExtraButtonLabel2, "string",
+					getPackageName());
+			if (extraButton != null) {
+				extraButton.setText(resid);
+				extraButton.setVisibility(View.VISIBLE);
+				extraButton.setOnClickListener(this);
+			}
+
+			// // Button is gone for USER users and (AGRI users during
+			// distribution events)
+			// Log.i(TAG, "Distr Stage = " +
+			// AppControlManager.displayDistributionStage(this));
+			// if (AppControlManager.isRegularUser()
+			// || AppControlManager.isAdminUser()
+			// || (AppControlManager.isAgriUser() &&
+			// AppControlManager.isDuringDistributionEvent())
+			// || (AppControlManager.isAgronUser() &&
+			// AppControlManager.isDuringDistributionEvent())) {
+			// extraButton.setVisibility(View.GONE);
+			// } else {
+			// extraButton.setVisibility(View.VISIBLE);
+			// }
+
+			Log.i(TAG,
+					"Extra button visibility = " + extraButton.getVisibility());
+		}
+
 	}
 
-	// Lifecycle methods just generate Log entries to help debug and understand flow
+	// Lifecycle methods just generate Log entries to help debug and understand
+	// flow
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		Log.i(TAG,"Pausing");
+		Log.i(TAG, "Pausing");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG,"Resuming");
-		
-		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+		Log.i(TAG, "Resuming");
+
+		AcdiVocaLocaleManager.setDefaultLocale(this); // Locale Manager should
+														// be in API
 		startPOSIT();
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i(TAG,"Starting");
+		Log.i(TAG, "Starting");
 	}
 
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		Log.i(TAG,"Restarting");
+		Log.i(TAG, "Restarting");
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.i(TAG,"Stopping");
+		Log.i(TAG, "Stopping");
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Log.i(TAG,"Destroying");
+		Log.i(TAG, "Destroying");
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.i(TAG,"onActivityResult Result from registration = " + resultCode);
+		Log.i(TAG, "onActivityResult Result from registration = " + resultCode);
 		switch (requestCode) {
 
 		case LoginActivity.ACTION_LOGIN:
 			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.toast_thankyou),
+						Toast.LENGTH_SHORT).show();
 				break;
 			} else {
 				finish();
-			} 
+			}
 		default:
 			super.onActivityResult(requestCode, resultCode, data);
 		}
@@ -326,38 +354,50 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 	 * Handles clicks on PositMain's buttons.
 	 */
 	public void onClick(View view) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		if (sp.getString(getString(R.string.projectPref), "").equals("")) {
+			Toast.makeText(this, "To get started, you must choose a project.", Toast.LENGTH_LONG).show();
+			Intent i = new Intent(this, ListProjectsActivity.class);
+			startActivity(i);
+		} else {
 
 			Intent intent = new Intent();
 
 			switch (view.getId()) {
 			case R.id.addFindButton:
-				intent.setClass(this, FindActivityProvider.getFindActivityClass());
+				intent.setClass(this,
+						FindActivityProvider.getFindActivityClass());
 				intent.setAction(Intent.ACTION_INSERT);
-				//intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_MCHN);
+				// intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_MCHN);
 				startActivity(intent);
 				break;
 			case R.id.listFindButton:
 				intent = new Intent();
 				intent.setAction(Intent.ACTION_SEND);
-				//intent.putExtra(AcdiVocaDbHelper.FINDS_STATUS, SearchFilterActivity.RESULT_SELECT_NEW);
-				intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
-				//intent.setClass(this, AcdiVocaListFindsActivity.class);
-				startActivity(intent);				
+				// intent.putExtra(AcdiVocaDbHelper.FINDS_STATUS,
+				// SearchFilterActivity.RESULT_SELECT_NEW);
+				intent.setClass(this,
+						FindActivityProvider.getListFindsActivityClass());
+				// intent.setClass(this, AcdiVocaListFindsActivity.class);
+				startActivity(intent);
 				break;
 
 			case R.id.extraButton:
 				intent.setAction(Intent.ACTION_EDIT);
-				intent.setClass(this, FindActivityProvider.getExtraActivityClass());
+				intent.setClass(this,
+						FindActivityProvider.getExtraActivityClass());
 				startActivity(intent);
-				break;	
+				break;
 
 			case R.id.extraButton2:
 				intent.setAction(Intent.ACTION_INSERT);
-				intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
+				intent.setClass(this,
+						FindActivityProvider.getExtraActivityClass2());
 				intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_AGRI);
 				startActivity(intent);
-				break;			
+				break;
 			}
+		}
 	}
 
 	/**
@@ -374,28 +414,30 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 	}
 
 	/**
-	 * Shows/Hides menus based on user type, SUPER, ADMIN, USER  
+	 * Shows/Hides menus based on user type, SUPER, ADMIN, USER
 	 * 
 	 * @see android.app.Activity#onPrepareOptionsMenu(android.view.Menu)
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		
+
 		// Re-inflate to force localization.
 		menu.clear();
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.positmain_menu, menu);
-		
-		MenuItem  adminMenu = menu.findItem(R.id.admin_menu_item);
-		
-//		Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
-//		Log.i(TAG, "distribution stage = " + AppControlManager.getDistributionStage());
-//		// Hide the ADMIN menu from regular users
-//		if (AppControlManager.isRegularUser() || AppControlManager.isAgriUser())
-//			adminMenu.setVisible(false);
-//		else 
-//			adminMenu.setVisible(true);
-		
+
+		MenuItem adminMenu = menu.findItem(R.id.admin_menu_item);
+
+		// Log.i(TAG, "UserType = " + AppControlManager.getUserType());
+		// Log.i(TAG, "distribution stage = " +
+		// AppControlManager.getDistributionStage());
+		// // Hide the ADMIN menu from regular users
+		// if (AppControlManager.isRegularUser() ||
+		// AppControlManager.isAgriUser())
+		// adminMenu.setVisible(false);
+		// else
+		// adminMenu.setVisible(true);
+
 		return super.onPrepareOptionsMenu(menu);
 
 	}
@@ -415,33 +457,31 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 		case R.id.map_finds_menu_item:
 			startActivity(new Intent(this, MapFindsActivity.class));
 			break;
-//		case R.id.admin_menu_item:
-//			startActivity(new Intent(this, AcdiVocaAdminActivity.class));
-//			break;
+		// case R.id.admin_menu_item:
+		// startActivity(new Intent(this, AcdiVocaAdminActivity.class));
+		// break;
 		case R.id.about_menu_item:
 			startActivity(new Intent(this, AboutActivity.class));
 			break;
 
 		}
-		
+
 		return true;
 	}
 
-	
 	/**
 	 * Intercepts the back key (KEYCODE_BACK) and displays a confirmation dialog
 	 * when the user tries to exit POSIT.
 	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if(keyCode==KeyEvent.KEYCODE_BACK){
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			showDialog(CONFIRM_EXIT);
 			return true;
 		}
-		Log.i("code", keyCode+"");
+		Log.i("code", keyCode + "");
 		return super.onKeyDown(keyCode, event);
 	}
-
 
 	/**
 	 * Creates a dialog to confirm that the user wants to exit POSIT.
@@ -450,30 +490,30 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_EXIT:
-			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.alert_dialog_icon).setTitle(R.string.exit)
+			return new AlertDialog.Builder(this)
+					.setIcon(R.drawable.alert_dialog_icon)
+					.setTitle(R.string.exit)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							// User clicked OK so do some stuff
-							finish();
-						}
-					}).setNegativeButton(R.string.alert_dialog_cancel,
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									// User clicked OK so do some stuff
+									finish();
+								}
+							})
+					.setNegativeButton(R.string.alert_dialog_cancel,
 							new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							/* User clicked Cancel so do nothing */
-						}
-					}).create();
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									/* User clicked Cancel so do nothing */
+								}
+							}).create();
 
 		default:
 			return null;
 		}
 	}
-	
-	
- 
+
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		super.onPrepareDialog(id, dialog);
@@ -482,33 +522,35 @@ public class PositMain  extends OrmLiteBaseActivity<DbManager> implements androi
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		switch (id) {
 		case CONFIRM_EXIT:
-					d.setTitle(R.string.exit);
-//					d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.alert_dialog_ok), new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog,
-//								int whichButton) {
-//							// User clicked OK so do some stuff
-//							finish();
-//						}
-//					} );
-//					d.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.alert_dialog_cancel), new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog,
-//								int whichButton) {
-//							/* User clicked Cancel so do nothing */
-//						}
-//					} );
-					needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
-					needsabutton.setText(R.string.alert_dialog_ok);
-					needsabutton.invalidate();
-					
-					needsabutton = d.getButton(DialogInterface.BUTTON_NEGATIVE);
-					needsabutton.setText(R.string.alert_dialog_cancel);
-					needsabutton.invalidate();
-					
-					break;
+			d.setTitle(R.string.exit);
+			// d.setButton(DialogInterface.BUTTON_POSITIVE,
+			// getString(R.string.alert_dialog_ok), new
+			// DialogInterface.OnClickListener() {
+			// public void onClick(DialogInterface dialog,
+			// int whichButton) {
+			// // User clicked OK so do some stuff
+			// finish();
+			// }
+			// } );
+			// d.setButton(DialogInterface.BUTTON_NEGATIVE,
+			// getString(R.string.alert_dialog_cancel), new
+			// DialogInterface.OnClickListener() {
+			// public void onClick(DialogInterface dialog,
+			// int whichButton) {
+			// /* User clicked Cancel so do nothing */
+			// }
+			// } );
+			needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
+			needsabutton.setText(R.string.alert_dialog_ok);
+			needsabutton.invalidate();
+
+			needsabutton = d.getButton(DialogInterface.BUTTON_NEGATIVE);
+			needsabutton.setText(R.string.alert_dialog_cancel);
+			needsabutton.invalidate();
+
+			break;
 		}
 	}
-
-
 
 	/**
 	 * Makes sure RWG is stopped before exiting the Activity

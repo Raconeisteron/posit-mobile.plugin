@@ -28,6 +28,8 @@ public class Find implements FindInterface {
 	// Db Column names
 	public static final String ORM_ID = "id";
 	public static final String GUID = "guid";
+	public static final String PROJECT_ID = "project_id";
+	
 	public static final String NAME = "name";
 
 	public static final String DESCRIPTION = "description";
@@ -35,19 +37,26 @@ public class Find implements FindInterface {
 	public static final String LONGITUDE = "longitude";
 	public static final String TIME = "timestamp";
 	public static final String MODIFY_TIME = "modify_time";
-	public static final String SYNCED = "synced";
-	public static final String REVISION = "revision";
+
 	public static final String IS_ADHOC = "is_adhoc";
-	public static final String ACTION = "action";
 	public static final String DELETED = "deleted";
-	public static final int IS_SYNCED = 1;
-	public static final int NOT_SYNCED = 0;
+	
+	public static final String REVISION = "revision";
+	
+	// For syncing.  Operation will store what operation is being performed
+	// on this record--posting, updating, deleting.  Status will
+	// record the state of the sync--transacting or done.
+	public static final String SYNC_OPERATION = "sync_operation";
+	public static final String STATUS= "status";
+
 
 	// Instance variables, automatically mapped to DB columns
 	@DatabaseField(columnName = ORM_ID, generatedId = true)
 	protected int id;
 	@DatabaseField(columnName = GUID)
 	protected String guid;
+	@DatabaseField(columnName = PROJECT_ID)
+	protected int project_id;
 	@DatabaseField(columnName = NAME)
 	protected String name;
 	@DatabaseField(columnName = DESCRIPTION)
@@ -56,20 +65,22 @@ public class Find implements FindInterface {
 	protected double latitude;
 	@DatabaseField(columnName = LONGITUDE)
 	protected double longitude;
-	@DatabaseField(columnName = SYNCED)
-	protected int synced;
 	@DatabaseField(columnName = TIME, canBeNull = false)
 	protected Date time = new Date();
 	@DatabaseField(columnName = MODIFY_TIME)
 	protected Date modify_time;
-	@DatabaseField(columnName = REVISION)
-	protected int revision;
 	@DatabaseField(columnName = IS_ADHOC)
 	protected int is_adhoc;
-	@DatabaseField(columnName = ACTION)
-	protected int action;
 	@DatabaseField(columnName = DELETED)
 	protected int deleted;
+	
+	@DatabaseField(columnName = REVISION)
+	protected int revision;
+	
+	@DatabaseField(columnName = SYNC_OPERATION)
+	protected int syncOperation;
+	@DatabaseField(columnName = STATUS)
+	protected int status;
 
 	/**
 	 * Creates the table for this class.
@@ -168,14 +179,6 @@ public class Find implements FindInterface {
 		this.longitude = longitude;
 	}
 
-	public int isSynced() {
-		return synced;
-	}
-
-	public void setSynced(int synced) {
-		this.synced = synced;
-	}
-
 	public Date getTime() {
 		return time;
 	}
@@ -192,28 +195,12 @@ public class Find implements FindInterface {
 		this.modify_time = modify_time;
 	}
 
-	public int getRevision() {
-		return revision;
-	}
-
-	public void setRevision(int revision) {
-		this.revision = revision;
-	}
-
 	public int getIs_adhoc() {
 		return is_adhoc;
 	}
 
 	public void setIs_adhoc(int is_adhoc) {
 		this.is_adhoc = is_adhoc;
-	}
-
-	public int getAction() {
-		return action;
-	}
-
-	public void setAction(int action) {
-		this.action = action;
 	}
 
 	public int getDeleted() {
@@ -230,6 +217,30 @@ public class Find implements FindInterface {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getProject_id() {
+		return project_id;
+	}
+
+	public void setProject_id(int projectId) {
+		this.project_id = projectId;
+	}
+	
+	public int getRevision() {
+		return revision;
+	}
+	
+	public void setRevision(int revision){
+		this.revision = revision;
+	}
+
+	public int getSyncOperation() {
+		return syncOperation;
+	}
+
+	public int getStatus() {
+		return status;
 	}
 
 	/**
@@ -304,6 +315,49 @@ public class Find implements FindInterface {
 		}
 		return rows;
 
+	}
+	
+	public int updateStatus(Dao<Find, Integer> dao, int status) {
+		int rows = 0;
+		try {
+			this.setStatus(status);
+			rows = dao.update(this);
+			if (rows == 1)
+				Log.i(TAG, "Updated find status:  " + this.toString());
+			else {
+				Log.e(TAG, "Db Error updating find: " + this.toString());
+				rows = 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public int updateSyncOperation(Dao <Find, Integer> dao, int operation) {
+		int rows = 0;
+		try {
+			this.setSyncOperation(operation);
+			rows = dao.update(this);
+			if (rows == 1)
+				Log.i(TAG, "Updated find sync operation:  " + this.toString());
+			else {
+				Log.e(TAG, "Db Error updating sync operation in find: " + this.toString());
+				rows = 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
+	
+	public void setSyncOperation(int syncOperation) {
+		this.syncOperation = syncOperation;
+		
 	}
 
 	public void sync(String protocol) {
@@ -383,9 +437,9 @@ public class Find implements FindInterface {
 					.append(",");
 		else
 			sb.append(MODIFY_TIME).append("=").append("").append(",");
-		sb.append(REVISION).append("=").append(revision).append(",");
-		sb.append(IS_ADHOC).append("=").append(is_adhoc).append(",");
-		sb.append(ACTION).append("=").append(action).append(",");
+//		sb.append(REVISION).append("=").append(revision).append(",");
+//		sb.append(IS_ADHOC).append("=").append(is_adhoc).append(",");
+//		sb.append(ACTION).append("=").append(action).append(",");
 		sb.append(DELETED).append("=").append(deleted).append(",");
 		return sb.toString();
 	}

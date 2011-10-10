@@ -6,10 +6,13 @@ import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
+import org.hfoss.posit.android.experimental.sync.SyncAdapter;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -58,22 +61,24 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		Log.i(TAG, "onResume()");
 		fillList(setUpAdapter());
 	}
+
 	/**
-	 * Called in onResume() and gets all of the finds in the database and puts them in an
-	 * adapter.  Override for a custom adapter/layout for this Activity.
+	 * Called in onResume() and gets all of the finds in the database and puts
+	 * them in an adapter. Override for a custom adapter/layout for this
+	 * Activity.
 	 */
 	protected ListAdapter setUpAdapter() {
 
 		List<? extends Find> list = this.getHelper().getAllFinds();
 
-		int resId = getResources().getIdentifier(FindPluginManager.mListFindLayout,
-			    "layout", getPackageName());
-		
-		FindsListAdapter adapter = new FindsListAdapter(this,
-				resId, list);
+		int resId = getResources().getIdentifier(
+				FindPluginManager.mListFindLayout, "layout", getPackageName());
+
+		FindsListAdapter adapter = new FindsListAdapter(this, resId, list);
 
 		return adapter;
 	}
+
 	/**
 	 * Puts the items from the DB table into the rows of the view.
 	 */
@@ -102,40 +107,57 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			}
 		});
 	}
-	
-	  /**
-     * Creates the menus for this activity.
-     * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.list_finds_menu, menu);
-            return true;
-    }
-	
-	/** 
+
+	/**
+	 * Creates the menus for this activity.
+	 * 
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.list_finds_menu, menu);
+		return true;
+	}
+
+	/**
 	 * Handles the various menu item actions.
-	 * @param featureId is unused
-	 * @param item is the MenuItem selected by the user
+	 * 
+	 * @param featureId
+	 *            is unused
+	 * @param item
+	 *            is the MenuItem selected by the user
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		Log.i(TAG, "onMenuitemSelected()");
+
 		Intent intent;
 		switch (item.getItemId()) {
 		case R.id.sync_finds_menu_item:
-			intent = new Intent(AccountManager.ACTION_AUTHENTICATOR_INTENT);
-			startService(intent);
-//		case R.id.save_find_menu_item:
-//			saveFind();			
-//			break;
-//
-//		case R.id.delete_find_menu_item:
-//			showDialog(CONFIRM_DELETE_DIALOG);
-//			break;
-//
-//		default:
-//			return false;
+			Log.i(TAG, "Sync finds menu item");
+			AccountManager manager = AccountManager.get(this);
+			Account[] accounts = manager
+					.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
+			// Just pick the first account for now.. TODO: make this work for
+			// multiple accounts of same type?
+			Bundle extras = new Bundle();
+			ContentResolver
+					.requestSync(
+							accounts[0],
+							getResources().getString(R.string.contentAuthority),
+							extras);
+			break;
+		// case R.id.save_find_menu_item:
+		// saveFind();
+		// break;
+		//
+		// case R.id.delete_find_menu_item:
+		// showDialog(CONFIRM_DELETE_DIALOG);
+		// break;
+		//
+		// default:
+		// return false;
 		}
 		return true;
 	} // onMenuItemSelected
@@ -159,9 +181,10 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			View v = convertView;
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				
-				int resId = getResources().getIdentifier(FindPluginManager.mListFindLayout,
-					    "layout", getPackageName());
+
+				int resId = getResources().getIdentifier(
+						FindPluginManager.mListFindLayout, "layout",
+						getPackageName());
 				v = vi.inflate(resId, null);
 			}
 			Find find = items.get(position);

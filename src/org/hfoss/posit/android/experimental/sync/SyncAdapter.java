@@ -30,6 +30,7 @@ import org.apache.http.ParseException;
 import org.apache.http.auth.AuthenticationException;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
+import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -47,6 +48,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private final AccountManager mAccountManager;
 
     private final Context mContext;
+    
+    private Communicator communicator;
 
     private Date mLastUpdated;
     
@@ -64,6 +67,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
         mContext = context;
         mAccountManager = AccountManager.get(context);
+        communicator = new Communicator(context);
     }
 
     @Override
@@ -71,17 +75,22 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         ContentProviderClient provider, SyncResult syncResult) {
 
         List<Find> finds;
-
+        Log.i(TAG, "In onPerformSync() wowowpw");
         String authtoken = null;
         try {
             // use the account manager to request the credentials
+        	// TODO: This is not the correct auth token.  Its just the password.
+        	// We want it to use the auth token that the server generates for us.
             authtoken =
                 mAccountManager
                     .blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
             // fetch updates from the sample service over the cloud
             //users = NetworkUtilities.fetchFriendUpdates(account, authtoken, mLastUpdated);
             // update the last synced date.
+            Log.i(TAG, "auth token: "+ authtoken);
             mLastUpdated = new Date();
+            Find find = DbHelper.getDbManager(mContext).getFindById(1);
+            communicator.sendFind(find,"create");
             // update platform contacts.
 //            Log.d(TAG, "Calling contactManager's sync contacts");
 //            ContactManager.syncContacts(mContext, account.name, users);

@@ -9,6 +9,10 @@
 			<CheckBoxPreference android:title="@string/geotaggingPref"
 				android:defaultValue="true" android:summary="@string/geotaggingSummary"
 				android:key="@string/geotaggingKey" />
+				
+			<Preference android:key="@string/projectPref" 
+				android:title="@string/currProjectLabel" 
+			/>
   <!-- 
 			<Preference android:key="regDevice" 
 				android:title="@string/prefDevice"

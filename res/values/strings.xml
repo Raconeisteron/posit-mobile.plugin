@@ -310,7 +310,13 @@
 	<string name="getting_longitude">Getting longitude...</string>
 	<string name="getting_latitude">Getting latitude...</string>
 	
+	
+	<!-- Authentication -->
+	<string name="accountType">org.hfoss.posit.account</string>
+	<string name="contentAuthority">org.hfoss.posit</string>
 	<!-- Preferences -->
+	
+	<string name="projectPref">projectKey</string>
 	
 	<string name="aboutKey">aboutKey</string>
 	

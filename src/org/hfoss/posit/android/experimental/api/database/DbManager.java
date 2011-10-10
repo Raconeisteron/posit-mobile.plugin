@@ -142,6 +142,41 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		}
 		return find;
 	}
+	
+	public int updateStatus(Find find, int status) {
+		int rows = 0;
+		try {
+			find.setStatus(status);
+			rows = getFindDao().update(find);
+			if (rows == 1)
+				Log.i(TAG, "Updated find status:  " + this.toString());
+			else {
+				Log.e(TAG, "Db Error updating find: " + this.toString());
+				rows = 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
+
+
+	public int updateSyncOperation(Find find, int operation) {
+		int rows = 0;
+		try {
+			find.setSyncOperation(operation);
+			rows = getFindDao().update(find);
+			if (rows == 1)
+				Log.i(TAG, "Updated find sync operation:  " + this.toString());
+			else {
+				Log.e(TAG, "Db Error updating sync operation in find: " + this.toString());
+				rows = 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
 
 	/**
 	 * Returns the Database Access Object (DAO) for the AcdiVocaUser class. It

@@ -83,9 +83,9 @@ public class OutsideInFind extends Find {
 					.append(",");
 		else
 			sb.append(MODIFY_TIME).append("=").append("").append(",");
-		sb.append(REVISION).append("=").append(revision).append(",");
+		//sb.append(REVISION).append("=").append(revision).append(",");
 		sb.append(IS_ADHOC).append("=").append(is_adhoc).append(",");
-		sb.append(ACTION).append("=").append(action).append(",");
+		//sb.append(ACTION).append("=").append(action).append(",");
 		sb.append(DELETED).append("=").append(deleted).append(",");
 		sb.append(SYRINGES_IN).append("=").append(syringesIn).append(",");
 		sb.append(SYRINGES_OUT).append("=").append(syringesOut).append(",");

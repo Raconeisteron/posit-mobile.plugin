@@ -236,7 +236,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 
 		// Mark the find unsynced TODO: Do we need this?
-		find.setSynced(Find.NOT_SYNCED);
+		//find.setSynced(Find.NOT_SYNCED);
 
 		return find;
 	}
