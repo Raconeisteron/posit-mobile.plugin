@@ -355,7 +355,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 	 */
 	public void onClick(View view) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		if (sp.getString(getString(R.string.projectPref), "").equals("")) {
+		if (sp.getString(getString(R.string.projectNamePref), "").equals("")) {
 			Toast.makeText(this, "To get started, you must choose a project.", Toast.LENGTH_LONG).show();
 			Intent i = new Intent(this, ListProjectsActivity.class);
 			startActivity(i);

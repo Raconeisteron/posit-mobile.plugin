@@ -371,6 +371,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected boolean saveFind() {
 		int rows = 0;
 		Find find = retrieveContentFromView();
+//		SharedPref
+//		find.setProject_id()
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT))
 			rows = find.insert(this.getHelper().getFindDao());
 		else if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
