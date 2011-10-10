@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:layout_height="match_parent"
+	android:orientation="vertical">
+	<TableLayout android:id="@+id/tableLayout1"
+		android:layout_height="wrap_content" android:layout_width="match_parent"
+		android:stretchColumns="1">
+		<TableRow android:id="@+id/tableRow1" android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+			<TextView android:text="@string/unique_id"
+				android:layout_height="wrap_content" android:layout_width="wrap_content"
+				android:id="@+id/guidTextView"></TextView>
+			<EditText android:text="" android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:id="@+id/guidEditText"></EditText>
+		</TableRow>
+		<TableRow android:id="@+id/tableRow2" android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:text="@string/syringes_in"
+				android:id="@+id/syringesInTextView"></TextView>
+			<EditText android:numeric="integer" android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:id="@+id/syringesInEditText"></EditText>
+		</TableRow>
+		<TableRow android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/tableRow3">
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:text="@string/syringes_out"
+				android:id="@+id/syringesOutTextView"></TextView>
+			<EditText android:numeric="integer" android:layout_height="wrap_content"
+				android:layout_width="wrap_content" android:id="@+id/syringesOutEditText"></EditText>
+		</TableRow>
+	</TableLayout>
+
+	<TableRow android:id="@+id/tableRow4" android:layout_height="wrap_content"
+		android:layout_width="match_parent">
+		<CheckBox android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:text="@string/is_new"
+			android:id="@+id/isNewCheckBox"></CheckBox>
+	</TableRow>
+	<TableRow android:id="@+id/tableRow5" android:layout_height="wrap_content"
+		android:layout_width="match_parent">
+		<Button android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:text="@string/save"
+			android:id="@+id/saveButton"></Button>
+	</TableRow>
+</LinearLayout>
