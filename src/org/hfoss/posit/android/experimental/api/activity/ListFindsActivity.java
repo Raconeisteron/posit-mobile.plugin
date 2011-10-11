@@ -44,6 +44,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.list_finds);
 	}
 
 	/**
@@ -78,11 +79,11 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	 * Puts the items from the DB table into the rows of the view.
 	 */
 	private void fillList(ListAdapter adapter) {
-
-		if (adapter.isEmpty()) {
-			setContentView(R.layout.list_finds);
-			return;
-		}
+		
+//		if (adapter.isEmpty()) {
+//			setContentView(R.layout.list_finds);
+//			return;
+//		}
 
 		setListAdapter(adapter);
 
