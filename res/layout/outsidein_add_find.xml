@@ -19,7 +19,8 @@
 				android:layout_width="wrap_content" android:text="@string/syringes_in"
 				android:id="@+id/syringesInTextView"></TextView>
 			<EditText android:numeric="integer" android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:id="@+id/syringesInEditText"></EditText>
+				android:layout_width="wrap_content" android:id="@+id/syringesInEditText" 
+				android:maxLength="2" android:hint="0"></EditText>
 		</TableRow>
 		<TableRow android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/tableRow3">
@@ -27,7 +28,8 @@
 				android:layout_width="wrap_content" android:text="@string/syringes_out"
 				android:id="@+id/syringesOutTextView"></TextView>
 			<EditText android:numeric="integer" android:layout_height="wrap_content"
-				android:layout_width="wrap_content" android:id="@+id/syringesOutEditText"></EditText>
+				android:layout_width="wrap_content" android:id="@+id/syringesOutEditText" 
+				android:maxLength="2" android:hint="0"></EditText>
 		</TableRow>
 	</TableLayout>
 
