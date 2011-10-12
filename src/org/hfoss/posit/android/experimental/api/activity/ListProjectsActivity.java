@@ -24,6 +24,7 @@ package org.hfoss.posit.android.experimental.api.activity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 
 import org.hfoss.posit.android.experimental.R;
@@ -41,6 +42,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -66,6 +68,7 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 	private int mClickedPosition = 0;
 
 	private ArrayList<HashMap<String, Object>> projectList;
+	Handler handler = new Handler();
 	private RadioGroup mRadio;	
 
 	/**
@@ -80,8 +83,7 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 		Button addProjectButton = (Button)findViewById(R.id.idAddProjButton);
 		addProjectButton.setOnClickListener(this);
 
-		showProjects();
-		
+		Communicator.attemptGetProjects(handler, this);
 
 	}
 
@@ -95,20 +97,20 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 	//	tryToRegister();
 	}
 
-	private void showProjects() {
+	private void showProjects(List<HashMap<String,Object>> projects) {
 //		if (!Utils.isConnected(this)) {
 //			reportNetworkError("No Network connection ... exiting");
 //			return;
 //		} 
-		Communicator comm = new Communicator(this);
-		try{
-			projectList = comm.getProjects();
-		} catch(Exception e){
-			Log.i(TAG, "Communicator error " + e.getMessage());
-			e.printStackTrace();
-			this.reportNetworkError(e.getMessage());
-			finish();
-		}
+//		Communicator comm = new Communicator(this);
+//		try{
+//			projectList = comm.getProjects();
+//		} catch(Exception e){
+//			Log.i(TAG, "Communicator error " + e.getMessage());
+//			e.printStackTrace();
+//			this.reportNetworkError(e.getMessage());
+//			finish();
+//		}
 		if (projectList != null) {
 			Iterator<HashMap<String, Object>> it = projectList.iterator();
 			ArrayList<String> projList = new ArrayList<String>();
@@ -124,6 +126,12 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 		}
 	} 
 	
+	public void onShowProjectsResult(ArrayList<HashMap<String,Object>> projects, Boolean result) {
+		Log.i(TAG, "The result of showing projects was: " + result);
+		projectList = projects;
+		showProjects(projectList);
+	}
+	
 
 	
 	/**
@@ -136,11 +144,11 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 		finish();
 	}
 	
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == NEW_PROJECT)
-			showProjects();
-	}
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//		if (requestCode == NEW_PROJECT)
+//			//showProjects();
+//	}
 
 	public void onListItemClick(ListView lv, View v, int position, long idFull){
 		mClickedPosition = position;

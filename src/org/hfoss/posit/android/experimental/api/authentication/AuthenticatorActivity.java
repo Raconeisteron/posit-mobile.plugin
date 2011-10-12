@@ -39,6 +39,7 @@ import android.widget.TextView;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
+import org.hfoss.posit.android.experimental.sync.Communicator;
 import org.hfoss.posit.android.experimental.sync.SyncAdapter;
 
 /**
@@ -161,8 +162,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             showProgress();
             // Start authenticating...
             mAuthThread =
-                NetworkUtilities.attemptAuth(mUsername, mPassword, imei, mHandler,
-                    AuthenticatorActivity.this);
+                Communicator.attemptAuth(mUsername, mPassword, imei);
         }
     }
 
@@ -189,6 +189,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
      * request. See onAuthenticationResult(). Sets the
      * AccountAuthenticatorResult which is sent back to the caller. Also sets
      * the authToken in AccountManager for this account.
+     * 
+     * @param authToken the auth token from the server.
      * 
      * @param the confirmCredentials result.
      */

@@ -16,6 +16,7 @@ package org.hfoss.posit.android.experimental.api.authentication;
  * the License.
  */
 
+import org.hfoss.posit.android.experimental.sync.Communicator;
 import org.hfoss.posit.android.experimental.sync.SyncAdapter;
 
 import android.accounts.AbstractAccountAuthenticator;
@@ -136,8 +137,8 @@ class Authenticator extends AbstractAccountAuthenticator {
     private boolean onlineConfirmPassword(String username, String password) {
     	TelephonyManager telephonyManager = (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
     	String imei = telephonyManager.getDeviceId();
-        return NetworkUtilities
-            .authenticate(username, password, imei, null/* Handler */, null/* Context */);
+        return Communicator
+            .loginUser(username, password, imei);
     }
 
     @Override
