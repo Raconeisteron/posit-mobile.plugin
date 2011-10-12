@@ -174,34 +174,35 @@ final public class NetworkUtilities {
 			// Parsing our JSON from our server..
 			json = new JSONObject(convertStreamToString(resp.getEntity()
 					.getContent()));
+			String authToken = (String)json.get(JSON_MESSAGE_KEY);
 			
 			if (json.getInt(JSON_MESSAGE_CODE_KEY) == AUTHENTICATION_SUCCEEDED) {
 					if (Log.isLoggable(TAG, Log.VERBOSE)) {
 						Log.v(TAG, "Successful authentication");
 					}
-					sendResult(true, handler, context);
+					sendResult(true, authToken, handler, context);
 					return true;
 				} else {
 					if (Log.isLoggable(TAG, Log.VERBOSE)) {
 						Log.v(TAG,
 								"Error authenticating" + resp.getStatusLine());
 					}
-					sendResult(false, handler, context);
+					sendResult(false, imei, handler, context);
 					return false;
 				}
 		} catch (IllegalStateException e) {
 			Log.e(TAG, "IllegalStateException when authenticating");
-			sendResult(false, handler, context);
+			sendResult(false, imei, handler, context);
 			return false;
 		} catch (JSONException e) {
 			Log.e(TAG, "JSONException parsing JSON from server, syntax error or duplicate key");
-			sendResult(false, handler, context);
+			sendResult(false, imei, handler, context);
 			return false;
 		} catch (final IOException e) {
 			if (Log.isLoggable(TAG, Log.VERBOSE)) {
 				Log.v(TAG, "IOException when getting authtoken", e);
 			}
-			sendResult(false, handler, context);
+			sendResult(false, imei, handler, context);
 			return false;
 		} finally {
 			if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -236,7 +237,7 @@ final public class NetworkUtilities {
 	 * @param context
 	 *            The caller Activity's context.
 	 */
-	private static void sendResult(final Boolean result, final Handler handler,
+	private static void sendResult(final Boolean result, final String authKey, final Handler handler,
 			final Context context) {
 		if (handler == null || context == null) {
 			return;
@@ -244,7 +245,7 @@ final public class NetworkUtilities {
 		handler.post(new Runnable() {
 			public void run() {
 				((AuthenticatorActivity) context)
-						.onAuthenticationResult(result);
+						.onAuthenticationResult(result, authKey);
 			}
 		});
 	}

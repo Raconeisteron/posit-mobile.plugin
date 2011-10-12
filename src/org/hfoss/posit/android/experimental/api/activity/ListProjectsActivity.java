@@ -98,19 +98,6 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 	}
 
 	private void showProjects(List<HashMap<String,Object>> projects) {
-//		if (!Utils.isConnected(this)) {
-//			reportNetworkError("No Network connection ... exiting");
-//			return;
-//		} 
-//		Communicator comm = new Communicator(this);
-//		try{
-//			projectList = comm.getProjects();
-//		} catch(Exception e){
-//			Log.i(TAG, "Communicator error " + e.getMessage());
-//			e.printStackTrace();
-//			this.reportNetworkError(e.getMessage());
-//			finish();
-//		}
 		if (projectList != null) {
 			Iterator<HashMap<String, Object>> it = projectList.iterator();
 			ArrayList<String> projList = new ArrayList<String>();
