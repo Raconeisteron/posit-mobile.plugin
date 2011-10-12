@@ -38,7 +38,7 @@ import android.widget.TextView;
 
 
 import org.hfoss.posit.android.experimental.R;
-import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
+//import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.hfoss.posit.android.experimental.sync.Communicator;
 import org.hfoss.posit.android.experimental.sync.SyncAdapter;
 
