@@ -15,7 +15,9 @@ import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -70,7 +72,10 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	 */
 	protected ListAdapter setUpAdapter() {
 
-		List<? extends Find> list = this.getHelper().getAllFinds();
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
+		
+		List<? extends Find> list = this.getHelper().getFindsByProjectId(projectId);
 
 		int resId = getResources().getIdentifier(
 				FindPluginManager.mListFindLayout, "layout", getPackageName());

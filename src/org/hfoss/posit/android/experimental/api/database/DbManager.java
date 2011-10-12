@@ -38,6 +38,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -126,6 +127,21 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		}
 		return list;
 
+	}
+	
+	public List<Find> getFindsByProjectId(int projectId){
+		List<Find> list = null;
+		try {
+			QueryBuilder<Find, Integer> builder = getFindDao().queryBuilder();
+			Where<Find, Integer> where = builder.where();
+			where.eq(Find.PROJECT_ID, projectId);
+			PreparedQuery<Find> preparedQuery = builder.prepare();
+			
+			list = getFindDao().query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "Database error getting finds: " + e.getMessage());
+		}
+		return list;
 	}
 
 	/**

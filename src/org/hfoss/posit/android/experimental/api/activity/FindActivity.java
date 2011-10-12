@@ -16,11 +16,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,8 +52,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		// Get the custom add find layout from the plugin settings, if there is
 		// one.
-		int resId = getResources().getIdentifier(
-				FindPluginManager.mAddFindLayout, "layout", getPackageName());
+		int resId = getResources().getIdentifier(FindPluginManager.mAddFindLayout, "layout", getPackageName());
 
 		setContentView(resId);
 		initializeListeners();
@@ -59,8 +60,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		// Check for a new location every ten seconds while we're adding a new
 		// find.
-		mLocationManager = (LocationManager) this
-				.getSystemService(Context.LOCATION_SERVICE);
+		mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
 		Criteria criteria = new Criteria();
 		criteria.setAccuracy(Criteria.ACCURACY_COARSE);
@@ -69,7 +69,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (provider != null)
 			mLocationManager.requestLocationUpdates(provider, 10000, 0, this);
 		else {
-			Toast.makeText(this, "Unable to get a location via Wifi or GPS.  Are they enabled?", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Unable to get a location via Wifi or GPS.  Are they enabled?", Toast.LENGTH_LONG)
+					.show();
 			Log.i(TAG, "Cannot request location updates, wifi or GPS might not be enabled/need a view of the sky");
 		}
 
@@ -84,12 +85,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected void onResume() {
 		super.onResume();
 
-		Location lastKnownLocation = mLocationManager
-				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		if (lastKnownLocation == null)
-			Toast.makeText(this,
-					"Unable to retrieve last known location.",
-					Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Unable to retrieve last known location.", Toast.LENGTH_LONG).show();
 		else
 			mCurrentLocation = lastKnownLocation;
 	}
@@ -137,9 +135,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		Intent intent;
 		switch (item.getItemId()) {
-
 		case R.id.save_find_menu_item:
 			saveFind();
 			break;
@@ -222,8 +218,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
 		if (datePicker != null) {
-			value = datePicker.getMonth() + "/" + datePicker.getDayOfMonth()
-					+ "/" + datePicker.getYear();
+			value = datePicker.getMonth() + "/" + datePicker.getDayOfMonth() + "/" + datePicker.getYear();
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 			Date date = null;
 			try {
@@ -234,9 +229,13 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			if (date != null)
 				find.setTime(date);
 		}
-
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
+		find.setProject_id(projectId);
+		
 		// Mark the find unsynced TODO: Do we need this?
-		//find.setSynced(Find.NOT_SYNCED);
+		// find.setSynced(Find.NOT_SYNCED);
 
 		return find;
 	}
@@ -257,8 +256,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
 
-		datePicker.init(find.getTime().getYear() + 1900, find.getTime()
-				.getMonth(), find.getTime().getDate(), null);
+		datePicker.init(find.getTime().getYear() + 1900, find.getTime().getMonth(), find.getTime().getDate(), null);
 
 		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
 		tView.setText(String.valueOf(find.getLongitude()));
@@ -272,8 +270,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 */
 	public void onLocationChanged(Location location) {
 		mCurrentLocation = location;
-		Log.i(TAG, "Got a new location: " + mCurrentLocation.getLatitude()
-				+ "," + mCurrentLocation.getLongitude());
+		Log.i(TAG, "Got a new location: " + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
 
 	}
 
@@ -307,32 +304,23 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_DELETE_DIALOG:
-			return new AlertDialog.Builder(this)
-					.setIcon(R.drawable.alert_dialog_icon)
+			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon)
 					.setTitle(R.string.alert_dialog_2)
-					.setPositiveButton(R.string.alert_dialog_ok,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									// User clicked OK so do some stuff
-									if (deleteFind()) {
-										Toast.makeText(FindActivity.this,
-												R.string.deleted_from_database,
-												Toast.LENGTH_SHORT).show();
-										finish();
-									} else
-										Toast.makeText(FindActivity.this,
-												R.string.delete_failed,
-												Toast.LENGTH_SHORT).show();
-								}
-							})
-					.setNegativeButton(R.string.alert_dialog_cancel,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									// User clicked cancel so do nothing
-								}
-							}).create();
+					.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// User clicked OK so do some stuff
+							if (deleteFind()) {
+								Toast.makeText(FindActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT)
+										.show();
+								finish();
+							} else
+								Toast.makeText(FindActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
+						}
+					}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// User clicked cancel so do nothing
+						}
+					}).create();
 
 			// case CONFIRM_EXIT:
 			// Log.i(TAG, "CONFIRM_EXIT dialog");
@@ -371,8 +359,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected boolean saveFind() {
 		int rows = 0;
 		Find find = retrieveContentFromView();
-//		SharedPref
-//		find.setProject_id()
+		// SharedPref
+		// find.setProject_id()
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT))
 			rows = find.insert(this.getHelper().getFindDao());
 		else if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {

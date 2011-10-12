@@ -320,7 +320,8 @@ public class Communicator {
 	 *            The user's username
 	 * @param password
 	 *            The user's password to be authenticated
-	 * @param imei the phone's IMEI
+	 * @param imei
+	 *            the phone's IMEI
 	 * @param handler
 	 *            The main UI thread's handler instance.
 	 * @param context
@@ -386,7 +387,8 @@ public class Communicator {
 	 * Sends the result of a getProjects request from server back to the caller
 	 * main UI thread through its handler.
 	 * 
-	 * @param projects the list of projects gotten from server
+	 * @param projects
+	 *            the list of projects gotten from server
 	 * @param result
 	 *            The boolean holding authentication result
 	 * @param authToken
@@ -412,7 +414,8 @@ public class Communicator {
 	 * Sends the authentication response from server back to the caller main UI
 	 * thread through its handler.
 	 * 
-	 * @param authKey the auth key obtained from the server
+	 * @param authKey
+	 *            the auth key obtained from the server
 	 * @param result
 	 *            The boolean holding authentication result
 	 * @param authToken
@@ -541,6 +544,7 @@ public class Communicator {
 
 		BasicNameValuePair pair = new BasicNameValuePair("imei", imei);
 		pairs.add(pair);
+		Log.i(TAG, "pairs: " + pairs);
 		String responseString = null;
 
 		// Send the find
@@ -871,6 +875,9 @@ public class Communicator {
 					if (returnType.equals(String.class))
 						value = (String) find.getClass().getDeclaredMethod(methodName, null)
 								.invoke(find, (Object[]) null);
+					else if (returnType.equals(int.class))
+						value = String.valueOf((Integer) find.getClass().getDeclaredMethod(methodName, null)
+								.invoke(find, (Object[]) null));
 
 				} catch (IllegalArgumentException e) {
 					Log.e(TAG, e + ": " + e.getMessage());
