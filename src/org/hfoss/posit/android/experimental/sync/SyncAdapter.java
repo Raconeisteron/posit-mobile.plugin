@@ -74,7 +74,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
 			SyncResult syncResult) {
 
-		List<Find> finds;
+		List<? extends Find> finds;
 		Log.i(TAG, "In onPerformSync() wowowpw");
 		String authToken = null;
 		try {
@@ -89,8 +89,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			// update the last synced date.
 			Log.i(TAG, "auth token: " + authToken);
 			mLastUpdated = new Date();
-			Find find = DbHelper.getDbManager(mContext).getFindById(1);
-			Communicator.sendFind(find, "create", mContext, authToken);
+			finds = DbHelper.getDbManager(mContext).getAllFinds();
+			Communicator.sendFind(finds.get(0), "create", mContext, authToken);
 			// update platform contacts.
 			// Log.d(TAG, "Calling contactManager's sync contacts");
 			// ContactManager.syncContacts(mContext, account.name, users);

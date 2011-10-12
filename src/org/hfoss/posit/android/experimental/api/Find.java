@@ -422,26 +422,10 @@ public class Find implements FindInterface {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(ORM_ID).append("=").append(id).append(",");
-		sb.append(GUID).append("=").append(guid).append(",");
-		sb.append(NAME).append("=").append(name).append(",");
-		sb.append(LATITUDE).append("=").append(latitude).append(",");
-		sb.append(LONGITUDE).append("=").append(longitude).append(",");
-		if (time != null)
-			sb.append(TIME).append("=").append(time.toString()).append(",");
-		else
-			sb.append(TIME).append("=").append("").append(",");
-		if (modify_time != null)
-			sb.append(MODIFY_TIME).append("=").append(modify_time.toString())
-					.append(",");
-		else
-			sb.append(MODIFY_TIME).append("=").append("").append(",");
-//		sb.append(REVISION).append("=").append(revision).append(",");
-//		sb.append(IS_ADHOC).append("=").append(is_adhoc).append(",");
-//		sb.append(ACTION).append("=").append(action).append(",");
-		sb.append(DELETED).append("=").append(deleted).append(",");
-		return sb.toString();
+		return "Find [id=" + id + ", guid=" + guid + ", project_id=" + project_id + ", name=" + name + ", description="
+				+ description + ", latitude=" + latitude + ", longitude=" + longitude + ", time=" + time
+				+ ", modify_time=" + modify_time + ", is_adhoc=" + is_adhoc + ", deleted=" + deleted + ", revision="
+				+ revision + ", syncOperation=" + syncOperation + ", status=" + status + "]";
 	}
 
 	// /**
