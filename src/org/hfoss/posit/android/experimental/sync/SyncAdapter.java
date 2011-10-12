@@ -1,4 +1,5 @@
 package org.hfoss.posit.android.experimental.sync;
+
 /*
  * Copyright (C) 2010 The Android Open Source Project
  * 
@@ -29,7 +30,7 @@ import android.util.Log;
 import org.apache.http.ParseException;
 import org.apache.http.auth.AuthenticationException;
 import org.hfoss.posit.android.experimental.api.Find;
-import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
+//import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.json.JSONException;
 
@@ -43,71 +44,71 @@ import java.util.List;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-    private static final String TAG = "SyncAdapter";
+	private static final String TAG = "SyncAdapter";
 
-    private final AccountManager mAccountManager;
+	private final AccountManager mAccountManager;
 
-    private final Context mContext;
-    
-    private Communicator communicator;
+	private final Context mContext;
 
-    private Date mLastUpdated;
-    
-    /**
-     * Account type string.
-     */
-    public static final String ACCOUNT_TYPE = "org.hfoss.posit.account";
+	private Communicator communicator;
 
-    /**
-     * Authtoken type string.
-     */
-    public static final String AUTHTOKEN_TYPE = "org.hfoss.posit.account";
+	private Date mLastUpdated;
 
-    public SyncAdapter(Context context, boolean autoInitialize) {
-        super(context, autoInitialize);
-        mContext = context;
-        mAccountManager = AccountManager.get(context);
-        communicator = new Communicator(context);
-    }
+	/**
+	 * Account type string.
+	 */
+	public static final String ACCOUNT_TYPE = "org.hfoss.posit.account";
 
-    @Override
-    public void onPerformSync(Account account, Bundle extras, String authority,
-        ContentProviderClient provider, SyncResult syncResult) {
+	/**
+	 * Authtoken type string.
+	 */
+	public static final String AUTHTOKEN_TYPE = "org.hfoss.posit.account";
 
-        List<Find> finds;
-        Log.i(TAG, "In onPerformSync() wowowpw");
-        String authToken = null;
-        try {
-            // use the account manager to request the credentials
-        	// TODO: This is not the correct auth token.  Its just the password.
-        	// We want it to use the auth token that the server generates for us.
-            authToken =
-                mAccountManager
-                    .blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
-            // fetch updates from the sample service over the cloud
-            //users = NetworkUtilities.fetchFriendUpdates(account, authtoken, mLastUpdated);
-            // update the last synced date.
-            Log.i(TAG, "auth token: "+ authToken);
-            mLastUpdated = new Date();
-            Find find = DbHelper.getDbManager(mContext).getFindById(1);
-            communicator.sendFind(find,"create", mContext, authToken);
-            // update platform contacts.
-//            Log.d(TAG, "Calling contactManager's sync contacts");
-//            ContactManager.syncContacts(mContext, account.name, users);
-//            // fetch and update status messages for all the synced users.
-//            statuses = NetworkUtilities.fetchFriendStatuses(account, authtoken);
-//            ContactManager.insertStatuses(mContext, account.name, statuses);
-        } catch (final AuthenticatorException e) {
-            syncResult.stats.numParseExceptions++;
-            Log.e(TAG, "AuthenticatorException", e);
-        } catch (final OperationCanceledException e) {
-            Log.e(TAG, "OperationCanceledExcetpion", e);
-        } catch (final IOException e) {
-            Log.e(TAG, "IOException", e);
-            syncResult.stats.numIoExceptions++;
-        } catch (final ParseException e) {
-            syncResult.stats.numParseExceptions++;
-            Log.e(TAG, "ParseException", e);
-        }
-    }
+	public SyncAdapter(Context context, boolean autoInitialize) {
+		super(context, autoInitialize);
+		mContext = context;
+		mAccountManager = AccountManager.get(context);
+	}
+
+	@Override
+	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
+			SyncResult syncResult) {
+
+		List<Find> finds;
+		Log.i(TAG, "In onPerformSync() wowowpw");
+		String authToken = null;
+		try {
+			// use the account manager to request the credentials
+			// TODO: This is not the correct auth token. Its just the password.
+			// We want it to use the auth token that the server generates for
+			// us.
+			authToken = mAccountManager.blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
+			// fetch updates from the sample service over the cloud
+			// users = NetworkUtilities.fetchFriendUpdates(account, authtoken,
+			// mLastUpdated);
+			// update the last synced date.
+			Log.i(TAG, "auth token: " + authToken);
+			mLastUpdated = new Date();
+			Find find = DbHelper.getDbManager(mContext).getFindById(1);
+			Communicator.sendFind(find, "create", mContext, authToken);
+			// update platform contacts.
+			// Log.d(TAG, "Calling contactManager's sync contacts");
+			// ContactManager.syncContacts(mContext, account.name, users);
+			// // fetch and update status messages for all the synced users.
+			// statuses = NetworkUtilities.fetchFriendStatuses(account,
+			// authtoken);
+			// ContactManager.insertStatuses(mContext, account.name, statuses);
+		} catch (final AuthenticatorException e) {
+			syncResult.stats.numParseExceptions++;
+			Log.e(TAG, "AuthenticatorException", e);
+		} catch (final OperationCanceledException e) {
+			Log.e(TAG, "OperationCanceledExcetpion", e);
+		} catch (final IOException e) {
+			Log.e(TAG, "IOException", e);
+			syncResult.stats.numIoExceptions++;
+		} catch (final ParseException e) {
+			syncResult.stats.numParseExceptions++;
+			Log.e(TAG, "ParseException", e);
+		}
+	}
 }

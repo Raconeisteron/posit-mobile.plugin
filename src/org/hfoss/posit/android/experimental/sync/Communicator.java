@@ -56,7 +56,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.authentication.AuthenticatorActivity;
-import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
+//import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 
@@ -104,130 +104,71 @@ public class Communicator {
 	private static final String COLUMN_IMEI = "imei";
 	public static final int CONNECTION_TIMEOUT = 3000; // millisecs
 	public static final int SOCKET_TIMEOUT = 5000;
-	
+	public static final String RESULT_FAIL = "false";
+
 	private static final String SERVER_PREF = "serverKey";
 	private static final String PROJECT_PREF = "projectKey";
 
-	/*
-	 * You should be careful with putting names for server. DO NOT always trust
-	 * DNS.
-	 */
-
-	public static final String RESULT_FAIL = "false";
-	//private static String server;
-	private static String authKey;
-	private static String imei;
-
-	private static int projectId;
-
 	private static String TAG = "Communicator";
-	private static String responseString;
-	private static Context mContext;
-	private static SharedPreferences applicationPreferences;
-	private static HttpParams mHttpParams;
-	private static HttpClient mHttpClient;
-	private static ThreadSafeClientConnManager mConnectionManager;
-	public static long mTotalTime = 0;
-	private static long mStart = 0;
-	private static AccountManager mAccountManager;
 
-	public Communicator(Context _context) {
-		mContext = _context;
-		mTotalTime = 0;
-		mStart = 0;
+	// /**
+	// * Attempts to get the auth token. Apparently this might have to perform a
+	// * network request, so you're supposed to use a thread.
+	// */
+	// public static Thread getAuthToken(final Context context) {
+	//
+	// final Runnable runnable = new Runnable() {
+	// public void run() {
+	// AccountManager mAccountManager = AccountManager.get(context);
+	//
+	// // TODO: again just picking the first account here.. how are you
+	// // supposed to handle this?
+	// Account[] accounts =
+	// mAccountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
+	//
+	// try {
+	// String authKey = mAccountManager
+	// .blockingGetAuthToken(accounts[0],
+	// SyncAdapter.AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
+	// Log.i(TAG, "AUTH TOKEN: " + authKey);
+	// } catch (OperationCanceledException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (AuthenticatorException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	// };
+	// // run on background thread.
+	// return performOnBackgroundThread(runnable);
+	// }
 
-		mHttpParams = new BasicHttpParams();
+	private static String getAuthKey(Context context) {
+		AccountManager accountManager = AccountManager.get(context);
 
-		// Set the timeout in milliseconds until a connection is established.
-		HttpConnectionParams.setConnectionTimeout(mHttpParams,
-				CONNECTION_TIMEOUT);
+		// TODO: again just picking the first account here.. how are you
+		// supposed to handle this?
+		Account[] accounts = accountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
 
-		// Set the default socket timeout (SO_TIMEOUT)
-		// in milliseconds which is the timeout for waiting for data.
-		HttpConnectionParams.setSoTimeout(mHttpParams, SOCKET_TIMEOUT);
-
-		SchemeRegistry registry = new SchemeRegistry();
-		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
-		mConnectionManager = new ThreadSafeClientConnManager(mHttpParams,
-				registry);
-		mHttpClient = new DefaultHttpClient(mConnectionManager, mHttpParams);
-
-		PreferenceManager.setDefaultValues(mContext, R.xml.posit_preferences,
-				false);
-		applicationPreferences = PreferenceManager
-				.getDefaultSharedPreferences(mContext);
-
-		mAccountManager = AccountManager.get(mContext);
-
-		//setApplicationAttributes(
-		//		applicationPreferences.getString("AUTHKEY", ""),
-		//		applicationPreferences.getString("SERVER_ADDRESS", server),
-		//		applicationPreferences.getInt("PROJECT_ID", projectId));
-		TelephonyManager manager = (TelephonyManager) mContext
-				.getSystemService(Context.TELEPHONY_SERVICE);
-		imei = manager.getDeviceId();
-
-	}
-
-
-	private static void setUpHttpConnection() {
-		mHttpParams = new BasicHttpParams();
-
-		// Set the timeout in milliseconds until a connection is established.
-		HttpConnectionParams.setConnectionTimeout(mHttpParams,
-				CONNECTION_TIMEOUT);
-
-		// Set the default socket timeout (SO_TIMEOUT)
-		// in milliseconds which is the timeout for waiting for data.
-		HttpConnectionParams.setSoTimeout(mHttpParams, SOCKET_TIMEOUT);
-
-		SchemeRegistry registry = new SchemeRegistry();
-		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
-		mConnectionManager = new ThreadSafeClientConnManager(mHttpParams,
-				registry);
-		mHttpClient = new DefaultHttpClient(mConnectionManager, mHttpParams);
-	}
-
-	private void setApplicationAttributes(String aKey, String serverAddress,
-			int projId) {
-		// authKey = aKey;
-		// server = serverAddress; TODO: Add setting for this
-		authKey = "ibDTqweXkvZM9kEO";
-		//server = "http://www.posit-project.org/sandbox";
-		projectId = projId;
-	}
-
-	/**
-	 * Attempts to get the auth token. Apparently this might have to perform a
-	 * network request, so you're supposed to use a thread.
-	 */
-	public static Thread getAuthToken() {
-
-		final Runnable runnable = new Runnable() {
-			public void run() {
-				// TODO: again just picking the first account here.. how are you
-				// supposed to handle this?
-				Account[] accounts = mAccountManager
-						.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
-				try {
-					authKey = mAccountManager
-							.blockingGetAuthToken(accounts[0],
-									SyncAdapter.AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
-					Log.i(TAG, "AUTH TOKEN: " + authKey);
-				} catch (OperationCanceledException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (AuthenticatorException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		};
-		// run on background thread.
-		return performOnBackgroundThread(runnable);
+		String authKey = null;
+		try {
+			authKey = accountManager
+					.blockingGetAuthToken(accounts[0], SyncAdapter.AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
+		} catch (OperationCanceledException e) {
+			Log.i(TAG, "getAuthKey(), cancelled during request: " + e.getMessage());
+			e.printStackTrace();
+		} catch (AuthenticatorException e) {
+			Log.e(TAG, "getAuthKey(), authentication exception: " + e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			Log.e(TAG, "getAuthKey() IOException" + e.getMessage());
+			e.printStackTrace();
+		}
+		return authKey;
 	}
 
 	/**
@@ -240,40 +181,37 @@ public class Communicator {
 	 * @return a list of all the projects and their information, encoded as maps
 	 * @throws JSONException
 	 */
-	public static ArrayList<HashMap<String, Object>> getProjects(
-			Handler handler, Context context) {
-		// if (authKey.equals("")) {
-		// Log.e(TAG, "getProjects() authKey == ");
-		// Toast.makeText(
-		// mContext,
-		// "Aborting Communicator:\nPhone does not have a valid authKey."
-		// + "\nUse settings menu to register phone.",
-		// Toast.LENGTH_LONG).show();
-		// return null;
-		// }
+	public static ArrayList<HashMap<String, Object>> getProjects(Handler handler, Context context) {
+
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = prefs.getString(SERVER_PREF, "");
-		
-		authKey = "ibDTqweXkvZM9kEO";
-		
-		String url = server + "/api/listMyProjects?authKey=" + authKey;
-		
-		ArrayList<HashMap<String, Object>> list;
-		responseString = doHTTPGET(url);
-		Log.i(TAG, responseString);
-		if (responseString.contains("Error")) {
+
+		String authKey = getAuthKey(context);
+
+		if (authKey != null) {
+
+			String url = server + "/api/listMyProjects?authKey=" + authKey;
+
+			ArrayList<HashMap<String, Object>> list;
+			String responseString = doHTTPGET(url);
+			Log.i(TAG, responseString);
+
+			if (responseString.contains("Error")) {
+				return null;
+			}
+			list = new ArrayList<HashMap<String, Object>>();
+			try {
+				list = (ArrayList<HashMap<String, Object>>) (new ResponseParser(responseString).parseList());
+			} catch (JSONException e) {
+				Log.i(TAG, "getProjects JSON exception " + e.getMessage());
+				return null;
+			}
+			sendProjectsResult(list, true, handler, context);
+			return list;
+		} else {
+			Log.e(TAG, "authKey is null.");
 			return null;
 		}
-		list = new ArrayList<HashMap<String, Object>>();
-		try {
-			list = (ArrayList<HashMap<String, Object>>) (new ResponseParser(
-					responseString).parseList());
-		} catch (JSONException e1) {
-			Log.i(TAG, "getProjects JSON exception " + e1.getMessage());
-			return null;
-		}
-		sendProjectsResult(list, true, handler, context);
-		return list;
 	}
 
 	/**
@@ -286,14 +224,15 @@ public class Communicator {
 	 * @return whether the registration was successful
 	 */
 	public String registerDevice(String server, String authKey, String imei) {
-		String url = server + "/api/registerDevice?authKey=" + authKey
-				+ "&imei=" + imei;
+		String url = server + "/api/registerDevice?authKey=" + authKey + "&imei=" + imei;
 		Log.i(TAG, "registerDevice URL=" + url);
 
+		String responseString = null;
 		try {
 			responseString = doHTTPGET(url);
 		} catch (Exception e) {
-			Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+			// Toast.makeText(mContext, e.getMessage(),
+			// Toast.LENGTH_LONG).show();
 		}
 		Log.i(TAG, responseString);
 		if (responseString.equals(RESULT_FAIL))
@@ -307,18 +246,22 @@ public class Communicator {
 	 * Registers the phone being used with the given server address, email,
 	 * password and imei.
 	 * 
-	 * @param server
-	 * @param authKey
+	 * @param email
+	 *            email/username
+	 * @param password
+	 *            the password
 	 * @param imei
+	 * @param handler
+	 *            the handler instance from the UI thread
+	 * @param context
+	 *            the context of the calling activity
 	 * @return the result
-	 * @throws JSONException
 	 */
-	public static String loginUser(String email, String password, String imei,
-			Handler handler, Context context) {
-		
-		applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+	public static String loginUser(String email, String password, String imei, Handler handler, Context context) {
+
+		SharedPreferences applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = applicationPreferences.getString(SERVER_PREF, "");
-		
+
 		String url = server + "/api/login";
 
 		HashMap<String, Object> responseMap = null;
@@ -329,6 +272,8 @@ public class Communicator {
 		sendList.add(new BasicNameValuePair("password", password));
 		sendList.add(new BasicNameValuePair("imei", imei));
 
+		String responseString = null;
+		String authKey = null;
 		try {
 			responseString = doHTTPPost(url, sendList);
 			Log.i(TAG, "longinUser response = " + responseString);
@@ -342,35 +287,25 @@ public class Communicator {
 			}
 		} catch (Exception e) {
 			Log.i(TAG, "longinUser catch clause response = " + responseString);
-			Toast.makeText(mContext, e.getMessage() + "", Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(context, e.getMessage() + "", Toast.LENGTH_LONG).show();
 			sendAuthenticationResult(authKey, false, handler, context);
-			// return Constants.AUTHN_FAILED+":"+e.getMessage();
 			return null;
 		}
 		try {
 			if (responseMap.containsKey(ERROR_CODE)) {
-				// return responseMap.get(ERROR_CODE) + ":"
-				// + responseMap.get(ERROR_MESSAGE);
 				sendAuthenticationResult(authKey, false, handler, context);
 				return null;
 			} else if (responseMap.containsKey(MESSAGE_CODE)) {
 				if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
-					// return Constants.AUTHN_OK + ":" +
-					// responseMap.get(MESSAGE);
 					sendAuthenticationResult(authKey, true, handler, context);
 					return authKey;
 				}
 			} else {
-				// return Constants.AUTHN_FAILED + ":" + "repsonseMap = "
-				// + responseMap.toString(); //
-				// "Malformed message from server.";
 				sendAuthenticationResult(authKey, false, handler, context);
 				return null;
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "loginUser " + e.getMessage() + " ");
-			// return Constants.AUTHN_FAILED + ": " + e.getMessage();
 			sendAuthenticationResult(authKey, false, handler, context);
 			return null;
 		}
@@ -381,18 +316,19 @@ public class Communicator {
 	/**
 	 * Attempts to authenticate the user credentials on the server.
 	 * 
-	 * @param username
+	 * @param email
 	 *            The user's username
 	 * @param password
 	 *            The user's password to be authenticated
+	 * @param imei the phone's IMEI
 	 * @param handler
 	 *            The main UI thread's handler instance.
 	 * @param context
 	 *            The caller Activity's context
 	 * @return Thread The thread on which the network mOperations are executed.
 	 */
-	public static Thread attemptAuth(final String email, final String password,
-			final String imei, final Handler handler, final Context context) {
+	public static Thread attemptAuth(final String email, final String password, final String imei,
+			final Handler handler, final Context context) {
 
 		final Runnable runnable = new Runnable() {
 			public void run() {
@@ -404,20 +340,15 @@ public class Communicator {
 	}
 
 	/**
-	 * Attempts to authenticate the user credentials on the server.
+	 * Attempts to get the user's projects from the server.
 	 * 
-	 * @param username
-	 *            The user's username
-	 * @param password
-	 *            The user's password to be authenticated
 	 * @param handler
 	 *            The main UI thread's handler instance.
 	 * @param context
 	 *            The caller Activity's context
 	 * @return Thread The thread on which the network mOperations are executed.
 	 */
-	public static Thread attemptGetProjects(final Handler handler,
-			final Context context) {
+	public static Thread attemptGetProjects(final Handler handler, final Context context) {
 
 		final Runnable runnable = new Runnable() {
 			ArrayList<HashMap<String, Object>> projectList;
@@ -455,6 +386,7 @@ public class Communicator {
 	 * Sends the result of a getProjects request from server back to the caller
 	 * main UI thread through its handler.
 	 * 
+	 * @param projects the list of projects gotten from server
 	 * @param result
 	 *            The boolean holding authentication result
 	 * @param authToken
@@ -464,16 +396,14 @@ public class Communicator {
 	 * @param context
 	 *            The caller Activity's context.
 	 */
-	private static void sendProjectsResult(
-			final ArrayList<HashMap<String, Object>> projects,
-			final Boolean result, final Handler handler, final Context context) {
+	private static void sendProjectsResult(final ArrayList<HashMap<String, Object>> projects, final Boolean result,
+			final Handler handler, final Context context) {
 		if (handler == null || context == null) {
 			return;
 		}
 		handler.post(new Runnable() {
 			public void run() {
-				((ListProjectsActivity) context).onShowProjectsResult(projects,
-						result);
+				((ListProjectsActivity) context).onShowProjectsResult(projects, result);
 			}
 		});
 	}
@@ -482,6 +412,7 @@ public class Communicator {
 	 * Sends the authentication response from server back to the caller main UI
 	 * thread through its handler.
 	 * 
+	 * @param authKey the auth key obtained from the server
 	 * @param result
 	 *            The boolean holding authentication result
 	 * @param authToken
@@ -491,15 +422,14 @@ public class Communicator {
 	 * @param context
 	 *            The caller Activity's context.
 	 */
-	private static void sendAuthenticationResult(final String authKey,
-			final Boolean result, final Handler handler, final Context context) {
+	private static void sendAuthenticationResult(final String authKey, final Boolean result, final Handler handler,
+			final Context context) {
 		if (handler == null || context == null) {
 			return;
 		}
 		handler.post(new Runnable() {
 			public void run() {
-				((AuthenticatorActivity) context).onAuthenticationResult(
-						result, authKey);
+				((AuthenticatorActivity) context).onAuthenticationResult(result, authKey);
 			}
 		});
 	}
@@ -594,44 +524,34 @@ public class Communicator {
 	 * 
 	 * @param action -- either 'create' or 'update'
 	 */
-	public boolean sendFind(Find find, String action, Context context, String authToken) {
-		boolean success = false;
+	public static boolean sendFind(Find find, String action, Context context, String authToken) {
 		String url;
-		// HashMap<String, String> sendMap = find.getContentMapGuid();
-		// Log.i(TAG, "sendFind map = " + sendMap.toString());
-		// cleanupOnSend(sendMap);
-		// sendMap.put("imei", imei);
-		// String guid = sendMap.get(PositDbHelper.FINDS_GUID);
-
-		// Create the url
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = prefs.getString(SERVER_PREF, "");
-		
-		if (action.equals("create")) {
-			url = server + "/api/createFind?authKey=" + authToken;
-		} else {
-			url = server + "/api/updateFind?authKey=" + authToken;
-		}
+
+		url = server + "/api/createFind?authKey=" + authToken;
 
 		Log.i(TAG, "SendFind=" + find);
 
 		List<NameValuePair> pairs = getNameValuePairs(find);
+
+		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei = telephonyManager.getDeviceId();
+
 		BasicNameValuePair pair = new BasicNameValuePair("imei", imei);
 		pairs.add(pair);
-		Log.i(TAG, "pairs: " + pairs);
+		String responseString = null;
+
 		// Send the find
 		try {
 			responseString = doHTTPPost(url, pairs);
-			DbHelper.getDbManager(mContext).updateStatus(find,
-					Constants.TRANSACTING);
-			DbHelper.getDbManager(mContext).updateSyncOperation(find,
-					Constants.POSTING);
+			DbHelper.getDbManager(context).updateStatus(find, Constants.TRANSACTING);
+			DbHelper.getDbManager(context).updateSyncOperation(find, Constants.POSTING);
 		} catch (Exception e) {
 			Log.i(TAG, e.getMessage());
-			Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
-			DbHelper.getDbManager(mContext)
-					.updateStatus(find, Constants.FAILED);
+			Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+			DbHelper.getDbManager(context).updateStatus(find, Constants.FAILED);
 		}
 
 		Log.i(TAG, "sendFind.ResponseString: " + responseString);
@@ -639,14 +559,11 @@ public class Communicator {
 		// If the update failed return false
 		if (responseString.indexOf("True") == -1) {
 			Log.i(TAG, "sendFind result doesn't contain 'True'");
-			DbHelper.getDbManager(mContext)
-					.updateStatus(find, Constants.FAILED);
+			DbHelper.getDbManager(context).updateStatus(find, Constants.FAILED);
 			return false;
 		} else {
-			DbHelper.getDbManager(mContext).updateStatus(find,
-					Constants.SUCCEEDED);
-			Log.i(TAG, "sendFind() synced find id: " + find.getId() + " "
-					+ success);
+			DbHelper.getDbManager(context).updateStatus(find, Constants.SUCCEEDED);
+			Log.i(TAG, "sendFind() synced find id: " + find.getId());
 		}
 
 		// if (!success)
@@ -691,7 +608,7 @@ public class Communicator {
 		// // it.next();
 		// }
 
-		// Update the Synced attribute.
+		DbHelper.releaseDbManager();
 		return true;
 	}
 
@@ -801,8 +718,20 @@ public class Communicator {
 	 * @return the response from the URL
 	 */
 	private static String doHTTPPost(String Uri, List<NameValuePair> pairs) {
-		setUpHttpConnection();
-		long startTime = System.currentTimeMillis();
+		BasicHttpParams mHttpParams = new BasicHttpParams();
+
+		// Set the timeout in milliseconds until a connection is established.
+		HttpConnectionParams.setConnectionTimeout(mHttpParams, CONNECTION_TIMEOUT);
+
+		// Set the default socket timeout (SO_TIMEOUT)
+		// in milliseconds which is the timeout for waiting for data.
+		HttpConnectionParams.setSoTimeout(mHttpParams, SOCKET_TIMEOUT);
+
+		SchemeRegistry registry = new SchemeRegistry();
+		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
+		ThreadSafeClientConnManager mConnectionManager = new ThreadSafeClientConnManager(mHttpParams, registry);
+		DefaultHttpClient mHttpClient = new DefaultHttpClient(mConnectionManager, mHttpParams);
+
 		if (Uri == null)
 			throw new NullPointerException("The URL has to be passed");
 		String responseString = null;
@@ -814,9 +743,7 @@ public class Communicator {
 		} catch (URISyntaxException e) {
 			Log.e(TAG, "URISyntaxException " + e.getMessage());
 			e.printStackTrace();
-			// return e.getMessage();
 			return "[Error] " + e.getMessage();
-
 		}
 
 		ResponseHandler<String> responseHandler = new BasicResponseHandler();
@@ -826,7 +753,6 @@ public class Communicator {
 			Log.e(TAG, "UnsupportedEncodingException " + e.getMessage());
 			return "[Error] " + e.getMessage();
 		}
-		mStart = System.currentTimeMillis();
 
 		try {
 			responseString = mHttpClient.execute(post, responseHandler);
@@ -834,28 +760,22 @@ public class Communicator {
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, "ClientProtocolException" + e.getMessage());
 			e.printStackTrace();
-			// return e.getMessage();
 			return "[Error] " + e.getMessage();
 		} catch (IOException e) {
 			Log.e(TAG, "IOException " + e.getMessage());
 			e.printStackTrace();
-			// return e.getMessage();
 			return "[Error] " + e.getMessage();
 		} catch (IllegalStateException e) {
 			Log.e(TAG, "IllegalStateException: " + e.getMessage());
 			e.printStackTrace();
-			// return e.getMessage();
 			return "[Error] " + e.getMessage();
 		} catch (Exception e) {
 			Log.e(TAG, "Exception on HttpPost " + e.getMessage());
 			e.printStackTrace();
-			// return e.getMessage();
 			return "[Error] " + e.getMessage();
 		}
-		long time = System.currentTimeMillis() - startTime;
-		mTotalTime += time;
-		Log.i(TAG, "doHTTPpost response = " + responseString + " TIME = "
-				+ time + " millisecs");
+
+		Log.i(TAG, "doHTTPpost response = " + responseString);
 
 		return responseString;
 	}
@@ -880,7 +800,20 @@ public class Communicator {
 	 * @return the request from the remote server
 	 */
 	public static String doHTTPGET(String Uri) {
-		setUpHttpConnection();
+		BasicHttpParams mHttpParams = new BasicHttpParams();
+
+		// Set the timeout in milliseconds until a connection is established.
+		HttpConnectionParams.setConnectionTimeout(mHttpParams, CONNECTION_TIMEOUT);
+
+		// Set the default socket timeout (SO_TIMEOUT)
+		// in milliseconds which is the timeout for waiting for data.
+		HttpConnectionParams.setSoTimeout(mHttpParams, SOCKET_TIMEOUT);
+
+		SchemeRegistry registry = new SchemeRegistry();
+		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
+		ThreadSafeClientConnManager mConnectionManager = new ThreadSafeClientConnManager(mHttpParams, registry);
+		DefaultHttpClient mHttpClient = new DefaultHttpClient(mConnectionManager, mHttpParams);
+
 		if (Uri == null)
 			throw new NullPointerException("The URL has to be passed");
 		String responseString = null;
@@ -897,31 +830,22 @@ public class Communicator {
 		Log.i(TAG, "doHTTPGet Uri = " + Uri);
 
 		ResponseHandler<String> responseHandler = new BasicResponseHandler();
-		mStart = System.currentTimeMillis();
 
 		try {
 			responseString = mHttpClient.execute(httpGet, responseHandler);
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, "ClientProtocolException" + e.getMessage());
-			e.printStackTrace();
 			return "[Error] " + e.getMessage();
 		} catch (SocketTimeoutException e) {
 			Log.e(TAG, "[Error: SocketTimeoutException]" + e.getMessage());
-			e.printStackTrace();
 			return "[Error] " + e.getMessage();
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
-			e.printStackTrace();
 			return "[Error] " + e.getMessage();
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage() + "what");
-			e.printStackTrace();
 			return "[Error] " + e.getMessage();
 		}
-
-		long time = System.currentTimeMillis() - mStart;
-		mTotalTime += time;
-		Log.i(TAG, "TIME = " + time + " millisecs");
 
 		Log.i(TAG, "doHTTPGet Response: " + responseString);
 		return responseString;
@@ -939,34 +863,25 @@ public class Communicator {
 		for (Field field : fields) {
 			if (!Modifier.isFinal(field.getModifiers())) {
 				String key = field.getName();
-				methodName = "get" + key.substring(0, 1).toUpperCase()
-						+ key.substring(1);
+				methodName = "get" + key.substring(0, 1).toUpperCase() + key.substring(1);
 				value = "";
 
 				try {
-					Class returnType = find.getClass()
-							.getDeclaredMethod(methodName, null)
-							.getReturnType();
+					Class returnType = find.getClass().getDeclaredMethod(methodName, null).getReturnType();
 					if (returnType.equals(String.class))
-						value = (String) find.getClass()
-								.getDeclaredMethod(methodName, null)
+						value = (String) find.getClass().getDeclaredMethod(methodName, null)
 								.invoke(find, (Object[]) null);
 
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.e(TAG, e + ": " + e.getMessage());
 				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.e(TAG, e + ": " + e.getMessage());
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.e(TAG, e + ": " + e.getMessage());
 				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.e(TAG, e + ": " + e.getMessage());
 				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.e(TAG, e + ": " + e.getMessage());
 				}
 				nvp.add(new BasicNameValuePair(key, value));
 			}

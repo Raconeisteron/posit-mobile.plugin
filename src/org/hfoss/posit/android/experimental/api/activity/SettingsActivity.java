@@ -286,8 +286,10 @@ public class SettingsActivity extends PreferenceActivity implements
 		sp.registerOnSharedPreferenceChangeListener(this);
 
 		controlSettingsVisibility(sp);
-
-		// this.findPreference("testpositpref").setOnPreferenceClickListener(this);
+		
+		PreferenceManager manager = this.getPreferenceManager();
+		Preference p = manager.findPreference(getString(R.string.projectNamePref));
+		p.setSummary(sp.getString(getString(R.string.projectNamePref), "None"));
 	}
 
 	/**
