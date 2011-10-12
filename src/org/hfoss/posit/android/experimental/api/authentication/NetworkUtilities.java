@@ -171,8 +171,6 @@ final public class NetworkUtilities {
 		try {
 			resp = mHttpClient.execute(post);
 			JSONObject json = null;
-			//Log.i(TAG, "JSONNNNNN: " + convertStreamToString(resp.getEntity()
-			//		.getContent()));
 			// Parsing our JSON from our server..
 			json = new JSONObject(convertStreamToString(resp.getEntity()
 					.getContent()));
@@ -231,6 +229,8 @@ final public class NetworkUtilities {
 	 * 
 	 * @param result
 	 *            The boolean holding authentication result
+	 * @param authToken
+	 * 			  The auth token returned from the server for this account.
 	 * @param handler
 	 *            The main UI thread's handler instance.
 	 * @param context

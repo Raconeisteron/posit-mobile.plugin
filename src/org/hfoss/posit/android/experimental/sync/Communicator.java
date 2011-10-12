@@ -55,7 +55,10 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.hfoss.posit.android.experimental.api.Find;
+import org.hfoss.posit.android.experimental.api.authentication.AuthenticatorActivity;
+import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
+import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -72,11 +75,18 @@ import org.json.JSONObject;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 
@@ -108,14 +118,15 @@ public class Communicator {
 	private static int projectId;
 
 	private static String TAG = "Communicator";
-	private String responseString;
-	private Context mContext;
+	private static String responseString;
+	private static Context mContext;
 	private SharedPreferences applicationPreferences;
-	private HttpParams mHttpParams;
-	private HttpClient mHttpClient;
-	private ThreadSafeClientConnManager mConnectionManager;
+	private static HttpParams mHttpParams;
+	private static HttpClient mHttpClient;
+	private static ThreadSafeClientConnManager mConnectionManager;
 	public static long mTotalTime = 0;
-	private long mStart = 0;
+	private static long mStart = 0;
+	private static AccountManager mAccountManager;
 
 	public Communicator(Context _context) {
 		mContext = _context;
@@ -142,8 +153,9 @@ public class Communicator {
 				false);
 		applicationPreferences = PreferenceManager
 				.getDefaultSharedPreferences(mContext);
-		
-		
+
+		mAccountManager = AccountManager.get(mContext);
+
 		setApplicationAttributes(
 				applicationPreferences.getString("AUTHKEY", ""),
 				applicationPreferences.getString("SERVER_ADDRESS", server),
@@ -154,13 +166,64 @@ public class Communicator {
 
 	}
 
+	private static void setUpHttpConnection() {
+		mHttpParams = new BasicHttpParams();
+
+		// Set the timeout in milliseconds until a connection is established.
+		HttpConnectionParams.setConnectionTimeout(mHttpParams,
+				CONNECTION_TIMEOUT);
+
+		// Set the default socket timeout (SO_TIMEOUT)
+		// in milliseconds which is the timeout for waiting for data.
+		HttpConnectionParams.setSoTimeout(mHttpParams, SOCKET_TIMEOUT);
+
+		SchemeRegistry registry = new SchemeRegistry();
+		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
+		mConnectionManager = new ThreadSafeClientConnManager(mHttpParams,
+				registry);
+		mHttpClient = new DefaultHttpClient(mConnectionManager, mHttpParams);
+	}
+
 	private void setApplicationAttributes(String aKey, String serverAddress,
 			int projId) {
-		//authKey = aKey;
-		authKey = "0oLpT4uDrNqo5USv";
-		//server = serverAddress;
+		// authKey = aKey;
+		// server = serverAddress; TODO: Add setting for this
+		authKey = "ibDTqweXkvZM9kEO";
 		server = "http://www.posit-project.org/sandbox";
 		projectId = projId;
+	}
+
+	/**
+	 * Attempts to get the auth token. Apparently this might have to perform a
+	 * network request, so you're supposed to use a thread.
+	 */
+	public static Thread getAuthToken() {
+
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				// TODO: again just picking the first account here.. how are you
+				// supposed to handle this?
+				Account[] accounts = mAccountManager
+						.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
+				try {
+					authKey = mAccountManager
+							.blockingGetAuthToken(accounts[0],
+									SyncAdapter.AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
+					Log.i(TAG, "AUTH TOKEN: " + authKey);
+				} catch (OperationCanceledException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (AuthenticatorException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		// run on background thread.
+		return performOnBackgroundThread(runnable);
 	}
 
 	/**
@@ -173,17 +236,18 @@ public class Communicator {
 	 * @return a list of all the projects and their information, encoded as maps
 	 * @throws JSONException
 	 */
-	public ArrayList<HashMap<String, Object>> getProjects() {
-		Log.i(TAG, "authkey=" + authKey);
-		if (authKey.equals("")) {
-			Log.e(TAG, "getProjects() authKey == ");
-			Toast.makeText(
-					mContext,
-					"Aborting Communicator:\nPhone does not have a valid authKey."
-							+ "\nUse settings menu to register phone.",
-					Toast.LENGTH_LONG).show();
-			return null;
-		}
+	public static ArrayList<HashMap<String, Object>> getProjects(Handler handler, Context context) {
+		// if (authKey.equals("")) {
+		// Log.e(TAG, "getProjects() authKey == ");
+		// Toast.makeText(
+		// mContext,
+		// "Aborting Communicator:\nPhone does not have a valid authKey."
+		// + "\nUse settings menu to register phone.",
+		// Toast.LENGTH_LONG).show();
+		// return null;
+		// }
+		server = "http://www.posit-project.org/sandbox";
+		authKey = "ibDTqweXkvZM9kEO";
 		String url = server + "/api/listMyProjects?authKey=" + authKey;
 		ArrayList<HashMap<String, Object>> list;
 		responseString = doHTTPGET(url);
@@ -199,96 +263,205 @@ public class Communicator {
 			Log.i(TAG, "getProjects JSON exception " + e1.getMessage());
 			return null;
 		}
+		sendProjectsResult(list, true, handler, context);
 		return list;
 	}
 
-	//
-	// /**
-	// * Registers the phone being used with the given server address, the
-	// * authentication key, and the phone's imei
-	// *
-	// * @param server
-	// * @param authKey
-	// * @param imei
-	// * @return whether the registration was successful
-	// */
-	// public String registerDevice(String server, String authKey, String imei)
-	// {
-	// // server = "http://192.168.1.105/posit";
-	// String url = server + "/api/registerDevice?authKey=" + authKey
-	// + "&imei=" + imei;
-	// Log.i(TAG, "registerDevice URL=" + url);
-	//
-	// try {
-	// responseString = doHTTPGET(url);
-	// } catch (Exception e) {
-	// Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
-	// }
-	// Log.i(TAG, responseString);
-	// if (responseString.equals(RESULT_FAIL))
-	// return null;
-	// else {
-	// return responseString;
-	// }
-	// }
-	//
-	// /**
-	// * Registers the phone being used with the given server address, email,
-	// * password and imei.
-	// *
-	// * @param server
-	// * @param authKey
-	// * @param imei
-	// * @return authentication key if successful and null if unsuccessful
-	// * @throws JSONException
-	// */
-	// public String loginUser(String server, String email, String password,
-	// String imei) {
-	// String url = server + "/api/login";
-	//
-	// HashMap<String, Object> responseMap = null;
-	// Log.i(TAG, "loginUser URL=" + url);
-	// HashMap<String, String> sendMap = new HashMap<String, String>();
-	// sendMap.put("email", email);
-	// sendMap.put("password", password);
-	// sendMap.put("imei", imei);
-	// try {
-	// responseString = doHTTPPost(url, sendMap);
-	// Log.i(TAG, "longinUser response = " + responseString);
-	// if (responseString.contains("[Error] ")) {
-	// Toast.makeText(mContext, responseString, Toast.LENGTH_LONG)
-	// .show();
-	// return Constants.AUTHN_FAILED + ":" + responseString;
-	// } else {
-	// ResponseParser parser = new ResponseParser(responseString);
-	// responseMap = parser.parseObject();
-	// }
-	// } catch (Exception e) {
-	// Log.i(TAG, "longinUser catch clause response = " + responseString);
-	// Toast.makeText(mContext, e.getMessage() + "", Toast.LENGTH_LONG)
-	// .show();
-	// // return Constants.AUTHN_FAILED+":"+e.getMessage();
-	// return Constants.AUTHN_FAILED + ":" + responseString;
-	// }
-	// try {
-	// if (responseMap.containsKey(ERROR_CODE))
-	// return responseMap.get(ERROR_CODE) + ":"
-	// + responseMap.get(ERROR_MESSAGE);
-	// else if (responseMap.containsKey(MESSAGE_CODE)) {
-	// if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
-	// return Constants.AUTHN_OK + ":" + responseMap.get(MESSAGE);
-	//
-	// }
-	// } else {
-	// return Constants.AUTHN_FAILED + ":" + "repsonseMap = "
-	// + responseMap.toString(); // "Malformed message from server.";
-	// }
-	// } catch (Exception e) {
-	// Log.e(TAG, "loginUser " + e.getMessage() + " ");
-	// return Constants.AUTHN_FAILED + ": " + e.getMessage();
-	// }
-	// return null;
-	// }
+	/**
+	 * Registers the phone being used with the given server address, the
+	 * authentication key, and the phone's imei
+	 * 
+	 * @param server
+	 * @param authKey
+	 * @param imei
+	 * @return whether the registration was successful
+	 */
+	public String registerDevice(String server, String authKey, String imei) {
+		String url = server + "/api/registerDevice?authKey=" + authKey
+				+ "&imei=" + imei;
+		Log.i(TAG, "registerDevice URL=" + url);
+
+		try {
+			responseString = doHTTPGET(url);
+		} catch (Exception e) {
+			Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+		}
+		Log.i(TAG, responseString);
+		if (responseString.equals(RESULT_FAIL))
+			return null;
+		else {
+			return responseString;
+		}
+	}
+
+	/**
+	 * Registers the phone being used with the given server address, email,
+	 * password and imei.
+	 * 
+	 * @param server
+	 * @param authKey
+	 * @param imei
+	 * @return the result
+	 * @throws JSONException
+	 */
+	public static boolean loginUser(String email, String password, String imei) {
+		String url = server + "/api/login";
+
+		HashMap<String, Object> responseMap = null;
+		Log.i(TAG, "loginUser URL=" + url);
+
+		// HashMap<String, String> sendMap = new HashMap<String, String>();
+		// sendMap.put("email", email);
+		// sendMap.put("password", password);
+		// sendMap.put("imei", imei);
+
+		List<NameValuePair> sendList = new ArrayList<NameValuePair>();
+		sendList.add(new BasicNameValuePair("email", email));
+		sendList.add(new BasicNameValuePair("password", password));
+		sendList.add(new BasicNameValuePair("imei", imei));
+
+		try {
+			responseString = doHTTPPost(url, sendList);
+			Log.i(TAG, "longinUser response = " + responseString);
+			if (responseString.contains("[Error] ")) {
+				Log.e(TAG, responseString);
+				return false;
+			} else {
+				ResponseParser parser = new ResponseParser(responseString);
+				responseMap = parser.parseObject();
+			}
+		} catch (Exception e) {
+			Log.i(TAG, "longinUser catch clause response = " + responseString);
+			Toast.makeText(mContext, e.getMessage() + "", Toast.LENGTH_LONG)
+					.show();
+			// return Constants.AUTHN_FAILED+":"+e.getMessage();
+			return false;
+		}
+		try {
+			if (responseMap.containsKey(ERROR_CODE))
+				// return responseMap.get(ERROR_CODE) + ":"
+				// + responseMap.get(ERROR_MESSAGE);
+				return false;
+			else if (responseMap.containsKey(MESSAGE_CODE)) {
+				if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
+					// return Constants.AUTHN_OK + ":" +
+					// responseMap.get(MESSAGE);
+					return true;
+
+				}
+			} else {
+				// return Constants.AUTHN_FAILED + ":" + "repsonseMap = "
+				// + responseMap.toString(); //
+				// "Malformed message from server.";
+				return false;
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "loginUser " + e.getMessage() + " ");
+			// return Constants.AUTHN_FAILED + ": " + e.getMessage();
+			return false;
+		}
+		return false;
+	}
+
+	/**
+	 * Attempts to authenticate the user credentials on the server.
+	 * 
+	 * @param username
+	 *            The user's username
+	 * @param password
+	 *            The user's password to be authenticated
+	 * @param handler
+	 *            The main UI thread's handler instance.
+	 * @param context
+	 *            The caller Activity's context
+	 * @return Thread The thread on which the network mOperations are executed.
+	 */
+	public static Thread attemptAuth(final String email, final String password,
+			final String imei) {
+
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				loginUser(email, password, imei);
+			}
+		};
+		// run on background thread.
+		return performOnBackgroundThread(runnable);
+	}
+
+	/**
+	 * Attempts to authenticate the user credentials on the server.
+	 * 
+	 * @param username
+	 *            The user's username
+	 * @param password
+	 *            The user's password to be authenticated
+	 * @param handler
+	 *            The main UI thread's handler instance.
+	 * @param context
+	 *            The caller Activity's context
+	 * @return Thread The thread on which the network mOperations are executed.
+	 */
+	public static Thread attemptGetProjects(final Handler handler, final Context context) {
+
+		final Runnable runnable = new Runnable() {
+			ArrayList<HashMap<String, Object>> projectList;
+
+			public void run() {
+				projectList = getProjects(handler, context);
+			}
+		};
+		// run on background thread.
+		return performOnBackgroundThread(runnable);
+	}
+
+	/**
+	 * Executes the network requests on a separate thread.
+	 * 
+	 * @param runnable
+	 *            The runnable instance containing network mOperations to be
+	 *            executed.
+	 */
+	public static Thread performOnBackgroundThread(final Runnable runnable) {
+		final Thread t = new Thread() {
+			@Override
+			public void run() {
+				try {
+					runnable.run();
+				} finally {
+				}
+			}
+		};
+		t.start();
+		return t;
+	}
+
+	/**
+	 * Sends the authentication response from server back to the caller main UI
+	 * thread through its handler.
+	 * 
+	 * @param result
+	 *            The boolean holding authentication result
+	 * @param authToken
+	 *            The auth token returned from the server for this account.
+	 * @param handler
+	 *            The main UI thread's handler instance.
+	 * @param context
+	 *            The caller Activity's context.
+	 */
+	private static void sendProjectsResult(
+			final ArrayList<HashMap<String, Object>> projects,
+			final Boolean result, final Handler handler, final Context context) {
+		if (handler == null || context == null) {
+			return;
+		}
+		handler.post(new Runnable() {
+			public void run() {
+				((ListProjectsActivity) context).onShowProjectsResult(projects,
+						result);
+			}
+		});
+	}
+
 	//
 	// public String createProject(String server, String projectName,
 	// String projectDescription, String authKey) {
@@ -431,8 +604,8 @@ public class Communicator {
 					+ success);
 		}
 
-		//if (!success)
-		//	return false;
+		// if (!success)
+		// return false;
 
 		// // Otherwise send the Find's images
 		//
@@ -582,7 +755,8 @@ public class Communicator {
 	 *            the hashMap of data to send to the server as POST data
 	 * @return the response from the URL
 	 */
-	private String doHTTPPost(String Uri, List<NameValuePair> pairs) {
+	private static String doHTTPPost(String Uri, List<NameValuePair> pairs) {
+		setUpHttpConnection();
 		long startTime = System.currentTimeMillis();
 		if (Uri == null)
 			throw new NullPointerException("The URL has to be passed");
@@ -660,7 +834,8 @@ public class Communicator {
 	 * @param Uri
 	 * @return the request from the remote server
 	 */
-	public String doHTTPGET(String Uri) {
+	public static String doHTTPGET(String Uri) {
+		setUpHttpConnection();
 		if (Uri == null)
 			throw new NullPointerException("The URL has to be passed");
 		String responseString = null;
@@ -694,7 +869,7 @@ public class Communicator {
 			e.printStackTrace();
 			return "[Error] " + e.getMessage();
 		} catch (Exception e) {
-			Log.e(TAG, e.getMessage());
+			Log.e(TAG, e.getMessage() + "what");
 			e.printStackTrace();
 			return "[Error] " + e.getMessage();
 		}
@@ -708,7 +883,9 @@ public class Communicator {
 	}
 
 	public static List<NameValuePair> getNameValuePairs(Find find) {
-		Field[] fields = find.getClass().getDeclaredFields(); // May not get methods in superclass?
+		Field[] fields = find.getClass().getDeclaredFields(); // May not get
+																// methods in
+																// superclass?
 
 		List<NameValuePair> nvp = new ArrayList<NameValuePair>();
 		String methodName = "";
