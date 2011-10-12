@@ -27,7 +27,6 @@ public class OutsideInFindActivity extends FindActivity {
 		Log.i(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
 
-
 	}
 
 	@Override
@@ -38,13 +37,25 @@ public class OutsideInFindActivity extends FindActivity {
 	@Override
 	protected Find retrieveContentFromView() {
 		OutsideInFind find =  (OutsideInFind)super.retrieveContentFromView();
-	
+		String value; //used to get the string from the textbox
+		
 		EditText eText = (EditText) findViewById(R.id.syringesInEditText);
-		String value = eText.getText().toString();
+		//If no value is supplied, set it to 0.
+		if(eText.getText().toString().equals("")){
+			value = "0";
+		}
+		else{
+			value = eText.getText().toString();
+		}
 		find.setSyringesIn(Integer.parseInt(value));
 
 		eText = (EditText) findViewById(R.id.syringesOutEditText);
-		value = eText.getText().toString();
+		if(eText.getText().toString().equals("")){
+			value = "0";
+		}
+		else{
+			value = eText.getText().toString();
+		}
 		find.setSyringesOut(Integer.parseInt(value));
 
 		CheckBox checkBox = (CheckBox) findViewById(R.id.isNewCheckBox);
