@@ -162,7 +162,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             showProgress();
             // Start authenticating...
             mAuthThread =
-                Communicator.attemptAuth(mUsername, mPassword, imei);
+                Communicator.attemptAuth(mUsername, mPassword, imei, mHandler, this);
         }
     }
 
@@ -194,7 +194,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
      * 
      * @param the confirmCredentials result.
      */
-    private void finishLogin() {
+    private void finishLogin(String authKey) {
 
         Log.i(TAG, "finishLogin()");
         final Account account = new Account(mUsername, SyncAdapter.ACCOUNT_TYPE);
@@ -206,7 +206,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             mAccountManager.setPassword(account, mPassword);
         }
         final Intent intent = new Intent();
-        mAuthtoken = mPassword;
+        mAuthtoken = authKey;
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE,SyncAdapter.ACCOUNT_TYPE);
         if (mAuthtokenType != null && mAuthtokenType.equals(SyncAdapter.AUTHTOKEN_TYPE)) {
@@ -227,14 +227,14 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     /**
      * Called when the authentication process completes (see attemptLogin()).
      */
-    public void onAuthenticationResult(boolean result) {
+    public void onAuthenticationResult(boolean result, String authKey) {
 
         Log.i(TAG, "onAuthenticationResult(" + result + ")");
         // Hide the progress dialog
         hideProgress();
         if (result) {
             if (!mConfirmCredentials) {
-                finishLogin();
+                finishLogin(authKey);
             } else {
                 finishConfirmCredentials(true);
             }
@@ -242,12 +242,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             Log.e(TAG, "onAuthenticationResult: failed to authenticate");
             if (mRequestNewAccount) {
                 // "Please enter a valid username/password.
-                mMessage.setText("Please enter a valid username passwort");
+                mMessage.setText(getString(R.string.authFailed));
             } else {
                 // "Please enter a valid password." (Used when the
                 // account is already in the database but the password
                 // doesn't work.)
-                mMessage.setText("Plz enter a valid password (yeah change thisss)");
+                mMessage.setText(getString(R.string.authFailed));
             }
         }
     }
@@ -259,12 +259,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         if (TextUtils.isEmpty(mUsername)) {
             // If no username, then we ask the user to log in using an
             // appropriate service.
-            final CharSequence msg = "WHAT?";
+            final CharSequence msg = getString(R.string.missingUsername);
             return msg;
         }
         if (TextUtils.isEmpty(mPassword)) {
             // We have an account but no password
-            return "I dont know";
+            return getString(R.string.missingPassword);
         }
         return null;
     }

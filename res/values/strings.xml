@@ -6,7 +6,7 @@
 <!-- 	<string name="open_helper_classname">org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInDbManager</string> -->
 	<string name="open_helper_classname">org.hfoss.posit.android.experimental.api.database.DbManager</string>
 		
-	<string name="defaultServer">http://turing.cs.trincoll.edu/~ram/positweb</string>
+	<string name="defaultServer">http://www.posit-project.org/sandbox</string>
 
 	<string name="addFind">Add find</string>
 	<string name="viewFinds">View finds</string>
@@ -314,7 +314,17 @@
 	<!-- Authentication -->
 	<string name="accountType">org.hfoss.posit.account</string>
 	<string name="contentAuthority">org.hfoss.posit</string>
+	
+	<string name="missingUsername">Please type a username.</string>
+	<string name="missingPassword">Please type a password.</string>
+	<string name="authFailed">Please enter a valid username and password.</string>
+	<string name="username">Username</string>
+	<string name="password">Password</string>
+	<string name="okay">Okay</string>
+	
 	<!-- Preferences -->
+	
+	<string name="serverPref">serverKey</string>
 	
 	<string name="projectPref">projectKey</string>
 	<string name="projectNamePref">projectNameKey</string>

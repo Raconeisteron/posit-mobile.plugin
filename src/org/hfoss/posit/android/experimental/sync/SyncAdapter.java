@@ -76,21 +76,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         List<Find> finds;
         Log.i(TAG, "In onPerformSync() wowowpw");
-        String authtoken = null;
+        String authToken = null;
         try {
             // use the account manager to request the credentials
         	// TODO: This is not the correct auth token.  Its just the password.
         	// We want it to use the auth token that the server generates for us.
-            authtoken =
+            authToken =
                 mAccountManager
                     .blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
             // fetch updates from the sample service over the cloud
             //users = NetworkUtilities.fetchFriendUpdates(account, authtoken, mLastUpdated);
             // update the last synced date.
-            Log.i(TAG, "auth token: "+ authtoken);
+            Log.i(TAG, "auth token: "+ authToken);
             mLastUpdated = new Date();
             Find find = DbHelper.getDbManager(mContext).getFindById(1);
-            communicator.sendFind(find,"create");
+            communicator.sendFind(find,"create", mContext, authToken);
             // update platform contacts.
 //            Log.d(TAG, "Calling contactManager's sync contacts");
 //            ContactManager.syncContacts(mContext, account.name, users);

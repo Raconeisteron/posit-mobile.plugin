@@ -104,6 +104,9 @@ public class Communicator {
 	private static final String COLUMN_IMEI = "imei";
 	public static final int CONNECTION_TIMEOUT = 3000; // millisecs
 	public static final int SOCKET_TIMEOUT = 5000;
+	
+	private static final String SERVER_PREF = "serverKey";
+	private static final String PROJECT_PREF = "projectKey";
 
 	/*
 	 * You should be careful with putting names for server. DO NOT always trust
@@ -111,7 +114,7 @@ public class Communicator {
 	 */
 
 	public static final String RESULT_FAIL = "false";
-	private static String server;
+	//private static String server;
 	private static String authKey;
 	private static String imei;
 
@@ -120,7 +123,7 @@ public class Communicator {
 	private static String TAG = "Communicator";
 	private static String responseString;
 	private static Context mContext;
-	private SharedPreferences applicationPreferences;
+	private static SharedPreferences applicationPreferences;
 	private static HttpParams mHttpParams;
 	private static HttpClient mHttpClient;
 	private static ThreadSafeClientConnManager mConnectionManager;
@@ -156,15 +159,16 @@ public class Communicator {
 
 		mAccountManager = AccountManager.get(mContext);
 
-		setApplicationAttributes(
-				applicationPreferences.getString("AUTHKEY", ""),
-				applicationPreferences.getString("SERVER_ADDRESS", server),
-				applicationPreferences.getInt("PROJECT_ID", projectId));
+		//setApplicationAttributes(
+		//		applicationPreferences.getString("AUTHKEY", ""),
+		//		applicationPreferences.getString("SERVER_ADDRESS", server),
+		//		applicationPreferences.getInt("PROJECT_ID", projectId));
 		TelephonyManager manager = (TelephonyManager) mContext
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		imei = manager.getDeviceId();
 
 	}
+
 
 	private static void setUpHttpConnection() {
 		mHttpParams = new BasicHttpParams();
@@ -189,7 +193,7 @@ public class Communicator {
 		// authKey = aKey;
 		// server = serverAddress; TODO: Add setting for this
 		authKey = "ibDTqweXkvZM9kEO";
-		server = "http://www.posit-project.org/sandbox";
+		//server = "http://www.posit-project.org/sandbox";
 		projectId = projId;
 	}
 
@@ -236,7 +240,8 @@ public class Communicator {
 	 * @return a list of all the projects and their information, encoded as maps
 	 * @throws JSONException
 	 */
-	public static ArrayList<HashMap<String, Object>> getProjects(Handler handler, Context context) {
+	public static ArrayList<HashMap<String, Object>> getProjects(
+			Handler handler, Context context) {
 		// if (authKey.equals("")) {
 		// Log.e(TAG, "getProjects() authKey == ");
 		// Toast.makeText(
@@ -246,9 +251,13 @@ public class Communicator {
 		// Toast.LENGTH_LONG).show();
 		// return null;
 		// }
-		server = "http://www.posit-project.org/sandbox";
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = prefs.getString(SERVER_PREF, "");
+		
 		authKey = "ibDTqweXkvZM9kEO";
+		
 		String url = server + "/api/listMyProjects?authKey=" + authKey;
+		
 		ArrayList<HashMap<String, Object>> list;
 		responseString = doHTTPGET(url);
 		Log.i(TAG, responseString);
@@ -304,16 +313,16 @@ public class Communicator {
 	 * @return the result
 	 * @throws JSONException
 	 */
-	public static boolean loginUser(String email, String password, String imei) {
+	public static String loginUser(String email, String password, String imei,
+			Handler handler, Context context) {
+		
+		applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = applicationPreferences.getString(SERVER_PREF, "");
+		
 		String url = server + "/api/login";
 
 		HashMap<String, Object> responseMap = null;
 		Log.i(TAG, "loginUser URL=" + url);
-
-		// HashMap<String, String> sendMap = new HashMap<String, String>();
-		// sendMap.put("email", email);
-		// sendMap.put("password", password);
-		// sendMap.put("imei", imei);
 
 		List<NameValuePair> sendList = new ArrayList<NameValuePair>();
 		sendList.add(new BasicNameValuePair("email", email));
@@ -325,42 +334,48 @@ public class Communicator {
 			Log.i(TAG, "longinUser response = " + responseString);
 			if (responseString.contains("[Error] ")) {
 				Log.e(TAG, responseString);
-				return false;
+				return null;
 			} else {
 				ResponseParser parser = new ResponseParser(responseString);
 				responseMap = parser.parseObject();
+				authKey = (String) responseMap.get(MESSAGE);
 			}
 		} catch (Exception e) {
 			Log.i(TAG, "longinUser catch clause response = " + responseString);
 			Toast.makeText(mContext, e.getMessage() + "", Toast.LENGTH_LONG)
 					.show();
+			sendAuthenticationResult(authKey, false, handler, context);
 			// return Constants.AUTHN_FAILED+":"+e.getMessage();
-			return false;
+			return null;
 		}
 		try {
-			if (responseMap.containsKey(ERROR_CODE))
+			if (responseMap.containsKey(ERROR_CODE)) {
 				// return responseMap.get(ERROR_CODE) + ":"
 				// + responseMap.get(ERROR_MESSAGE);
-				return false;
-			else if (responseMap.containsKey(MESSAGE_CODE)) {
+				sendAuthenticationResult(authKey, false, handler, context);
+				return null;
+			} else if (responseMap.containsKey(MESSAGE_CODE)) {
 				if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
 					// return Constants.AUTHN_OK + ":" +
 					// responseMap.get(MESSAGE);
-					return true;
-
+					sendAuthenticationResult(authKey, true, handler, context);
+					return authKey;
 				}
 			} else {
 				// return Constants.AUTHN_FAILED + ":" + "repsonseMap = "
 				// + responseMap.toString(); //
 				// "Malformed message from server.";
-				return false;
+				sendAuthenticationResult(authKey, false, handler, context);
+				return null;
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "loginUser " + e.getMessage() + " ");
 			// return Constants.AUTHN_FAILED + ": " + e.getMessage();
-			return false;
+			sendAuthenticationResult(authKey, false, handler, context);
+			return null;
 		}
-		return false;
+		sendAuthenticationResult(authKey, false, handler, context);
+		return null;
 	}
 
 	/**
@@ -377,11 +392,11 @@ public class Communicator {
 	 * @return Thread The thread on which the network mOperations are executed.
 	 */
 	public static Thread attemptAuth(final String email, final String password,
-			final String imei) {
+			final String imei, final Handler handler, final Context context) {
 
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				loginUser(email, password, imei);
+				loginUser(email, password, imei, handler, context);
 			}
 		};
 		// run on background thread.
@@ -401,7 +416,8 @@ public class Communicator {
 	 *            The caller Activity's context
 	 * @return Thread The thread on which the network mOperations are executed.
 	 */
-	public static Thread attemptGetProjects(final Handler handler, final Context context) {
+	public static Thread attemptGetProjects(final Handler handler,
+			final Context context) {
 
 		final Runnable runnable = new Runnable() {
 			ArrayList<HashMap<String, Object>> projectList;
@@ -436,8 +452,8 @@ public class Communicator {
 	}
 
 	/**
-	 * Sends the authentication response from server back to the caller main UI
-	 * thread through its handler.
+	 * Sends the result of a getProjects request from server back to the caller
+	 * main UI thread through its handler.
 	 * 
 	 * @param result
 	 *            The boolean holding authentication result
@@ -458,6 +474,32 @@ public class Communicator {
 			public void run() {
 				((ListProjectsActivity) context).onShowProjectsResult(projects,
 						result);
+			}
+		});
+	}
+
+	/**
+	 * Sends the authentication response from server back to the caller main UI
+	 * thread through its handler.
+	 * 
+	 * @param result
+	 *            The boolean holding authentication result
+	 * @param authToken
+	 *            The auth token returned from the server for this account.
+	 * @param handler
+	 *            The main UI thread's handler instance.
+	 * @param context
+	 *            The caller Activity's context.
+	 */
+	private static void sendAuthenticationResult(final String authKey,
+			final Boolean result, final Handler handler, final Context context) {
+		if (handler == null || context == null) {
+			return;
+		}
+		handler.post(new Runnable() {
+			public void run() {
+				((AuthenticatorActivity) context).onAuthenticationResult(
+						result, authKey);
 			}
 		});
 	}
@@ -552,7 +594,7 @@ public class Communicator {
 	 * 
 	 * @param action -- either 'create' or 'update'
 	 */
-	public boolean sendFind(Find find, String action) {
+	public boolean sendFind(Find find, String action, Context context, String authToken) {
 		boolean success = false;
 		String url;
 		// HashMap<String, String> sendMap = find.getContentMapGuid();
@@ -563,10 +605,13 @@ public class Communicator {
 
 		// Create the url
 
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = prefs.getString(SERVER_PREF, "");
+		
 		if (action.equals("create")) {
-			url = server + "/api/createFind?authKey=" + authKey;
+			url = server + "/api/createFind?authKey=" + authToken;
 		} else {
-			url = server + "/api/updateFind?authKey=" + authKey;
+			url = server + "/api/updateFind?authKey=" + authToken;
 		}
 
 		Log.i(TAG, "SendFind=" + find);
