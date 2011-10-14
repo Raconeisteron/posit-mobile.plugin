@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -55,6 +56,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.hfoss.posit.android.experimental.api.Find;
+import org.hfoss.posit.android.experimental.api.FindHistory;
 import org.hfoss.posit.android.experimental.api.authentication.AuthenticatorActivity;
 //import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
@@ -519,6 +521,35 @@ public class Communicator {
 	// return null;
 	// }
 
+	/**
+	 * Returns a list of guIds for server finds that need syncing.
+	 * 
+	 * @return
+	 */
+	public static String getServerFindsNeedingSync(Context context, String authKey) {
+		String response = "";
+		String url = "";
+
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = prefs.getString(SERVER_PREF, "");
+		int projectId = prefs.getInt(PROJECT_PREF, 0);
+
+		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei = telephonyManager.getDeviceId();
+
+		url = server + "/api/getDeltaFindsIds?authKey=" + authKey + "&imei=" + imei + "&projectId=" + projectId;
+		Log.i(TAG, "getDeltaFindsIds URL=" + url);
+
+		try {
+			response = doHTTPGET(url);
+		} catch (Exception e) {
+			Log.i(TAG, e.getMessage());
+		}
+		Log.i(TAG, "serverFindsNeedingSync = " + response);
+
+		return response;
+	}
+
 	/*
 	 * TODO: This method is a little long and could be split up. Send one find
 	 * to the server, including its images.
@@ -527,13 +558,21 @@ public class Communicator {
 	 * 
 	 * @param action -- either 'create' or 'update'
 	 */
-	public static boolean sendFind(Find find, String action, Context context, String authToken) {
-		String url;
+	public static boolean sendFind(Find find, Context context, String authToken) {
+		String url = "";
+		boolean success = false;
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = prefs.getString(SERVER_PREF, "");
 
-		url = server + "/api/createFind?authKey=" + authToken;
+		if (find.getAction().equals(FindHistory.ACTION_CREATE))
+			url = server + "/api/createFind?authKey=" + authToken;
+		else if (find.getAction().equals(FindHistory.ACTION_UPDATE))
+			url = server + "/api/updateFind?authKey=" + authToken;
+		else {
+			Log.e(TAG, "Find object does not contain an appropriate action: " + find);
+			return false;
+		}
 
 		Log.i(TAG, "SendFind=" + find);
 
@@ -556,6 +595,7 @@ public class Communicator {
 			Log.i(TAG, e.getMessage());
 			Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
 			DbHelper.getDbManager(context).updateStatus(find, Constants.FAILED);
+			success = false;
 		}
 
 		Log.i(TAG, "sendFind.ResponseString: " + responseString);
@@ -564,10 +604,11 @@ public class Communicator {
 		if (responseString.indexOf("True") == -1) {
 			Log.i(TAG, "sendFind result doesn't contain 'True'");
 			DbHelper.getDbManager(context).updateStatus(find, Constants.FAILED);
-			return false;
+			success = false;
 		} else {
 			DbHelper.getDbManager(context).updateStatus(find, Constants.SUCCEEDED);
 			Log.i(TAG, "sendFind() synced find id: " + find.getId());
+			success = true;
 		}
 
 		// if (!success)
@@ -613,7 +654,46 @@ public class Communicator {
 		// }
 
 		DbHelper.releaseDbManager();
-		return true;
+		return success;
+	}
+
+	/**
+	 * Sends finds to the server. Uses a Communicator.
+	 * 
+	 * @param phoneGuids
+	 * @return
+	 */
+	public static boolean sendFindsToServer(List<Find> finds, Context context, String authToken) {
+		boolean success = false;
+		// StringTokenizer st = new StringTokenizer(phoneGuids, ",");
+		// String str, guid, action;
+		// while (st.hasMoreElements()) {
+		// str = st.nextElement().toString();
+		// int indx = str.indexOf(':');
+		// guid = str.substring(0, indx);
+		// action = str.substring(indx + 1);
+
+		// Find find = new Find(mContext, guid); // Create a Find object
+		for (Find find : finds) {
+			try {
+				if (find.getAction().equals("delete"))
+					Log.i(TAG, "Ignoring deletions");
+				else {
+					Log.i(TAG, "sending Find=" + find);
+					success = sendFind(find, context, authToken);
+				}
+			} catch (Exception e) {
+				Log.i(TAG, e.toString());
+				e.printStackTrace();
+				success = false;
+				// mHandler.sendEmptyMessage(NETWORKERROR);
+			}
+			if (!success) {
+				// mHandler.sendEmptyMessage(SYNCERROR);
+			}
+		}
+
+		return success;
 	}
 
 	// /**
@@ -877,6 +957,9 @@ public class Communicator {
 								.invoke(find, (Object[]) null);
 					else if (returnType.equals(int.class))
 						value = String.valueOf((Integer) find.getClass().getDeclaredMethod(methodName, null)
+								.invoke(find, (Object[]) null));
+					else if (returnType.equals(double.class))
+						value = String.valueOf((Double) find.getClass().getDeclaredMethod(methodName, null)
 								.invoke(find, (Object[]) null));
 
 				} catch (IllegalArgumentException e) {

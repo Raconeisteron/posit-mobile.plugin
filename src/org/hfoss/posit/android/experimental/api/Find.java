@@ -42,6 +42,7 @@ public class Find implements FindInterface {
 	public static final String DELETED = "deleted";
 	
 	public static final String REVISION = "revision";
+	public static final String ACTION = "action";
 	
 	// For syncing.  Operation will store what operation is being performed
 	// on this record--posting, updating, deleting.  Status will
@@ -76,6 +77,8 @@ public class Find implements FindInterface {
 	
 	@DatabaseField(columnName = REVISION)
 	protected int revision;
+	@DatabaseField(columnName = ACTION)
+	protected String action;
 	
 	@DatabaseField(columnName = SYNC_OPERATION)
 	protected int syncOperation;
@@ -243,121 +246,22 @@ public class Find implements FindInterface {
 		return status;
 	}
 
-	/**
-	 * Inserts this find into the database.
-	 * 
-	 * @param dao
-	 *            the DAO object provided by the ORMLite helper class.
-	 * @return the number of rows inserted.
-	 */
-
-	public int insert(Dao<Find, Integer> dao) {
-		int rows = 0;
-		try {
-			rows = dao.create(this);
-			if (rows == 1)
-				Log.i(TAG, "Inserted find:  " + this.toString());
-			else {
-				Log.e(TAG, "Db Error inserting find: " + this.toString());
-				rows = 0;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return rows;
-	}
-
-	/**
-	 * Updates this find in the database with the given values.
-	 * 
-	 * @param dao
-	 *            the DAO provided by the ORMLite helper class.
-	 * @param values
-	 *            a ContentValues object containing all of the values to update.
-	 * @return the number of rows updated.
-	 */
-	public int update(Dao<Find, Integer> dao) {
-		int rows = 0;
-		try {
-			//updateObject(values);
-			rows = dao.update(this);
-			if (rows == 1)
-				Log.i(TAG, "Updated find:  " + this.toString());
-			else {
-				Log.e(TAG, "Db Error updating find: " + this.toString());
-				rows = 0;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return rows;
-	}
-
-	/**
-	 * Deletes this find.
-	 * 
-	 * @param dao
-	 *            the DAO provided by the ORMLite helper class.
-	 * @return the number of rows deleted.
-	 */
-	public int delete(Dao<Find, Integer> dao) {
-		int rows = 0;
-		try {
-			rows = dao.delete(this);
-			if (rows == 1)
-				Log.i(TAG, "Deleted find:  " + this.toString());
-			else {
-				Log.e(TAG, "Db Error deleting find: " + this.toString());
-				rows = 0;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return rows;
-
-	}
-	
-	public int updateStatus(Dao<Find, Integer> dao, int status) {
-		int rows = 0;
-		try {
-			this.setStatus(status);
-			rows = dao.update(this);
-			if (rows == 1)
-				Log.i(TAG, "Updated find status:  " + this.toString());
-			else {
-				Log.e(TAG, "Db Error updating find: " + this.toString());
-				rows = 0;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return rows;
-	}
 
 	public void setStatus(int status) {
 		this.status = status;
-	}
-
-	public int updateSyncOperation(Dao <Find, Integer> dao, int operation) {
-		int rows = 0;
-		try {
-			this.setSyncOperation(operation);
-			rows = dao.update(this);
-			if (rows == 1)
-				Log.i(TAG, "Updated find sync operation:  " + this.toString());
-			else {
-				Log.e(TAG, "Db Error updating sync operation in find: " + this.toString());
-				rows = 0;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return rows;
 	}
 	
 	public void setSyncOperation(int syncOperation) {
 		this.syncOperation = syncOperation;
 		
+	}
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
 	}
 
 	public void sync(String protocol) {

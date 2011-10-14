@@ -22,32 +22,32 @@ public interface FindInterface {
 	 */
 	public String getGuid();
 	
-	/**
-	 * Inserts this Find object into the DB, including its data.
-	 * Call delete() to delete this Find.
-	 * @return the row id or -1 if it was unsuccessful
-	 */
-	public int insert(Dao<Find, Integer> dao);
-	
-	/**
-	 * UPdates this Find object in the DB.
-	 * Call delete() to delete this Find.
-	 * @return the row id or -1 if it was unsuccessful
-	 */
-	public int update(Dao<Find, Integer> dao);
-
-	/**
-	 * Deletes this Find object form the DB, including its data
-	 * @return whether the DB operation was successful
-	 */
-	public int delete(Dao<Find, Integer> dao);
-	
-	/**
-	 * Syncs this Find object using the designated protocol.
-	 * @param protocol is a String, either SMS, HTTP
-	 * @return whether the DB operation was successful
-	 */
-	public void sync(String protocol);
+//	/**
+//	 * Inserts this Find object into the DB, including its data.
+//	 * Call delete() to delete this Find.
+//	 * @return the row id or -1 if it was unsuccessful
+//	 */
+//	public int insert(Dao<Find, Integer> dao);
+//	
+//	/**
+//	 * UPdates this Find object in the DB.
+//	 * Call delete() to delete this Find.
+//	 * @return the row id or -1 if it was unsuccessful
+//	 */
+//	public int update(Dao<Find, Integer> dao);
+//
+//	/**
+//	 * Deletes this Find object form the DB, including its data
+//	 * @return whether the DB operation was successful
+//	 */
+//	public int delete(Dao<Find, Integer> dao);
+//	
+//	/**
+//	 * Syncs this Find object using the designated protocol.
+//	 * @param protocol is a String, either SMS, HTTP
+//	 * @return whether the DB operation was successful
+//	 */
+//	public void sync(String protocol);
 
 	
 

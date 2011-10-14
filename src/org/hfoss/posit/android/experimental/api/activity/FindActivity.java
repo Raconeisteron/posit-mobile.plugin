@@ -362,10 +362,10 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		// SharedPref
 		// find.setProject_id()
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT))
-			rows = find.insert(this.getHelper().getFindDao());
+			rows = getHelper().insert(find);
 		else if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 			find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
-			rows = find.update(this.getHelper().getFindDao());
+			rows = getHelper().update(find);
 		} else
 			rows = 0; // Something wrong with intent
 		if (rows > 0) {
@@ -392,7 +392,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 
 		find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
-		rows = find.delete(this.getHelper().getFindDao());
+		rows = getHelper().delete(find);
 		return rows > 0;
 
 	}

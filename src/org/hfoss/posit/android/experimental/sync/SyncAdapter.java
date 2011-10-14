@@ -23,13 +23,18 @@ import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.apache.http.ParseException;
 import org.apache.http.auth.AuthenticationException;
+import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
+import org.hfoss.posit.android.experimental.api.FindHistory;
+import org.hfoss.posit.android.experimental.api.SyncHistory;
 //import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.json.JSONException;
@@ -74,30 +79,86 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
 			SyncResult syncResult) {
 
-		List<? extends Find> finds;
-		Log.i(TAG, "In onPerformSync() wowowpw");
+		List<Find> finds;
+		Log.i(TAG, "In onPerformSync()");
 		String authToken = null;
+		
 		try {
 			// use the account manager to request the credentials
-			// TODO: This is not the correct auth token. Its just the password.
-			// We want it to use the auth token that the server generates for
-			// us.
 			authToken = mAccountManager.blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
-			// fetch updates from the sample service over the cloud
-			// users = NetworkUtilities.fetchFriendUpdates(account, authtoken,
-			// mLastUpdated);
-			// update the last synced date.
 			Log.i(TAG, "auth token: " + authToken);
-			mLastUpdated = new Date();
-			finds = DbHelper.getDbManager(mContext).getAllFinds();
-			Communicator.sendFind(finds.get(0), "create", mContext, authToken);
-			// update platform contacts.
-			// Log.d(TAG, "Calling contactManager's sync contacts");
-			// ContactManager.syncContacts(mContext, account.name, users);
-			// // fetch and update status messages for all the synced users.
-			// statuses = NetworkUtilities.fetchFriendStatuses(account,
-			// authtoken);
-			// ContactManager.insertStatuses(mContext, account.name, statuses);
+
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+			int projectId = prefs.getInt(mContext.getString(R.string.projectPref), 0);
+			
+			finds = DbHelper.getDbManager(mContext).getChangedFinds(projectId);
+			Communicator.sendFindsToServer(finds, mContext, authToken);
+			DbHelper.getDbManager(mContext).recordSync(new SyncHistory("idkwhatthisissupposedtobe"));
+			
+			Log.i(TAG, "histories: " +finds);
+//			
+//			boolean success = false;
+//			//mdbh = new PositDbHelper(mContext);
+//
+//			//Log.i(TAG, "server=" + server + " key=" + authKey + " pid="
+//			//		+ mProjectId + " imei=" + imei);
+//
+//			// Wait here to make sure there is a WIFI connection
+//			//waitHere();
+//			
+//			// Check that project exists
+//			if(!comm.projectExists(""+mProjectId, server))
+//				mHandler.sendEmptyMessage(PROJECTERROR);
+//			
+//			// Get finds from the server since last sync with this device
+//			// (NEEDED: should be made project specific)
+//
+//			String serverFindGuIds = Communicator.getServerFindsNeedingSync(mContext, authToken);
+//
+//			// Get finds from the client
+//
+//			String phoneFindGuIds = mdbh.getDeltaFindsIds(mProjectId);
+//			Log.i(TAG, "phoneFindsNeedingSync = " + phoneFindGuIds);
+//
+//			// Send finds to the server
+//
+//			success = sendFindsToServer(phoneFindGuIds);
+//
+//			// Get finds from the server and store in the DB
+//
+//			success = getFindsFromServer(serverFindGuIds);
+//
+//			// Record the synchronization in the client's sync_history table
+//
+//			ContentValues values = new ContentValues();
+//			values.put(PositDbHelper.SYNC_COLUMN_SERVER, server);
+//
+//			success = mdbh.recordSync(values);
+//			if (!success) {
+//				Log.i(TAG, "Error recording sync stamp");
+//				mHandler.sendEmptyMessage(SYNCERROR);
+//			}
+//
+//			// Record the synchronization in the server's sync_history table
+//
+//			String url = server + "/api/recordSync?authKey=" + authKey + "&imei="
+//					+ imei;
+//			Log.i(TAG, "recordSyncDone URL=" + url);
+//			String responseString = "";
+//
+//			try {
+//				responseString = comm.doHTTPGET(url);
+//			} catch (Exception e) {
+//				Log.i(TAG, e.getMessage());
+//				e.printStackTrace();
+//				mHandler.sendEmptyMessage(NETWORKERROR);
+//			}
+//			Log.i(TAG, "HTTPGet recordSync response = " + responseString);
+//
+//			mHandler.sendEmptyMessage(DONE);
+//			return;
+			
+			
 		} catch (final AuthenticatorException e) {
 			syncResult.stats.numParseExceptions++;
 			Log.e(TAG, "AuthenticatorException", e);
