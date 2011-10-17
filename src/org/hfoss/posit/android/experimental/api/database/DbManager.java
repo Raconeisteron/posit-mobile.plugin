@@ -190,8 +190,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			if (rows == 1) {
 				Log.i(TAG, "Inserted find:  " + this.toString());
 				recordChangedFind(new FindHistory(find, FindHistory.ACTION_CREATE));
-			}
-			else {
+			} else {
 				Log.e(TAG, "Db Error inserting find: " + this.toString());
 				rows = 0;
 			}
@@ -252,6 +251,16 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	}
 
+	/**
+	 * Updates the status of the sync--will eventually use this to restart
+	 * interrupted syncs?
+	 * 
+	 * @param find
+	 * @param status
+	 *            Constants.TRANSACTING, Constants.SUCCEEDED, or
+	 *            Constants.FAILED
+	 * @return number of rows updated, 1 if successful
+	 */
 	public int updateStatus(Find find, int status) {
 		int rows = 0;
 		try {
@@ -259,7 +268,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			rows = getFindDao().update(find);
 			if (rows == 1) {
 				Log.i(TAG, "Updated find status:  " + this.toString());
-				//recordChangedFind(new FindHistory(find, FindHistory.ACTION_UPDATE));
 			} else {
 				Log.e(TAG, "Db Error updating find: " + this.toString());
 				rows = 0;
@@ -270,6 +278,15 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return rows;
 	}
 
+	/**
+	 * Updates the sync operation in progress for this find during the last
+	 * sync.
+	 * 
+	 * @param find
+	 * @param operation Constants.POSTING, Constants.UPDATING, or Constants.DELETING
+	 * @return number of rows updated, 1 if successful
+	 */
+
 	public int updateSyncOperation(Find find, int operation) {
 		int rows = 0;
 		try {
@@ -277,7 +294,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			rows = getFindDao().update(find);
 			if (rows == 1) {
 				Log.i(TAG, "Updated find sync operation:  " + this.toString());
-				//recordChangedFind(new FindHistory(find, FindHistory.ACTION_UPDATE));
 			} else {
 				Log.e(TAG, "Db Error updating sync operation in find: " + this.toString());
 				rows = 0;
@@ -288,29 +304,30 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return rows;
 	}
 
+	/**
+	 * Gets finds changed since the last sync in a given project. TODO: Fix
+	 * this, doesn't seem to get finds from the specific project id. Just
+	 * returns all finds changed since the last sync.
+	 * 
+	 * @param projectId
+	 *            the id of the project
+	 * @return a list of Finds
+	 */
+
 	public List<Find> getChangedFinds(int projectId) {
 		List<Find> finds = null;
 		try {
-			// Find find1 = new Find();
-			// find1.setProject_id(0);
-			// find1.setGuid("gagagagaaaa");
-			// Find find2 = new Find();
-			// find2.setProject_id(0);
-			// find2.setGuid("lolwhat");
-			// FindHistory history = new FindHistory(find1,
-			// FindHistory.ACTION_CREATE);
-			// FindHistory history2 = new FindHistory(find2,
-			// FindHistory.ACTION_CREATE);
-			// getFindDao().create(find1);
-			// getFindDao().create(find2);
-			// getFindHistoryDao().create(history);
-			// getFindHistoryDao().create(history2);
 
 			Date lastSync = getTimeOfLastSync();
 
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 			String lastSyncString = formatter.format(lastSync);
 
+			// Query taken from old POSIT DbHelper.java.. not sure it works
+			// properly.
+			// I don't think it's properly getting the finds from your current
+			// project.
+			// It seems to return all changed finds from all the projects.
 			GenericRawResults<String[]> raw = getFindHistoryDao().queryRaw(
 					"SELECT DISTINCT findhistory" + "." + FindHistory.FIND + ",findhistory" + "."
 							+ FindHistory.FIND_ACTION + " FROM findhistory, find" + " WHERE find." + Find.PROJECT_ID
@@ -320,29 +337,14 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 			List<String[]> results = raw.getResults();
 			finds = new ArrayList<Find>();
+
 			for (String[] result : results) {
 				int findId = Integer.parseInt(result[0]);
-				Find find = getFindDao().queryForId(Integer.parseInt(result[0]));
+				Find find = getFindDao().queryForId(findId);
 				finds.add(find);
 			}
-			Log.i(TAG, "rawlist: " + results.toString());
-			Log.i(TAG, "FINAL FINDS: " + finds);
 
-			// Iterator<String[]> it = raw.iterator();
-			// while (it.hasNext()) {
-			// String next[] = it.next();
-			// Log.i(TAG, "raw: " + next.toString() + next[0] + next[1]);
-			// }
-			// QueryBuilder<FindHistory, Integer> builder =
-			// getFindHistoryDao().queryBuilder();
-			// Where<FindHistory, Integer> where = builder.where();
-			// where.eq("find." + Find.PROJECT_ID, projectId);
-
-			// where.and();
-			// where.not(where.eq(FindHistory.FIND_ACTION,
-			// FindHistory.ACTION_DELETE));
-			// PreparedQuery<FindHistory> query = builder.prepare();
-			// findHistories = getFindHistoryDao().query(query);
+			Log.i(TAG, "Changed finds: " + finds);
 
 		} catch (SQLException e) {
 			Log.e(TAG, "Db error getting finds changed since last sync: " + e.getMessage());
@@ -363,7 +365,8 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			PreparedQuery<SyncHistory> query = builder.prepare();
 			SyncHistory syncHistory = getSyncHistoryDao().queryForFirst(query);
 			if (syncHistory == null) // Never synced before
-				lastSync = new Date(0); // Jan. 1st 1970 lol
+				lastSync = new Date(0); // Jan. 1st 1970 lol TODO: Better way to
+										// do this?
 			else
 				lastSync = syncHistory.getTime();
 		} catch (SQLException e) {
@@ -378,7 +381,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	 * @param findHistory
 	 * @return the number of rows changed if successful
 	 */
-	 public int recordSync(SyncHistory syncHistory) {
+	public int recordSync(SyncHistory syncHistory) {
 		int rows = 0;
 		try {
 			rows = getSyncHistoryDao().create(syncHistory);
