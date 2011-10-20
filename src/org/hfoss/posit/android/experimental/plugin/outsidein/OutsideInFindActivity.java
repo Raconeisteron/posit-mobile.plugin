@@ -59,7 +59,7 @@ public class OutsideInFindActivity extends FindActivity {
 		find.setSyringesOut(Integer.parseInt(value));
 
 		CheckBox checkBox = (CheckBox) findViewById(R.id.isNewCheckBox);
-		find.setNew(checkBox.isChecked());
+		find.setIsNew(checkBox.isChecked());
 
 		return find;
 	}
@@ -77,7 +77,7 @@ public class OutsideInFindActivity extends FindActivity {
 		et.setText(Integer.toString(oiFind.getSyringesOut()));
 		
 		CheckBox cb = (CheckBox)findViewById(R.id.isNewCheckBox);
-		cb.setChecked(oiFind.isNew());
+		cb.setChecked(oiFind.getIsNew());
 		
 	}
 

@@ -32,6 +32,8 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -936,14 +938,20 @@ public class Communicator {
 	}
 
 	public static List<NameValuePair> getNameValuePairs(Find find) {
-		Field[] fields = find.getClass().getDeclaredFields(); // May not get
-																// methods in
-																// superclass?
-
+		// Get fields from both class and superclass
+		List<NameValuePair> pairs= null;
+		String extendedDataPairs = getNameValuePairs(find, find.getClass()).toString();
+		pairs = getNameValuePairs(find, find.getClass().getSuperclass());
+		pairs.add(new BasicNameValuePair("data",extendedDataPairs));
+		return pairs;
+	}
+	
+	private static List<NameValuePair> getNameValuePairs(Find find, Class clazz){
+		Field[] fields = clazz.getDeclaredFields();
 		List<NameValuePair> nvp = new ArrayList<NameValuePair>();
 		String methodName = "";
 		String value = "";
-
+		
 		for (Field field : fields) {
 			if (!Modifier.isFinal(field.getModifiers())) {
 				String key = field.getName();
@@ -951,15 +959,18 @@ public class Communicator {
 				value = "";
 
 				try {
-					Class returnType = find.getClass().getDeclaredMethod(methodName, null).getReturnType();
+					Class returnType = clazz.getDeclaredMethod(methodName, null).getReturnType();
 					if (returnType.equals(String.class))
-						value = (String) find.getClass().getDeclaredMethod(methodName, null)
+						value = (String) clazz.getDeclaredMethod(methodName, null)
 								.invoke(find, (Object[]) null);
 					else if (returnType.equals(int.class))
-						value = String.valueOf((Integer) find.getClass().getDeclaredMethod(methodName, null)
+						value = String.valueOf((Integer) clazz.getDeclaredMethod(methodName, null)
 								.invoke(find, (Object[]) null));
 					else if (returnType.equals(double.class))
-						value = String.valueOf((Double) find.getClass().getDeclaredMethod(methodName, null)
+						value = String.valueOf((Double) clazz.getDeclaredMethod(methodName, null)
+								.invoke(find, (Object[]) null));
+					else if (returnType.equals(boolean.class))
+						value = String.valueOf((Boolean) clazz.getDeclaredMethod(methodName, null)
 								.invoke(find, (Object[]) null));
 
 				} catch (IllegalArgumentException e) {
@@ -977,7 +988,9 @@ public class Communicator {
 			}
 		}
 		return nvp;
+		
 	}
+
 	//
 	// /**
 	// * Pull the remote find from the server using the guid provided.
