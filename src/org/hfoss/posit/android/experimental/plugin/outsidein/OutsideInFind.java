@@ -64,11 +64,11 @@ public class OutsideInFind extends Find {
 		this.syringesOut = syringesOut;
 	}
 
-	public boolean isNew() {
+	public boolean getIsNew() {
 		return isNew;
 	}
 
-	public void setNew(boolean isNew) {
+	public void setIsNew(boolean isNew) {
 		this.isNew = isNew;
 	}
 	
