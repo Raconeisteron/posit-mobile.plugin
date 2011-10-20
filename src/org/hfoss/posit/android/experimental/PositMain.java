@@ -71,8 +71,7 @@ import android.widget.Toast;
 /**
  * Implements the main activity and the main screen for the POSIT application.
  */
-public class PositMain extends OrmLiteBaseActivity<DbManager> implements
-		android.view.View.OnClickListener {
+public class PositMain extends OrmLiteBaseActivity<DbManager> implements android.view.View.OnClickListener {
 
 	// extends Activity implements OnClickListener { //,RWGConstants {
 
@@ -105,12 +104,16 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 		// it is not already set.
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		try {
-			String phone = mSharedPrefs.getString(
-					getString(R.string.smsPhoneKey), "");
+			String phone = mSharedPrefs.getString(getString(R.string.smsPhoneKey), "");
 			if (phone.equals("")) {
 				mSpEditor = mSharedPrefs.edit();
-				mSpEditor.putString(getString(R.string.smsPhoneKey),
-						getString(R.string.default_phone));
+				mSpEditor.putString(getString(R.string.smsPhoneKey), getString(R.string.default_phone));
+				mSpEditor.commit();
+			}
+			String server = mSharedPrefs.getString(getString(R.string.serverPref), "");
+			if (server.equals("")) {
+				mSpEditor = mSharedPrefs.edit();
+				mSpEditor.putString(getString(R.string.serverPref), getString(R.string.defaultServer));
 				mSpEditor.commit();
 			}
 			Log.i(TAG, "Preferences= " + mSharedPrefs.getAll().toString());
@@ -144,8 +147,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 		// Run login activity, if necessary
 
 		Intent intent = new Intent();
-		Class<Activity> loginActivity = FindActivityProvider
-				.getLoginActivityClass();
+		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
 		if (loginActivity != null) {
 			intent.setClass(this, loginActivity);
 			intent.putExtra(User.USER_TYPE_STRING, User.UserType.USER.ordinal());
@@ -170,18 +172,15 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 
 		if (FindPluginManager.mMainIcon != null) {
 			final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
-			int resID = getResources().getIdentifier(
-					FindPluginManager.mMainIcon, "drawable",
-					this.getPackageName());
+			int resID = getResources().getIdentifier(FindPluginManager.mMainIcon, "drawable", this.getPackageName());
 			mainLogo.setImageResource(resID);
 		}
 
 		// New Beneficiary button
 		if (FindPluginManager.mAddButtonLabel != null) {
 			final Button addFindButton = (Button) findViewById(R.id.addFindButton);
-			int resid = this.getResources().getIdentifier(
-					FindPluginManager.mAddButtonLabel, "string",
-					getPackageName());
+			int resid = this.getResources()
+					.getIdentifier(FindPluginManager.mAddButtonLabel, "string", getPackageName());
 
 			if (addFindButton != null) {
 				addFindButton.setText(resid);
@@ -203,8 +202,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 		// Send messages button
 		if (FindPluginManager.mListButtonLabel != null) {
 			final Button listFindButton = (Button) findViewById(R.id.listFindButton);
-			int resid = this.getResources().getIdentifier(
-					FindPluginManager.mListButtonLabel, "string",
+			int resid = this.getResources().getIdentifier(FindPluginManager.mListButtonLabel, "string",
 					getPackageName());
 			if (listFindButton != null) {
 				listFindButton.setText(resid);
@@ -224,11 +222,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 		}
 
 		// Update button -- used during Distribution events
-		if (FindPluginManager.mExtraButtonLabel != null
-				&& !FindPluginManager.mExtraButtonLabel.equals("")) {
+		if (FindPluginManager.mExtraButtonLabel != null && !FindPluginManager.mExtraButtonLabel.equals("")) {
 			final Button extraButton = (Button) findViewById(R.id.extraButton);
-			int resid = this.getResources().getIdentifier(
-					FindPluginManager.mExtraButtonLabel, "string",
+			int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel, "string",
 					getPackageName());
 			if (extraButton != null) {
 				extraButton.setOnClickListener(this);
@@ -256,11 +252,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 		}
 
 		// New agriculture beneficiary
-		if (FindPluginManager.mExtraButtonLabel2 != null
-				&& !FindPluginManager.mExtraButtonLabel2.equals("")) {
+		if (FindPluginManager.mExtraButtonLabel2 != null && !FindPluginManager.mExtraButtonLabel2.equals("")) {
 			final Button extraButton = (Button) findViewById(R.id.extraButton2);
-			int resid = this.getResources().getIdentifier(
-					FindPluginManager.mExtraButtonLabel2, "string",
+			int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel2, "string",
 					getPackageName());
 			if (extraButton != null) {
 				extraButton.setText(resid);
@@ -283,8 +277,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 			// extraButton.setVisibility(View.VISIBLE);
 			// }
 
-			Log.i(TAG,
-					"Extra button visibility = " + extraButton.getVisibility());
+			Log.i(TAG, "Extra button visibility = " + extraButton.getVisibility());
 		}
 
 	}
@@ -339,8 +332,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 
 		case LoginActivity.ACTION_LOGIN:
 			if (resultCode == RESULT_OK) {
-				Toast.makeText(this, getString(R.string.toast_thankyou),
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
 				break;
 			} else {
 				finish();
@@ -354,7 +346,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 	 * Handles clicks on PositMain's buttons.
 	 */
 	public void onClick(View view) {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		if (sp.getString(getString(R.string.projectNamePref), "").equals("")) {
 			Toast.makeText(this, "To get started, you must choose a project.", Toast.LENGTH_LONG).show();
 			Intent i = new Intent(this, ListProjectsActivity.class);
@@ -365,8 +357,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 
 			switch (view.getId()) {
 			case R.id.addFindButton:
-				intent.setClass(this,
-						FindActivityProvider.getFindActivityClass());
+				intent.setClass(this, FindActivityProvider.getFindActivityClass());
 				intent.setAction(Intent.ACTION_INSERT);
 				// intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_MCHN);
 				startActivity(intent);
@@ -376,23 +367,20 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 				intent.setAction(Intent.ACTION_SEND);
 				// intent.putExtra(AcdiVocaDbHelper.FINDS_STATUS,
 				// SearchFilterActivity.RESULT_SELECT_NEW);
-				intent.setClass(this,
-						FindActivityProvider.getListFindsActivityClass());
+				intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
 				// intent.setClass(this, AcdiVocaListFindsActivity.class);
 				startActivity(intent);
 				break;
 
 			case R.id.extraButton:
 				intent.setAction(Intent.ACTION_EDIT);
-				intent.setClass(this,
-						FindActivityProvider.getExtraActivityClass());
+				intent.setClass(this, FindActivityProvider.getExtraActivityClass());
 				startActivity(intent);
 				break;
 
 			case R.id.extraButton2:
 				intent.setAction(Intent.ACTION_INSERT);
-				intent.setClass(this,
-						FindActivityProvider.getExtraActivityClass2());
+				intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
 				intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_AGRI);
 				startActivity(intent);
 				break;
@@ -490,24 +478,17 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_EXIT:
-			return new AlertDialog.Builder(this)
-					.setIcon(R.drawable.alert_dialog_icon)
-					.setTitle(R.string.exit)
-					.setPositiveButton(R.string.alert_dialog_ok,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									// User clicked OK so do some stuff
-									finish();
-								}
-							})
-					.setNegativeButton(R.string.alert_dialog_cancel,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									/* User clicked Cancel so do nothing */
-								}
-							}).create();
+			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon).setTitle(R.string.exit)
+					.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// User clicked OK so do some stuff
+							finish();
+						}
+					}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							/* User clicked Cancel so do nothing */
+						}
+					}).create();
 
 		default:
 			return null;
