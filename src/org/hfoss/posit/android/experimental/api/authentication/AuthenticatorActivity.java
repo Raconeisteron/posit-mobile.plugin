@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import org.hfoss.posit.android.experimental.R;
@@ -127,7 +128,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     @Override
     protected Dialog onCreateDialog(int id) {
         final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Authenticaitaitating");
+        dialog.setMessage("Authenticating");
         dialog.setIndeterminate(true);
         dialog.setCancelable(true);
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -214,6 +215,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         }
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
+        Toast.makeText(this, "Authentication successful.  You can now use POSIT.", Toast.LENGTH_LONG).show();
         finish();
     }
 
