@@ -65,6 +65,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	protected static final String DATABASE_NAME = "posit";
 	public static final int DATABASE_VERSION = 2;
+	public static final String FIND_TABLE_NAME = "find"; // All find extensions should use this table name
 
 	public static final int DELETE_FIND = 1;
 	public static final int UNDELETE_FIND = 0;
