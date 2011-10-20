@@ -3,14 +3,17 @@ package org.hfoss.posit.android.experimental.plugin.outsidein;
 import java.sql.SQLException;
 
 import org.hfoss.posit.android.experimental.api.Find;
+import org.hfoss.posit.android.experimental.api.database.DbManager;
 
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.DatabaseTable;
+import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
-
+@DatabaseTable(tableName = DbManager.FIND_TABLE_NAME)
 public class OutsideInFind extends Find {
 
 	public static final String SYRINGES_IN = "syringes_in";
@@ -37,6 +40,9 @@ public class OutsideInFind extends Find {
 		Log.i(TAG, "Creating OutsideinFind table");
 		try {
 			TableUtils.createTable(connectionSource, OutsideInFind.class);
+//			DatabaseTableConfig<OutsideInFind> config = new DatabaseTableConfig<OutsideInFind>(OutsideInFind.class, DbManager.FIND_TABLE_NAME,null);
+//			
+//			TableUtils.createTable(connectionSource, config);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
