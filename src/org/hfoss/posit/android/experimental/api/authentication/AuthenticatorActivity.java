@@ -25,6 +25,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
@@ -120,6 +122,21 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         mPasswordEdit = (EditText) findViewById(R.id.password_edit);
         mUsernameEdit.setText(mUsername);
         mMessage.setText(getMessage());
+        
+        // Checks for connectivity over wifi or mobile.  TODO: Other network types? They are listed in ConnectivityManager.
+        ConnectivityManager connectivityManager = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] networkInfos = connectivityManager.getAllNetworkInfo();
+        
+        boolean isConnected = false;
+        for (NetworkInfo info : networkInfos){
+        	if (info.isConnected() && (info.getType() == ConnectivityManager.TYPE_MOBILE || info.getType() == ConnectivityManager.TYPE_WIFI)) 
+        		isConnected=true;
+        }
+        if (!isConnected){
+        	Toast.makeText(this, "Sorry, you need a network connection to authenticate.", Toast.LENGTH_LONG).show();
+        	finish();
+        }
+        
     }
 
     /*
@@ -154,6 +171,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             mUsername = mUsernameEdit.getText().toString();
         }
         mPassword = mPasswordEdit.getText().toString();
+      
         // Get the imei for our server..
         TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
         String imei = telephonyManager.getDeviceId();
