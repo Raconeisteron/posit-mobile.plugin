@@ -49,6 +49,11 @@ public class FindPluginManager {
 	private Class<Activity> mExtraActivityClass = null;
 	private Class<Activity> mExtraActivityClass2 = null;
 	private Class<Activity> mLoginActivityClass = null;
+ 
+	public static String mExtensionPoint = null;
+	public static Class<Activity> mMenuActivity;
+	public static String mMenuIcon;
+	public static String mMenuTitle;
 
 	public static String mPreferences = null; // Shared preferences XML for
 												// Settings
@@ -87,7 +92,19 @@ public class FindPluginManager {
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			NodeList plugin_nodes = (NodeList)xpath.evaluate("PluginsPreferences/FindPlugins/Plugin", document, XPathConstants.NODESET);
 			for(int ii = 0; ii < plugin_nodes.getLength(); ++ii){
+				
 				if(plugin_nodes.item(ii).getAttributes().getNamedItem("active").getTextContent().compareTo("true") == 0){
+					// Function plugin fields -- menu function TODO: make this a separate class
+					if (plugin_nodes.item(ii).getAttributes().getNamedItem("type").getTextContent()
+							.equals("function")) {
+						mExtensionPoint = plugin_nodes.item(ii).getAttributes().getNamedItem("extensionPoint")
+								.getTextContent();
+						mMenuActivity = (Class<Activity>) Class.forName(plugin_nodes.item(ii).getAttributes()
+								.getNamedItem("menuActivity").getTextContent());
+						mMenuIcon = plugin_nodes.item(ii).getAttributes().getNamedItem("menuIcon").getTextContent();
+						mMenuTitle = plugin_nodes.item(ii).getAttributes().getNamedItem("menuTitle").getTextContent();
+					}
+					else {
 					String package_name = plugin_nodes.item(ii).getAttributes().getNamedItem("package").getTextContent();
 					String find_factory_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_factory").getTextContent();
 					String db_manager_name = plugin_nodes.item(ii).getAttributes().getNamedItem("find_data_manager").getTextContent();
@@ -106,7 +123,8 @@ public class FindPluginManager {
 					mPreferences = plugin_nodes.item(ii).getAttributes().getNamedItem("preferences_xml").getTextContent();
 					mAddFindLayout = plugin_nodes.item(ii).getAttributes().getNamedItem("add_find_layout").getTextContent();
 					mListFindLayout = plugin_nodes.item(ii).getAttributes().getNamedItem("list_find_layout").getTextContent();
-
+					
+					
 					@SuppressWarnings({ "rawtypes" })
 					Class new_class = Class.forName(find_factory_name);
 					//mFindFactory = (FindFactory)new_class.getMethod("getInstance", null).invoke(null, null);
@@ -129,13 +147,15 @@ public class FindPluginManager {
 					SettingsActivity.loadPluginPreferences(mMainActivity, mPreferences);
 
 					// Remove break to load more than one plugin
-					break;
+					//break;
+					}
 				}
 			}
 		}catch(Exception ex)
 		{
 			Log.i(TAG, "Failed to load plugin");
-			Log.i(TAG, "reason: " + ex.getMessage());
+			Log.i(TAG, "reason: " + ex);
+			Log.i(TAG, "stack trace: " + ex.getStackTrace().toString());
 			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.", Toast.LENGTH_LONG).show();
 			mMainActivity.finish();
 		}

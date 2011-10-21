@@ -84,6 +84,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 	private SharedPreferences mSharedPrefs;
 	private Editor mSpEditor;
+	
+	private boolean mMainMenuExtensionPointEnabled = false;
 
 	/**
 	 * Called when the activity is first created. Sets the UI layout, adds the
@@ -96,9 +98,13 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Initialize plugins and managers
 		FindPluginManager.initInstance(this);
+		mMainMenuExtensionPointEnabled = FindPluginManager.mExtensionPoint != null;
+		
 		// AcdiVocaSmsManager.initInstance(this);
 		AttributeManager.init();
 
+		
+		
 		// A newly installed POSIT should have no shared prefs. Set the default
 		// phone pref if
 		// it is not already set.
@@ -397,7 +403,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.positmain_menu, menu);
+		inflater.inflate(R.menu.positmain_menu, menu);	
 		return true;
 	}
 
@@ -412,6 +418,10 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		// Re-inflate to force localization.
 		menu.clear();
 		MenuInflater inflater = getMenuInflater();
+		if (mMainMenuExtensionPointEnabled){
+			menu.add(FindPluginManager.mMenuTitle);
+			// TODO: icon
+		}
 		inflater.inflate(R.menu.positmain_menu, menu);
 
 		MenuItem adminMenu = menu.findItem(R.id.admin_menu_item);
@@ -450,6 +460,13 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		// break;
 		case R.id.about_menu_item:
 			startActivity(new Intent(this, AboutActivity.class));
+			break;
+			
+		default:
+			if (mMainMenuExtensionPointEnabled){
+				startActivity(new Intent(this, FindPluginManager.mMenuActivity));
+			}
+
 			break;
 
 		}
