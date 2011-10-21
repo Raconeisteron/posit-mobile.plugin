@@ -1,82 +1,71 @@
 <PluginsPreferences>
 	<FindPlugins>
-<!-- 	<Plugin active="true" name="BasicFind" -->
-<!-- 			package="org.hfoss.posit.android.experimental.api"  -->
-<!-- 			find_class = "org.hfoss.posit.android.experimental.api.Find" -->
+<!-- 		<Plugin active="false" type="find" name="BasicFind" -->
+<!-- 			package="org.hfoss.posit.android.experimental.api" find_class="org.hfoss.posit.android.experimental.api.Find" -->
 <!-- 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory" -->
-<!-- 			find_activity_class="org.hfoss.posit.android.experimental.api.activity.FindActivity"  -->
-<!-- 			extra_activity_class="" -->
-<!-- 			extra_activity_class2="" -->
+<!-- 			find_activity_class="org.hfoss.posit.android.experimental.api.activity.FindActivity" -->
+<!-- 			extra_activity_class="" extra_activity_class2="" -->
 <!-- 			list_finds_activity_class="org.hfoss.posit.android.experimental.api.activity.ListFindsActivity" -->
-<!--  			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
-<!-- 			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"  -->
-<!-- 			preferences_xml="posit_preferences"  -->
-<!-- 			add_find_layout="add_find" -->
-<!-- 			list_find_layout="list_row" -->
-<!-- 			main_list_button_label="viewFinds" -->
-<!-- 			main_add_button_label="addFind" -->
-<!-- 			main_extra_button_label="" -->
-<!-- 			main_extra_button_label2="" -->
-<!-- 			main_icon="posit" /> -->
-			
-	<Plugin active="true" name="OutsideInFind"
+<!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
+<!-- 			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager" -->
+<!-- 			preferences_xml="posit_preferences" add_find_layout="add_find" -->
+<!-- 			list_find_layout="list_row" main_list_button_label="viewFinds" -->
+<!-- 			main_add_button_label="addFind" main_extra_button_label="" -->
+<!-- 			main_extra_button_label2="" main_icon="posit" /> -->
+
+		<Plugin active="true" type="find" name="OutsideInFind"
 			package="org.hfoss.posit.android.experimental.plugin.outsidein"
-			find_class = "org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind"
+			find_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
-			find_activity_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFindActivity" 
-			extra_activity_class=""
-			extra_activity_class2=""
+			find_activity_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFindActivity"
+			extra_activity_class="" extra_activity_class2=""
 			list_finds_activity_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInListFindsActivity"
- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity"
-			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager" 
-			preferences_xml="outsidein_preferences" 
- 		    add_find_layout="outsidein_add_find"
- 		    list_find_layout="outsidein_list_row"
-			main_list_button_label="viewFinds"
-			main_add_button_label="addFind"
-			main_extra_button_label=""
-			main_extra_button_label2=""
-			main_icon="outsidein_logo" />
+			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity"
+			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
+			preferences_xml="outsidein_preferences" add_find_layout="outsidein_add_find"
+			list_find_layout="outsidein_list_row" main_list_button_label="viewFinds"
+			main_add_button_label="addFind" main_extra_button_label=""
+			main_extra_button_label2="" main_icon="outsidein_logo" />
 
-	
-<!-- 		<Plugin active="true" name="AcdiVocaFind" -->
-<!-- 			package="org.hfoss.posit.android.experimental.plugin.acdivoca"  -->
-<!-- 			find_factory="AcdiVocaFindFactory" -->
-<!-- 			find_activity_class="AcdiVocaMchnFindActivity"  -->
-<!-- 			extra_activity_class="AcdiVocaUpdateFindActivity" -->
-<!-- 			extra_activity_class2="AcdiVocaAgriFindActivity" -->
-<!-- 			list_finds_activity_class="AcdiVocaListFindsActivity" -->
-<!--  			login_activity_class="LoginActivity" -->
-<!-- 			find_data_manager="AcdiVocaDbManager"  -->
-<!-- 			preferences_xml="acdivoca_preferences"  -->
-<!-- 			main_list_button_label="send_sms_label" -->
-<!-- 			main_add_button_label="add_beneficiary_label" -->
-<!-- 			main_extra_button_label="update_beneficiary_label" -->
-<!-- 			main_extra_button_label2="new_agri_beneficiary_label" -->
-<!-- 			main_icon="acdivoca_logo_lg" /> -->
+		<Plugin active="true" type="function" extensionPoint="mainMenu"
+			menuIcon="ic_menu_mapmode" name="map" menuTitle="Map Finds"
+			menuActivity="org.hfoss.posit.android.experimental.api.activity.MapFindsActivity" />
 
-<!-- 			list_finds_activity_class="AcdiVocaSendSmsActivity" -->
 
-<!-- 		<Plugin active="true" name="AcdiVocaFind2" -->
-<!-- 			package="org.hfoss.posit.android.experimental.plugin.acdivoca"  -->
-<!-- 			find_factory="AcdiVocaFindFactory" -->
-<!-- 			find_activity_class="AcdiVocaFindActivity"  -->
-<!-- 			extra_activity_class="AcdiVocaUpdateActivity" -->
-<!-- 			list_finds_activity_class="AcdiVocaListFindsActivity" -->
-<!-- 			login_activity_class="LoginActivity" -->
-<!-- 			extra_activity_class2="AcdiVocaNewAgriActivity" -->
-<!-- 			find_data_manager="AcdiVocaFindDataManager"  -->
-<!-- 			preferences_xml="acdivoca_preferences2"   -->
-<!-- 			main_list_button_label="list_beneficiary_label" -->
-<!-- 			main_add_button_label="add_beneficiary_label" -->
-<!-- 			main_extra_button_label="update_beneficiary_label" -->
-<!-- 			main_extra_button_label2="new_agri_beneficiary_label" -->
-<!-- 			main_icon="acdivoca_logo" /> -->
+		<!-- <Plugin active="true" name="AcdiVocaFind" -->
+		<!-- package="org.hfoss.posit.android.experimental.plugin.acdivoca" -->
+		<!-- find_factory="AcdiVocaFindFactory" -->
+		<!-- find_activity_class="AcdiVocaMchnFindActivity" -->
+		<!-- extra_activity_class="AcdiVocaUpdateFindActivity" -->
+		<!-- extra_activity_class2="AcdiVocaAgriFindActivity" -->
+		<!-- list_finds_activity_class="AcdiVocaListFindsActivity" -->
+		<!-- login_activity_class="LoginActivity" -->
+		<!-- find_data_manager="AcdiVocaDbManager" -->
+		<!-- preferences_xml="acdivoca_preferences" -->
+		<!-- main_list_button_label="send_sms_label" -->
+		<!-- main_add_button_label="add_beneficiary_label" -->
+		<!-- main_extra_button_label="update_beneficiary_label" -->
+		<!-- main_extra_button_label2="new_agri_beneficiary_label" -->
+		<!-- main_icon="acdivoca_logo_lg" /> -->
+
+		<!-- list_finds_activity_class="AcdiVocaSendSmsActivity" -->
+
+		<!-- <Plugin active="true" name="AcdiVocaFind2" -->
+		<!-- package="org.hfoss.posit.android.experimental.plugin.acdivoca" -->
+		<!-- find_factory="AcdiVocaFindFactory" -->
+		<!-- find_activity_class="AcdiVocaFindActivity" -->
+		<!-- extra_activity_class="AcdiVocaUpdateActivity" -->
+		<!-- list_finds_activity_class="AcdiVocaListFindsActivity" -->
+		<!-- login_activity_class="LoginActivity" -->
+		<!-- extra_activity_class2="AcdiVocaNewAgriActivity" -->
+		<!-- find_data_manager="AcdiVocaFindDataManager" -->
+		<!-- preferences_xml="acdivoca_preferences2" -->
+		<!-- main_list_button_label="list_beneficiary_label" -->
+		<!-- main_add_button_label="add_beneficiary_label" -->
+		<!-- main_extra_button_label="update_beneficiary_label" -->
+		<!-- main_extra_button_label2="new_agri_beneficiary_label" -->
+		<!-- main_icon="acdivoca_logo" /> -->
 	</FindPlugins>
 </PluginsPreferences>
 
-<!-- Specs:
-
-preferences_xml has to be in res/raw
-
- -->
+<!-- Specs: preferences_xml has to be in res/raw -->
