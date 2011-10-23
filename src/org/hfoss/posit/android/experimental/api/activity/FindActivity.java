@@ -189,11 +189,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			value = eText.getText().toString();
 			find.setDescription(value);
 		}
-		eText = (EditText) findViewById(R.id.guidEditText);
-		if (eText != null) {
-			value = eText.getText().toString();
-			find.setGuid(value);
-		}
 
 		// Removing for now.. using "currentLocation" variable instead
 		// TextView tView = (TextView) findViewById(R.id.latitudeValueTextView);
@@ -359,6 +354,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected boolean saveFind() {
 		int rows = 0;
 		Find find = retrieveContentFromView();
+		
+		// A valid GUID is required
+		if (!isValidGuid(find.getGuid())) {
+			Toast.makeText(this, "You must provide a valid Id for this Find.", Toast.LENGTH_LONG).show();
+			return false;
+		}
 		// SharedPref
 		// find.setProject_id()
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT))
@@ -373,6 +374,16 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		} else
 			Log.e(TAG, "Find not inserted: " + find);
 		return rows > 0;
+	}
+	
+	/**
+	 * By default a Guid must not be the empty string. This method can
+	 * be overridden in the plugin extension. 
+	 * @param guid
+	 * @return
+	 */
+	protected boolean isValidGuid(String guid) {
+		return guid.length() != 0;
 	}
 
 	protected boolean deleteFind() {
@@ -415,8 +426,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.saveButton:
-			saveFind();
-			finish();
+			if (saveFind()) {
+				finish();
+			}
 			break;
 
 		}

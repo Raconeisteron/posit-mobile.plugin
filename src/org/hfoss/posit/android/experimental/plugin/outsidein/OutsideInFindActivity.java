@@ -105,6 +105,15 @@ public class OutsideInFindActivity extends FindActivity {
 		
 	}
 	
+	
+	/**
+	 * A valid Guid must have the form AABB0011
+	 */
+	@Override
+	protected boolean isValidGuid(String guid) {
+		return guid.length() == 8;
+	}
+
 	/**
 	 * Retrieve unique ID created with:
 	 * first 2 letters of the first name, first 2 letters of their mom's name, month of birth, and year of birth
