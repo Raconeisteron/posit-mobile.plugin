@@ -154,6 +154,11 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 							getResources().getString(R.string.contentAuthority),
 							extras);
 			break;
+		case R.id.map_finds_menu_item:
+			Log.i(TAG, "Map finds menu item");
+			startActivity(new Intent(this, MapFindsActivity.class));
+			break;
+
 		// case R.id.save_find_menu_item:
 		// saveFind();
 		// break;

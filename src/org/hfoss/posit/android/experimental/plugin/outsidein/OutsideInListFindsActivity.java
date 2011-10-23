@@ -79,6 +79,12 @@ public class OutsideInListFindsActivity extends ListFindsActivity {
 				tv.setText(String.valueOf(find.getSyringesOut()));
 				tv = (TextView) v.findViewById(R.id.id);
 				tv.setText(Integer.toString(find.getId()));
+				tv = (TextView) v.findViewById(R.id.synced);
+				if (find.getStatus() == Find.IS_SYNCED) 
+					tv.setText("synced");
+				else
+					tv.setText("unsynced");
+				
 			}
 			return v;
 		}
