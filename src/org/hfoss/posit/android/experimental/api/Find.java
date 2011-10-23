@@ -49,6 +49,8 @@ public class Find implements FindInterface {
 	// record the state of the sync--transacting or done.
 	public static final String SYNC_OPERATION = "sync_operation";
 	public static final String STATUS= "status";
+	public static final int IS_SYNCED = 1;
+	public static final int IS_NOT_SYNCED = 0;
 
 
 	// Instance variables, automatically mapped to DB columns

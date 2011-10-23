@@ -16,7 +16,8 @@
 		android:title="@string/delete"
 		android:icon="@android:drawable/ic_menu_delete" ></item>
 	<item 
+		android:id="@+id/sync_finds_menu_item"
+		android:visible="false"
 		android:icon="@drawable/ic_menu_refresh" 
-		android:title="@string/sync"
-		android:id="@+id/sync_finds_menu_item"></item>
+		android:title="@string/sync"></item>
 </menu>
