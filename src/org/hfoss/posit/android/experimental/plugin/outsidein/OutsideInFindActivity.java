@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 
 /**
@@ -34,11 +35,18 @@ public class OutsideInFindActivity extends FindActivity {
 		super.initializeListeners();
 	}
 
+	/**
+	 * Retrieves values from the OutsideInFind fields and stores them in a Find instance. 
+	 * This method is invoked from the Save menu item. It also marks the find
+	 * 'unsynced' so it will be updated to the server.
+	 * 
+	 * @return a new Find object with data from the view.
+	 */
 	@Override
 	protected Find retrieveContentFromView() {
 		OutsideInFind find =  (OutsideInFind)super.retrieveContentFromView();
 		String value; //used to get the string from the textbox
-		
+
 		EditText eText = (EditText) findViewById(R.id.syringesInEditText);
 		//If no value is supplied, set it to 0.
 		if(eText.getText().toString().equals("")){
@@ -61,16 +69,20 @@ public class OutsideInFindActivity extends FindActivity {
 		CheckBox checkBox = (CheckBox) findViewById(R.id.isNewCheckBox);
 		find.setIsNew(checkBox.isChecked());
 
+		// Retrieve unique ID created by with:
+		// first 2 letters of the first name, first 2 letters of their mom's name, month of birth, and year of birth
+		find.setGuid(getGuidEditText());
+
 		return find;
 	}
 
 	@Override
 	protected void displayContentInView(Find find) {
 		OutsideInFind oiFind = (OutsideInFind)find;
-		EditText et = (EditText)findViewById(R.id.guidEditText);
-		et.setText(oiFind.getGuid());
+//		EditText et = (EditText)findViewById(R.id.guidEditText);
+//		et.setText(oiFind.getGuid());
 		
-		et = (EditText)findViewById(R.id.syringesInEditText);
+		EditText et = (EditText)findViewById(R.id.syringesInEditText);
 		et.setText(Integer.toString(oiFind.getSyringesIn()));
 		
 		et = (EditText)findViewById(R.id.syringesOutEditText);
@@ -79,7 +91,50 @@ public class OutsideInFindActivity extends FindActivity {
 		CheckBox cb = (CheckBox)findViewById(R.id.isNewCheckBox);
 		cb.setChecked(oiFind.getIsNew());
 		
+		String guid = oiFind.getGuid();
+		if(guid.length() == 8) {
+			et = (EditText)findViewById(R.id.idEditText_fname);
+			et.setText(guid.substring(0, 2));
+			et = (EditText)findViewById(R.id.idEditText_mname);
+			et.setText(guid.substring(2, 4));
+			et = (EditText)findViewById(R.id.idEditText_mbirth);
+			et.setText(guid.substring(4, 6));
+			et = (EditText)findViewById(R.id.idEditText_ybirth);
+			et.setText(guid.substring(6, 8));
+		}	
+		
 	}
+	
+	/**
+	 * Retrieve unique ID created with:
+	 * first 2 letters of the first name, first 2 letters of their mom's name, month of birth, and year of birth
+	 * @return String with all 4 components combined.
+	 */
+	private String getGuidEditText() {
+		EditText eText = (EditText) findViewById(R.id.idEditText_fname);
+		StringBuilder guid = new StringBuilder();
+		guid.append(eText.getText().toString());
+
+		eText = (EditText) findViewById(R.id.idEditText_mname);
+		guid.append(eText.getText().toString());
+
+		eText = (EditText) findViewById(R.id.idEditText_mbirth);
+		if (eText.getText().toString().length() == 1) {
+			guid.append("0").append(eText.getText().toString());
+		} else {
+			guid.append(eText.getText().toString());
+		}		
+
+		eText = (EditText) findViewById(R.id.idEditText_ybirth);
+		if (eText.getText().toString().length() == 1) {
+			guid.append("0").append(eText.getText().toString());
+		} else {
+			guid.append(eText.getText().toString());
+		}		
+
+		return guid.toString();
+	}
+	
 
 	public void onClick(View v) {
 		super.onClick(v);

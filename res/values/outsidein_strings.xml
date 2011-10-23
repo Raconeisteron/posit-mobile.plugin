@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="unique_id_hint">Enter the identifier</string>
-    <string name="syringes_out">Syringes out:</string>
-    <string name="syringes_in">Syringes in: </string>
-    <string name="is_new">Is this client new to Outside In?</string>
-</resources>
