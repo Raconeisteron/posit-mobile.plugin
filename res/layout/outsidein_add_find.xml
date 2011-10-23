@@ -3,7 +3,7 @@
 	android:layout_width="match_parent" android:layout_height="match_parent"
 	android:orientation="vertical">
 	<TableLayout android:id="@+id/tableLayout1"
-		android:layout_height="wrap_content" android:layout_width="match_parent"
+		android:layout_height="wrap_content" android:layout_width="wrap_content"
 		android:stretchColumns="1,2,3,4">
 		<TextView android:layout_height="wrap_content" 
 			android:layout_width="wrap_content" 
@@ -21,17 +21,18 @@
  				android:capitalize="characters"
  				android:layout_height="wrap_content" 
 				android:layout_width="wrap_content" 
+				android:imeOptions="actionNext"
  				android:nextFocusDown="@+id/idEditText_mname"
 				android:ems="2" 
 				android:maxLength="2" ></EditText>
 			<EditText android:id="@+id/idEditText_mname" 
-			 	android:hint="YY"
-				android:capitalize="characters"
-				android:layout_height="wrap_content" 
+ 				android:hint="YY"
+ 				android:capitalize="characters"
+ 				android:layout_height="wrap_content" 
 				android:layout_width="wrap_content" 
-				android:nextFocusDown="@+id/idEditText_mbirth" 
+ 				android:nextFocusDown="@+id/idEditText_mbirth"
 				android:ems="2" 
-				android:maxLength="2"></EditText>
+				android:maxLength="2" ></EditText>
 			<EditText android:id="@+id/idEditText_mbirth" 
 				android:hint="01" 
 				android:layout_height="wrap_content" 
@@ -79,8 +80,12 @@
 	</TableRow>
 	<TableRow android:id="@+id/tableRow5" android:layout_height="wrap_content"
 		android:layout_width="match_parent">
-		<Button android:layout_height="wrap_content"
+		<Button 
+			android:id="@+id/saveButton"
+			android:layout_height="wrap_content"
 			android:layout_width="fill_parent" android:text="@string/save"
-			android:id="@+id/saveButton"></Button>
+			android:layout_marginLeft="100dp"
+			android:layout_marginRight="100dp"
+			android:drawableLeft="@drawable/save_32"></Button>
 	</TableRow>
 </LinearLayout>

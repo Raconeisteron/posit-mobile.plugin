@@ -8,5 +8,5 @@
 	<string name="unique_id_help">Unique ID: First 2 letters of first name/First 2 letters of mom\'s name/Month of birth/Year of birth</string>
     <string name="syringes_out">Syringes out:</string>
     <string name="syringes_in">Syringes in: </string>
-    <string name="is_new">Check here if client is new to Outside In.</string>
+    <string name="is_new">Check here if new client.</string>
 </resources>
