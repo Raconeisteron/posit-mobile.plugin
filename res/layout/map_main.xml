@@ -6,7 +6,7 @@
 		android:id="@+id/mapView" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" 
 		android:clickable="true"
-		android:apiKey="0q4G7UpfXNuyFry0fxzeDke-e0bwdZAXs3ZLn2Q" />
+		android:apiKey="0bvEMJ9m96_er-z_dr1wcZjsucPYBoUZMjI-RQw" />
 	<LinearLayout android:id="@+id/zoomView"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_alignBottom="@id/mapView"
@@ -14,3 +14,5 @@
 </RelativeLayout>
 
 <!-- 0jDofiyQNYc4RdmdN3SzLHPlIVb6uawsWRrsGiA -->
+<!-- Ralph: 0bvEMJ9m96_er-z_dr1wcZjsucPYBoUZMjI-RQw  -->
+<!-- Rachel?  0q4G7UpfXNuyFry0fxzeDke-e0bwdZAXs3ZLn2Q -->

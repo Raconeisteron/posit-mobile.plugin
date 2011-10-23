@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.activity.FindActivity;
+import org.hfoss.posit.android.experimental.plugin.FindActivityProvider;
 
 import android.content.Context;
 import android.content.Intent;
@@ -83,7 +84,7 @@ public class FindOverlay extends ItemizedOverlay {
 		// Toast.makeText(mContext, mOverlays.get(pIndex).getSnippet(), Toast.LENGTH_LONG).show();
 		if (!isTappable)
 			return false;
-		Intent intent = new Intent(mContext, FindActivity.class);
+		Intent intent = new Intent(mContext, FindActivityProvider.getFindActivityClass());
 		intent.setAction(Intent.ACTION_EDIT);
 		int id = Integer.parseInt(mOverlays.get(pIndex).getTitle());
 		Log.i(TAG, "id= " + id);
