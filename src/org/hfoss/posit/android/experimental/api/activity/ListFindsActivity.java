@@ -37,7 +37,9 @@ import android.widget.Toast;
 public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 	private static final String TAG = "ListFindsActivity";
+	private boolean mListFindsMenuExtensionPoint = false;
 
+	
 	/**
 	 * Called when the Activity starts.
 	 * 
@@ -50,6 +52,8 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_finds);
+		mListFindsMenuExtensionPoint = FindPluginManager.mListFindsMenuExtensionPoint != null;
+
 	}
 
 	/**
@@ -122,6 +126,10 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
+		if (mListFindsMenuExtensionPoint){
+			MenuItem item = menu.add(FindPluginManager.mListFindsMenuTitle);
+			item.setIcon(android.R.drawable.ic_menu_save);
+		}
 		inflater.inflate(R.menu.list_finds_menu, menu);
 		return true;
 	}
@@ -158,6 +166,14 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			Log.i(TAG, "Map finds menu item");
 			startActivity(new Intent(this, MapFindsActivity.class));
 			break;
+			
+		default:
+			if (mListFindsMenuExtensionPoint){
+				startActivity(new Intent(this, FindPluginManager.mListFindsMenuActivity));
+			}
+
+			break;
+	
 
 		// case R.id.save_find_menu_item:
 		// saveFind();

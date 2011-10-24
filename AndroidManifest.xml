@@ -72,6 +72,10 @@
 			android:name="org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
+			
+		<!--  Activities for Function Plugins -->	
+		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.LogFindsActivity" />
 
 		<!-- Activities for Outside In plugin -->
 		<activity

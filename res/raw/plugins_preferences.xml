@@ -31,6 +31,9 @@
 			menuIcon="ic_menu_mapmode" name="map" menuTitle="Map Finds"
 			menuActivity="org.hfoss.posit.android.experimental.api.activity.MapFindsActivity" />
 
+		<Plugin active="true" type="function" extensionPoint="listMenu"
+			menuIcon="ic_menu_savetolog" name="log" menuTitle="Log Finds"
+			menuActivity="org.hfoss.posit.android.experimental.functionplugins.LogFindsActivity" />
 
 		<!-- <Plugin active="true" name="AcdiVocaFind" -->
 		<!-- package="org.hfoss.posit.android.experimental.plugin.acdivoca" -->
