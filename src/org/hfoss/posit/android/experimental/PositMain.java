@@ -419,8 +419,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		menu.clear();
 		MenuInflater inflater = getMenuInflater();
 		if (mMainMenuExtensionPointEnabled){
-			menu.add(FindPluginManager.mMenuTitle);
-			// TODO: icon
+			MenuItem item = menu.add(FindPluginManager.mMenuTitle);
+			item.setIcon(android.R.drawable.ic_menu_mapmode);
 		}
 		inflater.inflate(R.menu.positmain_menu, menu);
 

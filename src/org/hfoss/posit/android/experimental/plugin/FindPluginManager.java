@@ -50,10 +50,19 @@ public class FindPluginManager {
 	private Class<Activity> mExtraActivityClass2 = null;
 	private Class<Activity> mLoginActivityClass = null;
  
+	// Extension point in PositMain
 	public static String mExtensionPoint = null;
 	public static Class<Activity> mMenuActivity;
 	public static String mMenuIcon;
 	public static String mMenuTitle;
+	
+	// Extension point in ListFinds
+	public static String mListFindsMenuExtensionPoint = null;
+	public static Class<Activity> mListFindsMenuActivity;
+	public static String mListFindsMenuIcon;
+	public static String mListFindsMenuTitle;
+	
+	
 
 	public static String mPreferences = null; // Shared preferences XML for
 												// Settings
@@ -94,15 +103,24 @@ public class FindPluginManager {
 			for(int ii = 0; ii < plugin_nodes.getLength(); ++ii){
 				
 				if(plugin_nodes.item(ii).getAttributes().getNamedItem("active").getTextContent().compareTo("true") == 0){
+
 					// Function plugin fields -- menu function TODO: make this a separate class
-					if (plugin_nodes.item(ii).getAttributes().getNamedItem("type").getTextContent()
-							.equals("function")) {
+					if (plugin_nodes.item(ii).getAttributes().getNamedItem("type").getTextContent().equals("function") 
+							&& plugin_nodes.item(ii).getAttributes().getNamedItem("extensionPoint").getTextContent().equals("mainMenu")) {
 						mExtensionPoint = plugin_nodes.item(ii).getAttributes().getNamedItem("extensionPoint")
 								.getTextContent();
 						mMenuActivity = (Class<Activity>) Class.forName(plugin_nodes.item(ii).getAttributes()
 								.getNamedItem("menuActivity").getTextContent());
 						mMenuIcon = plugin_nodes.item(ii).getAttributes().getNamedItem("menuIcon").getTextContent();
 						mMenuTitle = plugin_nodes.item(ii).getAttributes().getNamedItem("menuTitle").getTextContent();
+					} else if (plugin_nodes.item(ii).getAttributes().getNamedItem("type").getTextContent().equals("function") 
+							&& plugin_nodes.item(ii).getAttributes().getNamedItem("extensionPoint").getTextContent().equals("listMenu")) {
+						mListFindsMenuExtensionPoint = plugin_nodes.item(ii).getAttributes().getNamedItem("extensionPoint")
+								.getTextContent();
+						mListFindsMenuActivity = (Class<Activity>) Class.forName(plugin_nodes.item(ii).getAttributes()
+								.getNamedItem("menuActivity").getTextContent());
+						mListFindsMenuIcon = plugin_nodes.item(ii).getAttributes().getNamedItem("menuIcon").getTextContent();
+						mListFindsMenuTitle = plugin_nodes.item(ii).getAttributes().getNamedItem("menuTitle").getTextContent();
 					}
 					else {
 					String package_name = plugin_nodes.item(ii).getAttributes().getNamedItem("package").getTextContent();
