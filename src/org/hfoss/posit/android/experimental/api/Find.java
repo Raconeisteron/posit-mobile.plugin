@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 
 import com.j256.ormlite.dao.Dao;
@@ -251,6 +252,19 @@ public class Find implements FindInterface {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	
+	public String getStatusAsString() {
+		switch (getStatus()) {
+		case Constants.POSTING:
+			return "posting";
+		case Constants.TRANSACTING:
+			return "transacting";
+		case Constants.SUCCEEDED:
+			return "synced";
+		default:
+			return "unsynced";
+		}
 	}
 	
 	public void setSyncOperation(int syncOperation) {

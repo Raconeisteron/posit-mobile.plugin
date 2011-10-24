@@ -80,11 +80,9 @@ public class OutsideInListFindsActivity extends ListFindsActivity {
 				tv = (TextView) v.findViewById(R.id.id);
 				tv.setText(Integer.toString(find.getId()));
 				tv = (TextView) v.findViewById(R.id.synced);
-				if (find.getStatus() == Find.IS_SYNCED) 
-					tv.setText("synced");
-				else
-					tv.setText("unsynced");
-				
+				tv.setText(find.getStatusAsString());			
+				tv = (TextView) v.findViewById(R.id.timestamp);
+				tv.setText(find.getTime().toLocaleString());
 			}
 			return v;
 		}
