@@ -153,14 +153,19 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			AccountManager manager = AccountManager.get(this);
 			Account[] accounts = manager
 					.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
+			
 			// Just pick the first account for now.. TODO: make this work for
 			// multiple accounts of same type?
 			Bundle extras = new Bundle();
-			ContentResolver
-					.requestSync(
-							accounts[0],
-							getResources().getString(R.string.contentAuthority),
-							extras);
+			
+			// Avoids index-out-of-bounds error if no such account
+			// Must be a better way to do this?
+			if (accounts.length != 0)  
+				ContentResolver
+				.requestSync(
+						accounts[0],
+						getResources().getString(R.string.contentAuthority),
+						extras);
 			break;
 		case R.id.map_finds_menu_item:
 			Log.i(TAG, "Map finds menu item");
