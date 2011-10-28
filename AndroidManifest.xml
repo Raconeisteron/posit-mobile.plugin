@@ -140,11 +140,11 @@
 		<activity android:name=".SettingsActivity"
 			android:screenOrientation="portrait" />
 
-		<receiver android:name=".plugin.acdivoca.AcdiVocaSmsManager">
-			<intent-filter>
-				<action android:name="android.provider.Telephony.SMS_RECEIVED" />
-			</intent-filter>
-		</receiver>
+<!-- 		<receiver android:name=".plugin.acdivoca.AcdiVocaSmsManager"> -->
+<!-- 			<intent-filter> -->
+<!-- 				<action android:name="android.provider.Telephony.SMS_RECEIVED" /> -->
+<!-- 			</intent-filter> -->
+<!-- 		</receiver> -->
 
 		<activity android:name=".api.authentication.AuthenticatorActivity"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
