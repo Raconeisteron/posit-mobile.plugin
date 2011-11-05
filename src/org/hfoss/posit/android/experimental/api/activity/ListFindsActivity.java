@@ -160,12 +160,22 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			
 			// Avoids index-out-of-bounds error if no such account
 			// Must be a better way to do this?
-			if (accounts.length != 0)  
+			if (accounts.length != 0) {
+				Log.i(TAG, "Requesting sync");
+				if (!ContentResolver.getSyncAutomatically(accounts[0],getResources().getString(R.string.contentAuthority))) {
+					Log.i(TAG, "Sync not requested. " + SyncAdapter.ACCOUNT_TYPE + " is not ON");
+					Toast.makeText(this, "Sync not requested: " + SyncAdapter.ACCOUNT_TYPE + " is not ON", Toast.LENGTH_LONG).show();
+				} else {
 				ContentResolver
 				.requestSync(
 						accounts[0],
 						getResources().getString(R.string.contentAuthority),
 						extras);
+				}
+			} else {
+				Log.i(TAG, "Sync not requested. Unable to get " + SyncAdapter.ACCOUNT_TYPE);
+				Toast.makeText(this, "Sync error: Unable to get " + SyncAdapter.ACCOUNT_TYPE, Toast.LENGTH_LONG).show();
+			}
 			break;
 		case R.id.map_finds_menu_item:
 			Log.i(TAG, "Map finds menu item");
