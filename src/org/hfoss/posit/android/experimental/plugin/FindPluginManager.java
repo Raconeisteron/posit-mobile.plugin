@@ -1,11 +1,14 @@
 package org.hfoss.posit.android.experimental.plugin;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.hfoss.posit.android.experimental.R;
@@ -17,6 +20,7 @@ import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -169,12 +173,54 @@ public class FindPluginManager {
 					}
 				}
 			}
-		}catch(Exception ex)
+		} catch (ParserConfigurationException ex)
+
 		{
 			Log.i(TAG, "Failed to load plugin");
 			Log.i(TAG, "reason: " + ex);
 			Log.i(TAG, "stack trace: " + ex.getStackTrace().toString());
-			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.", Toast.LENGTH_LONG).show();
+			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
+					Toast.LENGTH_LONG).show();
+			mMainActivity.finish();
+
+		} catch (SAXException ex)
+
+		{
+			Log.i(TAG, "Failed to load plugin");
+			Log.i(TAG, "reason: " + ex);
+			Log.i(TAG, "stack trace: " + ex.getStackTrace().toString());
+			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
+					Toast.LENGTH_LONG).show();
+			mMainActivity.finish();
+
+		} catch (IOException ex)
+
+		{
+			Log.i(TAG, "Failed to load plugin");
+			Log.i(TAG, "reason: " + ex);
+			Log.i(TAG, "stack trace: " + ex.getStackTrace().toString());
+			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
+					Toast.LENGTH_LONG).show();
+			mMainActivity.finish();
+
+		} catch (XPathExpressionException ex)
+
+		{
+			Log.i(TAG, "Failed to load plugin");
+			Log.i(TAG, "reason: " + ex);
+			Log.i(TAG, "stack trace: " + ex.getStackTrace().toString());
+			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
+					Toast.LENGTH_LONG).show();
+			mMainActivity.finish();
+
+		}
+
+		catch (Exception ex) {
+			Log.i(TAG, "Failed to load plugin");
+			Log.i(TAG, "reason: " + ex);
+			Log.i(TAG, "stack trace: " + ex.getStackTrace().toString());
+			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
+					Toast.LENGTH_LONG).show();
 			mMainActivity.finish();
 		}
 	}
