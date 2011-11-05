@@ -37,7 +37,9 @@ import android.widget.Toast;
 public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 	private static final String TAG = "ListFindsActivity";
+	private boolean mListFindsMenuExtensionPoint = false;
 
+	
 	/**
 	 * Called when the Activity starts.
 	 * 
@@ -50,6 +52,8 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_finds);
+		mListFindsMenuExtensionPoint = FindPluginManager.mListFindsMenuExtensionPoint != null;
+
 	}
 
 	/**
@@ -81,9 +85,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				FindPluginManager.mListFindLayout, "layout", getPackageName());
 
 		FindsListAdapter adapter = new FindsListAdapter(this, resId, list);
-		if (adapter == null) {
-			Log.i(TAG, "Adapter = null");
-		}
+
 		return adapter;
 	}
 
@@ -124,6 +126,10 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
+		if (mListFindsMenuExtensionPoint){
+			MenuItem item = menu.add(FindPluginManager.mListFindsMenuTitle);
+			item.setIcon(android.R.drawable.ic_menu_save);
+		}
 		inflater.inflate(R.menu.list_finds_menu, menu);
 		return true;
 	}
@@ -147,15 +153,33 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			AccountManager manager = AccountManager.get(this);
 			Account[] accounts = manager
 					.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
+			
 			// Just pick the first account for now.. TODO: make this work for
 			// multiple accounts of same type?
 			Bundle extras = new Bundle();
-			ContentResolver
-					.requestSync(
-							accounts[0],
-							getResources().getString(R.string.contentAuthority),
-							extras);
+			
+			// Avoids index-out-of-bounds error if no such account
+			// Must be a better way to do this?
+			if (accounts.length != 0)  
+				ContentResolver
+				.requestSync(
+						accounts[0],
+						getResources().getString(R.string.contentAuthority),
+						extras);
 			break;
+		case R.id.map_finds_menu_item:
+			Log.i(TAG, "Map finds menu item");
+			startActivity(new Intent(this, MapFindsActivity.class));
+			break;
+			
+		default:
+			if (mListFindsMenuExtensionPoint){
+				startActivity(new Intent(this, FindPluginManager.mListFindsMenuActivity));
+			}
+
+			break;
+	
+
 		// case R.id.save_find_menu_item:
 		// saveFind();
 		// break;
