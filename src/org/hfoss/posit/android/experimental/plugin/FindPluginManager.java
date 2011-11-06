@@ -19,6 +19,7 @@ import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -135,7 +136,12 @@ public class FindPluginManager {
 					String listfindsactivity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("list_finds_activity_class").getTextContent();
 					String extra_activity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("extra_activity_class").getTextContent();
 					String extra_activity_name2 = plugin_nodes.item(ii).getAttributes().getNamedItem("extra_activity_class2").getTextContent();
-					String login_activity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("login_activity_class").getTextContent();
+					
+					Node node = plugin_nodes.item(ii).getAttributes().getNamedItem("login_activity_class");
+					String login_activity_name = "";
+					if (node != null) 
+						login_activity_name = node.getTextContent();
+					//String login_activity_name = plugin_nodes.item(ii).getAttributes().getNamedItem("login_activity_class").getTextContent();
 
 					mMainIcon = plugin_nodes.item(ii).getAttributes().getNamedItem("main_icon").getTextContent();
 					mAddButtonLabel = plugin_nodes.item(ii).getAttributes().getNamedItem("main_add_button_label").getTextContent();
@@ -157,7 +163,8 @@ public class FindPluginManager {
 					mFindClass = (Class<Find>)Class.forName(findclass_name);
 					mFindActivityClass = (Class<FindActivity>)Class.forName(findactivity_name);
 					mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(listfindsactivity_name);
-					mLoginActivityClass = (Class<Activity>)Class.forName(login_activity_name); // Changed
+					if (!login_activity_name.equals(""))
+						mLoginActivityClass = (Class<Activity>)Class.forName(login_activity_name); // Changed
 					if (!extra_activity_name.equals(""))	
 						mExtraActivityClass = (Class<Activity>) Class
 								.forName(package_name + "."	+ extra_activity_name);
