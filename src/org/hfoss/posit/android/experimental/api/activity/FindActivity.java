@@ -47,64 +47,84 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	private LocationManager mLocationManager;
 	private Location mCurrentLocation;
-	private boolean geoTag; 
+	private boolean mGeoTag; 
+	private TextView mLatitudeView = null;
+	private TextView mLongitudeView = null;
+	private String mProvider = null;
 
+	/**
+	 * This may be invoked by a FindActivity subclass, which may or may not have latitude
+	 * and longitude fields.  
+	 */
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Get the custom add find layout from the plugin settings, if there is
-		// one.
+		// Get the custom add find layout from the plugin settings, if there is one.
 		int resId = getResources().getIdentifier(FindPluginManager.mAddFindLayout, "layout", getPackageName());
 
 		setContentView(resId);
+		mLatitudeView = (TextView) findViewById(R.id.latitudeValueTextView);
+		mLongitudeView = (TextView) findViewById(R.id.longitudeValueTextView);
+		
 		initializeListeners();
-//		Bundle extras = getIntent().getExtras();
 		
 		// Check if settings allow Geotagging
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);		
-		geoTag = prefs.getBoolean("geotagKey", true);
-		
-		if (geoTag) {
-			// Check for a new location every ten seconds while we're adding a new
-			// find.
+		mGeoTag = prefs.getBoolean("geotagKey", true);
+		if (mGeoTag) {
+			// Get location manager.  
 			mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
 			Criteria criteria = new Criteria();
 			criteria.setAccuracy(Criteria.ACCURACY_COARSE);
 			criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
-			String provider = mLocationManager.getBestProvider(criteria, true);
-			if (provider != null)
-				mLocationManager.requestLocationUpdates(provider, 10000, 0, this);
+			mProvider = mLocationManager.getBestProvider(criteria, true);
+			
+			// Set the current location
+			Location location = null;
+			if (mProvider != null && mLatitudeView != null && mLongitudeView != null) {
+				Log.i(TAG, "Location provider selected = " + mProvider);
+				location =  mLocationManager.getLastKnownLocation(mProvider);
+				if (location != null) {
+					int lat = (int) (location.getLatitude());
+					int lng = (int) (location.getLongitude());
+					mLatitudeView.setText(String.valueOf(lat));
+					mLongitudeView.setText(String.valueOf(lng));
+				} else {
+					mLatitudeView.setText("Unavailable");
+					mLongitudeView.setText("Unavailable");
+				}
+				//mLocationManager.requestLocationUpdates(provider, 10000, 0, this);
+			}
 			else {
 				Toast.makeText(this, "Unable to get a location via Wifi or GPS.  Are they enabled?", Toast.LENGTH_LONG)
 						.show();
 				Log.i(TAG, "Cannot request location updates, wifi or GPS might not be enabled/need a view of the sky");
 			}
-		} else {
-			TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
-			tView.setVisibility(View.INVISIBLE);
-			tView = (TextView) findViewById(R.id.longitudeTextView);
-			tView.setVisibility(View.INVISIBLE);
-			tView = (TextView) findViewById(R.id.latitudeValueTextView);
-			tView.setVisibility(View.INVISIBLE);
+		} else { // Geotagging is off
+			TextView tView = (TextView) findViewById(R.id.longitudeTextView); 
+			if (tView != null)
+				tView.setVisibility(View.INVISIBLE);
+			if (mLongitudeView != null)
+				mLongitudeView.setVisibility(View.INVISIBLE);
 			tView = (TextView) findViewById(R.id.latitudeTextView);
-			tView.setVisibility(View.INVISIBLE);
+			if (tView != null)
+				tView.setVisibility(View.INVISIBLE);	
+			if (mLatitudeView != null)
+				mLatitudeView.setVisibility(View.INVISIBLE);
 		}
-
-//		if (extras != null) {
-//			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
-//				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
-//				displayContentInView(find);
-//			}
-//		}
 	}
-
+	
+	/**
+	 * This may be invoked from a FindActivity subclass which has its own layout. So 
+	 * all Views here must be referred to only contingently.  They many not exist. 
+	 */
 	protected void onResume() {
 		super.onResume();
 
 		Bundle extras = getIntent().getExtras();
 
-		if(geoTag) {
+		if(mGeoTag) {
+			mLocationManager.requestLocationUpdates(mProvider, 10000, 0, this);
 			Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			if (lastKnownLocation == null)
 				Toast.makeText(this, "Unable to retrieve last known location.", Toast.LENGTH_LONG).show();
@@ -119,19 +139,35 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			}
 		} else {
 			TextView idView = (TextView) findViewById(R.id.guidRealValueTextView);
-			idView.setText(UUID.randomUUID().toString());
+			if (idView != null)
+				idView.setText(UUID.randomUUID().toString());
 
 			TextView tView = (TextView) findViewById(R.id.guidValueTextView);
-			tView.setText(idView.getText().toString().substring(0,8)+" ...");
+			if (tView != null)
+				tView.setText(idView.getText().toString().substring(0,8)+" ...");
 
 			tView = (TextView) findViewById(R.id.timeValueTextView);
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-			Date date = new Date();
-			tView.setText(dateFormat.format(date));
+			if (tView != null) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				Date date = new Date();
+				tView.setText(dateFormat.format(date));
+			}
 
 			setLocationTextViews(mCurrentLocation);
 		}		
 
+	}
+	
+	
+
+	/**
+	 * RemoveUpdates whenever the activity is paused.
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (mLocationManager != null)
+			mLocationManager.removeUpdates(this);
 	}
 
 	/**
@@ -151,13 +187,14 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected void setLocationTextViews(Location location) {
 		TextView longView = (TextView) findViewById(R.id.longitudeValueTextView);
 		TextView latView = (TextView) findViewById(R.id.latitudeValueTextView);
-		if (mCurrentLocation != null) {
-			longView.setText(String.valueOf(location.getLongitude()));
-			latView.setText(String.valueOf(location.getLatitude()));
-		} else {
-			longView.setText("0.0");
-			latView.setText("0.0");
-		}
+		if (longView != null && latView != null) 
+			if (mCurrentLocation != null) {
+				longView.setText(String.valueOf(location.getLongitude()));
+				latView.setText(String.valueOf(location.getLatitude()));
+			} else {
+				longView.setText("0.0");
+				latView.setText("0.0");
+			}
 	}
 
 	/**
@@ -222,34 +259,42 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 		
 		TextView idView = (TextView) findViewById(R.id.guidRealValueTextView);
-		value = idView.getText().toString();
-		find.setGuid(value);
+		if (idView != null) {
+			value = idView.getText().toString();
+			find.setGuid(value);
+		}
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		TextView tView = (TextView) findViewById(R.id.timeValueTextView);
-		value = tView.getText().toString();
-		try {
-			find.setTime(dateFormat.parse(value));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (tView != null) {
+			value = tView.getText().toString();
+			try {
+				find.setTime(dateFormat.parse(value));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		EditText eText = (EditText) findViewById(R.id.nameEditText);
-		value = eText.getText().toString();
-		find.setName(value);
+		if (eText != null) {
+			value = eText.getText().toString();
+			find.setName(value);
+		}
 
 		eText = (EditText) findViewById(R.id.descriptionEditText);
-		value = eText.getText().toString();
-		find.setDescription(value);
-		
-		if (mCurrentLocation != null) {
-			find.setLatitude(mCurrentLocation.getLatitude());
-			find.setLongitude(mCurrentLocation.getLongitude());
-		} else {
-			find.setLatitude(0);
-			find.setLongitude(0);
+		if (eText != null) {
+			value = eText.getText().toString();
+			find.setDescription(value);
 		}
+		
+//		if (mCurrentLocation != null) {
+//			find.setLatitude(mCurrentLocation.getLatitude());
+//			find.setLongitude(mCurrentLocation.getLongitude());
+//		} else {
+//			find.setLatitude(0);
+//			find.setLongitude(0);
+//		}
 
 		// Removing for now.. using "currentLocation" variable instead
 		// TextView tView = (TextView) findViewById(R.id.latitudeValueTextView);
@@ -264,7 +309,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		// find.setLongitude(Double.parseDouble(value));
 		// }
 
-		if (geoTag && mCurrentLocation != null) {
+		if (mGeoTag && mCurrentLocation != null) {
 			find.setLatitude(mCurrentLocation.getLatitude());
 			find.setLongitude(mCurrentLocation.getLongitude());
 		} else {
@@ -484,7 +529,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	@Override
 	public void finish() {
 		Log.i(TAG, "onFinish()");
-		if (geoTag)
+		if (mGeoTag)
 			mLocationManager.removeUpdates(this);
 		mLocationManager = null;
 		mCurrentLocation = null;
