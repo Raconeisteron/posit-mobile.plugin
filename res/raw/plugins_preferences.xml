@@ -8,7 +8,6 @@
 			extra_activity_class="" 
 			extra_activity_class2=""
 			list_finds_activity_class="org.hfoss.posit.android.experimental.api.activity.ListFindsActivity"
-			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity"
 			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
 			preferences_xml="posit_preferences" 
 			add_find_layout="add_find"
@@ -18,6 +17,8 @@
 			main_extra_button_label=""
 			main_extra_button_label2="" 
 			main_icon="posit" />
+
+<!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
 
 <!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
 

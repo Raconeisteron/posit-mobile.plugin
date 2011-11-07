@@ -6,7 +6,8 @@
 <!-- 	<string name="open_helper_classname">org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInDbManager</string> -->
 	<string name="open_helper_classname">org.hfoss.posit.android.experimental.api.database.DbManager</string>
 		
-	<string name="defaultServer">http://www.posit-project.org/sandbox</string>
+<!-- 	<string name="defaultServer">http://www.posit-project.org/sandbox</string> -->
+	<string name="defaultServer">http://www.cs.trincoll.edu/~rfoeckin/positweb3</string>
 
 	<string name="addFind">Add find</string>
 	<string name="viewFinds">View finds</string>
