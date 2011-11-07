@@ -1,6 +1,7 @@
 package org.hfoss.posit.android.experimental.api.activity;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
+import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
 import org.hfoss.posit.android.experimental.sync.SyncAdapter;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
@@ -42,7 +44,8 @@ import android.widget.Toast;
 public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 	private static final String TAG = "ListFindsActivity";
-	private boolean mListFindsMenuExtensionPoint = false;
+	private ArrayList<FunctionPlugin> mListMenuPlugins = null;
+
 	private static final int CONFIRM_DELETE_DIALOG = 0;
 
 	
@@ -58,8 +61,8 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_finds);
-		mListFindsMenuExtensionPoint = FindPluginManager.mListFindsMenuExtensionPoint != null;
-
+		mListMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.LIST_MENU_EXTENSION);
+		Log.i(TAG, "# of List menu plugins = " + mListMenuPlugins.size());
 	}
 
 	/**
@@ -88,7 +91,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		List<? extends Find> list = this.getHelper().getFindsByProjectId(projectId);
 
 		int resId = getResources().getIdentifier(
-				FindPluginManager.mListFindLayout, "layout", getPackageName());
+				FindPluginManager.mFindPlugin.mListFindLayout, "layout", getPackageName());
 
 		FindsListAdapter adapter = new FindsListAdapter(this, resId, list);
 
@@ -114,7 +117,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				Intent intent = new Intent(parent.getContext(),
-						FindPluginManager.getInstance().getFindActivityClass());
+						FindPluginManager.mFindPlugin.getmFindActivityClass());
 				TextView tv = (TextView) view.findViewById(R.id.id);
 				int ormId = Integer.parseInt((String) tv.getText());
 				intent.putExtra(Find.ORM_ID, ormId);
@@ -132,9 +135,11 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		if (mListFindsMenuExtensionPoint){
-			MenuItem item = menu.add(FindPluginManager.mListFindsMenuTitle);
-			item.setIcon(android.R.drawable.ic_menu_save);
+		if (mListMenuPlugins.size() > 0) {
+			for (FunctionPlugin plugin: mListMenuPlugins) {
+				MenuItem item = menu.add(plugin.getmMenuTitle());
+				item.setIcon(android.R.drawable.ic_menu_mapmode);				
+			}
 		}
 		inflater.inflate(R.menu.list_finds_menu, menu);
 		return true;
@@ -195,8 +200,11 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			break;
 			
 		default:
-			if (mListFindsMenuExtensionPoint){
-				startActivity(new Intent(this, FindPluginManager.mListFindsMenuActivity));
+			if (mListMenuPlugins.size() > 0){
+				for (FunctionPlugin plugin: mListMenuPlugins) {
+					if (item.getTitle().equals(plugin.getmMenuTitle()))
+						startActivity(new Intent(this, plugin.getmMenuActivity()));
+				}
 			}
 			break;
 	
@@ -267,7 +275,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 				int resId = getResources().getIdentifier(
-						FindPluginManager.mListFindLayout, "layout",
+						FindPluginManager.mFindPlugin.mListFindLayout, "layout",
 						getPackageName());
 				v = vi.inflate(resId, null);
 			}
