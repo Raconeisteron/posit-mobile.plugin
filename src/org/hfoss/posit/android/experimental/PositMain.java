@@ -21,6 +21,8 @@
  */
 package org.hfoss.posit.android.experimental;
 
+import java.util.ArrayList;
+
 import org.hfoss.posit.android.experimental.api.User;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.experimental.api.activity.LoginActivity;
@@ -29,9 +31,11 @@ import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.FindActivityProvider;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
+import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AttributeManager;
+import org.hfoss.posit.android.experimental.plugin.Plugin;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -72,7 +76,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	private SharedPreferences mSharedPrefs;
 	private Editor mSpEditor;
 	
-	private boolean mMainMenuExtensionPointEnabled = false;
+	//private boolean mMainMenuExtensionPointEnabled = false;
+	private ArrayList<FunctionPlugin> mMainMenuPlugins = null;
 
 	/**
 	 * Called when the activity is first created. Sets the UI layout, adds the
@@ -85,7 +90,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Initialize plugins and managers
 		FindPluginManager.initInstance(this);
-		mMainMenuExtensionPointEnabled = FindPluginManager.mExtensionPoint != null;
+		//mMainMenuExtensionPointEnabled = FindPluginManager.mExtensionPoint != null;
+		mMainMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_MENU_EXTENSION);
 		
 		// AcdiVocaSmsManager.initInstance(this);
 		AttributeManager.init();
@@ -405,9 +411,12 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		// Re-inflate to force localization.
 		menu.clear();
 		MenuInflater inflater = getMenuInflater();
-		if (mMainMenuExtensionPointEnabled){
-			MenuItem item = menu.add(FindPluginManager.mMenuTitle);
-			item.setIcon(android.R.drawable.ic_menu_mapmode);
+//		if (mMainMenuExtensionPointEnabled){
+		if (mMainMenuPlugins.size() > 0) {
+			for (FunctionPlugin plugin: mMainMenuPlugins) {
+				MenuItem item = menu.add(plugin.mMenuTitle);
+				item.setIcon(android.R.drawable.ic_menu_mapmode);				
+			}
 		}
 		inflater.inflate(R.menu.positmain_menu, menu);
 
@@ -450,8 +459,12 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			break;
 			
 		default:
-			if (mMainMenuExtensionPointEnabled){
-				startActivity(new Intent(this, FindPluginManager.mMenuActivity));
+			if (mMainMenuPlugins.size() > 0){
+				for (FunctionPlugin plugin: mMainMenuPlugins) {
+					if (item.getTitle().equals(plugin.mMenuTitle))
+						startActivity(new Intent(this, plugin.mMenuActivity));
+				}
+			
 			}
 
 			break;
