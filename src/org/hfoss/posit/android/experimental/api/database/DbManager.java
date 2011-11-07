@@ -251,6 +251,23 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return rows;
 
 	}
+	
+	public int deleteAll(int projectID) {
+		int rows = -1;
+		List<Find> allFinds = getFindsByProjectId(projectID);
+		try {
+			rows = getFindDao().delete(allFinds);
+			if (rows == 1)
+				Log.i(TAG, "Deleted find:  " + this.toString());
+			else {
+				Log.e(TAG, "Db Error deleting find: " + this.toString());
+				rows = -1;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
 
 	/**
 	 * Updates the status of the sync--will eventually use this to restart

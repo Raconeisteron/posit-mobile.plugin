@@ -21,10 +21,6 @@
  */
 package org.hfoss.posit.android.experimental;
 
-import java.sql.SQLException;
-import java.util.List;
-
-import org.hfoss.posit.android.experimental.api.AppControlManager;
 import org.hfoss.posit.android.experimental.api.User;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.experimental.api.activity.LoginActivity;
@@ -35,26 +31,15 @@ import org.hfoss.posit.android.experimental.plugin.FindActivityProvider;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaLocaleManager;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaUser;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AttributeManager;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.SearchFilterActivity;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
-
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
-import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -63,10 +48,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 /**
  * Implements the main activity and the main screen for the POSIT application.
@@ -184,12 +171,12 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// New Beneficiary button
 		if (FindPluginManager.mAddButtonLabel != null) {
-			final Button addFindButton = (Button) findViewById(R.id.addFindButton);
+			final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 			int resid = this.getResources()
 					.getIdentifier(FindPluginManager.mAddButtonLabel, "string", getPackageName());
 
 			if (addFindButton != null) {
-				addFindButton.setText(resid);
+				addFindButton.setTag(resid);
 				addFindButton.setOnClickListener(this);
 			}
 
@@ -207,11 +194,11 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Send messages button
 		if (FindPluginManager.mListButtonLabel != null) {
-			final Button listFindButton = (Button) findViewById(R.id.listFindButton);
+			final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
 			int resid = this.getResources().getIdentifier(FindPluginManager.mListButtonLabel, "string",
 					getPackageName());
 			if (listFindButton != null) {
-				listFindButton.setText(resid);
+				listFindButton.setTag(resid);
 				listFindButton.setOnClickListener(this);
 			}
 
@@ -229,12 +216,12 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Update button -- used during Distribution events
 		if (FindPluginManager.mExtraButtonLabel != null && !FindPluginManager.mExtraButtonLabel.equals("")) {
-			final Button extraButton = (Button) findViewById(R.id.extraButton);
+			final ImageButton extraButton = (ImageButton) findViewById(R.id.extraButton);
 			int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel, "string",
 					getPackageName());
 			if (extraButton != null) {
 				extraButton.setOnClickListener(this);
-				extraButton.setText(resid);
+				extraButton.setTag(resid);
 				extraButton.setVisibility(View.VISIBLE);
 			}
 
@@ -259,11 +246,11 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// New agriculture beneficiary
 		if (FindPluginManager.mExtraButtonLabel2 != null && !FindPluginManager.mExtraButtonLabel2.equals("")) {
-			final Button extraButton = (Button) findViewById(R.id.extraButton2);
+			final ImageButton extraButton = (ImageButton) findViewById(R.id.extraButton2);
 			int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel2, "string",
 					getPackageName());
 			if (extraButton != null) {
-				extraButton.setText(resid);
+				extraButton.setTag(resid);
 				extraButton.setVisibility(View.VISIBLE);
 				extraButton.setOnClickListener(this);
 			}

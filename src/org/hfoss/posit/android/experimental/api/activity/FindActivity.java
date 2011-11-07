@@ -3,6 +3,7 @@ package org.hfoss.posit.android.experimental.api.activity;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
@@ -21,6 +22,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -56,7 +58,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		setContentView(resId);
 		initializeListeners();
-		Bundle extras = getIntent().getExtras();
+//		Bundle extras = getIntent().getExtras();
 		
 		// Check if settings allow Geotagging
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);		
@@ -89,16 +91,19 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			tView.setVisibility(View.INVISIBLE);
 		}
 
-		if (extras != null) {
-			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
-				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
-				displayContentInView(find);
-			}
-		}
+//		if (extras != null) {
+//			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
+//				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
+//				displayContentInView(find);
+//			}
+//		}
 	}
 
 	protected void onResume() {
 		super.onResume();
+
+		Bundle extras = getIntent().getExtras();
+
 		if(geoTag) {
 			Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			if (lastKnownLocation == null)
@@ -106,6 +111,27 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			else
 				mCurrentLocation = lastKnownLocation;
 		}	
+
+		if (extras != null) {
+			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
+				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
+				displayContentInView(find);
+			}
+		} else {
+			TextView idView = (TextView) findViewById(R.id.guidRealValueTextView);
+			idView.setText(UUID.randomUUID().toString());
+
+			TextView tView = (TextView) findViewById(R.id.guidValueTextView);
+			tView.setText(idView.getText().toString().substring(0,8)+" ...");
+
+			tView = (TextView) findViewById(R.id.timeValueTextView);
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			Date date = new Date();
+			tView.setText(dateFormat.format(date));
+
+			setLocationTextViews(mCurrentLocation);
+		}		
+
 	}
 
 	/**
@@ -123,10 +149,15 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * @param location
 	 */
 	protected void setLocationTextViews(Location location) {
-		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
-		tView.setText(String.valueOf(location.getLongitude()));
-		tView = (TextView) findViewById(R.id.latitudeValueTextView);
-		tView.setText(String.valueOf(location.getLatitude()));
+		TextView longView = (TextView) findViewById(R.id.longitudeValueTextView);
+		TextView latView = (TextView) findViewById(R.id.latitudeValueTextView);
+		if (mCurrentLocation != null) {
+			longView.setText(String.valueOf(location.getLongitude()));
+			latView.setText(String.valueOf(location.getLatitude()));
+		} else {
+			longView.setText("0.0");
+			latView.setText("0.0");
+		}
 	}
 
 	/**
@@ -153,7 +184,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.save_find_menu_item:
-			saveFind();
+			if (saveFind()) {
+				finish();
+			}
 			break;
 
 		case R.id.delete_find_menu_item:
@@ -187,23 +220,35 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		}
-
-		EditText eText = (EditText) findViewById(R.id.guidEditText);
-		if (eText != null) {
-			value = eText.getText().toString();
-			find.setGuid(value);
+		
+		TextView idView = (TextView) findViewById(R.id.guidRealValueTextView);
+		value = idView.getText().toString();
+		find.setGuid(value);
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		TextView tView = (TextView) findViewById(R.id.timeValueTextView);
+		value = tView.getText().toString();
+		try {
+			find.setTime(dateFormat.parse(value));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		eText = (EditText) findViewById(R.id.nameEditText);
-		if (eText != null) {
-			value = eText.getText().toString();
-			find.setName(value);
-		}
+		
+		EditText eText = (EditText) findViewById(R.id.nameEditText);
+		value = eText.getText().toString();
+		find.setName(value);
 
 		eText = (EditText) findViewById(R.id.descriptionEditText);
-		if (eText != null) {
-			value = eText.getText().toString();
-			find.setDescription(value);
+		value = eText.getText().toString();
+		find.setDescription(value);
+		
+		if (mCurrentLocation != null) {
+			find.setLatitude(mCurrentLocation.getLatitude());
+			find.setLongitude(mCurrentLocation.getLongitude());
+		} else {
+			find.setLatitude(0);
+			find.setLongitude(0);
 		}
 
 		// Removing for now.. using "currentLocation" variable instead
@@ -227,19 +272,19 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			find.setLongitude(0);
 		}
 
-		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
-		if (datePicker != null) {
-			value = datePicker.getMonth() + "/" + datePicker.getDayOfMonth() + "/" + datePicker.getYear();
-			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-			Date date = null;
-			try {
-				date = (Date) formatter.parse(value);
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			if (date != null)
-				find.setTime(date);
-		}
+//		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
+//		if (datePicker != null) {
+//			value = datePicker.getMonth() + "/" + datePicker.getDayOfMonth() + "/" + datePicker.getYear();
+//			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+//			Date date = null;
+//			try {
+//				date = (Date) formatter.parse(value);
+//			} catch (ParseException e) {
+//				e.printStackTrace();
+//			}
+//			if (date != null)
+//				find.setTime(date);
+//		}
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
@@ -262,17 +307,29 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		eText.setText(find.getName());
 		eText = (EditText) findViewById(R.id.descriptionEditText);
 		eText.setText(find.getDescription());
-		eText = (EditText) findViewById(R.id.guidEditText);
-		eText.setText(find.getGuid());
-
-		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
-
-		datePicker.init(find.getTime().getYear() + 1900, find.getTime().getMonth(), find.getTime().getDate(), null);
+//		eText = (EditText) findViewById(R.id.guidEditText);
+//		eText.setText(find.getGuid());
+//
+//		DatePicker datePicker = (DatePicker) findViewById(R.id.datePicker);
+//
+//		datePicker.init(find.getTime().getYear() + 1900, find.getTime().getMonth(), find.getTime().getDate(), null);
 
 		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
 		tView.setText(String.valueOf(find.getLongitude()));
 		tView = (TextView) findViewById(R.id.latitudeValueTextView);
 		tView.setText(String.valueOf(find.getLatitude()));
+		
+		tView = (TextView) findViewById(R.id.timeValueTextView);
+		tView = (TextView) findViewById(R.id.timeValueTextView);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		tView.setText(dateFormat.format(find.getTime()));
+
+		TextView idView = (TextView) findViewById(R.id.guidRealValueTextView);
+		idView.setText(find.getGuid());
+
+		tView = (TextView) findViewById(R.id.guidValueTextView);
+		String id = idView.getText().toString();
+		tView.setText(id.substring(0,Math.min(8,id.length()))+" ...");
 
 	}
 
