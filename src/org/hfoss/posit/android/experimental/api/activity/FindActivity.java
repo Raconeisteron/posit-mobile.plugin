@@ -60,7 +60,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		super.onCreate(savedInstanceState);
 
 		// Get the custom add find layout from the plugin settings, if there is one.
-		int resId = getResources().getIdentifier(FindPluginManager.mAddFindLayout, "layout", getPackageName());
+		int resId = getResources().getIdentifier(FindPluginManager.mFindPlugin.mAddFindLayout, "layout", getPackageName());
 
 		setContentView(resId);
 		mLatitudeView = (TextView) findViewById(R.id.latitudeValueTextView);
@@ -246,7 +246,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected Find retrieveContentFromView() {
 		// Get the appropriate find class from the plugin manager and
 		// make an instance of it.
-		Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
+		Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
 		Find find = null;
 		String value = "";
 
@@ -509,7 +509,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		// Get the appropriate find class from the plugin manager and
 		// make an instance of it.
-		Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
+		Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
 		Find find = null;
 
 		try {

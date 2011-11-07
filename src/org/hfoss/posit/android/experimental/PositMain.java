@@ -90,8 +90,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Initialize plugins and managers
 		FindPluginManager.initInstance(this);
-		//mMainMenuExtensionPointEnabled = FindPluginManager.mExtensionPoint != null;
+		//mMainMenuExtensionPointEnabled = FindPluginManager.mFindPlugin.mExtensionPoint != null;
 		mMainMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_MENU_EXTENSION);
+		Log.i(TAG, "# main menu plugins = " + mMainMenuPlugins.size());
 		
 		// AcdiVocaSmsManager.initInstance(this);
 		AttributeManager.init();
@@ -169,17 +170,17 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		// Log.i(TAG, "POSIT Start, distrStage = " +
 		// AppControlManager.displayDistributionStage(this));
 
-		if (FindPluginManager.mMainIcon != null) {
+		if (FindPluginManager.mFindPlugin.mMainIcon != null) {
 			final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
-			int resID = getResources().getIdentifier(FindPluginManager.mMainIcon, "drawable", this.getPackageName());
+			int resID = getResources().getIdentifier(FindPluginManager.mFindPlugin.mMainIcon, "drawable", this.getPackageName());
 			mainLogo.setImageResource(resID);
 		}
 
 		// New Beneficiary button
-		if (FindPluginManager.mAddButtonLabel != null) {
+		if (FindPluginManager.mFindPlugin.mAddButtonLabel != null) {
 			final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 			int resid = this.getResources()
-					.getIdentifier(FindPluginManager.mAddButtonLabel, "string", getPackageName());
+					.getIdentifier(FindPluginManager.mFindPlugin.mAddButtonLabel, "string", getPackageName());
 
 			if (addFindButton != null) {
 				addFindButton.setTag(resid);
@@ -199,9 +200,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		}
 
 		// Send messages button
-		if (FindPluginManager.mListButtonLabel != null) {
+		if (FindPluginManager.mFindPlugin.mListButtonLabel != null) {
 			final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
-			int resid = this.getResources().getIdentifier(FindPluginManager.mListButtonLabel, "string",
+			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mListButtonLabel, "string",
 					getPackageName());
 			if (listFindButton != null) {
 				listFindButton.setTag(resid);
@@ -221,9 +222,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		}
 
 		// Update button -- used during Distribution events
-		if (FindPluginManager.mExtraButtonLabel != null && !FindPluginManager.mExtraButtonLabel.equals("")) {
+		if (FindPluginManager.mFindPlugin.mExtraButtonLabel != null && !FindPluginManager.mFindPlugin.mExtraButtonLabel.equals("")) {
 			final ImageButton extraButton = (ImageButton) findViewById(R.id.extraButton);
-			int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel, "string",
+			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mExtraButtonLabel, "string",
 					getPackageName());
 			if (extraButton != null) {
 				extraButton.setOnClickListener(this);
@@ -251,9 +252,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		}
 
 		// New agriculture beneficiary
-		if (FindPluginManager.mExtraButtonLabel2 != null && !FindPluginManager.mExtraButtonLabel2.equals("")) {
+		if (FindPluginManager.mFindPlugin.mExtraButtonLabel2 != null && !FindPluginManager.mFindPlugin.mExtraButtonLabel2.equals("")) {
 			final ImageButton extraButton = (ImageButton) findViewById(R.id.extraButton2);
-			int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel2, "string",
+			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mExtraButtonLabel2, "string",
 					getPackageName());
 			if (extraButton != null) {
 				extraButton.setTag(resid);
@@ -414,7 +415,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 //		if (mMainMenuExtensionPointEnabled){
 		if (mMainMenuPlugins.size() > 0) {
 			for (FunctionPlugin plugin: mMainMenuPlugins) {
-				MenuItem item = menu.add(plugin.mMenuTitle);
+				MenuItem item = menu.add(plugin.getmMenuTitle());
 				item.setIcon(android.R.drawable.ic_menu_mapmode);				
 			}
 		}
@@ -461,8 +462,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		default:
 			if (mMainMenuPlugins.size() > 0){
 				for (FunctionPlugin plugin: mMainMenuPlugins) {
-					if (item.getTitle().equals(plugin.mMenuTitle))
-						startActivity(new Intent(this, plugin.mMenuActivity));
+					if (item.getTitle().equals(plugin.getmMenuTitle()))
+						startActivity(new Intent(this, plugin.getmMenuActivity()));
 				}
 			
 			}

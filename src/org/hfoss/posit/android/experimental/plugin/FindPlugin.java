@@ -30,6 +30,10 @@ public class FindPlugin extends Plugin {
 	
 	public FindPlugin(Activity activity, Node node) throws DOMException, ClassNotFoundException {
 		mMainActivity = activity;
+		
+		name = node.getAttributes().getNamedItem("name").getTextContent();
+		type = node.getAttributes().getNamedItem("type").getTextContent();
+
 		String package_name = node.getAttributes().getNamedItem("package").getTextContent();
 		String find_factory_name = node.getAttributes().getNamedItem("find_factory").getTextContent();
 		String db_manager_name = node.getAttributes().getNamedItem("find_data_manager").getTextContent();
@@ -80,5 +84,111 @@ public class FindPlugin extends Plugin {
 		// Remove break to load more than one plugin
 		//break;		
 	}
+
+	public static String getmAddFindLayout() {
+		return mAddFindLayout;
+	}
+
+	public static void setmAddFindLayout(String mAddFindLayout) {
+		FindPlugin.mAddFindLayout = mAddFindLayout;
+	}
+
+	public static String getmListFindLayout() {
+		return mListFindLayout;
+	}
+
+	public static void setmListFindLayout(String mListFindLayout) {
+		FindPlugin.mListFindLayout = mListFindLayout;
+	}
+
+	public static String getmMainIcon() {
+		return mMainIcon;
+	}
+
+	public static void setmMainIcon(String mMainIcon) {
+		FindPlugin.mMainIcon = mMainIcon;
+	}
+
+	public static String getmAddButtonLabel() {
+		return mAddButtonLabel;
+	}
+
+	public static void setmAddButtonLabel(String mAddButtonLabel) {
+		FindPlugin.mAddButtonLabel = mAddButtonLabel;
+	}
+
+	public static String getmListButtonLabel() {
+		return mListButtonLabel;
+	}
+
+	public static void setmListButtonLabel(String mListButtonLabel) {
+		FindPlugin.mListButtonLabel = mListButtonLabel;
+	}
+
+	public static String getmExtraButtonLabel() {
+		return mExtraButtonLabel;
+	}
+
+	public static void setmExtraButtonLabel(String mExtraButtonLabel) {
+		FindPlugin.mExtraButtonLabel = mExtraButtonLabel;
+	}
+
+	public static String getmExtraButtonLabel2() {
+		return mExtraButtonLabel2;
+	}
+
+	public static void setmExtraButtonLabel2(String mExtraButtonLabel2) {
+		FindPlugin.mExtraButtonLabel2 = mExtraButtonLabel2;
+	}
+
+	public Class<Find> getmFindClass() {
+		return mFindClass;
+	}
+
+	public void setmFindClass(Class<Find> mFindClass) {
+		this.mFindClass = mFindClass;
+	}
+
+	public Class<FindActivity> getmFindActivityClass() {
+		return mFindActivityClass;
+	}
+
+	public void setmFindActivityClass(Class<FindActivity> mFindActivityClass) {
+		this.mFindActivityClass = mFindActivityClass;
+	}
+
+	public Class<ListFindsActivity> getmListFindsActivityClass() {
+		return mListFindsActivityClass;
+	}
+
+	public void setmListFindsActivityClass(
+			Class<ListFindsActivity> mListFindsActivityClass) {
+		this.mListFindsActivityClass = mListFindsActivityClass;
+	}
+
+	public Class<Activity> getmExtraActivityClass() {
+		return mExtraActivityClass;
+	}
+
+	public void setmExtraActivityClass(Class<Activity> mExtraActivityClass) {
+		this.mExtraActivityClass = mExtraActivityClass;
+	}
+
+	public Class<Activity> getmExtraActivityClass2() {
+		return mExtraActivityClass2;
+	}
+
+	public void setmExtraActivityClass2(Class<Activity> mExtraActivityClass2) {
+		this.mExtraActivityClass2 = mExtraActivityClass2;
+	}
+
+	public Class<Activity> getmLoginActivityClass() {
+		return mLoginActivityClass;
+	}
+
+	public void setmLoginActivityClass(Class<Activity> mLoginActivityClass) {
+		this.mLoginActivityClass = mLoginActivityClass;
+	}
+	
 	
 }
