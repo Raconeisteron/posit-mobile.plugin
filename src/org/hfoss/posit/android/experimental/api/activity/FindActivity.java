@@ -9,8 +9,6 @@ import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -30,13 +28,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		implements OnClickListener, OnItemClickListener, LocationListener {
@@ -46,6 +45,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	private LocationManager mLocationManager;
 	private Location mCurrentLocation;
+	private boolean geoTag; 
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,21 +57,36 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		setContentView(resId);
 		initializeListeners();
 		Bundle extras = getIntent().getExtras();
+		
+		// Check if settings allow Geotagging
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);		
+		geoTag = prefs.getBoolean("geotagKey", true);
+		
+		if (geoTag) {
+			// Check for a new location every ten seconds while we're adding a new
+			// find.
+			mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-		// Check for a new location every ten seconds while we're adding a new
-		// find.
-		mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-		Criteria criteria = new Criteria();
-		criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-		criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
-		String provider = mLocationManager.getBestProvider(criteria, true);
-		if (provider != null)
-			mLocationManager.requestLocationUpdates(provider, 10000, 0, this);
-		else {
-			Toast.makeText(this, "Unable to get a location via Wifi or GPS.  Are they enabled?", Toast.LENGTH_LONG)
-					.show();
-			Log.i(TAG, "Cannot request location updates, wifi or GPS might not be enabled/need a view of the sky");
+			Criteria criteria = new Criteria();
+			criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+			criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
+			String provider = mLocationManager.getBestProvider(criteria, true);
+			if (provider != null)
+				mLocationManager.requestLocationUpdates(provider, 10000, 0, this);
+			else {
+				Toast.makeText(this, "Unable to get a location via Wifi or GPS.  Are they enabled?", Toast.LENGTH_LONG)
+						.show();
+				Log.i(TAG, "Cannot request location updates, wifi or GPS might not be enabled/need a view of the sky");
+			}
+		} else {
+			TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
+			tView.setVisibility(View.INVISIBLE);
+			tView = (TextView) findViewById(R.id.longitudeTextView);
+			tView.setVisibility(View.INVISIBLE);
+			tView = (TextView) findViewById(R.id.latitudeValueTextView);
+			tView.setVisibility(View.INVISIBLE);
+			tView = (TextView) findViewById(R.id.latitudeTextView);
+			tView.setVisibility(View.INVISIBLE);
 		}
 
 		if (extras != null) {
@@ -84,12 +99,13 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	protected void onResume() {
 		super.onResume();
-
-		Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		if (lastKnownLocation == null)
-			Toast.makeText(this, "Unable to retrieve last known location.", Toast.LENGTH_LONG).show();
-		else
-			mCurrentLocation = lastKnownLocation;
+		if(geoTag) {
+			Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if (lastKnownLocation == null)
+				Toast.makeText(this, "Unable to retrieve last known location.", Toast.LENGTH_LONG).show();
+			else
+				mCurrentLocation = lastKnownLocation;
+		}	
 	}
 
 	/**
@@ -203,7 +219,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		// find.setLongitude(Double.parseDouble(value));
 		// }
 
-		if (mCurrentLocation != null) {
+		if (geoTag && mCurrentLocation != null) {
 			find.setLatitude(mCurrentLocation.getLatitude());
 			find.setLongitude(mCurrentLocation.getLongitude());
 		} else {
@@ -255,9 +271,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		TextView tView = (TextView) findViewById(R.id.longitudeValueTextView);
 		tView.setText(String.valueOf(find.getLongitude()));
-
 		tView = (TextView) findViewById(R.id.latitudeValueTextView);
 		tView.setText(String.valueOf(find.getLatitude()));
+
 	}
 
 	/**
@@ -411,7 +427,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	@Override
 	public void finish() {
 		Log.i(TAG, "onFinish()");
-		mLocationManager.removeUpdates(this);
+		if (geoTag)
+			mLocationManager.removeUpdates(this);
 		mLocationManager = null;
 		mCurrentLocation = null;
 		super.finish();
