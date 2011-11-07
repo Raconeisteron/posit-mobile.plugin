@@ -157,6 +157,9 @@ public class Communicator {
 		// TODO: again just picking the first account here.. how are you
 		// supposed to handle this?
 		Account[] accounts = accountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
+		
+		if (accounts.length == 0)
+			return null;
 
 		String authKey = null;
 		try {

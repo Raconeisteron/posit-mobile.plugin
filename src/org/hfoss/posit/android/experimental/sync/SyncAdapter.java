@@ -92,8 +92,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			int projectId = prefs.getInt(mContext.getString(R.string.projectPref), 0);
 			
 			finds = DbHelper.getDbManager(mContext).getChangedFinds(projectId);
-			Communicator.sendFindsToServer(finds, mContext, authToken);
-			DbHelper.getDbManager(mContext).recordSync(new SyncHistory("idkwhatthisissupposedtobe"));
+			if (finds != null) {
+				Communicator.sendFindsToServer(finds, mContext, authToken);
+				DbHelper.getDbManager(mContext).recordSync(new SyncHistory("idkwhatthisissupposedtobe"));
+			}
 			
 			Log.i(TAG, "histories: " +finds);
 //			
