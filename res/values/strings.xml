@@ -48,7 +48,7 @@
 	<string name="label_victim">Victim Number</string>
 	<string name="numberLabel">Number</string>
 	<string name="typeLabel">Type</string>
-	<string name="descriptionLabel">Description</string>
+	<string name="descriptionLabel">Description: </string>
 	<string name="devTeamLabel">Development Team</string>
 	<string name="devTeamText1">Prasanna Gautam\tTrishan de Lanerolle</string>
 	<string name="devTeamText2">Ralph Morelli\tAntonio Alcorn</string>
@@ -166,7 +166,8 @@
 
 	<!-- Labels -->
 	<string name="idLabel">Id: </string>
-	<string name="nameLabel">Name</string>
+	<string name="timeLabel">Time: </string>
+	<string name="nameLabel">Name: </string>
 	<string name="ghostData_name">Name</string>
 	<string name="ghostData_description">Description</string>
 	<string name="identifierLabel">Id</string>
@@ -183,8 +184,8 @@
 	<string name="defaultInstanceLabel">Entry</string>
 	<string name="okLabel">OK</string>
 <!-- 	<string name="cancelLabel">Cancel</string> -->
-	<string name="latitude">Latitude</string>
-	<string name="longitude">Longitude</string>
+	<string name="latitude">Latitude:</string>
+	<string name="longitude">Longitude:</string>
 	<string name="button_scanner">Scan</string>
 	<string name="date_time_label">Date and Time</string>
 	<string name="settings">Settings</string>

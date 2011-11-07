@@ -1,5 +1,7 @@
 package org.hfoss.posit.android.experimental.api.activity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.hfoss.posit.android.experimental.R;
@@ -12,8 +14,11 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -38,6 +43,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 	private static final String TAG = "ListFindsActivity";
 	private boolean mListFindsMenuExtensionPoint = false;
+	private static final int CONFIRM_DELETE_DIALOG = 0;
 
 	
 	/**
@@ -177,16 +183,21 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				Toast.makeText(this, "Sync error: Unable to get " + SyncAdapter.ACCOUNT_TYPE, Toast.LENGTH_LONG).show();
 			}
 			break;
+			
 		case R.id.map_finds_menu_item:
 			Log.i(TAG, "Map finds menu item");
 			startActivity(new Intent(this, MapFindsActivity.class));
+			break;
+
+		case R.id.delete_finds_menu_item:
+			Log.i(TAG, "Delete all finds menu item"); 
+			showDialog(CONFIRM_DELETE_DIALOG);
 			break;
 			
 		default:
 			if (mListFindsMenuExtensionPoint){
 				startActivity(new Intent(this, FindPluginManager.mListFindsMenuActivity));
 			}
-
 			break;
 	
 
@@ -194,15 +205,46 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		// saveFind();
 		// break;
 		//
-		// case R.id.delete_find_menu_item:
-		// showDialog(CONFIRM_DELETE_DIALOG);
-		// break;
-		//
 		// default:
 		// return false;
 		}
 		return true;
 	} // onMenuItemSelected
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case CONFIRM_DELETE_DIALOG:
+			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon)
+					.setTitle(R.string.confirm_delete)
+					.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// User clicked OK so do some stuff
+							if (deleteAllFind()) {
+								Toast.makeText(ListFindsActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT)
+										.show();
+								finish();
+							} else
+								Toast.makeText(ListFindsActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
+						}
+					}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							// User clicked cancel so do nothing
+						}
+					}).create();
+		default:
+			return null;
+		}
+	}
+	
+	protected boolean deleteAllFind() {
+		int rows = 0;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
+		rows = getHelper().deleteAll(projectId);
+		return rows >= 0;
+
+	}
 
 	/**
 	 * Adapter for displaying finds.
@@ -234,12 +276,21 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				TextView tv = (TextView) v.findViewById(R.id.name);
 				tv.setText(find.getName());
 				tv = (TextView) v.findViewById(R.id.latitude);
-				tv.setText(String.valueOf(find.getLatitude()));
+				tv.setText(getText(R.string.latitude) + " " + String.valueOf(find.getLatitude()));
 				tv = (TextView) v.findViewById(R.id.longitude);
-				tv.setText(String.valueOf(find.getLongitude()));
+				tv.setText(getText(R.string.longitude) + " " + String.valueOf(find.getLongitude()));
 				tv = (TextView) v.findViewById(R.id.id);
 				tv.setText(Integer.toString(find.getId()));
-
+				tv = (TextView) v.findViewById(R.id.time);
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				tv.setText(getText(R.string.timeLabel)+ " " + dateFormat.format(find.getTime()));
+				tv = (TextView) v.findViewById(R.id.description_id);
+				String description = find.getDescription();
+				if (description.length() <= 50) {
+					tv.setText(description);
+				} else {
+					tv.setText(description.substring(0,49)+" ...");
+				}
 			}
 			return v;
 		}
