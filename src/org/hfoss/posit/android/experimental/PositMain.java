@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 import org.hfoss.posit.android.experimental.api.User;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
-import org.hfoss.posit.android.experimental.api.activity.LoginActivity;
+//import org.hfoss.posit.android.experimental.api.activity.LoginActivity;
 import org.hfoss.posit.android.experimental.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
@@ -70,14 +70,16 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 	private static final int CONFIRM_EXIT = 0;
 
-	public static final int LOGIN_CANCELED = 3;
-	public static final int LOGIN_SUCCESSFUL = 4;
+//	public static final int LOGIN_CANCELED = 3;
+//	public static final int LOGIN_SUCCESSFUL = 4;
 
 	private SharedPreferences mSharedPrefs;
 	private Editor mSpEditor;
 	
 	//private boolean mMainMenuExtensionPointEnabled = false;
 	private ArrayList<FunctionPlugin> mMainMenuPlugins = null;
+	private FunctionPlugin mMainLoginPlugin = null;
+	
 
 	/**
 	 * Called when the activity is first created. Sets the UI layout, adds the
@@ -90,17 +92,17 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Initialize plugins and managers
 		FindPluginManager.initInstance(this);
-		//mMainMenuExtensionPointEnabled = FindPluginManager.mFindPlugin.mExtensionPoint != null;
 		mMainMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_MENU_EXTENSION);
 		Log.i(TAG, "# main menu plugins = " + mMainMenuPlugins.size());
-		
+		mMainLoginPlugin = FindPluginManager.getFunctionPlugin(FindPluginManager.MAIN_LOGIN_EXTENSION);	
+
+		// NOTE: This is AcdiVoca stuff and should be put in a plugin
 		// AcdiVocaSmsManager.initInstance(this);
 		AttributeManager.init();
 
-		
-		
-		// A newly installed POSIT should have no shared prefs. Set the default
-		// phone pref if
+		// NOTE: Not sure if this is the best way to do this -- perhaps these kinds of prefs
+		//  should go in the plugins_preferences.xml
+		// A newly installed POSIT should have no shared prefs. Set the default phone pref if
 		// it is not already set.
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		try {
@@ -122,38 +124,30 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			e.printStackTrace();
 		}
 
-		// // get our dao
-		// Dao<AcdiVocaUser, Integer> avUserDao = null;
-		// try {
-		// avUserDao = getHelper().getAvUserDao();
-		// } catch (SQLException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
-		// // Query for all of the data objects in the database
-		// List<AcdiVocaUser> list = null;
-		// try {
-		// list = avUserDao.queryForAll();
-		// } catch (SQLException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// // our string builder for building the content-view
-		// for (AcdiVocaUser item : list) {
-		// Log.i(TAG, "User= " + item.toString());
-		// }
-
-		// Run login activity, if necessary
-
-		Intent intent = new Intent();
-		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
-		if (loginActivity != null) {
+		
+		// Login Extension Point
+		// Run login plugin, if necessary
+		
+		if (mMainLoginPlugin != null) {
+			Intent intent = new Intent();
+			Class<Activity> loginActivity = mMainLoginPlugin.getActivity();
 			intent.setClass(this, loginActivity);
 			intent.putExtra(User.USER_TYPE_STRING, User.UserType.USER.ordinal());
-			Log.i(TAG, "started activity fo rresult");
-			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
+			Log.i(TAG, "Starting login activity for result");
+			if (mMainLoginPlugin.getActivityReturnsResult()) 
+				this.startActivityForResult(intent, mMainLoginPlugin.getActivityResultAction());
+			else
+				this.startActivity(intent);
 		}
+
+//		Intent intent = new Intent();
+//		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
+//		if (loginActivity != null) {
+//			intent.setClass(this, loginActivity);
+//			intent.putExtra(User.USER_TYPE_STRING, User.UserType.USER.ordinal());
+//			Log.i(TAG, "started activity fo rresult");
+//			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
+//		}
 	}
 
 	/**
@@ -325,21 +319,33 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		Log.i(TAG, "Destroying");
 	}
 
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.i(TAG, "onActivityResult Result from registration = " + resultCode);
-		switch (requestCode) {
-
-		case LoginActivity.ACTION_LOGIN:
-			if (resultCode == RESULT_OK) {
+		Log.i(TAG, "onActivityResult resultcode = " + resultCode);
+		
+		// Login Extension Point result
+		if (mMainLoginPlugin != null && requestCode == mMainLoginPlugin.getActivityResultAction()) {
+			if (resultCode == Activity.RESULT_OK) {
 				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
-				break;
 			} else {
-				finish();
+				finish();				
 			}
-		default:
+		} else 
 			super.onActivityResult(requestCode, resultCode, data);
-		}
+			
+		
+//		switch (requestCode) {
+//		case LoginActivity.ACTION_LOGIN:
+//			if (resultCode == RESULT_OK) {
+//				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
+//				break;
+//			} else {
+//				finish();
+//			}
+//		default:
+//			super.onActivityResult(requestCode, resultCode, data);
+//		}
 	}
 
 	/**

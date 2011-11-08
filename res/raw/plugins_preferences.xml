@@ -40,13 +40,31 @@
 <!-- 			main_extra_button_label2=""  -->
 <!-- 			main_icon="outsidein_logo" /> -->
 
-		<Plugin active="true" type="function" extensionPoint="mainMenu"
-			menuIcon="ic_menu_mapmode" name="map" menuTitle="Map Finds"
+<!-- Function Plugins -->
+		<Plugin active="true" 
+			type="function" 
+			extensionPoint="mainMenu"
+			name="map" 
+			menuIcon="ic_menu_mapmode" 
+			menuTitle="Map Finds"
 			menuActivity="org.hfoss.posit.android.experimental.api.activity.MapFindsActivity" />
 
-		<Plugin active="true" type="function" extensionPoint="listMenu"
-			menuIcon="ic_menu_savetolog" name="log" menuTitle="Log Finds"
+		<Plugin active="true" 
+			type="function" 
+			extensionPoint="listMenu"
+			name="log" 
+			menuIcon="ic_menu_savetolog" menuTitle="Log Finds"
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.LogFindsActivity" />
+
+		<Plugin active="true" 
+			type="function" 
+			extensionPoint="mainLogin"
+			name="login"
+			activity="org.hfoss.posit.android.experimental.functionplugins.LoginActivity" 
+			activity_returns_result="true"
+			activity_result_action="0"
+			/>
+
 
 		<!-- <Plugin active="true" name="AcdiVocaFind" -->
 		<!-- package="org.hfoss.posit.android.experimental.plugin.acdivoca" -->

@@ -20,7 +20,7 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android.experimental.api.activity;
+package org.hfoss.posit.android.experimental.functionplugins;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -127,7 +127,7 @@ public class LoginActivity extends OrmLiteBaseActivity<DbManager> implements OnC
 			String password = etext.getText().toString();
 			int userTypeOrdinal = authenticateUser(username, password, mUserType);
 			if (userTypeOrdinal != -1) {
-				setResult(RESULT_OK,returnIntent);
+				setResult(Activity.RESULT_OK,returnIntent);
 				
 				// Remember what type of user this is -- for controlling menus, etc.			
 				AppControlManager.setUserType(userTypeOrdinal);
