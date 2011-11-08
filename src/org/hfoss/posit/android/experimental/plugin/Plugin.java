@@ -14,6 +14,7 @@ public class Plugin {
 	public static String mPreferences = null;
 	protected String name;
 	protected String type;
+	protected Class<Activity> activity;
 	
 	protected Activity mMainActivity;
 	public static String getmPreferences() {
@@ -40,6 +41,13 @@ public class Plugin {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Class<Activity> getActivity() {
+		return activity;
+	}
+	public void setActivity(Class<Activity> activity) {
+		this.activity = activity;
 	}
 	public String toString() {
 		return name + " " + type;

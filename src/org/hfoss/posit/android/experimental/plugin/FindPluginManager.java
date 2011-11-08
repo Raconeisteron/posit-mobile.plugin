@@ -39,6 +39,7 @@ public class FindPluginManager {
 
 	public static final String MAIN_MENU_EXTENSION = "mainMenu";
 	public static final String LIST_MENU_EXTENSION = "listMenu";
+	public static final String MAIN_LOGIN_EXTENSION = "mainLogin"; 
 	
 	public static final String IS_PLUGIN = "isPlugin"; // used in subclasses to
 														// indicate
@@ -145,6 +146,23 @@ public class FindPluginManager {
 	public ArrayList<Plugin> getPlugins() {
 		return plugins;
 	}
+	
+	/**
+	 * Returns a FunctionPlugin by extension point
+	 * @return
+	 */
+	public static FunctionPlugin getFunctionPlugin(String extensionType) {
+		FunctionPlugin plugin = null;
+		for (Plugin p : plugins) {
+			if (p instanceof FunctionPlugin) {
+				Log.i(TAG, "Function plugin " + p.toString());
+				if ( ((FunctionPlugin) p).mExtensionPoint.equals(extensionType))
+					plugin = (FunctionPlugin) p;
+			}
+		}
+		return plugin;
+	}
+
 	
 	/**
 	 * Returns FunctionPlugins by extension point

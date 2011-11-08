@@ -76,6 +76,9 @@
 		<!--  Activities for Function Plugins -->	
 		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.LogFindsActivity" />
+		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.LoginActivity" />
+
 
 		<!-- Activities for Outside In plugin -->
 		<activity
@@ -139,7 +142,7 @@
 
 		<activity android:name=".SettingsActivity"
 			android:screenOrientation="portrait" />
-
+			
 <!-- 		<receiver android:name=".plugin.acdivoca.AcdiVocaSmsManager"> -->
 <!-- 			<intent-filter> -->
 <!-- 				<action android:name="android.provider.Telephony.SMS_RECEIVED" /> -->
@@ -169,7 +172,5 @@
 			<meta-data android:name="android.accounts.AccountAuthenticator"
 				android:resource="@xml/authenticator" />
 		</service>
-
-
 	</application>
 </manifest>
