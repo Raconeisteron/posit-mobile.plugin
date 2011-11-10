@@ -12,22 +12,22 @@ public class FindActivityProvider {
 	private FindActivityProvider(){} // don't instantiate this class
 	
 	public static Class<FindActivity> getFindActivityClass(){
-		return FindPluginManager.getInstance().getFindActivityClass();
+		return FindPluginManager.mFindPlugin.getmFindActivityClass();
 	}
 
 	public static Class<ListFindsActivity> getListFindsActivityClass(){
-		return FindPluginManager.getInstance().getListFindsActivityClass();
+		return FindPluginManager.mFindPlugin.getmListFindsActivityClass();
 	}
 	
 	public static Class<Activity> getLoginActivityClass(){
-		return FindPluginManager.getInstance().getLoginActivityClass();
+		return FindPluginManager.mFindPlugin.getmLoginActivityClass();
 	}
 
 	public static Class<Activity> getExtraActivityClass(){
-		return FindPluginManager.getInstance().getExtraActivityClass();
+		return FindPluginManager.mFindPlugin.getmExtraActivityClass();
 	}
 	
 	public static Class<Activity> getExtraActivityClass2(){
-		return FindPluginManager.getInstance().getExtraActivityClass2();
+		return FindPluginManager.mFindPlugin.getmExtraActivityClass2();
 	}
 }

@@ -16,9 +16,14 @@ package org.hfoss.posit.android.experimental.api.authentication;
  * the License.
  */
 
+import org.hfoss.posit.android.experimental.R;
+
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
@@ -27,31 +32,42 @@ import android.util.Log;
  */
 public class AuthenticationService extends Service {
 
-    private static final String TAG = "AuthenticationService";
+	private static final String TAG = "AuthenticationService";
 
-    private Authenticator mAuthenticator;
+	private Authenticator mAuthenticator;
 
-    @Override
-    public void onCreate() {
-        if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            Log.v(TAG, "SampleSyncAdapter Authentication Service started.");
-        }
-        mAuthenticator = new Authenticator(this);
-    }
+	@Override
+	public void onCreate() {
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			Log.v(TAG, "SampleSyncAdapter Authentication Service started.");
+		}
+		SharedPreferences SharedPrefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		String server = SharedPrefs.getString(getString(R.string.serverPref),
+				"");
+		if (server.equals("")) {
+			Editor SpEditor = SharedPrefs.edit();
+			SpEditor.putString(getString(R.string.serverPref),
+					getString(R.string.defaultServer));
+			SpEditor.commit();
+		}
+		mAuthenticator = new Authenticator(this);
+	}
 
-    @Override
-    public void onDestroy() {
-        if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            Log.v(TAG, "SampleSyncAdapter Authentication Service stopped.");
-        }
-    }
+	@Override
+	public void onDestroy() {
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			Log.v(TAG, "SampleSyncAdapter Authentication Service stopped.");
+		}
+	}
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            Log.v(TAG, "getBinder()...  returning the AccountAuthenticator binder for intent "
-                + intent);
-        }
-        return mAuthenticator.getIBinder();
-    }
+	@Override
+	public IBinder onBind(Intent intent) {
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			Log.v(TAG,
+					"getBinder()...  returning the AccountAuthenticator binder for intent "
+							+ intent);
+		}
+		return mAuthenticator.getIBinder();
+	}
 }

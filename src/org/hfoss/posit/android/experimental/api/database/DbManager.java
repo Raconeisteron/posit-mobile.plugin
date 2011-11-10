@@ -96,7 +96,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		Log.i(TAG, "onCreate");
-		Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
+		Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
 		try {
 			findClass.getMethod("createTable", ConnectionSource.class).invoke(null, connectionSource);
 		} catch (Exception e) {
@@ -115,7 +115,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, FindHistory.class, true);
 			TableUtils.dropTable(connectionSource, SyncHistory.class, true);
 
-			Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
+			Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
 			TableUtils.dropTable(connectionSource, findClass, true);
 
 			// after we drop the old databases, we create the new ones
@@ -250,6 +250,23 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		}
 		return rows;
 
+	}
+	
+	public int deleteAll(int projectID) {
+		int rows = -1;
+		List<Find> allFinds = getFindsByProjectId(projectID);
+		try {
+			rows = getFindDao().delete(allFinds);
+			if (rows == 1)
+				Log.i(TAG, "Deleted find:  " + this.toString());
+			else {
+				Log.e(TAG, "Db Error deleting find: " + this.toString());
+				rows = -1;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
 	}
 
 	/**
@@ -431,7 +448,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	 */
 	public Dao<Find, Integer> getFindDao() {
 		if (findDao == null) {
-			Class<Find> findClass = FindPluginManager.getInstance().getFindClass();
+			Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
 			try {
 				findDao = getDao(findClass);
 			} catch (SQLException e) {

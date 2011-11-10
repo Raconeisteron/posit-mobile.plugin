@@ -9,65 +9,47 @@ import android.app.Activity;
 
 public class Plugin {
 
-	private static final String TAG = "Plugin";
+	protected static final String TAG = "Plugin";
 	
-	private Activity mMainActivity = null;
-	
-	private FindFactory mFindFactory = null;
-	//private FindDataManager mFindDataManager = null;
-	private Class<FindActivity> mFindActivityClass = null;
-	private Class<ListFindsActivity> mListFindsActivityClass = null;
-	
-	private Class<SettingsActivity> mSettingsActivityClass = null;
-
 	public static String mPreferences = null;
-	public static String mMainIcon = null;
-
-	public Activity getmMainActivity() {
-		return mMainActivity;
-	}
-	public void setmMainActivity(Activity mMainActivity) {
-		this.mMainActivity = mMainActivity;
-	}
-	public FindFactory getmFindFactory() {
-		return mFindFactory;
-	}
-	public void setmFindFactory(FindFactory mFindFactory) {
-		this.mFindFactory = mFindFactory;
-	}
-//	public FindDataManager getmFindDataManager() {
-//		return mFindDataManager;
-//	}
-//	public void setmFindDataManager(FindDataManager mFindDataManager) {
-//		this.mFindDataManager = mFindDataManager;
-//	}
-	public Class<FindActivity> getmFindActivityClass() {
-		return mFindActivityClass;
-	}
-	public void setmFindActivityClass(Class<FindActivity> mFindActivityClass) {
-		this.mFindActivityClass = mFindActivityClass;
-	}
-	public Class<ListFindsActivity> getmListFindsActivityClass() {
-		return mListFindsActivityClass;
-	}
-	public void setmListFindsActivityClass(
-			Class<ListFindsActivity> mListFindsActivityClass) {
-		this.mListFindsActivityClass = mListFindsActivityClass;
-	}
-	public Class<SettingsActivity> getmSettingsActivityClass() {
-		return mSettingsActivityClass;
-	}
-	public void setmSettingsActivityClass(
-			Class<SettingsActivity> mSettingsActivityClass) {
-		this.mSettingsActivityClass = mSettingsActivityClass;
-	}
+	protected String name;
+	protected String type;
+	protected Class<Activity> activity;
+	
+	protected Activity mMainActivity;
 	public static String getmPreferences() {
 		return mPreferences;
 	}
 	public static void setmPreferences(String mPreferences) {
 		Plugin.mPreferences = mPreferences;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Activity getmMainActivity() {
+		return mMainActivity;
+	}
+	public void setmMainActivity(Activity mMainActivity) {
+		this.mMainActivity = mMainActivity;
+	}
 	
-	
-	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Class<Activity> getActivity() {
+		return activity;
+	}
+	public void setActivity(Class<Activity> activity) {
+		this.activity = activity;
+	}
+	public String toString() {
+		return name + " " + type;
+	}
 }

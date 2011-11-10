@@ -21,40 +21,29 @@
  */
 package org.hfoss.posit.android.experimental;
 
-import java.sql.SQLException;
-import java.util.List;
+import java.util.ArrayList;
 
-import org.hfoss.posit.android.experimental.api.AppControlManager;
 import org.hfoss.posit.android.experimental.api.User;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
-import org.hfoss.posit.android.experimental.api.activity.LoginActivity;
+//import org.hfoss.posit.android.experimental.api.activity.LoginActivity;
 import org.hfoss.posit.android.experimental.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.FindActivityProvider;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
+import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaLocaleManager;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaUser;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AttributeManager;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.SearchFilterActivity;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager;
-
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
-import com.j256.ormlite.dao.Dao;
+import org.hfoss.posit.android.experimental.plugin.Plugin;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -63,10 +52,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 /**
  * Implements the main activity and the main screen for the POSIT application.
@@ -79,13 +70,16 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 	private static final int CONFIRM_EXIT = 0;
 
-	public static final int LOGIN_CANCELED = 3;
-	public static final int LOGIN_SUCCESSFUL = 4;
+//	public static final int LOGIN_CANCELED = 3;
+//	public static final int LOGIN_SUCCESSFUL = 4;
 
 	private SharedPreferences mSharedPrefs;
 	private Editor mSpEditor;
 	
-	private boolean mMainMenuExtensionPointEnabled = false;
+	//private boolean mMainMenuExtensionPointEnabled = false;
+	private ArrayList<FunctionPlugin> mMainMenuPlugins = null;
+	private FunctionPlugin mMainLoginPlugin = null;
+	
 
 	/**
 	 * Called when the activity is first created. Sets the UI layout, adds the
@@ -98,15 +92,17 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Initialize plugins and managers
 		FindPluginManager.initInstance(this);
-		mMainMenuExtensionPointEnabled = FindPluginManager.mExtensionPoint != null;
-		
+		mMainMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_MENU_EXTENSION);
+		Log.i(TAG, "# main menu plugins = " + mMainMenuPlugins.size());
+		mMainLoginPlugin = FindPluginManager.getFunctionPlugin(FindPluginManager.MAIN_LOGIN_EXTENSION);	
+
+		// NOTE: This is AcdiVoca stuff and should be put in a plugin
 		// AcdiVocaSmsManager.initInstance(this);
 		AttributeManager.init();
 
-		
-		
-		// A newly installed POSIT should have no shared prefs. Set the default
-		// phone pref if
+		// NOTE: Not sure if this is the best way to do this -- perhaps these kinds of prefs
+		//  should go in the plugins_preferences.xml
+		// A newly installed POSIT should have no shared prefs. Set the default phone pref if
 		// it is not already set.
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		try {
@@ -128,38 +124,30 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			e.printStackTrace();
 		}
 
-		// // get our dao
-		// Dao<AcdiVocaUser, Integer> avUserDao = null;
-		// try {
-		// avUserDao = getHelper().getAvUserDao();
-		// } catch (SQLException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
-		// // Query for all of the data objects in the database
-		// List<AcdiVocaUser> list = null;
-		// try {
-		// list = avUserDao.queryForAll();
-		// } catch (SQLException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// // our string builder for building the content-view
-		// for (AcdiVocaUser item : list) {
-		// Log.i(TAG, "User= " + item.toString());
-		// }
-
-		// Run login activity, if necessary
-
-		Intent intent = new Intent();
-		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
-		if (loginActivity != null) {
+		
+		// Login Extension Point
+		// Run login plugin, if necessary
+		
+		if (mMainLoginPlugin != null) {
+			Intent intent = new Intent();
+			Class<Activity> loginActivity = mMainLoginPlugin.getActivity();
 			intent.setClass(this, loginActivity);
 			intent.putExtra(User.USER_TYPE_STRING, User.UserType.USER.ordinal());
-			Log.i(TAG, "started activity fo rresult");
-			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
+			Log.i(TAG, "Starting login activity for result");
+			if (mMainLoginPlugin.getActivityReturnsResult()) 
+				this.startActivityForResult(intent, mMainLoginPlugin.getActivityResultAction());
+			else
+				this.startActivity(intent);
 		}
+
+//		Intent intent = new Intent();
+//		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
+//		if (loginActivity != null) {
+//			intent.setClass(this, loginActivity);
+//			intent.putExtra(User.USER_TYPE_STRING, User.UserType.USER.ordinal());
+//			Log.i(TAG, "started activity fo rresult");
+//			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
+//		}
 	}
 
 	/**
@@ -176,20 +164,20 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		// Log.i(TAG, "POSIT Start, distrStage = " +
 		// AppControlManager.displayDistributionStage(this));
 
-		if (FindPluginManager.mMainIcon != null) {
+		if (FindPluginManager.mFindPlugin.mMainIcon != null) {
 			final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
-			int resID = getResources().getIdentifier(FindPluginManager.mMainIcon, "drawable", this.getPackageName());
+			int resID = getResources().getIdentifier(FindPluginManager.mFindPlugin.mMainIcon, "drawable", this.getPackageName());
 			mainLogo.setImageResource(resID);
 		}
 
 		// New Beneficiary button
-		if (FindPluginManager.mAddButtonLabel != null) {
-			final Button addFindButton = (Button) findViewById(R.id.addFindButton);
+		if (FindPluginManager.mFindPlugin.mAddButtonLabel != null) {
+			final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 			int resid = this.getResources()
-					.getIdentifier(FindPluginManager.mAddButtonLabel, "string", getPackageName());
+					.getIdentifier(FindPluginManager.mFindPlugin.mAddButtonLabel, "string", getPackageName());
 
 			if (addFindButton != null) {
-				addFindButton.setText(resid);
+				addFindButton.setTag(resid);
 				addFindButton.setOnClickListener(this);
 			}
 
@@ -206,12 +194,12 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		}
 
 		// Send messages button
-		if (FindPluginManager.mListButtonLabel != null) {
-			final Button listFindButton = (Button) findViewById(R.id.listFindButton);
-			int resid = this.getResources().getIdentifier(FindPluginManager.mListButtonLabel, "string",
+		if (FindPluginManager.mFindPlugin.mListButtonLabel != null) {
+			final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
+			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mListButtonLabel, "string",
 					getPackageName());
 			if (listFindButton != null) {
-				listFindButton.setText(resid);
+				listFindButton.setTag(resid);
 				listFindButton.setOnClickListener(this);
 			}
 
@@ -228,13 +216,13 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		}
 
 		// Update button -- used during Distribution events
-		if (FindPluginManager.mExtraButtonLabel != null && !FindPluginManager.mExtraButtonLabel.equals("")) {
-			final Button extraButton = (Button) findViewById(R.id.extraButton);
-			int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel, "string",
+		if (FindPluginManager.mFindPlugin.mExtraButtonLabel != null && !FindPluginManager.mFindPlugin.mExtraButtonLabel.equals("")) {
+			final ImageButton extraButton = (ImageButton) findViewById(R.id.extraButton);
+			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mExtraButtonLabel, "string",
 					getPackageName());
 			if (extraButton != null) {
 				extraButton.setOnClickListener(this);
-				extraButton.setText(resid);
+				extraButton.setTag(resid);
 				extraButton.setVisibility(View.VISIBLE);
 			}
 
@@ -258,12 +246,12 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		}
 
 		// New agriculture beneficiary
-		if (FindPluginManager.mExtraButtonLabel2 != null && !FindPluginManager.mExtraButtonLabel2.equals("")) {
-			final Button extraButton = (Button) findViewById(R.id.extraButton2);
-			int resid = this.getResources().getIdentifier(FindPluginManager.mExtraButtonLabel2, "string",
+		if (FindPluginManager.mFindPlugin.mExtraButtonLabel2 != null && !FindPluginManager.mFindPlugin.mExtraButtonLabel2.equals("")) {
+			final ImageButton extraButton = (ImageButton) findViewById(R.id.extraButton2);
+			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mExtraButtonLabel2, "string",
 					getPackageName());
 			if (extraButton != null) {
-				extraButton.setText(resid);
+				extraButton.setTag(resid);
 				extraButton.setVisibility(View.VISIBLE);
 				extraButton.setOnClickListener(this);
 			}
@@ -331,21 +319,33 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		Log.i(TAG, "Destroying");
 	}
 
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.i(TAG, "onActivityResult Result from registration = " + resultCode);
-		switch (requestCode) {
-
-		case LoginActivity.ACTION_LOGIN:
-			if (resultCode == RESULT_OK) {
+		Log.i(TAG, "onActivityResult resultcode = " + resultCode);
+		
+		// Login Extension Point result
+		if (mMainLoginPlugin != null && requestCode == mMainLoginPlugin.getActivityResultAction()) {
+			if (resultCode == Activity.RESULT_OK) {
 				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
-				break;
 			} else {
-				finish();
+				finish();				
 			}
-		default:
+		} else 
 			super.onActivityResult(requestCode, resultCode, data);
-		}
+			
+		
+//		switch (requestCode) {
+//		case LoginActivity.ACTION_LOGIN:
+//			if (resultCode == RESULT_OK) {
+//				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
+//				break;
+//			} else {
+//				finish();
+//			}
+//		default:
+//			super.onActivityResult(requestCode, resultCode, data);
+//		}
 	}
 
 	/**
@@ -418,9 +418,12 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		// Re-inflate to force localization.
 		menu.clear();
 		MenuInflater inflater = getMenuInflater();
-		if (mMainMenuExtensionPointEnabled){
-			MenuItem item = menu.add(FindPluginManager.mMenuTitle);
-			item.setIcon(android.R.drawable.ic_menu_mapmode);
+//		if (mMainMenuExtensionPointEnabled){
+		if (mMainMenuPlugins.size() > 0) {
+			for (FunctionPlugin plugin: mMainMenuPlugins) {
+				MenuItem item = menu.add(plugin.getmMenuTitle());
+				item.setIcon(android.R.drawable.ic_menu_mapmode);				
+			}
 		}
 		inflater.inflate(R.menu.positmain_menu, menu);
 
@@ -463,8 +466,12 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			break;
 			
 		default:
-			if (mMainMenuExtensionPointEnabled){
-				startActivity(new Intent(this, FindPluginManager.mMenuActivity));
+			if (mMainMenuPlugins.size() > 0){
+				for (FunctionPlugin plugin: mMainMenuPlugins) {
+					if (item.getTitle().equals(plugin.getmMenuTitle()))
+						startActivity(new Intent(this, plugin.getmMenuActivity()));
+				}
+			
 			}
 
 			break;
