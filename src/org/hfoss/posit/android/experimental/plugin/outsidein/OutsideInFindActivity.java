@@ -111,7 +111,17 @@ public class OutsideInFindActivity extends FindActivity {
 	 */
 	@Override
 	protected boolean isValidGuid(String guid) {
-		return guid.length() == 8;
+		if (guid.length() != 8) 
+			return false;
+		int month = Integer.parseInt(guid.substring(4,6));
+		Log.i(TAG, "Month = " + month);
+		if (month < 1 || month > 12)
+			return false;
+		int year = Integer.parseInt(guid.substring(6));
+		Log.i(TAG, "Year = " + year);
+		if (year < 20)  // valid birth years 1920 - 1999 (so 12-91 years old??)
+			return false; 
+		return true;
 	}
 
 	/**
@@ -145,6 +155,7 @@ public class OutsideInFindActivity extends FindActivity {
 	}
 	
 
+	
 	@Override
 	protected void prepareForSave(Find find) {
 		((OutsideInFind)find).isLogged = false;
