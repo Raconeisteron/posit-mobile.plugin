@@ -46,7 +46,7 @@ public class FindPluginManager {
 	// that in onCreate() we are in a plugin.. not sure
 
 	// Mostly for Function Plugins
-	private static ArrayList<Plugin> plugins = new ArrayList<Plugin>();
+	private static ArrayList<Plugin> plugins = null; // new ArrayList<Plugin>();
 	
 	// Our one and only (sometimes) Find Plugin
 	public static FindPlugin mFindPlugin = null;
@@ -69,7 +69,9 @@ public class FindPluginManager {
 		return sInstance;
 	}
 
-	public void initFromResource(Context context, int plugins_xml){		
+	public void initFromResource(Context context, int plugins_xml){	
+		plugins = new ArrayList<Plugin>();
+		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try{
 			DocumentBuilder builder = factory.newDocumentBuilder();
