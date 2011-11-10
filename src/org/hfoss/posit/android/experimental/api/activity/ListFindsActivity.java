@@ -5,11 +5,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
+import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
+import org.hfoss.posit.android.experimental.sync.SyncActivity;
 import org.hfoss.posit.android.experimental.sync.SyncAdapter;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
@@ -47,7 +50,8 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	private ArrayList<FunctionPlugin> mListMenuPlugins = null;
 
 	private static final int CONFIRM_DELETE_DIALOG = 0;
-
+	
+	protected static FindsListAdapter mAdapter = null;
 	
 	/**
 	 * Called when the Activity starts.
@@ -75,7 +79,8 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume()");
-		fillList(setUpAdapter());
+		mAdapter = (FindsListAdapter) setUpAdapter();
+		fillList(mAdapter);
 	}
 
 	/**
@@ -102,12 +107,6 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	 * Puts the items from the DB table into the rows of the view.
 	 */
 	private void fillList(ListAdapter adapter) {
-		
-//		if (adapter.isEmpty()) {
-//			setContentView(R.layout.list_finds);
-//			return;
-//		}
-
 		setListAdapter(adapter);
 
 		ListView lv = getListView();
@@ -161,32 +160,37 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		switch (item.getItemId()) {
 		case R.id.sync_finds_menu_item:
 			Log.i(TAG, "Sync finds menu item");
-			AccountManager manager = AccountManager.get(this);
-			Account[] accounts = manager
-					.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
+			startActivityForResult(new Intent(this,SyncActivity.class), 0);
 			
-			// Just pick the first account for now.. TODO: make this work for
-			// multiple accounts of same type?
-			Bundle extras = new Bundle();
-			
-			// Avoids index-out-of-bounds error if no such account
-			// Must be a better way to do this?
-			if (accounts.length != 0) {
-				Log.i(TAG, "Requesting sync");
-				if (!ContentResolver.getSyncAutomatically(accounts[0],getResources().getString(R.string.contentAuthority))) {
-					Log.i(TAG, "Sync not requested. " + SyncAdapter.ACCOUNT_TYPE + " is not ON");
-					Toast.makeText(this, "Sync not requested: " + SyncAdapter.ACCOUNT_TYPE + " is not ON", Toast.LENGTH_LONG).show();
-				} else {
-				ContentResolver
-				.requestSync(
-						accounts[0],
-						getResources().getString(R.string.contentAuthority),
-						extras);
-				}
-			} else {
-				Log.i(TAG, "Sync not requested. Unable to get " + SyncAdapter.ACCOUNT_TYPE);
-				Toast.makeText(this, "Sync error: Unable to get " + SyncAdapter.ACCOUNT_TYPE, Toast.LENGTH_LONG).show();
-			}
+//			Log.i(TAG, "Sync finds menu item");
+//			AccountManager manager = AccountManager.get(this);
+//			Account[] accounts = manager
+//					.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
+//			
+//			// Just pick the first account for now.. TODO: make this work for
+//			// multiple accounts of same type?
+//			Bundle extras = new Bundle();
+//			
+//			// Avoids index-out-of-bounds error if no such account
+//			// Must be a better way to do this?
+//			if (accounts.length != 0) {
+//				Log.i(TAG, "Requesting sync");
+//				if (!ContentResolver.getSyncAutomatically(accounts[0],getResources().getString(R.string.contentAuthority))) {
+//					Log.i(TAG, "Sync not requested. " + SyncAdapter.ACCOUNT_TYPE + " is not ON");
+//					Toast.makeText(this, "Sync not requested: " + SyncAdapter.ACCOUNT_TYPE + " is not ON", Toast.LENGTH_LONG).show();
+//				} else {
+//				ContentResolver
+//				.requestSync(
+//						accounts[0],
+//						getResources().getString(R.string.contentAuthority),
+//						extras);
+////				mAdapter.notifyDataSetChanged();
+//				Toast.makeText(this, "Sync requested", Toast.LENGTH_LONG).show();
+//				}
+//			} else {
+//				Log.i(TAG, "Sync not requested. Unable to get " + SyncAdapter.ACCOUNT_TYPE);
+//				Toast.makeText(this, "Sync error: Unable to get " + SyncAdapter.ACCOUNT_TYPE, Toast.LENGTH_LONG).show();
+//			}
 			break;
 			
 		case R.id.map_finds_menu_item:
@@ -207,18 +211,23 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				}
 			}
 			break;
-	
-
-		// case R.id.save_find_menu_item:
-		// saveFind();
-		// break;
-		//
-		// default:
-		// return false;
 		}
 		return true;
 	} // onMenuItemSelected
 	
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		// TODO Auto-generated method stub
+//		Log.i(TAG, "Notify data set changed");
+//		this.mAdapter.notifyDataSetChanged();
+//		super.onActivityResult(requestCode, resultCode, data);
+//	}
+	
+	public static void syncCallback() {
+		Log.i(TAG, "Notified sync callback");
+		mAdapter.notifyDataSetChanged();
+	}
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -267,6 +276,13 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			super(context, textViewResourceId, list);
 			this.items = list;
 		}
+
+		
+		@Override
+		public void notifyDataSetChanged() {
+			super.notifyDataSetChanged();
+		}
+
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
