@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+import org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
@@ -33,14 +34,16 @@ public class LogFindsActivity extends OrmLiteBaseActivity<DbManager> {
 
 	@Override
 	protected void onResume() {
+		int count = 0;
 		super.onResume();
 		List<? extends Find> finds = this.getHelper().getAllFinds();
-		Toast.makeText(this, "Saving Finds to Log File", Toast.LENGTH_LONG).show();
-		if (logFinds(finds)) {
+//		Toast.makeText(this, "Saving Finds to Log File", Toast.LENGTH_LONG).show();
+		count = logFinds(finds);
+		if (count  >= 0) {
 			finish();
 			Toast.makeText(
-					this,
-					"Finds saved to SD Card: " + DEFAULT_LOG_DIRECTORY + "/"
+					this, count + 
+					" Finds saved to SD Card: " + DEFAULT_LOG_DIRECTORY + "/"
 							+ DEFAULT_LOG_FILE, Toast.LENGTH_LONG).show();
 		} else {
 			finish();
@@ -57,7 +60,8 @@ public class LogFindsActivity extends OrmLiteBaseActivity<DbManager> {
 	 * @param finds, a list of Find records	 * 
 	 * @return True if Finds were written successfully, False otherwise.
 	 */
-	protected boolean logFinds(List<? extends Find> finds) {
+	protected int logFinds(List<? extends Find> finds) {
+		int count = 0;
 		try {
 			File dir = new File(Environment.getExternalStorageDirectory()
 					+ "/" + DEFAULT_LOG_DIRECTORY);
@@ -84,16 +88,22 @@ public class LogFindsActivity extends OrmLiteBaseActivity<DbManager> {
 			Iterator<? extends Find> it = finds.iterator();
 			while (it.hasNext()) {
 				Find find = it.next();
-				writer.println(new Date() + ": " + find);
-				Log.i(TAG, "Wrote to file: " + find);
+				
+				if (((OutsideInFind)find).getIsLogged() == false) {
+					((OutsideInFind) find).setIsLogged(true);
+					getHelper().update(find);
+					writer.println(new Date() + ": " + find);
+					Log.i(TAG, "Wrote to file: " + find);
+					++count;
+				}
 			}
 			writer.flush();
 			writer.close();
-			return true;
+			return count;
 		} catch (IOException e) {
 			Log.e(TAG, "IO Exception writing to Log " + e.getMessage());
 			e.printStackTrace();
-			return false;
+			return -1;
 		}
 	}
 

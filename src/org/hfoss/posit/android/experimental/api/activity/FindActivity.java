@@ -472,6 +472,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected boolean saveFind() {
 		int rows = 0;
 		Find find = retrieveContentFromView();
+		prepareForSave(find);
 		
 		// A valid GUID is required
 		if (!isValidGuid(find.getGuid())) {
@@ -492,6 +493,10 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		} else
 			Log.e(TAG, "Find not inserted: " + find);
 		return rows > 0;
+	}
+	
+	protected void prepareForSave(Find find) {
+		// Stub :  meant to be overridden in subclass
 	}
 	
 	/**
