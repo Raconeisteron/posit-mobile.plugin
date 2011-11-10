@@ -145,6 +145,12 @@ public class OutsideInFindActivity extends FindActivity {
 	}
 	
 
+	@Override
+	protected void prepareForSave(Find find) {
+		((OutsideInFind)find).isLogged = false;
+		super.prepareForSave(find);
+	}
+
 	public void onClick(View v) {
 		super.onClick(v);
 	}

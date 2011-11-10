@@ -19,13 +19,16 @@ public class OutsideInFind extends Find {
 	public static final String SYRINGES_IN = "syringes_in";
 	public static final String SYRINGES_OUT = "syringes_out";
 	public static final String IS_NEW = "is_new";
-
+	public static final String IS_LOGGED = "is_logged"
+;
 	@DatabaseField(columnName = SYRINGES_IN)
 	protected int syringesIn;
 	@DatabaseField(columnName = SYRINGES_OUT)
 	protected int syringesOut;
 	@DatabaseField(columnName = IS_NEW)
 	protected boolean isNew;
+	@DatabaseField(columnName = IS_LOGGED)
+	protected boolean isLogged = false;  // Unlogged by default
 
 	public OutsideInFind() {
 		// Necessary by ormlite
@@ -40,9 +43,6 @@ public class OutsideInFind extends Find {
 		Log.i(TAG, "Creating OutsideinFind table");
 		try {
 			TableUtils.createTable(connectionSource, OutsideInFind.class);
-//			DatabaseTableConfig<OutsideInFind> config = new DatabaseTableConfig<OutsideInFind>(OutsideInFind.class, DbManager.FIND_TABLE_NAME,null);
-//			
-//			TableUtils.createTable(connectionSource, config);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -72,6 +72,14 @@ public class OutsideInFind extends Find {
 		this.isNew = isNew;
 	}
 	
+	public boolean getIsLogged() {
+		return isLogged;
+	}
+
+	public void setIsLogged(boolean isLogged) {
+		this.isLogged = isLogged;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -95,6 +103,7 @@ public class OutsideInFind extends Find {
 		sb.append(DELETED).append("=").append(deleted).append(",");
 		sb.append(SYRINGES_IN).append("=").append(syringesIn).append(",");
 		sb.append(SYRINGES_OUT).append("=").append(syringesOut).append(",");
+		sb.append(IS_LOGGED).append("=").append(isLogged).append(",");
 		return sb.toString();
 	}
 
