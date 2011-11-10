@@ -1,39 +1,70 @@
 <PluginsPreferences>
 	<FindPlugins>
-<!-- 		<Plugin active="false" type="find" name="BasicFind" -->
-<!-- 			package="org.hfoss.posit.android.experimental.api" find_class="org.hfoss.posit.android.experimental.api.Find" -->
-<!-- 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory" -->
-<!-- 			find_activity_class="org.hfoss.posit.android.experimental.api.activity.FindActivity" -->
-<!-- 			extra_activity_class="" extra_activity_class2="" -->
-<!-- 			list_finds_activity_class="org.hfoss.posit.android.experimental.api.activity.ListFindsActivity" -->
+		<Plugin active="false" type="find" name="BasicFind"
+			package="org.hfoss.posit.android.experimental.api" 
+			find_class="org.hfoss.posit.android.experimental.api.Find"
+			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
+			find_activity_class="org.hfoss.posit.android.experimental.api.activity.FindActivity"
+			extra_activity_class="" 
+			extra_activity_class2=""
+			list_finds_activity_class="org.hfoss.posit.android.experimental.api.activity.ListFindsActivity"
+			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
+			preferences_xml="posit_preferences" 
+			add_find_layout="add_find"
+			list_find_layout="list_row" 
+			main_list_button_label="viewFinds"
+			main_add_button_label="addFind" 
+			main_extra_button_label=""
+			main_extra_button_label2="" 
+			main_icon="posit" />
+
 <!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
-<!-- 			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager" -->
-<!-- 			preferences_xml="posit_preferences" add_find_layout="add_find" -->
-<!-- 			list_find_layout="list_row" main_list_button_label="viewFinds" -->
-<!-- 			main_add_button_label="addFind" main_extra_button_label="" -->
-<!-- 			main_extra_button_label2="" main_icon="posit" /> -->
+
+<!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
 
 		<Plugin active="true" type="find" name="OutsideInFind"
 			package="org.hfoss.posit.android.experimental.plugin.outsidein"
 			find_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
 			find_activity_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFindActivity"
-			extra_activity_class="" extra_activity_class2=""
+			extra_activity_class="" 
+			extra_activity_class2=""
 			list_finds_activity_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInListFindsActivity"
-			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity"
 			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
-			preferences_xml="outsidein_preferences" add_find_layout="outsidein_add_find"
-			list_find_layout="outsidein_list_row" main_list_button_label="viewFinds"
-			main_add_button_label="addFind" main_extra_button_label=""
-			main_extra_button_label2="" main_icon="outsidein_logo" />
+			preferences_xml="outsidein_preferences" 
+			add_find_layout="outsidein_add_find"
+			list_find_layout="outsidein_list_row" 
+			main_list_button_label="viewFinds"
+			main_add_button_label="addFind" 
+			main_extra_button_label=""
+			main_extra_button_label2="" 
+			main_icon="outsidein_logo" />
 
-		<Plugin active="true" type="function" extensionPoint="mainMenu"
-			menuIcon="ic_menu_mapmode" name="map" menuTitle="Map Finds"
+<!-- Function Plugins -->
+		<Plugin active="true" 
+			type="function" 
+			extensionPoint="mainMenu"
+			name="map" 
+			menuIcon="ic_menu_mapmode" 
+			menuTitle="Map Finds"
 			menuActivity="org.hfoss.posit.android.experimental.api.activity.MapFindsActivity" />
 
-		<Plugin active="true" type="function" extensionPoint="listMenu"
-			menuIcon="ic_menu_savetolog" name="log" menuTitle="Log Finds"
+		<Plugin active="true" 
+			type="function" 
+			extensionPoint="listMenu"
+			name="log" 
+			menuIcon="ic_menu_savetolog" menuTitle="Log Finds"
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.LogFindsActivity" />
+
+		<Plugin active="false" 
+			type="function" 
+			extensionPoint="mainLogin"
+			name="login"
+			activity="org.hfoss.posit.android.experimental.functionplugins.LoginActivity" 
+			activity_returns_result="true"
+			activity_result_action="0"
+			/>
+
 
 		<!-- <Plugin active="true" name="AcdiVocaFind" -->
 		<!-- package="org.hfoss.posit.android.experimental.plugin.acdivoca" -->
