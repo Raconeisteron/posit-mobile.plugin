@@ -137,6 +137,11 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         	finish();
         }
         
+        if (!Communicator.isServerReachable(this))  {
+        	Toast.makeText(this, "Sorry, server is not reachable.", Toast.LENGTH_LONG).show();
+        	finish();        	
+        }
+        
     }
 
     /*

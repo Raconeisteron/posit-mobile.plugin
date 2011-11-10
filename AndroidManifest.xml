@@ -152,6 +152,9 @@
 		<activity android:name=".api.authentication.AuthenticatorActivity"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 
+		<activity android:name="org.hfoss.posit.android.experimental.sync.SyncActivity"
+			android:launchMode="singleTop" />
+			
 		<service android:name="org.hfoss.posit.android.api.service.SmsService" />
 
 		<service android:name="org.hfoss.posit.android.experimental.sync.SyncService"
