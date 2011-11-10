@@ -95,7 +95,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			Communicator.sendFindsToServer(finds, mContext, authToken);
 			DbHelper.getDbManager(mContext).recordSync(new SyncHistory("idkwhatthisissupposedtobe"));
 			
-			Log.i(TAG, "histories: " +finds);
+			String findsIds = Communicator.getServerFindsNeedingSync(mContext, authToken);
+			
+			Log.i(TAG, "find id's: " +findsIds);
 //			
 //			boolean success = false;
 //			//mdbh = new PositDbHelper(mContext);
@@ -113,7 +115,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //			// Get finds from the server since last sync with this device
 //			// (NEEDED: should be made project specific)
 //
-//			String serverFindGuIds = Communicator.getServerFindsNeedingSync(mContext, authToken);
+			//String serverFindGuIds = Communicator.getServerFindsNeedingSync(mContext, authToken);
 //
 //			// Get finds from the client
 //

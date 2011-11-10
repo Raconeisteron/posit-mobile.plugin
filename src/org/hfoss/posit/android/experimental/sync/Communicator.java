@@ -63,6 +63,7 @@ import org.hfoss.posit.android.experimental.api.authentication.AuthenticatorActi
 //import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
+import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -366,6 +367,27 @@ public class Communicator {
 		return performOnBackgroundThread(runnable);
 	}
 
+//	/**
+//	 * Attempts to get changed finds from the server.
+//	 * 
+//	 * @param handler
+//	 *            The main UI thread's handler instance.
+//	 * @param context
+//	 *            The caller Activity's context
+//	 * @return Thread The thread on which the network mOperations are executed.
+//	 */
+//	public static Thread attemptGetChangedFinds(final Handler handler, final Context context) {
+//
+//		final Runnable runnable = new Runnable() {
+//			//ArrayList<Integer> finds; 
+//			String finds;
+//			public void run() {
+//				finds = getServerFindsNeedingSync(handler, context);
+//			}
+//		};
+//		// run on background thread.
+//		return performOnBackgroundThread(runnable);
+//	}
 	/**
 	 * Executes the network requests on a separate thread.
 	 * 
@@ -386,6 +408,33 @@ public class Communicator {
 		t.start();
 		return t;
 	}
+	
+//	/**
+//	 * Sends the result of a getChangedFinds request from server back to the caller
+//	 * main UI thread through its handler.
+//	 * 
+//	 * @param projects
+//	 *            the list of projects gotten from server
+//	 * @param result
+//	 *            The boolean holding authentication result
+//	 * @param authToken
+//	 *            The auth token returned from the server for this account.
+//	 * @param handler
+//	 *            The main UI thread's handler instance.
+//	 * @param context
+//	 *            The caller Activity's context.
+//	 */
+//	private static void sendFindsResult(final String finds, final Boolean result,
+//			final Handler handler, final Context context) {
+//		if (handler == null || context == null) {
+//			return;
+//		}
+//		handler.post(new Runnable() {
+//			public void run() {
+//				((ListFindsActivity) context).onGetChangedFindsResult(finds);
+//			}
+//		});
+//	}
 
 	/**
 	 * Sends the result of a getProjects request from server back to the caller

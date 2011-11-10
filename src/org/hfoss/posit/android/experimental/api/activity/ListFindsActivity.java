@@ -38,6 +38,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 	private static final String TAG = "ListFindsActivity";
 	private boolean mListFindsMenuExtensionPoint = false;
+	List<? extends Find> finds;
 
 	
 	/**
@@ -69,6 +70,9 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		fillList(setUpAdapter());
 	}
 
+	public void onGetChangedFindsResult(String finds) {
+		Log.i(TAG,"Got changed finds: " + finds);
+	}
 	/**
 	 * Called in onResume() and gets all of the finds in the database and puts
 	 * them in an adapter. Override for a custom adapter/layout for this
@@ -79,12 +83,12 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
 		
-		List<? extends Find> list = this.getHelper().getFindsByProjectId(projectId);
+		finds = this.getHelper().getFindsByProjectId(projectId);
 
 		int resId = getResources().getIdentifier(
 				FindPluginManager.mListFindLayout, "layout", getPackageName());
 
-		FindsListAdapter adapter = new FindsListAdapter(this, resId, list);
+		FindsListAdapter adapter = new FindsListAdapter(this, resId, finds);
 
 		return adapter;
 	}
