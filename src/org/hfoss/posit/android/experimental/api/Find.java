@@ -144,6 +144,14 @@ public class Find implements FindInterface {
 	 */
 	public Find(Context context, String guid) {
 	}
+	
+	/**
+	 * Creates a find object from content values.
+	 * @param content ContentValues object that contains all the fields of a Find
+	 */
+	public Find(ContentValues cv) {
+		updateObject(cv);
+	}
 
 	public String getGuid() {
 		return guid;
@@ -324,6 +332,13 @@ public class Find implements FindInterface {
 						i = iVal;
 					field.set(this, i);
 					Log.i(TAG, "Set " + fieldName + "=" + i);
+				} else if (obj instanceof Double) {
+					Double dVal = data.getAsDouble(fieldName);
+					double d = 0;
+					if (dVal != null)
+						d = dVal;
+					field.set(this, d);
+					Log.i(TAG, "Set " + fieldName + "=" + d);
 				} else {
 					String s = data.getAsString(fieldName);
 					field.set(this, s);

@@ -158,7 +158,7 @@ public class Communicator {
 		// TODO: again just picking the first account here.. how are you
 		// supposed to handle this?
 		Account[] accounts = accountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
-		
+
 		if (accounts.length == 0)
 			return null;
 
@@ -370,27 +370,29 @@ public class Communicator {
 		return performOnBackgroundThread(runnable);
 	}
 
-//	/**
-//	 * Attempts to get changed finds from the server.
-//	 * 
-//	 * @param handler
-//	 *            The main UI thread's handler instance.
-//	 * @param context
-//	 *            The caller Activity's context
-//	 * @return Thread The thread on which the network mOperations are executed.
-//	 */
-//	public static Thread attemptGetChangedFinds(final Handler handler, final Context context) {
-//
-//		final Runnable runnable = new Runnable() {
-//			//ArrayList<Integer> finds; 
-//			String finds;
-//			public void run() {
-//				finds = getServerFindsNeedingSync(handler, context);
-//			}
-//		};
-//		// run on background thread.
-//		return performOnBackgroundThread(runnable);
-//	}
+	// /**
+	// * Attempts to get changed finds from the server.
+	// *
+	// * @param handler
+	// * The main UI thread's handler instance.
+	// * @param context
+	// * The caller Activity's context
+	// * @return Thread The thread on which the network mOperations are
+	// executed.
+	// */
+	// public static Thread attemptGetChangedFinds(final Handler handler, final
+	// Context context) {
+	//
+	// final Runnable runnable = new Runnable() {
+	// //ArrayList<Integer> finds;
+	// String finds;
+	// public void run() {
+	// finds = getServerFindsNeedingSync(handler, context);
+	// }
+	// };
+	// // run on background thread.
+	// return performOnBackgroundThread(runnable);
+	// }
 	/**
 	 * Executes the network requests on a separate thread.
 	 * 
@@ -411,33 +413,35 @@ public class Communicator {
 		t.start();
 		return t;
 	}
-	
-//	/**
-//	 * Sends the result of a getChangedFinds request from server back to the caller
-//	 * main UI thread through its handler.
-//	 * 
-//	 * @param projects
-//	 *            the list of projects gotten from server
-//	 * @param result
-//	 *            The boolean holding authentication result
-//	 * @param authToken
-//	 *            The auth token returned from the server for this account.
-//	 * @param handler
-//	 *            The main UI thread's handler instance.
-//	 * @param context
-//	 *            The caller Activity's context.
-//	 */
-//	private static void sendFindsResult(final String finds, final Boolean result,
-//			final Handler handler, final Context context) {
-//		if (handler == null || context == null) {
-//			return;
-//		}
-//		handler.post(new Runnable() {
-//			public void run() {
-//				((ListFindsActivity) context).onGetChangedFindsResult(finds);
-//			}
-//		});
-//	}
+
+	// /**
+	// * Sends the result of a getChangedFinds request from server back to the
+	// caller
+	// * main UI thread through its handler.
+	// *
+	// * @param projects
+	// * the list of projects gotten from server
+	// * @param result
+	// * The boolean holding authentication result
+	// * @param authToken
+	// * The auth token returned from the server for this account.
+	// * @param handler
+	// * The main UI thread's handler instance.
+	// * @param context
+	// * The caller Activity's context.
+	// */
+	// private static void sendFindsResult(final String finds, final Boolean
+	// result,
+	// final Handler handler, final Context context) {
+	// if (handler == null || context == null) {
+	// return;
+	// }
+	// handler.post(new Runnable() {
+	// public void run() {
+	// ((ListFindsActivity) context).onGetChangedFindsResult(finds);
+	// }
+	// });
+	// }
 
 	/**
 	 * Sends the result of a getProjects request from server back to the caller
@@ -602,6 +606,86 @@ public class Communicator {
 		Log.i(TAG, "serverFindsNeedingSync = " + response);
 
 		return response;
+	}
+
+	/**
+	 * 
+	 * Retrieve finds from the server using a Communicator.
+	 * 
+	 * @param serverGuids
+	 * @return
+	 */
+	public static boolean getFindsFromServer(Context context, String authKey, String serverGuids) {
+		String guid;
+		int rows = 0;
+		StringTokenizer st = new StringTokenizer(serverGuids, ",");
+		
+		while (st.hasMoreElements()) {
+			guid = st.nextElement().toString();
+			ContentValues cv = getRemoteFindById(context, authKey, guid);
+
+			if (cv == null) {
+				return false; // Shouldn't be null
+			} else {
+				// cv.put(PositDbHelper.FINDS_SYNCED,
+				// PositDbHelper.FIND_IS_SYNCED);
+				Log.i(TAG, cv.toString());
+				// Update the DB
+				Find find = DbHelper.getDbManager(context).getFindByGuid(guid);
+				if (find != null) {
+					// if (cv.containsKey(PositDbHelper.FINDS_DELETED)) {
+					// if ((Integer) cv.get(PositDbHelper.FINDS_DELETED) == 1) {
+					// dbh.deleteFind(guid);
+					// }
+					// }
+					Log.i(TAG, "Updating existing find: " + find.getId());
+					Find updatedFind = new Find(cv);
+					updatedFind.setId(find.getId());
+					rows = DbHelper.getDbManager(context).updateWithoutHistory(updatedFind);
+					
+				} else {
+					Log.i(TAG, "Adding a new find" + find);
+					find = new Find(cv);
+					rows = DbHelper.getDbManager(context).insertWithoutHistory(find);
+					
+					// }
+					// if (!success) {
+					// Log.i(TAG, "Error recording sync stamp");
+					// mHandler.sendEmptyMessage(SYNCERROR);
+					// } else {
+					// Log.i(TAG, "Recorded timestamp stamp");
+					// }
+					// dbh.close();
+				}
+			}
+		}
+		DbHelper.releaseDbManager();
+		return rows > 0;
+	}
+
+	public static boolean recordSync(Context context, String authKey) {
+		// Record the synchronization in the server's sync_history table
+
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = prefs.getString(SERVER_PREF, "");
+		int projectId = prefs.getInt(context.getString(R.string.projectPref), 0);
+
+		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei = telephonyManager.getDeviceId();
+
+		String url = server + "/api/recordSync?authKey=" + authKey + "&imei=" + imei + "&projectId=" + projectId;
+		Log.i(TAG, "recordSync URL=" + url);
+		String responseString = "";
+
+		try {
+			responseString = doHTTPGET(url);
+		} catch (Exception e) {
+			Log.i(TAG, e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+		Log.i(TAG, "HTTPGet recordSync response = " + responseString);
+		return true;
 	}
 
 	/*
@@ -991,19 +1075,23 @@ public class Communicator {
 
 	public static List<NameValuePair> getNameValuePairs(Find find) {
 		// Get fields from both class and superclass
-		List<NameValuePair> pairs= null;
-		String extendedDataPairs = getNameValuePairs(find, find.getClass()).toString();
-		pairs = getNameValuePairs(find, find.getClass().getSuperclass());
-		pairs.add(new BasicNameValuePair("data",extendedDataPairs));
+		List<NameValuePair> pairs = null;
+		if (find instanceof Find) { // For basic POSIT
+			pairs = getNameValuePairs(find, find.getClass());
+		} else { // For find extensions
+			String extendedDataPairs = getNameValuePairs(find, find.getClass()).toString();
+			pairs = getNameValuePairs(find, find.getClass().getSuperclass());
+			pairs.add(new BasicNameValuePair("data", extendedDataPairs));
+		}
 		return pairs;
 	}
-	
-	private static List<NameValuePair> getNameValuePairs(Find find, Class clazz){
+
+	private static List<NameValuePair> getNameValuePairs(Find find, Class clazz) {
 		Field[] fields = clazz.getDeclaredFields();
 		List<NameValuePair> nvp = new ArrayList<NameValuePair>();
 		String methodName = "";
 		String value = "";
-		
+
 		for (Field field : fields) {
 			if (!Modifier.isFinal(field.getModifiers())) {
 				String key = field.getName();
@@ -1013,17 +1101,16 @@ public class Communicator {
 				try {
 					Class returnType = clazz.getDeclaredMethod(methodName, null).getReturnType();
 					if (returnType.equals(String.class))
-						value = (String) clazz.getDeclaredMethod(methodName, null)
-								.invoke(find, (Object[]) null);
+						value = (String) clazz.getDeclaredMethod(methodName, null).invoke(find, (Object[]) null);
 					else if (returnType.equals(int.class))
-						value = String.valueOf((Integer) clazz.getDeclaredMethod(methodName, null)
-								.invoke(find, (Object[]) null));
+						value = String.valueOf((Integer) clazz.getDeclaredMethod(methodName, null).invoke(find,
+								(Object[]) null));
 					else if (returnType.equals(double.class))
-						value = String.valueOf((Double) clazz.getDeclaredMethod(methodName, null)
-								.invoke(find, (Object[]) null));
+						value = String.valueOf((Double) clazz.getDeclaredMethod(methodName, null).invoke(find,
+								(Object[]) null));
 					else if (returnType.equals(boolean.class))
-						value = String.valueOf((Boolean) clazz.getDeclaredMethod(methodName, null)
-								.invoke(find, (Object[]) null));
+						value = String.valueOf((Boolean) clazz.getDeclaredMethod(methodName, null).invoke(find,
+								(Object[]) null));
 
 				} catch (IllegalArgumentException e) {
 					Log.e(TAG, e + ": " + e.getMessage());
@@ -1040,57 +1127,57 @@ public class Communicator {
 			}
 		}
 		return nvp;
-		
+
 	}
 
-	//
-	// /**
-	// * Pull the remote find from the server using the guid provided.
-	// *
-	// * @param guid
-	// * , a globally unique identifier
-	// * @return an associative list of attribute/value pairs
-	// */
-	// public ContentValues getRemoteFindById(String guid) {
-	// String url = server + "/api/getFind?guid=" + guid + "&authKey="
-	// + authKey;
-	// HashMap<String, String> sendMap = new HashMap<String, String>();
-	// addRemoteIdentificationInfo(sendMap);
-	// sendMap.put("guid", guid + "");
-	// String responseString = doHTTPPost(url, sendMap);
-	// ContentValues cv = new ContentValues();
-	//
-	// Log.i(TAG, "getRemoteFindById = " + responseString);
-	// try {
-	// JSONObject jobj = new JSONObject(responseString);
-	// cv.put(PositDbHelper.FINDS_GUID,
-	// jobj.getString(PositDbHelper.FINDS_GUID));
-	// cv.put(PositDbHelper.FINDS_PROJECT_ID,
-	// jobj.getInt(PositDbHelper.FINDS_PROJECT_ID));
-	// cv.put(PositDbHelper.FINDS_NAME,
-	// jobj.getString(PositDbHelper.FINDS_NAME));
-	// cv.put(PositDbHelper.FINDS_DESCRIPTION, jobj
-	// .getString(PositDbHelper.FINDS_DESCRIPTION));
-	// //FIXME add add_time and modify_time for this
-	// cv.put(PositDbHelper.FINDS_TIME, jobj.getString("add_time"));
-	// cv.put(PositDbHelper.FINDS_TIME, jobj.getString("modify_time"));
-	// cv.put(PositDbHelper.FINDS_LATITUDE,
-	// jobj.getDouble(PositDbHelper.FINDS_LATITUDE));
-	// cv.put(PositDbHelper.FINDS_LONGITUDE,
-	// jobj.getDouble(PositDbHelper.FINDS_LONGITUDE));
-	// cv.put(PositDbHelper.FINDS_REVISION,
-	// jobj.getInt(PositDbHelper.FINDS_REVISION));
-	// return cv;
-	// } catch (JSONException e) {
-	// Log.i(TAG, e.getMessage());
-	// e.printStackTrace();
-	// } catch (Exception e) {
-	// Log.i(TAG, e.getMessage());
-	// e.printStackTrace();
-	// }
-	// return null;
-	// }
-	//
+	/**
+	 * Pull the remote find from the server using the guid provided.
+	 * 
+	 * @param guid
+	 *            , a globally unique identifier
+	 * @return an associative list of attribute/value pairs
+	 */
+	public static ContentValues getRemoteFindById(Context context, String authKey, String guid) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = prefs.getString(SERVER_PREF, "");
+
+		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei = telephonyManager.getDeviceId();
+
+		String url = server + "/api/getFind?guid=" + guid + "&authKey=" + authKey;
+		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+		pairs.add(new BasicNameValuePair("guid", guid));
+		pairs.add(new BasicNameValuePair("imei", imei));
+
+		String responseString = doHTTPPost(url, pairs);
+		ContentValues cv = new ContentValues();
+
+		Log.i(TAG, "getRemoteFindById = " + responseString);
+		try {
+			JSONObject jobj = new JSONObject(responseString);
+			String findJson = jobj.getString("find");
+			JSONObject find = new JSONObject(findJson);
+			cv.put(Find.GUID, find.getString(Find.GUID));
+			cv.put(Find.PROJECT_ID, find.getInt(Find.PROJECT_ID));
+			cv.put(Find.NAME, find.getString(Find.NAME));
+			cv.put(Find.DESCRIPTION, find.getString(Find.DESCRIPTION));
+			// FIXME add add_time and modify_time for this
+			cv.put(Find.TIME, find.getString("add_time"));
+			cv.put(Find.TIME, find.getString("modify_time"));
+			cv.put(Find.LATITUDE, find.getDouble(Find.LATITUDE));
+			cv.put(Find.LONGITUDE, find.getDouble(Find.LONGITUDE));
+			cv.put(Find.REVISION, find.getInt(Find.REVISION));
+			return cv;
+		} catch (JSONException e) {
+			Log.i(TAG, e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			Log.i(TAG, e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	// /**
 	// * Get an image from the server using the guid as Key.
 	// *

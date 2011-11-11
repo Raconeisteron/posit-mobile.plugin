@@ -17,6 +17,7 @@
 				android:summary="Something"
 			/>
 			
+			
 			<EditTextPreference android:title="@string/serverPrefLabel"
 				android:key="@string/serverPref" 
 				android:defaultValue="@string/defaultServer" />
