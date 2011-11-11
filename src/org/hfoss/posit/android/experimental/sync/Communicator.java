@@ -62,6 +62,7 @@ import org.hfoss.posit.android.experimental.api.FindHistory;
 import org.hfoss.posit.android.experimental.api.authentication.AuthenticatorActivity;
 //import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
+import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
 
@@ -152,6 +153,51 @@ public class Communicator {
 	// return performOnBackgroundThread(runnable);
 	// }
 
+	
+	public static boolean isServerReachable(Context context) {
+		SharedPreferences applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = applicationPreferences.getString(SERVER_PREF, "");
+		String url = server + "/api/isreachable?authKey=" + getAuthKey(context);
+
+		HashMap<String, Object> responseMap = null;
+		Log.i(TAG, "is reachable URL=" + url);
+
+		String responseString = null;
+		String responseCode = null;
+		try {
+			responseString = doHTTPGET(url);
+			Log.i(TAG, "isreachable response = " + responseString);
+			if (responseString.contains("[Error] ")) {
+				Log.e(TAG, responseString);
+				return false;
+			} else {
+				ResponseParser parser = new ResponseParser(responseString);
+				responseMap = parser.parseObject();
+				//responseCode = (String) responseMap.get(MESSAGE_CODE);
+			}
+		} catch (Exception e) {
+			Log.i(TAG, "longinUser catch clause response = " + responseString);
+			Toast.makeText(context, e.getMessage() + "", Toast.LENGTH_LONG).show();
+			//sendAuthenticationResult(authKey, false, handler, context);
+			return false;
+		}
+		try {
+			if (responseMap.containsKey(ERROR_CODE)) {
+				return false;
+			} else if (responseMap.containsKey(MESSAGE_CODE)) {
+				if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
+					return true;
+				}
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "loginUser " + e.getMessage() + " ");
+			return false;
+		}
+		return false;
+	}
+	
 	private static String getAuthKey(Context context) {
 		AccountManager accountManager = AccountManager.get(context);
 
