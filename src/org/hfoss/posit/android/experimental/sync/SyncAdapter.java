@@ -74,6 +74,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		mContext = context;
 		mAccountManager = AccountManager.get(context);
 	}
+	
+	
 
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
