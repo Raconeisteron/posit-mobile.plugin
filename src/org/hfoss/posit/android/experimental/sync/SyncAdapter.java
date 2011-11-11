@@ -82,6 +82,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		List<Find> finds;
 		Log.i(TAG, "In onPerformSync()");
 		String authToken = null;
+		boolean success;
 		
 		try {
 			// use the account manager to request the credentials
@@ -91,15 +92,32 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 			int projectId = prefs.getInt(mContext.getString(R.string.projectPref), 0);
 			
+			
+			// Get finds changed/created on phone
 			finds = DbHelper.getDbManager(mContext).getChangedFinds(projectId);
+			
+			// Get finds changed/created on server
+			String serverFindsIds = Communicator.getServerFindsNeedingSync(mContext, authToken);
+			
+			// Get each find from the server and store in the phone's database
+			if (!serverFindsIds.equals("")) {
+				success = Communicator.getFindsFromServer(mContext, authToken, serverFindsIds);
+				Log.i(TAG, "server find id's: " + serverFindsIds);
+			}
+
+			// Send each find to the server 
 			if (finds != null) {
 				Communicator.sendFindsToServer(finds, mContext, authToken);
+				// Record sync on the phone
 				DbHelper.getDbManager(mContext).recordSync(new SyncHistory("idkwhatthisissupposedtobe"));
 			}
 			
-			String findsIds = Communicator.getServerFindsNeedingSync(mContext, authToken);
+			// Record the sync on the server
+			success = Communicator.recordSync(mContext, authToken);
 			
-			Log.i(TAG, "find id's: " +findsIds);
+			Log.i(TAG, "Sync recorded: " + success);
+			
+			DbHelper.releaseDbManager();
 //			
 //			boolean success = false;
 //			//mdbh = new PositDbHelper(mContext);
@@ -161,7 +179,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //
 //			mHandler.sendEmptyMessage(DONE);
 //			return;
-			
+		
 			
 		} catch (final AuthenticatorException e) {
 			syncResult.stats.numParseExceptions++;

@@ -174,6 +174,27 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		}
 		return find;
 	}
+	
+	/**
+	 * Looks up a find by its GUID.
+	 * 
+	 * @param guid
+	 *            the guid of the find to look up
+	 * @return the find
+	 */
+	public Find getFindByGuid(String guid) {
+		Find find = null;
+		try {
+			QueryBuilder<Find, Integer> builder = getFindDao().queryBuilder();
+			Where<Find, Integer> where = builder.where();
+			where.eq(Find.GUID, guid);
+			PreparedQuery<Find> query = builder.prepare();
+			find = getFindDao().queryForFirst(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return find;
+	}
 
 	/**
 	 * Inserts this find into the database.
@@ -189,10 +210,36 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			find.setAction(FindHistory.ACTION_CREATE);
 			rows = getFindDao().create(find);
 			if (rows == 1) {
-				Log.i(TAG, "Inserted find:  " + this.toString());
+				Log.i(TAG, "Inserted find:  " + find.toString());
 				recordChangedFind(new FindHistory(find, FindHistory.ACTION_CREATE));
 			} else {
-				Log.e(TAG, "Db Error inserting find: " + this.toString());
+				Log.e(TAG, "Db Error inserting find: " + find.toString());
+				rows = 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
+	
+	/**
+	 * Inserts this find into the database without an entry
+	 * in FindHistory.  Used for syncing.
+	 * 
+	 * @param dao
+	 *            the DAO object provided by the ORMLite helper class.
+	 * @return the number of rows inserted.
+	 */
+
+	public int insertWithoutHistory(Find find) {
+		int rows = 0;
+		try {
+			find.setAction(FindHistory.ACTION_CREATE);
+			rows = getFindDao().create(find);
+			if (rows == 1) {
+				Log.i(TAG, "Inserted find:  " + find.toString());
+			} else {
+				Log.e(TAG, "Db Error inserting find: " + find.toString());
 				rows = 0;
 			}
 		} catch (SQLException e) {
@@ -216,10 +263,37 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			find.setAction(FindHistory.ACTION_UPDATE);
 			rows = getFindDao().update(find);
 			if (rows == 1) {
-				Log.i(TAG, "Updated find:  " + this.toString());
+				Log.i(TAG, "Updated find:  " + find.toString());
 				recordChangedFind(new FindHistory(find, FindHistory.ACTION_UPDATE));
 			} else {
-				Log.e(TAG, "Db Error updating find: " + this.toString());
+				Log.e(TAG, "Db Error updating find: " + find.toString());
+				rows = 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
+	
+	/**
+	 * Updates this find in the database with the given values
+	 * without adding an entry to FindHistory.  Used for syncing.
+	 * 
+	 * @param dao
+	 *            the DAO provided by the ORMLite helper class.
+	 * @param values
+	 *            a ContentValues object containing all of the values to update.
+	 * @return the number of rows updated.
+	 */
+	public int updateWithoutHistory(Find find) {
+		int rows = 0;
+		try {
+			find.setAction(FindHistory.ACTION_UPDATE);
+			rows = getFindDao().update(find);
+			if (rows == 1) {
+				Log.i(TAG, "Updated find:  " + find.toString());
+			} else {
+				Log.e(TAG, "Db Error updating find: " + find.toString());
 				rows = 0;
 			}
 		} catch (SQLException e) {
