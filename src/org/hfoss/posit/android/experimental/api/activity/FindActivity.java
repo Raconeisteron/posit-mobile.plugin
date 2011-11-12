@@ -47,7 +47,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	private LocationManager mLocationManager;
 	private Location mCurrentLocation;
-	private boolean mGeoTag; 
+	private boolean mGeoTagIsOn; 
 	private TextView mLatitudeView = null;
 	private TextView mLongitudeView = null;
 	private String mProvider = null;
@@ -68,36 +68,40 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		
 		initializeListeners();
 		
-		// Check if settings allow Geotagging
+		// Check if settings allow Geotagging  
+		// Note: If geotagging is on, we gather location data even if it is not displayed in the view.
+		// Some plugins may not care about the data, but we gather it anyway if geotagging is on.
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);		
-		mGeoTag = prefs.getBoolean("geotagKey", true);
-		if (mGeoTag) {
+		mGeoTagIsOn = prefs.getBoolean("geotagKey", true);
+		if (mGeoTagIsOn) {
 			// Get location manager.  
 			mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 			Criteria criteria = new Criteria();
-			criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-			criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
+			//			criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+			//			criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
 			mProvider = mLocationManager.getBestProvider(criteria, true);
-			
+
 			// Set the current location
 			Location location = null;
-			if (mProvider != null && mLatitudeView != null && mLongitudeView != null) {
-				Log.i(TAG, "Location provider selected = " + mProvider);
-				location =  mLocationManager.getLastKnownLocation(mProvider);
-				if (location != null) {
-					int lat = (int) (location.getLatitude());
-					int lng = (int) (location.getLongitude());
-					mLatitudeView.setText(String.valueOf(lat));
-					mLongitudeView.setText(String.valueOf(lng));
-				} else {
-					mLatitudeView.setText("Unavailable");
-					mLongitudeView.setText("Unavailable");
+			if (mProvider != null) {
+				if (mLatitudeView != null && mLongitudeView != null) {
+
+					Log.i(TAG, "Location provider selected = " + mProvider);
+					location =  mLocationManager.getLastKnownLocation(mProvider);
+					if (location != null) {
+						int lat = (int) (location.getLatitude());
+						int lng = (int) (location.getLongitude());
+						mLatitudeView.setText(String.valueOf(lat));
+						mLongitudeView.setText(String.valueOf(lng));
+					} else {
+						mLatitudeView.setText("Unavailable");
+						mLongitudeView.setText("Unavailable");
+					}
+					//mLocationManager.requestLocationUpdates(provider, 10000, 0, this);
 				}
-				//mLocationManager.requestLocationUpdates(provider, 10000, 0, this);
 			}
 			else {
-				Toast.makeText(this, "Unable to get a location via Wifi or GPS.  Are they enabled?", Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(this, "Unable to get a location via Wifi or GPS.  Are they enabled?", Toast.LENGTH_LONG).show();
 				Log.i(TAG, "Cannot request location updates, wifi or GPS might not be enabled/need a view of the sky");
 			}
 		} else { // Geotagging is off
@@ -123,7 +127,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		Bundle extras = getIntent().getExtras();
 
-		if(mGeoTag) {
+		if(mGeoTagIsOn) {
 			mLocationManager.requestLocationUpdates(mProvider, 10000, 0, this);
 			Location lastKnownLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			if (lastKnownLocation == null)
@@ -309,7 +313,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		// find.setLongitude(Double.parseDouble(value));
 		// }
 
-		if (mGeoTag && mCurrentLocation != null) {
+		if (mGeoTagIsOn && mCurrentLocation != null) {
 			find.setLatitude(mCurrentLocation.getLatitude());
 			find.setLongitude(mCurrentLocation.getLongitude());
 		} else {
@@ -534,7 +538,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	@Override
 	public void finish() {
 		Log.i(TAG, "onFinish()");
-		if (mGeoTag)
+		if (mGeoTagIsOn)
 			mLocationManager.removeUpdates(this);
 		mLocationManager = null;
 		mCurrentLocation = null;
