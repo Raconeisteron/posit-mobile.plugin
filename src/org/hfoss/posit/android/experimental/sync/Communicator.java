@@ -1122,7 +1122,7 @@ public class Communicator {
 	public static List<NameValuePair> getNameValuePairs(Find find) {
 		// Get fields from both class and superclass
 		List<NameValuePair> pairs = null;
-		if (find instanceof Find) { // For basic POSIT
+		if (find.getClass().getName().equals(Find.class.getName())) { // For basic POSIT
 			pairs = getNameValuePairs(find, find.getClass());
 		} else { // For find extensions
 			String extendedDataPairs = getNameValuePairs(find, find.getClass()).toString();
@@ -1132,13 +1132,22 @@ public class Communicator {
 		return pairs;
 	}
 
+	/**
+	 * Returns a list on name/value pairs for the Find.  Should work for Plugin Finds as
+	 * well as Basic Finds.  
+	 * @param find
+	 * @param clazz
+	 * @return
+	 */
 	private static List<NameValuePair> getNameValuePairs(Find find, Class clazz) {
 		Field[] fields = clazz.getDeclaredFields();
+
 		List<NameValuePair> nvp = new ArrayList<NameValuePair>();
 		String methodName = "";
 		String value = "";
 
 		for (Field field : fields) {
+//			Log.i(TAG, "class= " + clazz + " field = " + field);
 			if (!Modifier.isFinal(field.getModifiers())) {
 				String key = field.getName();
 				methodName = "get" + key.substring(0, 1).toUpperCase() + key.substring(1);
