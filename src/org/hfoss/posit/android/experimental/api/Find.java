@@ -4,7 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Map.Entry;
 
+import org.apache.http.message.BasicNameValuePair;
 import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 
@@ -32,6 +36,7 @@ public class Find implements FindInterface {
 	public static final String PROJECT_ID = "project_id";
 	
 	public static final String NAME = "name";
+	public static final String CLASS_NAME = "class_name";   // Either Find or some subclass
 
 	public static final String DESCRIPTION = "description";
 	public static final String LATITUDE = "latitude";
@@ -44,6 +49,8 @@ public class Find implements FindInterface {
 	
 	public static final String REVISION = "revision";
 	public static final String ACTION = "action";
+	
+	public static final String EXTENSION = "extension";
 	
 	// For syncing.  Operation will store what operation is being performed
 	// on this record--posting, updating, deleting.  Status will
@@ -150,7 +157,7 @@ public class Find implements FindInterface {
 	 * @param content ContentValues object that contains all the fields of a Find
 	 */
 	public Find(ContentValues cv) {
-		updateObject(cv);
+//		updateObject(cv);
 	}
 
 	public String getGuid() {
@@ -290,70 +297,109 @@ public class Find implements FindInterface {
 
 	public void sync(String protocol) {
 		// TODO Auto-generated method stub
-
 	}
 
 	/**
-	 * Uses reflection to copy data from a ContentValues object to this object.
-	 * NOTE: This does not currently include any data from the superclass.
-	 * Should it?
-	 * 
-	 * @param data
+	 * Converts an object's value to a type that matches a field's Type
+	 * NOTE: This method is incomplete. It needs more cases for both field's and val's type.
+	 * @param field, the field
+	 * @param val, the value being converted (usually a String)
+	 * @return an Object whose dynamic type is Integer or Boolean or ...
 	 */
-	private void updateObject(ContentValues data) {
-		Field[] fields = this.getClass().getDeclaredFields();
-		for (Field field : fields) {
-			if (Modifier.isStatic(field.getModifiers())) // Skip static fields
-				continue;
-			Object obj = null;
-			String fieldName = null;
+	protected Object convertArgumentForField(Object field, Object val) {
+		String oType = field.getClass().getName();
+		Object result = null;
+		Log.i(TAG, "Convert argument for " + oType + " field for value " + val);
+		if (oType.equals("java.lang.Integer")) {
+			result = Integer.parseInt((String)val);
+		} else if (oType.equals("java.lang.Boolean"))  {
+			result = Boolean.parseBoolean((String) val);
+		} else if (oType.equals("java.lang.Double"))
+			result = Double.parseDouble((String) val);
+		else if (oType.equals("java.lang.String")) {
+			result = val.toString();
+		} 
+		else  {
+			result = val;
+		}
+		Log.i(TAG, "Returning " + result + " of type " + result.getClass());
+		return result;
+	}
+	
+	/**
+	 * Uses reflection to copy data from a ContentValues object to this Find object.
+	 * This should also work for subclasses of Find.
+	 * 
+	 * NOTE: This is a little ugly.  Can it be simplified?  The main complication is
+	 * that it seems like you have to handel the cases of the derived fields and the
+	 * Find fields separately.  
+	 * 
+	 * @param cv, the ContentValues (key=val, key2=val2, ...)
+	 */
+	public void updateObject(ContentValues cv) {
+		Set <Entry <String, Object>> cvSet = cv.valueSet();
+		Iterator it = cvSet.iterator();
+		
+		// For each key/val pair
+		while (it.hasNext()) {
+			Entry<String, Object> entry = (Entry<String,Object>)it.next();
+			String key = entry.getKey();
+			Object val = entry.getValue();
+			Log.i(TAG, "Key = " + key + " val = " + val + " " + val.getClass().getName());
+				
+			Field field = null;
+			Object o = null;
 			try {
-				fieldName = field.getName();
-				obj = field.get(this);
-				if (!data.containsKey(fieldName))
-					continue;
-				Log.i(TAG, "field: " + fieldName);
-				if (obj instanceof String) {
-					String s = data.getAsString(fieldName);
-					field.set(this, s);
-					Log.i(TAG, "Set " + fieldName + "=" + s);
-				} else if (obj instanceof Boolean) {
-					Log.i(TAG, "Boolean value: " + data.getAsString(fieldName));
-					Boolean bVal = data.getAsBoolean(fieldName);
-					boolean b = false;
-					if (bVal != null)
-						b = bVal;
-					field.set(this, b);
-					Log.i(TAG, "Set " + fieldName + "=" + b);
-				} else if (obj instanceof Integer) {
-					Integer iVal = data.getAsInteger(fieldName);
-					int i = 0;
-					if (iVal != null)
-						i = iVal;
-					field.set(this, i);
-					Log.i(TAG, "Set " + fieldName + "=" + i);
-				} else if (obj instanceof Double) {
-					Double dVal = data.getAsDouble(fieldName);
-					double d = 0;
-					if (dVal != null)
-						d = dVal;
-					field.set(this, d);
-					Log.i(TAG, "Set " + fieldName + "=" + d);
-				} else {
-					String s = data.getAsString(fieldName);
-					field.set(this, s);
-					Log.i(TAG, "Set " + fieldName + "=" + s);
+				// Find a field with the same name as the key.  This will throw and exceptoin
+				// when the field is declared in the (Find) superclass for a derived object.
+				field = this.getClass().getDeclaredField(key);
+				
+				// Make the field accessible so that if it is protected subclass field, it can
+				// be accessed here. 
+				field.setAccessible(true);
+				
+				// Get the field's current value (and type)
+				o = field.get(this);
+				
+				// Convert the value, val, to object of the same type as the field's type
+				Object obj = convertArgumentForField(o, val);
+				//Log.i(TAG, "obj = " + obj.toString() + " of type " + obj.getClass());
+				
+				// Set the field's value
+				field.set(this, obj);
+				Log.i(TAG, ">>>>>>> Set" + field + "=" + val);
+			}  catch (NoSuchFieldException e) {
+				try {
+					// This will handle the case where the field is declared in the superclass
+					// and the current (dynamic) object is a derived Find.
+					Log.i(TAG, "#####Exception: no such field " + key + " in " + this.getClass());
+					
+					// Get the superclass field
+					field = this.getClass().getSuperclass().getDeclaredField(key);
+					
+					// Set its value -- for the Find class, the type's should match.
+					field.set(this, val);
+					Log.i(TAG, ">>>>>>> Set" + field + "=" + val);					
+				} catch (NoSuchFieldException ex) {
+					Log.i(TAG, "Exception: no such field " + key + " in " + this.getClass().getSuperclass());
+					e.printStackTrace();
+				} catch (IllegalArgumentException ex) {
+					e.printStackTrace();
+				} catch (IllegalAccessException ex) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			} catch (IllegalArgumentException e) {
+				Log.i(TAG, "Illegal Argument " + field.getName() + " in " + this.getClass());
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (ClassCastException e) {
-				Log.e(TAG, "Class cast exception on " + fieldName + "=" + obj);
+				Log.i(TAG, "Illegal Access " + field.getName() + " in " + this.getClass());
 				e.printStackTrace();
 			}
 		}
 	}
+
+
 
 	@Override
 	public String toString() {
@@ -362,29 +408,4 @@ public class Find implements FindInterface {
 				+ ", modify_time=" + modify_time + ", is_adhoc=" + is_adhoc + ", deleted=" + deleted + ", revision="
 				+ revision + ", syncOperation=" + syncOperation + ", status=" + status + "]";
 	}
-
-	// /**
-	// * Return attr=val, ... for all non-static attributes using Reflection.
-	// * @return
-	// */
-	// @Override
-	// public String toString() {
-	// StringBuilder sb = new StringBuilder(super.toString());
-	// Field[] fields = this.getClass().getDeclaredFields();
-	// for (Field field : fields) {
-	// if (Modifier.isStatic(field.getModifiers())) // Skip static fields
-	// continue;
-	// try {
-	// sb.append(", ").append(field.getName()).append("=").append(field.get(this));
-	// } catch (IllegalArgumentException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (IllegalAccessException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-	// return sb.toString();
-	// }
-
 }

@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.FindHistory;
 import org.hfoss.posit.android.experimental.api.SyncHistory;
@@ -235,6 +236,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		int rows = 0;
 		try {
 			find.setAction(FindHistory.ACTION_CREATE);
+			find.setStatus(Constants.SUCCEEDED);
 			rows = getFindDao().create(find);
 			if (rows == 1) {
 				Log.i(TAG, "Inserted find:  " + find.toString());
@@ -289,6 +291,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		int rows = 0;
 		try {
 			find.setAction(FindHistory.ACTION_UPDATE);
+			find.setStatus(Constants.SUCCEEDED);   // Marks it synced
 			rows = getFindDao().update(find);
 			if (rows == 1) {
 				Log.i(TAG, "Updated find:  " + find.toString());
