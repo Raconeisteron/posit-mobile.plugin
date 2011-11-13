@@ -37,6 +37,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.http.NameValuePair;
@@ -65,6 +67,7 @@ import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
+import org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -669,39 +672,34 @@ public class Communicator {
 		while (st.hasMoreElements()) {
 			guid = st.nextElement().toString();
 			ContentValues cv = getRemoteFindById(context, authKey, guid);
+			
+//			Set <Entry <String, Object>> cvSet = cv.valueSet();
+//			Iterator setIt = cvSet.iterator();
+//			while (setIt.hasNext()) {
+//				Entry<String, Object> entry = (Entry<String,Object>)setIt.next();
+//				String key = entry.getKey();
+//				Object val = entry.getValue();
+//				Log.i(TAG, "Key = " + key + " val = " + val + " " + val.getClass().getName());
+//			}
 
 			if (cv == null) {
-				return false; // Shouldn't be null
+				return false; // Shouldn't be null--we know its ID
 			} else {
-				// cv.put(PositDbHelper.FINDS_SYNCED,
-				// PositDbHelper.FIND_IS_SYNCED);
 				Log.i(TAG, cv.toString());
 				// Update the DB
 				Find find = DbHelper.getDbManager(context).getFindByGuid(guid);
 				if (find != null) {
-					// if (cv.containsKey(PositDbHelper.FINDS_DELETED)) {
-					// if ((Integer) cv.get(PositDbHelper.FINDS_DELETED) == 1) {
-					// dbh.deleteFind(guid);
-					// }
-					// }
 					Log.i(TAG, "Updating existing find: " + find.getId());
-					Find updatedFind = new Find(cv);
+					Find updatedFind = (OutsideInFind)find;
+					((OutsideInFind) updatedFind).updateObject(cv);
 					updatedFind.setId(find.getId());
-					rows = DbHelper.getDbManager(context).updateWithoutHistory(updatedFind);
-					
+					rows = DbHelper.getDbManager(context).updateWithoutHistory(updatedFind);				
 				} else {
-					Log.i(TAG, "Adding a new find" + find);
-					find = new Find(cv);
+					find = new OutsideInFind();
+					Log.i(TAG, "Inserting new find: " + find.getId());
+					((OutsideInFind) find).updateObject(cv);
+					Log.i(TAG, "Adding a new find " + find);
 					rows = DbHelper.getDbManager(context).insertWithoutHistory(find);
-					
-					// }
-					// if (!success) {
-					// Log.i(TAG, "Error recording sync stamp");
-					// mHandler.sendEmptyMessage(SYNCERROR);
-					// } else {
-					// Log.i(TAG, "Recorded timestamp stamp");
-					// }
-					// dbh.close();
 				}
 			}
 		}
@@ -1211,10 +1209,13 @@ public class Communicator {
 		try {
 			JSONObject jobj = new JSONObject(responseString);
 			String findJson = jobj.getString("find");
-			JSONObject find = new JSONObject(findJson);
+			JSONObject find = new JSONObject(findJson);			
 			cv.put(Find.GUID, find.getString(Find.GUID));
 			cv.put(Find.PROJECT_ID, find.getInt(Find.PROJECT_ID));
 			cv.put(Find.NAME, find.getString(Find.NAME));
+			
+			cv.put(Find.CLASS_NAME, "OutsideInFind");   // Temporary Hack, should come from Db
+			
 			cv.put(Find.DESCRIPTION, find.getString(Find.DESCRIPTION));
 			// FIXME add add_time and modify_time for this
 			cv.put(Find.TIME, find.getString("add_time"));
@@ -1222,6 +1223,14 @@ public class Communicator {
 			cv.put(Find.LATITUDE, find.getDouble(Find.LATITUDE));
 			cv.put(Find.LONGITUDE, find.getDouble(Find.LONGITUDE));
 			cv.put(Find.REVISION, find.getInt(Find.REVISION));
+			
+			// Is this a extended find?
+			if (jobj.has(Find.EXTENSION)) {
+				String extradata = jobj.getString(Find.EXTENSION);		
+				Log.i(TAG, "extradata = " + extradata);
+				addExtraDataToContentValues(cv, extradata);
+			}
+			
 			return cv;
 		} catch (JSONException e) {
 			Log.i(TAG, e.getMessage());
@@ -1233,6 +1242,34 @@ public class Communicator {
 		return null;
 	}
 
+	/**
+	 * The data has the form: [attr=value, ...]
+	 * @param cv
+	 * @param data
+	 */
+	static private void addExtraDataToContentValues(ContentValues cv, String data) {
+		data = data.trim();
+		data = data.substring(1,data.length()-1);
+		StringTokenizer st = new StringTokenizer(data,",");
+		while (st.hasMoreElements()) {
+			String attrvalpair = (String) st.nextElement();
+			String attr = attrvalpair.substring(0,attrvalpair.indexOf("="));
+			attr = attr.trim();
+			String val = attrvalpair.substring(attrvalpair.indexOf("=")+1);
+			val = val.trim();
+			Log.i(TAG, "Putting " + attr + "=" + val + " into CV");
+			if (Integer.getInteger(val) != null)
+				cv.put(attr, Integer.parseInt(val));
+//			else if (Boolean.getBoolean(val) != null)
+//				cv.put(attr, Boolean.parseBoolean(val))
+//			else if (Double.getDouble(val) != null))
+//				cv.put(attr, Double.parseDouble(val))
+			else
+				cv.put(attr, val);
+		}
+		
+	}
+	
 	// /**
 	// * Get an image from the server using the guid as Key.
 	// *

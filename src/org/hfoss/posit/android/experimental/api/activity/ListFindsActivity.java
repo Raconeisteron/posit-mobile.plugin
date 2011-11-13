@@ -323,6 +323,8 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				tv = (TextView) v.findViewById(R.id.time);
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				tv.setText(getText(R.string.timeLabel)+ " " + dateFormat.format(find.getTime()));
+				tv = (TextView) v.findViewById(R.id.status);
+				tv.setText(find.getStatusAsString());
 				tv = (TextView) v.findViewById(R.id.description_id);
 				String description = find.getDescription();
 				if (description.length() <= 50) {
