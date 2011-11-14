@@ -67,6 +67,7 @@ import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
+import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind;
 
 import android.util.Log;
@@ -660,6 +661,8 @@ public class Communicator {
 
 		return response;
 	}
+	
+	
 
 	/**
 	 * 
@@ -676,34 +679,44 @@ public class Communicator {
 		while (st.hasMoreElements()) {
 			guid = st.nextElement().toString();
 			ContentValues cv = getRemoteFindById(context, authKey, guid);
-			
-//			Set <Entry <String, Object>> cvSet = cv.valueSet();
-//			Iterator setIt = cvSet.iterator();
-//			while (setIt.hasNext()) {
-//				Entry<String, Object> entry = (Entry<String,Object>)setIt.next();
-//				String key = entry.getKey();
-//				Object val = entry.getValue();
-//				Log.i(TAG, "Key = " + key + " val = " + val + " " + val.getClass().getName());
-//			}
 
 			if (cv == null) {
 				return false; // Shouldn't be null--we know its ID
 			} else {
 				Log.i(TAG, cv.toString());
-				// Update the DB
-				Find find = DbHelper.getDbManager(context).getFindByGuid(guid);
-				if (find != null) {
-					Log.i(TAG, "Updating existing find: " + find.getId());
-					Find updatedFind = (OutsideInFind)find;
-					((OutsideInFind) updatedFind).updateObject(cv);
-					updatedFind.setId(find.getId());
-					rows = DbHelper.getDbManager(context).updateWithoutHistory(updatedFind);				
-				} else {
-					find = new OutsideInFind();
-					Log.i(TAG, "Inserting new find: " + find.getId());
-					((OutsideInFind) find).updateObject(cv);
-					Log.i(TAG, "Adding a new find " + find);
-					rows = DbHelper.getDbManager(context).insertWithoutHistory(find);
+				try {
+					
+					// Find out what Find class POSIT is configured for
+					Class<? extends Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
+					
+					Log.i(TAG, "Find class = " + findClass.getSimpleName());
+					
+					// Update the DB
+					Find find = DbHelper.getDbManager(context).getFindByGuid(guid);
+					if (find != null) {
+						Log.i(TAG, "Updating existing find: " + find.getId());
+						Find updatedFind = findClass.newInstance();
+						updatedFind.updateObject(cv);
+						
+//						Find updatedFind = (OutsideInFind)find;
+//						((OutsideInFind) updatedFind).updateObject(cv);
+						updatedFind.setId(find.getId());
+						rows = DbHelper.getDbManager(context).updateWithoutHistory(updatedFind);				
+					} else {
+					//	find = new OutsideInFind();
+						find = findClass.newInstance();
+						Log.i(TAG, "Inserting new find: " + find.getId());
+						find.updateObject(cv);
+//						((OutsideInFind) find).updateObject(cv);
+						Log.i(TAG, "Adding a new find " + find);
+						rows = DbHelper.getDbManager(context).insertWithoutHistory(find);
+					}
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
@@ -1216,10 +1229,7 @@ public class Communicator {
 			JSONObject find = new JSONObject(findJson);			
 			cv.put(Find.GUID, find.getString(Find.GUID));
 			cv.put(Find.PROJECT_ID, find.getInt(Find.PROJECT_ID));
-			cv.put(Find.NAME, find.getString(Find.NAME));
-			
-			cv.put(Find.CLASS_NAME, "OutsideInFind");   // Temporary Hack, should come from Db
-			
+			cv.put(Find.NAME, find.getString(Find.NAME));			
 			cv.put(Find.DESCRIPTION, find.getString(Find.DESCRIPTION));
 			// FIXME add add_time and modify_time for this
 			cv.put(Find.TIME, find.getString("add_time"));
@@ -1232,26 +1242,30 @@ public class Communicator {
 			if (jobj.has(Find.EXTENSION)) {
 				String extradata = jobj.getString(Find.EXTENSION);		
 				Log.i(TAG, "extradata = " + extradata);
-				addExtraDataToContentValues(cv, extradata);
+				if ( !extradata.equals("null") )
+					addExtraDataToContentValues(cv, extradata);
 			}
 			
 			return cv;
 		} catch (JSONException e) {
-			Log.i(TAG, e.getMessage());
+			Log.i(TAG, "JSONException " + e.getMessage());
 			e.printStackTrace();
 		} catch (Exception e) {
-			Log.i(TAG, e.getMessage());
+			Log.i(TAG, "Exception " + e.getMessage());
 			e.printStackTrace();
 		}
 		return null;
 	}
 
 	/**
-	 * The data has the form: [attr=value, ...]
+	 * The data has the form: [attr=value, ...] or 'null'
 	 * @param cv
 	 * @param data
 	 */
 	static private void addExtraDataToContentValues(ContentValues cv, String data) {
+		Log.i(TAG, "data = " + data  + " " + data.length());
+		if (data.equals("null")) 
+			return;
 		data = data.trim();
 		data = data.substring(1,data.length()-1);
 		StringTokenizer st = new StringTokenizer(data,",");

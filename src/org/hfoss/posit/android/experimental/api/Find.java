@@ -300,29 +300,34 @@ public class Find implements FindInterface {
 	}
 
 	/**
-	 * Converts an object's value to a type that matches a field's Type
+	 * Converts a value to the type that matches a given field in this class
 	 * NOTE: This method is incomplete. It needs more cases for both field's and val's type.
-	 * @param field, the field
-	 * @param val, the value being converted (usually a String)
+	 * @param field, the field's typed as represented by a Class object
+	 * @param val, the value being converted
 	 * @return an Object whose dynamic type is Integer or Boolean or ...
 	 */
-	protected Object convertArgumentForField(Object field, Object val) {
-		String oType = field.getClass().getName();
+	protected Object convertValueTypeForField(Class field, Object val) {
+		String oType = field.getName();
 		Object result = null;
 		Log.i(TAG, "Convert argument for " + oType + " field for value " + val);
-		if (oType.equals("java.lang.Integer")) {
-			result = Integer.parseInt((String)val);
-		} else if (oType.equals("java.lang.Boolean"))  {
-			result = Boolean.parseBoolean((String) val);
-		} else if (oType.equals("java.lang.Double"))
-			result = Double.parseDouble((String) val);
-		else if (oType.equals("java.lang.String")) {
-			result = val.toString();
-		} 
-		else  {
-			result = val;
+		try {
+			if (oType.equals("java.lang.Integer")) {
+				result = Integer.parseInt((String)val);
+			} else if (oType.equals("java.lang.Boolean"))  {
+				result = Boolean.parseBoolean((String) val);
+			} else if (oType.equals("java.lang.Double"))
+				result = Double.parseDouble((String) val);
+			else if (oType.equals("java.lang.String")) {
+				result = val.toString();
+			} 
+			else  {
+				result = val;
+			}
+			Log.i(TAG, "Returning " + result + " of type " + result.getClass());
+			return result;
+		} catch (ClassCastException e) {
+			e.printStackTrace();
 		}
-		Log.i(TAG, "Returning " + result + " of type " + result.getClass());
 		return result;
 	}
 	
@@ -348,25 +353,29 @@ public class Find implements FindInterface {
 			Log.i(TAG, "Key = " + key + " val = " + val + " " + val.getClass().getName());
 				
 			Field field = null;
-			Object o = null;
 			try {
-				// Find a field with the same name as the key.  This will throw and exceptoin
+				// Find a field with the same name as the key.  This will throw and exception
 				// when the field is declared in the (Find) superclass for a derived object.
 				field = this.getClass().getDeclaredField(key);
 				
-				// Make the field accessible so that if it is protected subclass field, it can
-				// be accessed here. 
+				// Get the field's type.
+				Class fieldType = field.getType();
+				
+				// Make the field accessible so that it can be referenced here. 
 				field.setAccessible(true);
-				
-				// Get the field's current value (and type)
-				o = field.get(this);
-				
-				// Convert the value, val, to object of the same type as the field's type
-				Object obj = convertArgumentForField(o, val);
-				//Log.i(TAG, "obj = " + obj.toString() + " of type " + obj.getClass());
-				
-				// Set the field's value
-				field.set(this, obj);
+
+				// If there's no type conflict
+				if (fieldType.getSimpleName().equals(val.getClass().getSimpleName())) 
+					field.set(this, val);
+				else {
+
+					// Convert the value, val, to object of the same type as the field's type
+					Object obj = convertValueTypeForField(fieldType, val);
+					//Log.i(TAG, "obj = " + obj.toString() + " of type " + obj.getClass());
+
+					// Set the field's value
+					field.set(this, obj);
+				}
 				Log.i(TAG, ">>>>>>> Set" + field + "=" + val);
 			}  catch (NoSuchFieldException e) {
 				try {
