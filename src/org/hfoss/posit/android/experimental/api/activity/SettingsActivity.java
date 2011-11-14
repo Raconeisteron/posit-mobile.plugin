@@ -467,6 +467,15 @@ public class SettingsActivity extends PreferenceActivity implements
 			PreferenceManager manager = this.getPreferenceManager();
 			Preference p = manager.findPreference(key);
 			Log.i(TAG, "p = " + p);
+			
+			if (p!= null && key.equals(getString(R.string.serverPref))) {
+				String server = sp.getString(key, "");
+				if (server != null) {
+					Log.i(TAG, "new server = " + server);
+					p.setSummary(server);
+				}
+			}
+
 			if (p != null && key.equals(getString(R.string.projectNamePref))) {
 				
 				String value = sp.getString(key, "");
