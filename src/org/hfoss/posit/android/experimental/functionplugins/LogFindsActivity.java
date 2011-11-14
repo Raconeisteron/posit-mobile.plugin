@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+
+import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -24,8 +26,9 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 public class LogFindsActivity extends OrmLiteBaseActivity<DbManager> {
 
 	public static final String TAG = "LogFindsActivity";
-	private static final String DEFAULT_LOG_DIRECTORY = "oi";
-	private static final String DEFAULT_LOG_FILE = "oi_log.txt";
+	public static final int IS_LOGGED = 1;
+	private static final String DEFAULT_LOG_DIRECTORY = "log";
+	private static final String DEFAULT_LOG_FILE = "log.txt";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,13 +87,19 @@ public class LogFindsActivity extends OrmLiteBaseActivity<DbManager> {
             
 			PrintWriter writer = new PrintWriter(new BufferedWriter(
 					new FileWriter(file, true)));
+			
+			// NOTE:  For now we use the Find's isAdhoc field (which is unused) for
+			// recording whether the Find is logged.
 
 			Iterator<? extends Find> it = finds.iterator();
 			while (it.hasNext()) {
 				Find find = it.next();
+				Log.i(TAG, "Find = " + find);
 				
-				if (((OutsideInFind)find).getIsLogged() == false) {
-					((OutsideInFind) find).setIsLogged(true);
+				if (find.getIs_adhoc() != IS_LOGGED) {
+					find.setIs_adhoc(IS_LOGGED);
+//				if (((OutsideInFind)find).getIsLogged() == false) {
+//					((OutsideInFind) find).setIsLogged(true);
 					getHelper().update(find);
 					writer.println(new Date() + ": " + find);
 					Log.i(TAG, "Wrote to file: " + find);
