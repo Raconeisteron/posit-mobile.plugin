@@ -368,9 +368,9 @@ public class Find implements FindInterface {
 				if (fieldType.getSimpleName().equals(val.getClass().getSimpleName())) 
 					field.set(this, val);
 				else {
-
+					Log.i(TAG, "field type = " + fieldType.getSimpleName() + " val type = " + val.getClass().getSimpleName());
 					// Convert the value, val, to object of the same type as the field's type
-					Object obj = convertValueTypeForField(fieldType, val);
+					Object obj = convertValueTypeForField(fieldType, val.toString());
 					//Log.i(TAG, "obj = " + obj.toString() + " of type " + obj.getClass());
 
 					// Set the field's value
