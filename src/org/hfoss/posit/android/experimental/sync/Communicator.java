@@ -201,7 +201,7 @@ public class Communicator {
 		return false;
 	}
 	
-	private static String getAuthKey(Context context) {
+	public static String getAuthKey(Context context) {
 		AccountManager accountManager = AccountManager.get(context);
 
 		// TODO: again just picking the first account here.. how are you
@@ -546,46 +546,50 @@ public class Communicator {
 		});
 	}
 
-	//
-	// public String createProject(String server, String projectName,
-	// String projectDescription, String authKey) {
-	// String url = server + "/api/newProject?authKey=" + authKey;
-	// HashMap<String, String> sendMap = new HashMap<String, String>();
-	// sendMap.put("name", projectName);
-	// sendMap.put("description", projectDescription);
-	//
-	// HashMap<String, Object> responseMap = null;
-	// Log.i(TAG, "Create Project URL=" + url);
-	//
-	// try {
-	// responseString = doHTTPPost(url, sendMap);
-	// Log.i(TAG, responseString);
-	// if (responseString.contains("[ERROR]")) {
-	// Toast.makeText(mContext, responseString, Toast.LENGTH_LONG)
-	// .show();
-	// return Constants.AUTHN_FAILED + ":" + "Error";
-	// }
-	// ResponseParser parser = new ResponseParser(responseString);
-	// responseMap = parser.parseObject();
-	// } catch (Exception e) {
-	// Toast.makeText(mContext, e.getMessage() + "", Toast.LENGTH_LONG)
-	// .show();
-	// }
-	// try {
-	// if (responseMap.containsKey(ERROR_CODE))
-	// return responseMap.get(ERROR_CODE) + ":"
-	// + responseMap.get(ERROR_MESSAGE);
-	// else if (responseMap.containsKey(MESSAGE_CODE)) {
-	// return (String) responseMap.get(MESSAGE);
-	//
-	// } else {
-	// return "Malformed message from server.";
-	// }
-	// } catch (Exception e) {
-	// Log.e(TAG, "createProject " + e.getMessage());
-	// return e.getMessage();
-	// }
-	// }
+	
+	public String createProject(Context context, String server, String projectName,
+			String projectDescription, String authKey) {
+		String url = server + "/api/newProject?authKey=" + authKey;
+		
+		List<NameValuePair> nvp = new ArrayList<NameValuePair>();
+		
+		nvp.add(new BasicNameValuePair("name", projectName));
+		nvp.add(new BasicNameValuePair("description", projectDescription));
+		
+		HashMap<String, Object> responseMap = null;
+		Log.i(TAG, "Create Project URL=" + url);
+
+		String responseString = null;
+		
+		try {
+			responseString = doHTTPPost(url, nvp);
+			Log.i(TAG, responseString);
+			if (responseString.contains("[ERROR]")) {
+				Toast.makeText(context, responseString, Toast.LENGTH_LONG).show();
+				return Constants.AUTHN_FAILED + ":" + "Error";
+			}
+			ResponseParser parser = new ResponseParser(responseString);
+			responseMap = parser.parseObject();
+		} catch (Exception e) {
+			Toast.makeText(context, e.getMessage() + "", Toast.LENGTH_LONG).show();
+		}
+		try {
+			if (responseMap.containsKey(ERROR_CODE))
+				return responseMap.get(ERROR_CODE) + ":"
+				+ responseMap.get(ERROR_MESSAGE);
+			else if (responseMap.containsKey(MESSAGE_CODE)) {
+				return (String) responseMap.get(MESSAGE);
+
+			} else {
+				return "Malformed message from server.";
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "createProject " + e.getMessage());
+			return e.getMessage();
+		}
+	}
+	
+	
 	//
 	// public String registerUser(String server, String firstname,
 	// String lastname, String email, String password, String check,
