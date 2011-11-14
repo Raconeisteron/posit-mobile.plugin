@@ -36,6 +36,7 @@ import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.experimental.plugin.Plugin;
+import org.hfoss.posit.android.experimental.sync.Communicator;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -353,6 +354,14 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	 */
 	public void onClick(View view) {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		
+		String authKey = Communicator.getAuthKey(this);
+		if (authKey == null) {
+			Toast.makeText(this, "You must go to Android > Settings > Accounts & Sync to " +
+					" set up an account before you use POSIT.", Toast.LENGTH_LONG).show();
+			return;
+		}
+		
 		if (sp.getString(getString(R.string.projectNamePref), "").equals("")) {
 			Toast.makeText(this, "To get started, you must choose a project.", Toast.LENGTH_LONG).show();
 			Intent i = new Intent(this, ListProjectsActivity.class);
