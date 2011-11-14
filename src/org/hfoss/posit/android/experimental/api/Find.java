@@ -311,11 +311,11 @@ public class Find implements FindInterface {
 		Object result = null;
 		Log.i(TAG, "Convert argument for " + oType + " field for value " + val);
 		try {
-			if (oType.equals("java.lang.Integer")) {
+			if (oType.equals("java.lang.Integer") || oType.equals("int")) {
 				result = Integer.parseInt((String)val);
-			} else if (oType.equals("java.lang.Boolean"))  {
+			} else if (oType.equals("java.lang.Boolean") || oType.equals("boolean"))  {
 				result = Boolean.parseBoolean((String) val);
-			} else if (oType.equals("java.lang.Double"))
+			} else if (oType.equals("java.lang.Double") || oType.equals("double"))
 				result = Double.parseDouble((String) val);
 			else if (oType.equals("java.lang.String")) {
 				result = val.toString();
