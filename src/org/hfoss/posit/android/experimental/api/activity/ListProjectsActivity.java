@@ -131,11 +131,12 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 		finish();
 	}
 	
-//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//		super.onActivityResult(requestCode, resultCode, data);
-//		if (requestCode == NEW_PROJECT)
-//			//showProjects();
-//	}
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == NEW_PROJECT) {
+			Communicator.attemptGetProjects(handler, this);
+		}
+	}
 
 	public void onListItemClick(ListView lv, View v, int position, long idFull){
 		mClickedPosition = position;
@@ -168,12 +169,11 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 	 * TODO: NewProjectActivity isn't re-added yet
 	 */
 	public void onClick(View v) {
-		//Intent i = new Intent(this, NewProjectActivity.class);;
+		Intent i = new Intent(this, NewProjectActivity.class);;
 		switch (v.getId()) {
 
 		case R.id.idAddProjButton:
-			//startActivityForResult(i,NEW_PROJECT);
-
+			startActivityForResult(i,NEW_PROJECT);
 			break;
 
 			
