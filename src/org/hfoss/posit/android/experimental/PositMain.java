@@ -45,6 +45,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -431,11 +434,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		if (mMainMenuPlugins.size() > 0) {
 			for (FunctionPlugin plugin: mMainMenuPlugins) {
 				MenuItem item = menu.add(plugin.getmMenuTitle());
-
 				int id = getResources().getIdentifier(
 						plugin.getmMenuIcon(), "drawable", "org.hfoss.posit.android.experimental");
-				Log.i(TAG, "icon =  " + plugin.getmMenuIcon() + " id =" + id);
-				item.setIcon(id);				
+				item.setIcon(id);
 			}
 		}
 		inflater.inflate(R.menu.positmain_menu, menu);
