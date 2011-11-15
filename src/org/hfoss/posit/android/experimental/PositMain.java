@@ -431,7 +431,11 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		if (mMainMenuPlugins.size() > 0) {
 			for (FunctionPlugin plugin: mMainMenuPlugins) {
 				MenuItem item = menu.add(plugin.getmMenuTitle());
-				item.setIcon(android.R.drawable.ic_menu_mapmode);				
+
+				int id = getResources().getIdentifier(
+						plugin.getmMenuIcon(), "drawable", "org.hfoss.posit.android.experimental");
+				Log.i(TAG, "icon =  " + plugin.getmMenuIcon() + " id =" + id);
+				item.setIcon(id);				
 			}
 		}
 		inflater.inflate(R.menu.positmain_menu, menu);
