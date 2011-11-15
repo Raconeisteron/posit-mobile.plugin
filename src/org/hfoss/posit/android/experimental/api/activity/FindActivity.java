@@ -142,12 +142,15 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				displayContentInView(find);
 			}
 		} else {
+			
+			// The GUID is hidden in the guidRealValueTextView
 			TextView idView = (TextView) findViewById(R.id.guidRealValueTextView);
 			if (idView != null)
 				idView.setText(UUID.randomUUID().toString());
 
+			//  It is truncated to 8 characters and displayed here.
 			TextView tView = (TextView) findViewById(R.id.guidValueTextView);
-			if (tView != null)
+			if (tView != null && idView != null) 
 				tView.setText(idView.getText().toString().substring(0,8)+" ...");
 
 			tView = (TextView) findViewById(R.id.timeValueTextView);
@@ -262,10 +265,15 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			e.printStackTrace();
 		}
 		
+	
+		//  For derived Finds that don't care about GUID (what's wrong with them?) 
+		//  we create one anyway and associate it with the Find.  It never appears in the UI
 		TextView idView = (TextView) findViewById(R.id.guidRealValueTextView);
 		if (idView != null) {
 			value = idView.getText().toString();
 			find.setGuid(value);
+		} else {
+			find.setGuid(UUID.randomUUID().toString());
 		}
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -510,6 +518,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * @return
 	 */
 	protected boolean isValidGuid(String guid) {
+		if (guid == null)
+			return false;
 		return guid.length() != 0;
 	}
 
