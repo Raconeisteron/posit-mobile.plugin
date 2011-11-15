@@ -141,7 +141,11 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		if (mListMenuPlugins.size() > 0) {
 			for (FunctionPlugin plugin: mListMenuPlugins) {
 				MenuItem item = menu.add(plugin.getmMenuTitle());
-				item.setIcon(android.R.drawable.ic_menu_mapmode);				
+				int id = getResources().getIdentifier(
+						plugin.getmMenuIcon(), "drawable", "org.hfoss.posit.android.experimental");
+				Log.i(TAG, "icon =  " + plugin.getmMenuIcon() + " id =" + id);
+				item.setIcon(id);
+				//item.setIcon(android.R.drawable.ic_menu_mapmode);				
 			}
 		}
 		inflater.inflate(R.menu.list_finds_menu, menu);
