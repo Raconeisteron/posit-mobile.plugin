@@ -1,4 +1,4 @@
-package org.hfoss.posit.android.experimental.api.activity;
+package org.hfoss.posit.android.experimental.functionplugins;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,31 +27,23 @@ public class FilePickerActivity extends ListActivity {
 	public static final String TAG = "FilePicker";
 	public static final int ACTION_CHOOSER = 1;
 	public static final int RESULT_OK = 1;
-	public static final String HOME_DIRECTORY = "/sdcard/acdivoca";
-	public static final String HOME_DIRECTORY_MCHN = "/sdcard/acdivoca/mchn";
-	public static final String HOME_DIRECTORY_AGRI = "/sdcard/acdivoca/agri";
+	public static final int RESULT_ERROR = 0;
 
 	private File currentDir;
 	private FileArrayAdapter adapter;
-	private int mBeneficiaryType; 
-
 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		currentDir = new File(HOME_DIRECTORY);
 
 		Intent intent = this.getIntent();
 		 Bundle extras = intent.getExtras();
 			if (extras == null) {
 				return;
 			}
-		mBeneficiaryType= extras.getInt(AcdiVocaFind.TYPE);
-		if (mBeneficiaryType == AcdiVocaFind.TYPE_MCHN) 
-			currentDir = new File(HOME_DIRECTORY_MCHN);
-		else 
-			currentDir = new File(HOME_DIRECTORY_AGRI);
+		String home = extras.getString("home");
+		currentDir = new File(home);
 		
 		File files[] = currentDir.listFiles();
 		List<String> datafiles = new ArrayList<String>();
@@ -64,6 +56,9 @@ public class FilePickerActivity extends ListActivity {
 		} catch (Exception e) {
 			Log.e(TAG, "IO Exception");
 			e.printStackTrace();
+			Intent returnIntent = new Intent();
+			setResult(RESULT_ERROR, returnIntent);
+			finish();
 		}
 		
 		if (datafiles.size() == 0) 
@@ -80,7 +75,6 @@ public class FilePickerActivity extends ListActivity {
         String filename = adapter.getItem(position);
 	    Intent returnIntent = new Intent();
 	    returnIntent.putExtra(Intent.ACTION_CHOOSER, filename);
-	    returnIntent.putExtra(AcdiVocaFind.TYPE, mBeneficiaryType);
 
 		setResult(RESULT_OK, returnIntent);
 		finish();

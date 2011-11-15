@@ -49,11 +49,18 @@
 			menuTitle="Map Finds"
 			menuActivity="org.hfoss.posit.android.experimental.api.activity.MapFindsActivity" />
 
+		<Plugin active="true"
+			type="function"
+			extensionPoint="listMenu"
+			name="viewfile"
+			menuIcon="ic_menu_view" menuTitle="View File"
+			menuActivity="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
+
 		<Plugin active="true" 
 			type="function" 
 			extensionPoint="listMenu"
 			name="log" 
-			menuIcon="ic_menu_savetolog" menuTitle="Log Finds"
+			menuIcon="menu_log_med_grey" menuTitle="Log Finds"
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.LogFindsActivity" />
 
 		<Plugin active="false" 
