@@ -84,6 +84,10 @@
 			android:name="org.hfoss.posit.android.experimental.functionplugins.LogFindsActivity" />
 		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.LoginActivity" />
+		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.FilePickerActivity" />
+		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
 
 
 		<!-- Activities for Outside In plugin -->
