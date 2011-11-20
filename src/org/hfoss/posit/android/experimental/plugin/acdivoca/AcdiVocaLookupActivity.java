@@ -25,6 +25,7 @@ package org.hfoss.posit.android.experimental.plugin.acdivoca;
 import java.sql.SQLException;
 
 import org.hfoss.posit.android.experimental.R;
+import org.hfoss.posit.android.experimental.api.LocaleManager;
 import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 
@@ -132,7 +133,7 @@ public class AcdiVocaLookupActivity extends OrmLiteBaseActivity<DbManager> imple
 		super.onResume();
 		Log.i(TAG, "onResume");
 		
-		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+		LocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		setContentView(R.layout.acdivoca_lookup);  // Should be done after locale configuration
 

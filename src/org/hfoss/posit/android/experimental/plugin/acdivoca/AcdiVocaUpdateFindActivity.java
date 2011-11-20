@@ -27,6 +27,7 @@ import java.util.Calendar;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
+import org.hfoss.posit.android.experimental.api.LocaleManager;
 import org.hfoss.posit.android.experimental.api.activity.FindActivity;
 
 import com.j256.ormlite.dao.Dao;
@@ -138,7 +139,7 @@ public class AcdiVocaUpdateFindActivity extends FindActivity implements OnDateCh
     	super.onResume();
     	Log.i(TAG, "onResume beneficiary id = " + mBeneficiaryId);
 
-    	AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+    	LocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
     	Log.i(TAG, "Before edited = " + isProbablyEdited);
 

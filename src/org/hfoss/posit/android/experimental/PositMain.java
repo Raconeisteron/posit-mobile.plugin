@@ -23,6 +23,7 @@ package org.hfoss.posit.android.experimental;
 
 import java.util.ArrayList;
 
+import org.hfoss.posit.android.experimental.api.LocaleManager;
 import org.hfoss.posit.android.experimental.api.User;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 //import org.hfoss.posit.android.experimental.api.activity.LoginActivity;
@@ -33,7 +34,6 @@ import org.hfoss.posit.android.experimental.plugin.FindActivityProvider;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaLocaleManager;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.experimental.plugin.Plugin;
 import org.hfoss.posit.android.experimental.sync.Communicator;
@@ -294,7 +294,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		super.onResume();
 		Log.i(TAG, "Resuming");
 
-		AcdiVocaLocaleManager.setDefaultLocale(this); // Locale Manager should
+		LocaleManager.setDefaultLocale(this); // Locale Manager should
 														// be in API
 		startPOSIT();
 	}

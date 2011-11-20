@@ -27,6 +27,7 @@ import java.util.Calendar;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
+import org.hfoss.posit.android.experimental.api.LocaleManager;
 import org.hfoss.posit.android.experimental.api.activity.FindActivity;
 import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 
@@ -173,7 +174,7 @@ TextWatcher, OnItemSelectedListener { //, OnKeyListener {
 		super.onResume();
 		Log.i(TAG, "onResume");
 
-		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+		LocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 
 		if (this.mSavedStateValues != null) {
