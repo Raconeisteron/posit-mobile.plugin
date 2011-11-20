@@ -38,6 +38,9 @@ public class FindPluginManager {
 	private static final String TAG = "FindPluginManager";
 
 	public static final String MAIN_MENU_EXTENSION = "mainMenu";
+	/* Function Button Begins */
+	public static final String MAIN_BUTTON_EXTENSION = "mainButton";
+	/* Function Button Ends */
 	public static final String LIST_MENU_EXTENSION = "listMenu";
 	public static final String MAIN_LOGIN_EXTENSION = "mainLogin"; 
 	
