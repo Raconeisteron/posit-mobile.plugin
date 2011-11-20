@@ -83,6 +83,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	//private boolean mMainMenuExtensionPointEnabled = false;
 	private ArrayList<FunctionPlugin> mMainMenuPlugins = null;
 	private FunctionPlugin mMainLoginPlugin = null;
+	/* Function Button Begins */
+	private ArrayList<FunctionPlugin> mMainButtonPlugins = null;
+	/* Function Button Ends */
 	
 
 	/**
@@ -143,15 +146,6 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			else
 				this.startActivity(intent);
 		}
-
-//		Intent intent = new Intent();
-//		Class<Activity> loginActivity = FindActivityProvider.getLoginActivityClass();
-//		if (loginActivity != null) {
-//			intent.setClass(this, loginActivity);
-//			intent.putExtra(User.USER_TYPE_STRING, User.UserType.USER.ordinal());
-//			Log.i(TAG, "started activity fo rresult");
-//			this.startActivityForResult(intent, LoginActivity.ACTION_LOGIN);
-//		}
 	}
 
 	/**
@@ -174,7 +168,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			mainLogo.setImageResource(resID);
 		}
 
-		// New Beneficiary button
+		// New Find Button
 		if (FindPluginManager.mFindPlugin.mAddButtonLabel != null) {
 			final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 			int resid = this.getResources()
@@ -184,20 +178,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 				addFindButton.setTag(resid);
 				addFindButton.setOnClickListener(this);
 			}
-
-			// // Button is gone for AGRI and AGRON users and for USER users
-			// during distribution events
-			// if ( (AppControlManager.isAgriUser() ||
-			// AppControlManager.isAgronUser())
-			// || (AppControlManager.isRegularUser() &&
-			// AppControlManager.isDuringDistributionEvent())) {
-			// addFindButton.setVisibility(View.GONE);
-			// } else {
-			// addFindButton.setVisibility(View.VISIBLE);
-			// }
 		}
 
-		// Send messages button
+		// View Finds Button
 		if (FindPluginManager.mFindPlugin.mListButtonLabel != null) {
 			final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
 			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mListButtonLabel, "string",
@@ -206,78 +189,19 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 				listFindButton.setTag(resid);
 				listFindButton.setOnClickListener(this);
 			}
-
-			// // Button is gone for USER and AGRI users during distribution
-			// events
-			// if (AppControlManager.isDuringDistributionEvent()
-			// && (AppControlManager.isRegularUser()
-			// || AppControlManager.isAgriUser()
-			// || AppControlManager.isAgronUser() )) {
-			// listFindButton.setVisibility(View.GONE);
-			// } else {
-			// listFindButton.setVisibility(View.VISIBLE);
-			// }
 		}
-
-		// Update button -- used during Distribution events
-		if (FindPluginManager.mFindPlugin.mExtraButtonLabel != null && !FindPluginManager.mFindPlugin.mExtraButtonLabel.equals("")) {
-			final ImageButton extraButton = (ImageButton) findViewById(R.id.extraButton);
-			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mExtraButtonLabel, "string",
-					getPackageName());
-			if (extraButton != null) {
-				extraButton.setOnClickListener(this);
-				extraButton.setTag(resid);
-				extraButton.setVisibility(View.VISIBLE);
-			}
-
-			// // Button is gone for USER and ADMIN users except during
-			// distribution events
-			// if (AppControlManager.isRegularUser() ||
-			// AppControlManager.isAdminUser()) {
-			// if (AppControlManager.isDuringDistributionEvent())
-			// extraButton.setVisibility(View.VISIBLE);
-			// else
-			// extraButton.setVisibility(View.GONE);
-			//
-			// // Enable the Button only if the event is started
-			// if (AppControlManager.isDistributionStarted())
-			// extraButton.setEnabled(true);
-			// else
-			// extraButton.setEnabled(false);
-			// } else if (AppControlManager.isAgriUser() ||
-			// AppControlManager.isAgronUser())
-			// extraButton.setVisibility(View.GONE);
+		
+		// Extra function plugin buttons
+		mMainButtonPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_BUTTON_EXTENSION);
+		
+		for (FunctionPlugin plugin : mMainButtonPlugins) {
+			int buttonID = getResources().getIdentifier(plugin.getName(), "id", getPackageName());
+			int iconID = getResources().getIdentifier(plugin.getmMenuIcon(), "drawable", getPackageName());
+			ImageButton button = (ImageButton) findViewById(buttonID);
+			button.setImageResource(iconID);
+			button.setVisibility(ImageButton.VISIBLE);
+			button.setOnClickListener(this);
 		}
-
-		// New agriculture beneficiary
-		if (FindPluginManager.mFindPlugin.mExtraButtonLabel2 != null && !FindPluginManager.mFindPlugin.mExtraButtonLabel2.equals("")) {
-			final ImageButton extraButton = (ImageButton) findViewById(R.id.extraButton2);
-			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mExtraButtonLabel2, "string",
-					getPackageName());
-			if (extraButton != null) {
-				extraButton.setTag(resid);
-				extraButton.setVisibility(View.VISIBLE);
-				extraButton.setOnClickListener(this);
-			}
-
-			// // Button is gone for USER users and (AGRI users during
-			// distribution events)
-			// Log.i(TAG, "Distr Stage = " +
-			// AppControlManager.displayDistributionStage(this));
-			// if (AppControlManager.isRegularUser()
-			// || AppControlManager.isAdminUser()
-			// || (AppControlManager.isAgriUser() &&
-			// AppControlManager.isDuringDistributionEvent())
-			// || (AppControlManager.isAgronUser() &&
-			// AppControlManager.isDuringDistributionEvent())) {
-			// extraButton.setVisibility(View.GONE);
-			// } else {
-			// extraButton.setVisibility(View.VISIBLE);
-			// }
-
-			Log.i(TAG, "Extra button visibility = " + extraButton.getVisibility());
-		}
-
 	}
 
 	// Lifecycle methods just generate Log entries to help debug and understand
@@ -337,19 +261,6 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			}
 		} else 
 			super.onActivityResult(requestCode, resultCode, data);
-			
-		
-//		switch (requestCode) {
-//		case LoginActivity.ACTION_LOGIN:
-//			if (resultCode == RESULT_OK) {
-//				Toast.makeText(this, getString(R.string.toast_thankyou), Toast.LENGTH_SHORT).show();
-//				break;
-//			} else {
-//				finish();
-//			}
-//		default:
-//			super.onActivityResult(requestCode, resultCode, data);
-//		}
 	}
 
 	/**
@@ -377,30 +288,33 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			case R.id.addFindButton:
 				intent.setClass(this, FindActivityProvider.getFindActivityClass());
 				intent.setAction(Intent.ACTION_INSERT);
-				// intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_MCHN);
 				startActivity(intent);
 				break;
 			case R.id.listFindButton:
 				intent = new Intent();
-				intent.setAction(Intent.ACTION_SEND);
-				// intent.putExtra(AcdiVocaDbHelper.FINDS_STATUS,
-				// SearchFilterActivity.RESULT_SELECT_NEW);
+//				intent.setAction(Intent.ACTION_SEND);
 				intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
-				// intent.setClass(this, AcdiVocaListFindsActivity.class);
 				startActivity(intent);
 				break;
-
-			case R.id.extraButton:
-				intent.setAction(Intent.ACTION_EDIT);
-				intent.setClass(this, FindActivityProvider.getExtraActivityClass());
-				startActivity(intent);
-				break;
-
-			case R.id.extraButton2:
-				intent.setAction(Intent.ACTION_INSERT);
-				intent.setClass(this, FindActivityProvider.getExtraActivityClass2());
-				intent.putExtra(AcdiVocaFind.TYPE, AcdiVocaFind.TYPE_AGRI);
-				startActivity(intent);
+			/* Function Button Begins */
+			default:
+				for (FunctionPlugin plugin: mMainButtonPlugins) {
+					int buttonID = getResources().getIdentifier(plugin.getName(), "id", getPackageName());
+					if (view.getId() == buttonID) {
+						intent = new Intent(this, plugin.getmMenuActivity());
+						/* Add specific info based on each button */
+						if (plugin.getmMenuTitle().equals("Extra Button")) {
+							intent.setAction(Intent.ACTION_INSERT);
+						} else if (plugin.getmMenuTitle().equals("Extra Button 2")) {
+							intent.setAction(Intent.ACTION_SEND);
+						}
+						/* Start the Activity */
+						if (plugin.getActivityReturnsResult())
+							startActivityForResult(intent, plugin.getActivityResultAction());
+						else
+							startActivity(intent);
+					}
+				}
 				break;
 			}
 		}

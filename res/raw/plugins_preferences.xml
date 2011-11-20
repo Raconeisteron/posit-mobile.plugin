@@ -49,6 +49,27 @@
 			menuTitle="Map Finds"
 			menuActivity="org.hfoss.posit.android.experimental.api.activity.MapFindsActivity" />
 
+       <!-- Extra Buttons in PositMain -->
+       <Plugin active="fale"
+            type="function"
+            extensionPoint="mainButton"
+            name="extraButton"
+            menuIcon="ic_menu_add_text" menuTitle="Extra Button"
+            menuActivity="org.hfoss.posit.android.experimental.api.activity.FindActivity"
+            activity_returns_result="false"
+            activity_result_action="0" />
+
+       <Plugin active="false"
+            type="function"
+            extensionPoint="mainButton"
+            name="extraButton2"
+            menuIcon="ic_menu_view" menuTitle="Extra Button 2"
+            menuActivity="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInListFindsActivity"
+            activity_returns_result="false"
+            activity_result_action="0" />
+       <!-- Function Button Ends -->
+
+
 		<Plugin active="true"
 			type="function"
 			extensionPoint="listMenu"
