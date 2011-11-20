@@ -337,4 +337,7 @@
 	<string name="geotaggingPref">Geotagging</string>
     <string name="geotaggingSummary">Geotag all finds</string>
     <string name="geotaggingKey">geotagKey</string>	
+    <string name="LocaleKey">locale</string>
+    <string name="Locale">Locale</string>
+    <string name="CancelLabel">Cancel</string>
 </resources>

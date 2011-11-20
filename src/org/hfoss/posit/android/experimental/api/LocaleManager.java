@@ -1,4 +1,4 @@
-package org.hfoss.posit.android.experimental.plugin.acdivoca;
+package org.hfoss.posit.android.experimental.api;
 
 import java.util.Locale;
 
@@ -7,7 +7,7 @@ import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class AcdiVocaLocaleManager {
+public class LocaleManager {
 	
 	public static final String TAG = "LocaleManager";
 	

@@ -29,11 +29,11 @@ import java.util.Set;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.AppControlManager;
+import org.hfoss.posit.android.experimental.api.LocaleManager;
 import org.hfoss.posit.android.experimental.api.User;
 import org.hfoss.posit.android.experimental.api.User.UserType;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaLocaleManager;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 

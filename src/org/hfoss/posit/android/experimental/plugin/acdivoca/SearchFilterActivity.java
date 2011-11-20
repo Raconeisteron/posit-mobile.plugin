@@ -24,6 +24,7 @@ package org.hfoss.posit.android.experimental.plugin.acdivoca;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.AppControlManager;
+import org.hfoss.posit.android.experimental.api.LocaleManager;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import android.app.Activity;
@@ -80,7 +81,7 @@ public class SearchFilterActivity extends Activity implements OnClickListener {
 		super.onResume();
 		Log.i(TAG, "onResume");
 		
-		AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+		LocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		setContentView(R.layout.acdivoca_search_filter);  // Should be done after locale configuration
 		

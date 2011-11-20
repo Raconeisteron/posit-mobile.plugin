@@ -22,6 +22,16 @@
 				android:key="@string/serverPref" 
 				android:summary="@string/defaultServer"
 				android:defaultValue="@string/defaultServer" />
+				
+			<ListPreference 
+				android:key="@string/LocaleKey"
+				android:title="@string/Locale" 
+				android:persistent="true"
+				android:defaultValue="en" 
+				android:summary="@string/Locale"
+				android:entries="@array/locales" 
+				android:entryValues="@array/locale_values"
+				android:negativeButtonText="@string/CancelLabel" />
   <!-- 
 			<Preference android:key="regDevice" 
 				android:title="@string/prefDevice"
