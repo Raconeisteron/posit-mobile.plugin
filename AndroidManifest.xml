@@ -85,6 +85,8 @@
 		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.LoginActivity" />
 		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.TrackerActivity" />
+		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.FilePickerActivity" />
 		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
@@ -185,5 +187,8 @@
 			<meta-data android:name="android.accounts.AccountAuthenticator"
 				android:resource="@xml/authenticator" />
 		</service>
+		<activity android:name=".functionplugins.SetReminder" android:theme="@android:style/Theme.Translucent"></activity>
+		<service android:name=".api.service.LocationService"></service>
+		<activity android:name=".functionplugins.NotifyReminder" android:theme="@android:style/Theme.Translucent"></activity>
 	</application>
 </manifest>

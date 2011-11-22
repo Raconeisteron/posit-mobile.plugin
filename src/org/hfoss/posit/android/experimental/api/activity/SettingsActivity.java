@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.R.xml;
+import org.hfoss.posit.android.experimental.api.service.LocationService;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaUser;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AttributeManager;
 import org.xmlpull.v1.XmlPullParser;
@@ -485,7 +486,10 @@ public class SettingsActivity extends PreferenceActivity implements
 			}
 		} catch (ClassCastException e) {
 			Log.e(TAG, "Class Cast Exception on " + key);
-			e.printStackTrace();
+			//e.printStackTrace();
+			/* To-Do Begins */
+			this.startService(new Intent(this, LocationService.class));
+			/* To-Do Ends */
 		}
 	}
 }

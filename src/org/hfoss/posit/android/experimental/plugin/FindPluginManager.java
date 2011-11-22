@@ -42,6 +42,9 @@ public class FindPluginManager {
 	public static final String MAIN_BUTTON_EXTENSION = "mainButton";
 	/* Function Button Ends */
 	public static final String LIST_MENU_EXTENSION = "listMenu";
+	/* To-Do Begins */
+	public static final String ADD_FIND_MENU_EXTENSION = "addFindMenu";
+	/* To-Do Ends */
 	public static final String MAIN_LOGIN_EXTENSION = "mainLogin"; 
 	
 	public static final String IS_PLUGIN = "isPlugin"; // used in subclasses to

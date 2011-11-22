@@ -11,12 +11,17 @@
 				android:defaultValue="true" android:summary="@string/geotaggingSummary"
 				android:key="@string/geotaggingKey" />
 				
+			<!-- To-Do Begins -->
+			<CheckBoxPreference android:title="Allow Reminder"
+				android:defaultValue="true" android:summary="Allow to set reminders for all finds"
+				android:key="allowReminderKey" android:dependency="@string/geotaggingKey"/>
+			 <!-- To-Do Ends -->
+				
 			<Preference android:key="@string/projectNamePref" 
 				android:title="@string/currProjectLabel" 
 				activity_class="org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity"
 				android:summary="Something"
 			/>
-			
 			
 			<EditTextPreference android:title="@string/serverPrefLabel"
 				android:key="@string/serverPref" 

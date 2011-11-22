@@ -10,6 +10,7 @@ import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
+import org.hfoss.posit.android.experimental.api.service.LocationService;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
 import org.hfoss.posit.android.experimental.sync.SyncActivity;
@@ -257,11 +258,8 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// User clicked OK so do some stuff
 							if (deleteAllFind()) {
-								Toast.makeText(ListFindsActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT)
-										.show();
 								finish();
-							} else
-								Toast.makeText(ListFindsActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
+							}
 						}
 					}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
@@ -278,8 +276,19 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
 		rows = getHelper().deleteAll(projectId);
+		if (rows >0) {
+			Toast.makeText(ListFindsActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
+			/* To-Do Begins */	
+			boolean allowReminder = prefs.getBoolean("allowReminderKey", true);
+			boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
+			if (allowReminder && allowGeoTag) {
+				this.startService(new Intent(this, LocationService.class));
+			}
+			/* To-Do Ends */
+		} else {
+			Toast.makeText(ListFindsActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
+		}
 		return rows >= 0;
-
 	}
 
 	/**
