@@ -30,6 +30,7 @@ import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.experimental.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
+import org.hfoss.posit.android.experimental.api.service.LocationService;
 import org.hfoss.posit.android.experimental.plugin.FindActivityProvider;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
@@ -146,6 +147,16 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			else
 				this.startActivity(intent);
 		}
+		
+		/* To-Do Begins */
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean allowReminder = prefs.getBoolean("allowReminderKey", true);
+		boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
+		if (allowReminder && allowGeoTag) {
+			this.startService(new Intent(this, LocationService.class));
+		}
+		/* To-Do Ends */
+		
 	}
 
 	/**
