@@ -67,6 +67,8 @@
 			android:name="org.hfoss.posit.android.experimental.api.activity.MapFindsActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
+		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerActivity" />
 			
 		<activity
 			android:name="org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity"
