@@ -456,6 +456,7 @@ OnSharedPreferenceChangeListener {
 	 * This method is called by the Tracker Service.  It must run in the UI thread. 
 	 */
 	public void updateUI(final TrackerState state) {
+//		Log.i(TAG, "Updating UI");
 		mTrack = state;
 		// make sure this runs in the UI thread... since it's messing with views...
 		this.runOnUiThread(new Runnable() {
