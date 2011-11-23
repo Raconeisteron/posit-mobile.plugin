@@ -192,7 +192,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		// Request location updates
  		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE); 
  		if (mLocationManager != null) {
-	 		Log.i(TrackerActivity.TAG, "TrackerBackgroudnService Requesting updates");
+	 		Log.i(TrackerActivity.TAG, "TrackerBackgroundService Requesting updates");
  			mLocationManager.requestLocationUpdates(
  					LocationManager.GPS_PROVIDER, 
  					TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, 
@@ -462,7 +462,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			handleNewLocation(location);
 		}
 		
-//		Log.d(TAG, "TrackerService, point found");			
+		Log.d(TAG, "TrackerService, point found");			
 	}
 
 	public void onProviderDisabled(String provider) {

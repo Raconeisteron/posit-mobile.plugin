@@ -89,13 +89,13 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 		
 //		mCursor = mDbHelper.fetchExpeditionsByProjectId(mProjectId);
 		
-		if (mCursor.getCount() == 0) { // No tracks
-//			setContentView(R.layout.tracker_list);
-			mCursor.close();
-			return;
-		}
-		
-		startManagingCursor(mCursor); // NOTE: Can't close DB while managing cursor
+//		if (mCursor.getCount() == 0) { // No tracks
+////			setContentView(R.layout.tracker_list);
+//			mCursor.close();
+//			return;
+//		}
+//		
+//		startManagingCursor(mCursor); // NOTE: Can't close DB while managing cursor
 
 		// CursorAdapter binds the data in 'columns' to the views in 'views' 
 		// It repeatedly calls ViewBinder.setViewValue() (see below) for each column
@@ -140,7 +140,8 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mCursor.close();
+		if (mCursor != null)
+			mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onPause()");
 
 	}
@@ -148,7 +149,8 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		mCursor.close();
+		if (mCursor != null)
+			mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onStop()");
 	}
 
@@ -156,7 +158,8 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mCursor.close();
+		if (mCursor != null)
+			mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onDestroy()");
 	}
 
