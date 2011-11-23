@@ -103,13 +103,13 @@
 			activity_result_action="0"
 			/>
 			
-<!-- 		<Plugin active="true"  -->
-<!--  			 type="function"  -->
-<!--  			 extensionPoint="mainMenu" -->
-<!--  			 name="tracker"  -->
-<!-- 			 menuIcon="radar"  -->
-<!-- 			 menuTitle="Tracker Activity" -->
-<!-- 			 menuActivity="org.hfoss.posit.android.experimental.functionplugins.TrackerActivity" />			 -->
+		<Plugin active="true" 
+ 			 type="function" 
+ 			 extensionPoint="mainMenu"
+ 			 name="tracker" 
+			 menuIcon="radar" 
+			 menuTitle="Tracker Activity"
+			 menuActivity="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerActivity" />			
 
 
 		<!-- <Plugin active="true" name="AcdiVocaFind" -->
