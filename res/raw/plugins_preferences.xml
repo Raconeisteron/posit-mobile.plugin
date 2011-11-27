@@ -41,7 +41,7 @@
 			main_icon="outsidein_logo" />
 
 <!-- Function Plugins -->
-		<Plugin active="true" 
+		<Plugin active="false" 
 			type="function" 
 			extensionPoint="mainMenu"
 			name="map" 
@@ -70,7 +70,7 @@
        <!-- Function Button Ends -->
        
        <!-- To-Do Begins -->
-		<Plugin active="true" 
+		<Plugin active="false" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="setReminder" 
@@ -80,14 +80,14 @@
 			activity_result_action="0" />
 		<!-- To-Do Ends -->
 
-		<Plugin active="true"
+		<Plugin active="false"
 			type="function"
 			extensionPoint="listMenu"
 			name="viewfile"
 			menuIcon="ic_menu_view" menuTitle="View File"
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
 
-		<Plugin active="true" 
+		<Plugin active="false" 
 			type="function" 
 			extensionPoint="listMenu"
 			name="log" 

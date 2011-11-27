@@ -31,6 +31,7 @@ import org.hfoss.posit.android.experimental.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.api.service.LocationService;
+import org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerDbManager;
 import org.hfoss.posit.android.experimental.plugin.FindActivityProvider;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
@@ -390,6 +391,14 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Log.i(TAG, "onMenuItemSelected " + item.toString());
+		
+		String authKey = Communicator.getAuthKey(this);
+		if (authKey == null) {
+			Toast.makeText(this, "You must go to Android > Settings > Accounts & Sync to " +
+					" set up an account before you use POSIT.", Toast.LENGTH_LONG).show();
+			return false;
+		}
+
 		switch (item.getItemId()) {
 		case R.id.settings_menu_item:
 			startActivity(new Intent(this, SettingsActivity.class));

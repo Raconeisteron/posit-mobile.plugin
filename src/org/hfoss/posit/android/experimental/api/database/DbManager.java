@@ -37,6 +37,8 @@ import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.FindHistory;
 import org.hfoss.posit.android.experimental.api.SyncHistory;
 import org.hfoss.posit.android.experimental.api.User;
+import org.hfoss.posit.android.experimental.functionplugins.tracker.Expedition;
+import org.hfoss.posit.android.experimental.functionplugins.tracker.Points;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaMessage;
@@ -51,7 +53,9 @@ import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -62,9 +66,9 @@ import android.util.Log;
  */
 public class DbManager extends OrmLiteSqliteOpenHelper {
 
-	private static final String TAG = "DbHelper";
+	private static final String TAG = "DbManager";
 
-	protected static final String DATABASE_NAME = "posit";
+	public static final String DATABASE_NAME = "posit";
 	public static final int DATABASE_VERSION = 2;
 	public static final String FIND_TABLE_NAME = "find"; // All find extensions should use this table name
 
@@ -75,12 +79,45 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	public static final String FINDS_HISTORY_TABLE = "acdi_voca_finds_history";
 	public static final String HISTORY_ID = "_id";
+	
+	
+	public static final String EXPEDITION_GPS_POINTS_TABLE = "points";
+	public static String EXPEDITION = "expedition";
+	public static final String GPS_SYNCED = "synced";
+	public static String GPS_POINT_LATITUDE = "latitude";
+	public static String GPS_POINT_LONGITUDE = "longitude";
+	public static String GPS_POINT_ALTITUDE = "altitude";
+
+	public static final String EXPEDITION_POINTS = "expedition_points";
+	public static final String EXPEDITION_SYNCED = "expedition_synced";
+	public static final String EXPEDITION_REGISTERED = "expedition_registered";
+	public static final int EXPEDITION_NOT_REGISTERED = 0;	
+	public static final int EXPEDITION_IS_REGISTERED = 1;
+	public static final int FIND_IS_SYNCED = 1;
+	public static final int FIND_NOT_SYNCED = 0;
+	public static final String EXPEDITION_PROJECT_ID = "project_id";
+	public static final String EXPEDITION_ROW_ID = "_id";
+	public static final String EXPEDITION_NUM = "expedition_number";
+	public static final String GPS_POINT_SWATH = "swath";
+	public static final String GPS_TIME = "time";
+	public static final String EXPEDITION_GPS_POINT_ROW_ID = "_id";
+
+	
+	
+	
+	
 
 	// DAO objects used to access the Db tables
 	private Dao<User, Integer> userDao = null;
 	private Dao<Find, Integer> findDao = null;
 	private Dao<FindHistory, Integer> findHistoryDao = null;
 	private Dao<SyncHistory, Integer> syncHistoryDao = null;
+	
+	
+	// DAO objects used to access the Db tables
+	private Dao<Expedition, Integer> expeditionDao = null;
+	private Dao<Points, Integer> pointsDao = null;
+
 
 	/**
 	 * Constructor just saves and opens the Db.
@@ -89,6 +126,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	 */
 	public DbManager(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		Log.i(TAG, "constructor");
 	}
 
 	/**
@@ -106,6 +144,10 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		User.createTable(connectionSource, getUserDao());
 		FindHistory.createTable(connectionSource);
 		SyncHistory.createTable(connectionSource);
+		
+		Expedition.createTable(connectionSource, getExpeditionDao());
+		Points.createTable(connectionSource, getPointsDao());
+
 	}
 
 	@Override
@@ -115,6 +157,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, User.class, true);
 			TableUtils.dropTable(connectionSource, FindHistory.class, true);
 			TableUtils.dropTable(connectionSource, SyncHistory.class, true);
+			
+			TableUtils.dropTable(connectionSource, Expedition.class, true);
+			TableUtils.dropTable(connectionSource, Points.class, true);
 
 			Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
 			TableUtils.dropTable(connectionSource, findClass, true);
@@ -126,6 +171,166 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	/**
+	 * Returns the Database Access Object (DAO) for the Expedition class. It
+	 * will create it or just give the cached value.
+	 */
+	public Dao<Expedition, Integer> getExpeditionDao() {
+		if (expeditionDao == null) {
+			try {
+				expeditionDao = getDao(Expedition.class);
+			} catch (SQLException e) {
+				Log.e(TAG, "Get user DAO failed.");
+				e.printStackTrace();
+			}
+		}
+		return expeditionDao;
+	}
+
+	/**
+	 * Returns the Database Access Object (DAO) for the Expedition class. It
+	 * will create it or just give the cached value.
+	 */
+	public Dao<Points, Integer> getPointsDao() {
+		if (pointsDao == null) {
+			try {
+
+				pointsDao = getDao(Points.class);
+			} catch (SQLException e) {
+				Log.e(TAG, "Get user DAO failed.");
+				e.printStackTrace();
+			}
+		}
+		return pointsDao;
+	}
+	
+	public Cursor fetchExpeditionsByProjectId(int mProjectId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int addNewExpedition(ContentValues values) {
+		Expedition expedition = new Expedition(values);
+		int rows = 0;
+		try {
+			rows = getExpeditionDao().create(expedition);
+			if (rows == 1) {
+				Log.i(TAG, "Inserted Expedition:  " + expedition.toString());
+			} else {
+				Log.e(TAG, "Db Error inserting Expedition: " + expedition.toString());
+				rows = 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
+	
+	/**
+	 * Looks up a POInt by its row id.
+	 * 
+	 * @param rowId
+	 *            the id of the point to look up
+	 * @return the point
+	 */
+	public Points getPointById(int rowId) {
+		Points point = null;
+		try {
+			point = getPointsDao().queryForId(rowId);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return point;
+	}
+
+	public boolean updateGPSPoint(int rowId, ContentValues vals) {
+		Log.i(TAG, "Updating GPS Point, rowId = " + rowId);
+		int rows = 0;
+		Points point = getPointById(rowId);
+		try {
+			if (vals.containsKey(GPS_SYNCED))
+				point.setSynced(vals.getAsInteger(GPS_SYNCED));
+			rows = getPointsDao().update(point);
+			if (rows == 1) {
+				Log.i(TAG, "Updated Expedition:  " + this.toString());
+			} else {
+				Log.e(TAG, "Db Error updating Expedition: " + this.toString());
+				rows = 0;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return rows == 1;
+	}
+
+	public int updateExpedition(int expNum, ContentValues values) {
+		Log.i(TAG, "Updating Expedition, expNum = " + expNum);
+		int rows = 0;
+		Expedition expedition = getExpeditionByExpeditionNumber(expNum);
+		try {
+			if (values.containsKey(EXPEDITION_POINTS))
+					expedition.setPoints(values.getAsInteger(EXPEDITION_POINTS));
+			if (values.containsKey(EXPEDITION_SYNCED))
+				expedition.setIs_synced(values.getAsInteger(EXPEDITION_SYNCED));
+			rows = getExpeditionDao().update(expedition);
+			if (rows == 1) {
+				Log.i(TAG, "Updated Expedition :  " + this.toString());
+			} else {
+				Log.e(TAG, "Db Error updating Expedition: " + this.toString());
+				rows = 0;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return rows;
+	}
+	
+	/**
+	 * Looks up an Expedition by its Expedition number.
+	 * 
+	 * @param expNum, the expedition's number as returned from the server
+	 * @return the expedition
+	 */
+	public Expedition getExpeditionByExpeditionNumber(int expNum) {
+		Expedition expedition = null;
+		try {
+			QueryBuilder<Expedition, Integer> builder = getExpeditionDao().queryBuilder();
+			Where<Expedition, Integer> where = builder.where();
+			where.eq(Expedition.EXPEDITION_NUM, expNum);
+			PreparedQuery<Expedition> query = builder.prepare();
+			expedition = getExpeditionDao().queryForFirst(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return expedition;
+	}
+
+	/**
+	 * Inserts a GPS value into the Db and returns its row Id
+	 * @param values, a ContentValues with lat, long, etc. 
+	 * @return the point's row Id
+	 */
+	public int addNewGPSPoint(ContentValues values) {
+		Points point = new Points(values);
+		int rows = 0;
+		int rowId = 0;
+		try {
+			rows = getPointsDao().create(point);
+			if (rows == 1) {
+				Log.i(TAG, "Inserted Point:  " + point.toString());
+				rowId = point.getId();
+			} else {
+				Log.e(TAG, "Db Error inserting Point: " + point.toString());
+				rowId = 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rowId;
+	}
+
+	
 
 	/**
 	 * Fetches all finds currently in the database.

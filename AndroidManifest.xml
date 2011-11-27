@@ -89,6 +89,11 @@
 		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.TrackerActivity" />
 		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerListActivity" />
+		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerSettings" />
+		<service android:name="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerBackgroundService"/>
+		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.FilePickerActivity" />
 		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />

@@ -21,7 +21,8 @@
  */
 package org.hfoss.posit.android.experimental.functionplugins.tracker;
 
-//import org.hfoss.posit.android.experimental.R;
+import org.hfoss.posit.android.experimental.R;
+
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -47,7 +48,7 @@ public class TrackerSettings extends PreferenceActivity {
 	  public static final String PREFERENCES_NAME = "TrackerSettings";
 
 	  // Default settings -- some of these settable in shared preferences
-	  public static final int DEFAULT_MIN_RECORDING_DISTANCE = 3; // meters, sp
+	  public static final int DEFAULT_MIN_RECORDING_DISTANCE = 0; // meters, sp
 	  public static final int DEFAULT_MIN_RECORDING_INTERVAL = 2000; 
 	  public static final int DEFAULT_MIN_REQUIRED_ACCURACY = 200; // Unused
 	  public static final int DEFAULT_SWATH_WIDTH = 50; // sp
@@ -92,6 +93,6 @@ public class TrackerSettings extends PreferenceActivity {
 			
 			PreferenceManager.getDefaultSharedPreferences(this);
 
-//		    addPreferencesFromResource(R.xml.tracker_preferences);	
+		    addPreferencesFromResource(R.xml.tracker_preferences);	
 		}
 }

@@ -22,7 +22,11 @@
 
 package org.hfoss.posit.android.experimental.functionplugins.tracker;
 
+import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
+import org.hfoss.posit.android.experimental.api.database.DbManager;
+
+import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -44,7 +48,7 @@ import android.widget.SimpleCursorAdapter.ViewBinder;
  * @author rmorelli
  *
  */
-public class TrackerListActivity extends ListActivity implements ViewBinder {
+public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> implements ViewBinder {
 	private static final String TAG = "PositTracker";
 	
 	private int mProjectId;
@@ -80,33 +84,33 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 	 */
 	private void displayTracks() {
 		
-		// These arrays are defined in PositDbHelper to associate columns from the
-		// Expedition table (columns) with the Views that will display their data.
-		// columns[0] is displayed in views[0], etc.  See PositDbHelper for their defs.
-		
-//		String[] columns = PositDbHelper.track_data;
-//		int [] views = PositDbHelper.track_views;
-		
-//		mCursor = mDbHelper.fetchExpeditionsByProjectId(mProjectId);
-		
-		if (mCursor.getCount() == 0) { // No tracks
+//		// These arrays are defined in PositDbHelper to associate columns from the
+//		// Expedition table (columns) with the Views that will display their data.
+//		// columns[0] is displayed in views[0], etc.  See PositDbHelper for their defs.
+//		
+//		String[] columns = getHelper().track_data;
+//		int [] views = getHelper().track_views;
+//		
+//		mCursor = getHelper().fetchExpeditionsByProjectId(mProjectId);
+//		
+//		if (mCursor.getCount() == 0) { // No tracks
 //			setContentView(R.layout.tracker_list);
-			mCursor.close();
-			return;
-		}
-		
-		startManagingCursor(mCursor); // NOTE: Can't close DB while managing cursor
-
-		// CursorAdapter binds the data in 'columns' to the views in 'views' 
-		// It repeatedly calls ViewBinder.setViewValue() (see below) for each column
-		// NOTE: The columns and views are defined in PositDBHelper.  For each column
-		// there must be a view and vice versa.
-		
+//			mCursor.close();
+//			return;
+//		}
+//		
+//		startManagingCursor(mCursor); // NOTE: Can't close DB while managing cursor
+//
+//		// CursorAdapter binds the data in 'columns' to the views in 'views' 
+//		// It repeatedly calls ViewBinder.setViewValue() (see below) for each column
+//		// NOTE: The columns and views are defined in PositDBHelper.  For each column
+//		// there must be a view and vice versa.
+//		
 //		SimpleCursorAdapter adapter = 
 //			new SimpleCursorAdapter(this, R.layout.tracker_row, mCursor, columns, views);
 //		adapter.setViewBinder(this);
 //		setListAdapter(adapter); 
-		//stopManagingCursor(mCursor);
+//		//stopManagingCursor(mCursor);
 	}
 	
 	/**
@@ -120,7 +124,7 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 
 		//Intent result = new Intent(null, data);
 		Intent result = new Intent();
-//		result.putExtra(PositDbHelper.EXPEDITION_ROW_ID, id);
+		result.putExtra(getHelper().EXPEDITION_ROW_ID, id);
 		setResult(Activity.RESULT_OK, result);
 		mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onListItemClick position= " + position + " id = " +  id);
@@ -140,7 +144,8 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mCursor.close();
+		if (mCursor != null)
+			mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onPause()");
 
 	}
@@ -148,7 +153,8 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		mCursor.close();
+		if (mCursor != null)
+			mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onStop()");
 	}
 
@@ -156,7 +162,8 @@ public class TrackerListActivity extends ListActivity implements ViewBinder {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mCursor.close();
+		if (mCursor != null)
+			mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onDestroy()");
 	}
 

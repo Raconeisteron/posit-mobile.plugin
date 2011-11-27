@@ -59,14 +59,18 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
+import org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerActivity;
+//import org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerDbManager;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.FindHistory;
 import org.hfoss.posit.android.experimental.api.authentication.AuthenticatorActivity;
 //import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
+import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
+import org.hfoss.posit.android.experimental.api.activity.OrmLiteBaseMapActivity;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind;
 
@@ -75,6 +79,7 @@ import android.widget.Toast;
 
 import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
+//import org.hfoss.posit.android.provider.PositDbHelper;
 //import org.hfoss.posit.android.TrackerActivity;
 //import org.hfoss.posit.android.provider.PositDbHelper;
 //import org.hfoss.posit.android.utilities.Utils;
@@ -84,6 +89,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -106,6 +112,8 @@ import android.telephony.TelephonyManager;
  * 
  * 
  */
+
+//public class Communicator extends OrmLiteBaseActivity<TrackerDbManager> {
 public class Communicator {
 	private static final String MESSAGE = "message";
 	private static final String MESSAGE_CODE = "messageCode";
@@ -115,11 +123,66 @@ public class Communicator {
 	public static final int CONNECTION_TIMEOUT = 3000; // millisecs
 	public static final int SOCKET_TIMEOUT = 5000;
 	public static final String RESULT_FAIL = "false";
-
+	private static String server;
+	private static String authKey;
+	private static String imei;
+	
+	private static int projectId;
+	
 	private static final String SERVER_PREF = "serverKey";
 	private static final String PROJECT_PREF = "projectKey";
 
 	private static String TAG = "Communicator";
+	private String responseString;
+	private Context mContext;
+	private SharedPreferences applicationPreferences;
+	private HttpParams mHttpParams;
+	private HttpClient mHttpClient;
+	private ThreadSafeClientConnManager mConnectionManager;
+	public static long mTotalTime = 0;
+	private long mStart = 0;
+
+	
+//	public void setContext(Context _context) {
+//		mContext = _context;
+//		mTotalTime = 0;
+//		mStart = 0;
+//
+//		mHttpParams = new BasicHttpParams();
+//
+//		// Set the timeout in milliseconds until a connection is established.
+//		HttpConnectionParams.setConnectionTimeout(mHttpParams, CONNECTION_TIMEOUT);
+//		
+//		// Set the default socket timeout (SO_TIMEOUT) 
+//		// in milliseconds which is the timeout for waiting for data.
+//		HttpConnectionParams.setSoTimeout(mHttpParams, SOCKET_TIMEOUT);
+//
+//		SchemeRegistry registry = new SchemeRegistry();
+//		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
+//		mConnectionManager = new ThreadSafeClientConnManager(mHttpParams,
+//				registry);
+//		mHttpClient = new DefaultHttpClient(mConnectionManager, mHttpParams);
+//
+//		PreferenceManager.setDefaultValues(mContext, R.xml.posit_preferences,
+//				false);
+//		applicationPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+//		setApplicationAttributes(
+//				getAuthKey(mContext),
+//				//applicationPreferences.getString("AUTHKEY", ""), 
+//				applicationPreferences.getString(SERVER_PREF, server), 
+//				applicationPreferences.getInt(PROJECT_PREF, projectId));
+//		TelephonyManager manager = (TelephonyManager) mContext
+//				.getSystemService(Context.TELEPHONY_SERVICE);
+//		imei = manager.getDeviceId();
+//
+//	}
+//	
+//	private void setApplicationAttributes(String aKey, String serverAddress,
+//			int projId) {
+//		authKey = aKey;
+//		server = serverAddress;
+//		projectId = projId;
+//	}
 
 	// /**
 	// * Attempts to get the auth token. Apparently this might have to perform a
@@ -994,10 +1057,8 @@ public class Communicator {
 	/**
 	 * Sends a HttpPost request to the given URL. Any JSON
 	 * 
-	 * @param Uri
-	 *            the URL to send to/receive from
-	 * @param sendMap
-	 *            the hashMap of data to send to the server as POST data
+	 * @param Uri, the URL to send to/receive from
+	 * @param pairs, a list of attribute/value pairs
 	 * @return the response from the URL
 	 */
 	private static String doHTTPPost(String Uri, List<NameValuePair> pairs) {
@@ -1061,6 +1122,19 @@ public class Communicator {
 		Log.i(TAG, "doHTTPpost response = " + responseString);
 
 		return responseString;
+	}
+	
+	
+	/**
+	 * Sends a HttpPost request to the given URL. Any JSON
+	 * 
+	 * @param Uri, the URL to send to/receive from
+	 * @param sendMap, the hashMap of data to send to the server as POST data
+	 * @return the response from the URL
+	 */
+	
+	private String doHTTPPost(String Uri, HashMap<String, String> sendMap) {
+		return doHTTPPost(Uri, getNameValuePairs(sendMap));
 	}
 
 	// public boolean projectExists(String projectId, String server){
@@ -1286,6 +1360,95 @@ public class Communicator {
 				cv.put(attr, val);
 		}
 		
+	}
+	
+	/**
+	 * Registers a new expedition with the server.
+	 * @param projectId  Posit's current project id.
+	 * @return Returns the expedition number received from the server or -1 if something
+	 * goes wrong.
+	 */
+	public int registerExpeditionId(Context context, int projectId) {
+		mContext = context;
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = prefs.getString(SERVER_PREF, "");
+
+		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+		String imei = telephonyManager.getDeviceId();
+		
+		HashMap<String, String> sendMap = new HashMap<String, String>();
+		addRemoteIdentificationInfo(sendMap);
+		String addExpeditionUrl = server + "/api/addExpedition?authKey="   + getAuthKey(context);
+		sendMap.put("projectId", "" + projectId);
+		Log.i(TAG, "URL=" + addExpeditionUrl + " projectId = " + projectId);
+		String response = doHTTPPost(addExpeditionUrl, sendMap);
+		Log.d(TAG,"registerExpeditionId response = " + response);
+
+		// The server should return an expedition number if everything goes ok.  If 
+		//  an error occurs, it will return an error message that cannot parse to an int
+		//  which will cause an exception here.
+		try {
+			Integer i = Integer.parseInt(response);
+			return i;
+		} catch (NumberFormatException e) {
+			Log.e(TrackerActivity.TAG, "Communicator, registerExpeditionId, Invalid response received");
+			return -1;
+		}
+	}
+	
+	private void addRemoteIdentificationInfo(HashMap<String, String> sendMap) {
+		// sendMap.put(COLUMN_APP_KEY, appKey);
+		sendMap.put(COLUMN_IMEI, getIMEI(mContext));
+	}
+	
+	/**
+	 * Gets the unique IMEI code for the phone used for identification
+	 * The phone should have proper permissions (READ_PHONE_STATE) to be able to get this data.
+	 */
+	public static String getIMEI(Context mContext) {
+		TelephonyManager tm = (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
+		return tm.getDeviceId();
+	}
+	
+	public static List<NameValuePair> getNameValuePairs (HashMap<String,String> nameValuesMap) {
+		Iterator<String> iter = nameValuesMap.keySet().iterator();
+		List<NameValuePair> nvp = new ArrayList<NameValuePair>();
+		while (iter.hasNext()) {
+			String key = iter.next();
+			String value = nameValuesMap.get(key);
+			nvp.add(new BasicNameValuePair(key,value));
+		}
+		return nvp;
+	}
+
+	/**
+	 * Sends a GPS point and associated data to the Posit server. Called from 
+	 *  Tracker Activity or TrackerBackgroundService.  
+	 */
+	public String registerExpeditionPoint(Context context, double lat, double lng, double alt,
+			int swath, int expedition, long time) {
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = prefs.getString(SERVER_PREF, "");
+
+			//long swath, int expedition) {
+		Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint " + lat + " " + lng + " " + time);
+		HashMap<String, String> sendMap = new HashMap<String, String>();
+		addRemoteIdentificationInfo(sendMap);
+		Log.i(TrackerActivity.TAG, "Sendmap= " + sendMap.toString());
+		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="  + this.getAuthKey(context);
+		sendMap.put(DbManager.GPS_POINT_LATITUDE, "" + lat);
+		sendMap.put(DbManager.GPS_POINT_LONGITUDE, lng + "");
+		sendMap.put(DbManager.GPS_POINT_ALTITUDE, "" + alt);
+		sendMap.put(DbManager.GPS_POINT_SWATH, "" + swath);
+		sendMap.put(DbManager.EXPEDITION, expedition + "");
+		sendMap.put(DbManager.GPS_TIME, time + "");
+		Log.i(TrackerActivity.TAG, "Sendmap= " + sendMap.toString());
+		
+		String response = doHTTPPost(addExpeditionUrl, sendMap);
+		Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint, response: " + response);
+		return response;
 	}
 	
 	// /**

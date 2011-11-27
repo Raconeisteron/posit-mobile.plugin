@@ -22,7 +22,9 @@
 package org.hfoss.posit.android.experimental.functionplugins.tracker;
 
 //import org.hfoss.posit.android.experimental.R;  
+import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
+import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.sync.Communicator;
 
 import android.app.Service;
@@ -44,6 +46,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
+import com.j256.ormlite.android.apptools.OrmLiteBaseService;
 
 
 /**
@@ -56,7 +59,7 @@ import com.google.android.maps.GeoPoint;
  * @author rmorelli
  *
  */ 
-public class TrackerBackgroundService extends Service implements LocationListener {
+public class TrackerBackgroundService extends OrmLiteBaseService<DbManager> implements LocationListener {
 
 	private static final String TAG = "PositTracker";
 	private static final int START_STICKY = 1;
@@ -71,13 +74,14 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	
 	private Communicator mCommunicator;
 	private ConnectivityManager mConnectivityMgr;
-	private DbHelper mDbHelper;
+
+	TrackerDbManager dbManager;
 
 	private LocationManager mLocationManager;
 	private Location mLocation  = null;
 	private TrackerState mState;
 	
-	private long mRowId;
+	private int mRowId;
 	
 	/**
 	 * These next two STATIC methods allow data to pass between Service and Activity (UI)
@@ -128,7 +132,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 		
 		// Create a database helper
-//		mDbHelper = new DbHelper(this);
+		dbManager = new TrackerDbManager(TRACKER_ACTIVITY);
 		
 		// Let the UI know about this Tracker service.
 		if (TRACKER_ACTIVITY != null)
@@ -192,7 +196,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		// Request location updates
  		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE); 
  		if (mLocationManager != null) {
-	 		Log.i(TrackerActivity.TAG, "TrackerBackgroudnService Requesting updates");
+	 		Log.i(TrackerActivity.TAG, "TrackerBackgroundService Requesting updates");
  			mLocationManager.requestLocationUpdates(
  					LocationManager.GPS_PROVIDER, 
  					TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, 
@@ -201,7 +205,8 @@ public class TrackerBackgroundService extends Service implements LocationListene
  		}
 	
 		// Register a new expedition and update the UI
-//		mCommunicator = new Communicator(this);
+		mCommunicator = new Communicator();
+//		mCommunicator.setContext(this);
 		registerExpedition();
 		if (UI_UPDATE_LISTENER != null) {
 			UI_UPDATE_LISTENER.updateUI(mState);
@@ -234,7 +239,8 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			// Register a new expedition
 			// TODO: Embed this in an error check or try/catch block and possibly
 			// clean up the communicator method
-//			expId = mCommunicator.registerExpeditionId(mState.mProjId);
+			
+			expId = mCommunicator.registerExpeditionId(TRACKER_ACTIVITY, mState.mProjId);
 			Log.d(TrackerActivity.TAG, "Async: Register Expedition expId = " + expId);
 			if (expId != -1) {
 				mState.isRegistered = true;
@@ -266,31 +272,37 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 */
 	private synchronized void insertExpeditionToDb (int expId) {
         ContentValues values = new ContentValues();
-//		values.put(DbHelper.EXPEDITION_NUM, expId);
-//		values.put(DbHelper.EXPEDITION_PROJECT_ID, mState.mProjId);
+
+        DbManager dbHelper = DbHelper.getDbManager(TRACKER_ACTIVITY);
+        
+		values.put(DbManager.EXPEDITION_NUM, expId);
+		values.put(DbManager.EXPEDITION_PROJECT_ID, mState.mProjId);
+					
 		if (mState.isRegistered)
-//			values.put(DbHelper.EXPEDITION_REGISTERED, DbHelper.EXPEDITION_IS_REGISTERED);
-//		else 
-//			values.put(DbHelper.EXPEDITION_REGISTERED, DbHelper.EXPEDITION_NOT_REGISTERED);
+			values.put(DbManager.EXPEDITION_REGISTERED, DbManager.EXPEDITION_IS_REGISTERED);
+		else 
+			values.put(DbManager.EXPEDITION_REGISTERED, DbManager.EXPEDITION_NOT_REGISTERED);
 		
 		try {
-//			long id = mDbHelper.addNewExpedition(values);
+			//long id = getHelper().addNewExpedition(values);
+			int rows = dbHelper.addNewExpedition(values);
 
-//			if (id != -1) {
-//				Log.i(TAG, "TrackerService, saved expedition " 
-//						+ expId + " projid= " + mState.mProjId + " in row " + id);
-//				//			Utils.showToast(this, "Saved expedition " + mState.mExpeditionNumber);
-//				if (mState != null)
-//					mState.setSaved(true);
-//			} else {
-//				Log.i(TAG, "TrackerService, Db Error: exped=" + expId + " proj=" 
-//						+ mState.mProjId);
-//				//			Utils.showToast(this, "Oops, something went wrong when saving " + mState.mExpeditionNumber);
-//			}
+			if (rows > 0) {
+				Log.i(TAG, "TrackerService, saved expedition " 
+						+ expId + " projid= " + mState.mProjId);
+				//			Utils.showToast(this, "Saved expedition " + mState.mExpeditionNumber);
+				if (mState != null)
+					mState.setSaved(true);
+			} else {
+				Log.i(TAG, "TrackerService, Db Error: exped=" + expId + " proj=" 
+						+ mState.mProjId);
+				//			Utils.showToast(this, "Oops, something went wrong when saving " + mState.mExpeditionNumber);
+			}
 		} catch (Exception e) {
 			Log.e(TrackerActivity.TAG, "TrackerService.Async, insertExpeditionToDb " + e.getMessage());
 			e.printStackTrace();
 		}
+		DbHelper.releaseDbManager();
 	}
 	
 	/**
@@ -301,23 +313,34 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 * @param isSynced  Synced or not
 	 * @param expId  The expedition's id
 	 */
-	private synchronized void updatePointAndExpedition(long rowId, ContentValues vals, int isSynced, int expId) {
+	private synchronized void updatePointAndExpedition(int rowId, ContentValues vals, int isSynced, int expId) {
 		// Update the point in the database
+		DbManager dbHelper = DbHelper.getDbManager(TRACKER_ACTIVITY);
 		try {
-//			boolean success = mDbHelper.updateGPSPoint(rowId, vals);
-//			if (success) {
-//				Log.i(TAG, "TrackerService.Async, Updated point# " + rowId + " synced = " + isSynced);
+//			boolean success = getHelper().updateGPSPoint(rowId, vals);
+			boolean success = dbHelper.updateGPSPoint(rowId, vals);
+			if (success) {
+				Log.i(TAG, "TrackerService.Async, Updated point# " + rowId + " synced = " + isSynced);
 
 				// Update the expedition record
-//				ContentValues expVals = new ContentValues();
-//				expVals.put(DbHelper.EXPEDITION_SYNCED, mState.mSynced);
-//				mDbHelper.updateExpedition(mState.mExpeditionNumber, expVals);
-//			} else
-//				Log.i(TAG, "TrackerService.Async, Oops. Failed to update point# " + rowId + " synced = " + isSynced);
+				ContentValues expVals = new ContentValues();
+				expVals.put(DbManager.EXPEDITION_SYNCED, mState.mSynced);
+				//dbHelper.updateExpedition(mState.mExpeditionNumber, expVals);
+				int rows = dbHelper.updateExpedition(mState.mExpeditionNumber, expVals);
+				if (rows != 0) {
+					Log.i(TrackerActivity.TAG, "Updated Expedition " + mState.mExpeditionNumber);
+				} else {
+					Log.i(TrackerActivity.TAG, "Failed to update Expedition " + mState.mExpeditionNumber);
+				}
+				//expVals.put(getHelper().EXPEDITION_SYNCED, mState.mSynced);
+				//getHelper().updateExpedition(mState.mExpeditionNumber, expVals);
+			} else
+				Log.i(TAG, "TrackerService.Async, Oops. Failed to update point# " + rowId + " synced = " + isSynced);
 		} catch (Exception e) {
 			Log.e(TrackerActivity.TAG, "TrackerService.Async, updatePointAndExpedition " + e.getMessage());
 			e.printStackTrace();
 		}
+		DbHelper.releaseDbManager();
 	}
 
 	/**
@@ -349,20 +372,20 @@ public class TrackerBackgroundService extends Service implements LocationListene
 	 * @param key
 	 */
 	public void changePreference(SharedPreferences sp, String key) {
-//		Log.d(TAG, "TrackerService, Shared Preference Changed key = " + key);
-//		if (key != null) {
-//			if (key.equals(getString(R.string.swath_width))) {
-//				mState.mSwath = Integer.parseInt(
-//						sp.getString(key, ""+TrackerSettings.DEFAULT_SWATH_WIDTH));
-//				if (mState.mSwath <= 0) 
-//					mState.mSwath = TrackerSettings.DEFAULT_SWATH_WIDTH;
-//			} else if (key.equals(getString(R.string.min_recording_distance))) {
-//				mState.mMinDistance = Integer.parseInt(
-//						sp.getString(key, ""+TrackerSettings.DEFAULT_MIN_RECORDING_DISTANCE));
-//				if (mState.mMinDistance < 0) 
-//					mState.mMinDistance = 0;
-//			}	   
-//		}
+		Log.d(TAG, "TrackerService, Shared Preference Changed key = " + key);
+		if (key != null) {
+			if (key.equals(getString(R.string.swath_width))) {
+				mState.mSwath = Integer.parseInt(
+						sp.getString(key, ""+TrackerSettings.DEFAULT_SWATH_WIDTH));
+				if (mState.mSwath <= 0) 
+					mState.mSwath = TrackerSettings.DEFAULT_SWATH_WIDTH;
+			} else if (key.equals(getString(R.string.min_recording_distance))) {
+				mState.mMinDistance = Integer.parseInt(
+						sp.getString(key, ""+TrackerSettings.DEFAULT_MIN_RECORDING_DISTANCE));
+				if (mState.mMinDistance < 0) 
+					mState.mMinDistance = 0;
+			}	   
+		}
 	}
 	
 	/**
@@ -394,22 +417,34 @@ public class TrackerBackgroundService extends Service implements LocationListene
 				time);
 		
 		// Create a ContentValues for the Point
+		DbManager dbHelper = DbHelper.getDbManager(TRACKER_ACTIVITY);
         ContentValues resultGPSPoint = new ContentValues();
-//        resultGPSPoint.put(DbHelper.EXPEDITION, mState.mExpeditionNumber); // Will be -1 if no network
-//        resultGPSPoint.put(DbHelper.GPS_POINT_LATITUDE, latStr);
-//        resultGPSPoint.put(DbHelper.GPS_POINT_LONGITUDE, longStr);
-//        resultGPSPoint.put(DbHelper.GPS_POINT_ALTITUDE, loc.getAltitude());
-//        resultGPSPoint.put(DbHelper.GPS_POINT_SWATH, mState.mSwath);
-//        resultGPSPoint.put(DbHelper.GPS_TIME, time);
+        resultGPSPoint.put(DbManager.EXPEDITION, mState.mExpeditionNumber); // Will be -1 if no network
+        resultGPSPoint.put(DbManager.GPS_POINT_LATITUDE, latStr);
+        resultGPSPoint.put(DbManager.GPS_POINT_LONGITUDE, longStr);
+        resultGPSPoint.put(DbManager.GPS_POINT_ALTITUDE, loc.getAltitude());
+        resultGPSPoint.put(DbManager.GPS_POINT_SWATH, mState.mSwath);
+        resultGPSPoint.put(DbManager.GPS_TIME, time);
         
         try {
         	// Insert the point to the phone's database and update the expedition record
-//        	mRowId = mDbHelper.addNewGPSPoint(resultGPSPoint);
-//        	
-//        	// Update the expedition record
-//			ContentValues expVals = new ContentValues();
-//			expVals.put(DbHelper.EXPEDITION_POINTS, mState.mPoints);
-//			mDbHelper.updateExpedition(mState.mExpeditionNumber, expVals);
+        	mRowId = dbHelper.addNewGPSPoint(resultGPSPoint);
+        	Log.i(TAG, "New point " + resultGPSPoint);
+        	
+        	// Update the expedition record
+        	
+			ContentValues expVals = new ContentValues();
+			expVals.put(DbManager.EXPEDITION_POINTS, mState.mPoints);
+//			dbHelper.updateExpedition(mState.mExpeditionNumber, expVals);
+			int rows = dbHelper.updateExpedition(mState.mExpeditionNumber, expVals);
+			if (rows != 0) {
+				Log.i(TrackerActivity.TAG, "Updated Expedition " + mState.mExpeditionNumber);
+			} else {
+				Log.i(TrackerActivity.TAG, "Failed to update Expedition " + mState.mExpeditionNumber);
+			}
+				
+			
+			//getHelper().updateExpedition(mState.mExpeditionNumber, expVals);
 			
         } catch (Exception e) {
         	Log.e(TrackerActivity.TAG, "TrackerService, handleNewLocation " + e.getMessage());
@@ -426,13 +461,16 @@ public class TrackerBackgroundService extends Service implements LocationListene
 		if (mConnectivityMgr.getActiveNetworkInfo() != null) {
 			
 			// Pass the row id to the Async thread
-//			resultGPSPoint.put(DbHelper.EXPEDITION_GPS_POINT_ROW_ID, mRowId);
+			resultGPSPoint.put(DbManager.EXPEDITION_GPS_POINT_ROW_ID, mRowId);
 
 			// Send the point to the POSIT server using a background Async Thread
 			new SendExpeditionPointTask().execute(resultGPSPoint);
 		} else {
 			Log.i(TrackerActivity.TAG, "Caching: no network. Not sending point to server.");
 		}
+		
+        DbHelper.releaseDbManager();
+
 	}
 	
 //	/**
@@ -462,7 +500,7 @@ public class TrackerBackgroundService extends Service implements LocationListene
 			handleNewLocation(location);
 		}
 		
-//		Log.d(TAG, "TrackerService, point found");			
+		Log.d(TAG, "TrackerService, point found");			
 	}
 
 	public void onProviderDisabled(String provider) {
@@ -517,37 +555,37 @@ public class TrackerBackgroundService extends Service implements LocationListene
 				}
 				
 				// Send the point to the Server
-//				result = mCommunicator.registerExpeditionPoint(
-//						vals.getAsDouble(DbHelper.GPS_POINT_LATITUDE),
-//						vals.getAsDouble(DbHelper.GPS_POINT_LONGITUDE), 
-//						vals.getAsDouble(DbHelper.GPS_POINT_ALTITUDE), 
-//						vals.getAsInteger(DbHelper.GPS_POINT_SWATH), 
-//						mState.mExpeditionNumber,  //  We need to use the newly made expedition number
-//						vals.getAsLong(DbHelper.GPS_TIME));
+				result = mCommunicator.registerExpeditionPoint(TRACKER_ACTIVITY,
+						vals.getAsDouble(DbManager.GPS_POINT_LATITUDE),
+						vals.getAsDouble(DbManager.GPS_POINT_LONGITUDE), 
+						vals.getAsDouble(DbManager.GPS_POINT_ALTITUDE), 
+						vals.getAsInteger(DbManager.GPS_POINT_SWATH), 
+						mState.mExpeditionNumber,  //  We need to use the newly made expedition number
+						vals.getAsLong(DbManager.GPS_TIME));
 				
 				// Successful result has the form mmm,nnnn where mmm = expediton_id
-//				String s = result.substring(0, result.indexOf(","));
+				String s = result.substring(0, result.indexOf(","));
 				 
 				// Get this point's row id
-//				long rowId = vals.getAsLong(DbHelper.EXPEDITION_GPS_POINT_ROW_ID);
+				int rowId = vals.getAsInteger(DbManager.EXPEDITION_GPS_POINT_ROW_ID);
 				
 				++mState.mSent;	
-//				Log.i(TAG, "TrackerService.Async, Sent  point " + mState.mSent + " rowId=" + rowId + " to server, result = |" + result + "|");
+				Log.i(TAG, "TrackerService.Async, Sent  point " + mState.mSent + " rowId=" + rowId + " to server, result = |" + result + "|");
 
 				vals = new ContentValues();
 				int isSynced = 0;
-//				if (s.equals("" + mState.mExpeditionNumber)) {
-//					++mState.mSynced;
-//					isSynced = DbHelper.FIND_IS_SYNCED;
-//					vals.put(DbHelper.GPS_SYNCED, isSynced);
-//				} else {
-//					isSynced = DbHelper.FIND_NOT_SYNCED;
-//					vals.put(DbHelper.GPS_SYNCED, isSynced);
-//				}
-//				
-//				// Mark the point as synced or not -- probably not necessary in the NOT case
-//				// because the default value for a point is NOT synced
-//				updatePointAndExpedition(rowId, vals, isSynced, mState.mExpeditionNumber);
+				if (s.equals("" + mState.mExpeditionNumber)) {
+					++mState.mSynced;
+					isSynced = DbManager.FIND_IS_SYNCED;
+					vals.put(DbManager.GPS_SYNCED, isSynced);
+				} else {
+					isSynced = DbManager.FIND_NOT_SYNCED;
+					vals.put(DbManager.GPS_SYNCED, isSynced);
+				}
+				
+				// Mark the point as synced or not -- probably not necessary in the NOT case
+				// because the default value for a point is NOT synced
+				updatePointAndExpedition(rowId, vals, isSynced, mState.mExpeditionNumber);
 
 
 			} catch (Exception e) {

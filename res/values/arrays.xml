@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
 
+	<string-array name="swath_entries"> 
+	<item>10</item>
+	<item>25</item>
+	<item>50 (default)</item>
+	<item>100</item>
+	<item>200</item>
+	<item>500</item>
+	<item>1000</item>
+	</string-array>
+	
+	<!--  These have to be parsable as ints -->
+	<string-array name="swath_values"> 
+	<item>10</item>
+	<item>25</item>
+	<item>50</item>
+	<item>100</item>
+	<item>200</item>
+	<item>500</item>
+	<item>1000</item>
+	</string-array>	
+	
+		<string-array name="min_dist_entries">
+	<item>0 meters</item>
+	<item>3 (recommended)</item>
+	<item>10</item>
+	<item>25 (bicycling)</item>
+	<item>50</item>
+	<item>100 (driving)</item>
+	<item>200</item>
+	<item>500</item>
+	</string-array>
+
+	<!--  These have to be parsable as ints -->
+	<string-array name="min_dist_values">
+	<item>0</item>
+	<item>3</item>
+	<item>10</item>
+	<item>25</item>
+	<item>50</item>
+	<item>100</item>
+	<item>200</item>
+	<item>500</item>
+	</string-array>
+
 <!-- ACDI/VOCA Arrays -->
 	<string-array name="locales"> 
 	<item>@string/english</item>

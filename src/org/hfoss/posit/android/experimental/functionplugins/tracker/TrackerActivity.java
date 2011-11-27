@@ -21,15 +21,11 @@
  */
 package org.hfoss.posit.android.experimental.functionplugins.tracker;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hfoss.posit.android.experimental.R;
-import org.hfoss.posit.android.experimental.api.database.DbHelper;
-//import org.hfoss.posit.android.TrackerState.PointAndTime;
-//import org.hfoss.posit.android.provider.PositDbHelper;
-//import org.hfoss.posit.android.utilities.Utils;
-//import org.hfoss.posit.android.web.Communicator;
+import org.hfoss.posit.android.experimental.api.activity.OrmLiteBaseMapActivity;
+import org.hfoss.posit.android.experimental.api.database.DbManager;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -55,7 +51,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
@@ -70,10 +65,8 @@ import com.google.android.maps.Overlay;
  *
  */
 
-public class TrackerActivity extends MapActivity 
-implements ServiceUpdateUIListener, 
-View.OnClickListener,
-OnSharedPreferenceChangeListener { 
+public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager> 
+	implements ServiceUpdateUIListener, View.OnClickListener, OnSharedPreferenceChangeListener { 
 
 	public static final String TAG = "PositTracker";
 
@@ -98,7 +91,7 @@ OnSharedPreferenceChangeListener {
 	private MapController mMapController;
 
 	private static TrackerBackgroundService mBackgroundService; 
-	private DbHelper mDbHelper;
+	private TrackerDbManager mDbManager;
 	//	private Communicator mCommunicator;
 
 	// View stuff
@@ -142,7 +135,7 @@ OnSharedPreferenceChangeListener {
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mPreferences.registerOnSharedPreferenceChangeListener(this);
 		spEditor = mPreferences.edit();
-
+		
 		//Abort the Tracker if GPS is unavailable
 		if (!hasNecessaryServices())  {
 			this.finish();
@@ -152,6 +145,10 @@ OnSharedPreferenceChangeListener {
 		// Create a network manager
 		mConnectivityMgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
+		// Create a Db Helper
+		mDbManager = new TrackerDbManager(this);
+
+		
 		// Initialize call backs so that the Tracker Service can pass data to this UI
 		TrackerBackgroundService.setUpdateListener(this);   // The Listener for the Service
 		TrackerBackgroundService.setMainActivity(this);
@@ -456,6 +453,7 @@ OnSharedPreferenceChangeListener {
 	 * This method is called by the Tracker Service.  It must run in the UI thread. 
 	 */
 	public void updateUI(final TrackerState state) {
+//		Log.i(TAG, "Updating UI");
 		mTrack = state;
 		// make sure this runs in the UI thread... since it's messing with views...
 		this.runOnUiThread(new Runnable() {
@@ -554,8 +552,8 @@ OnSharedPreferenceChangeListener {
 				mMapController.animateTo(point);
 				String lat = mTrack.mLocation.getLatitude() + "";
 				String lon = mTrack.mLocation.getLongitude() + "";		
-				mLocationTextView.setText("(" + lat.substring(0,10) + "...," 
-						+ lon.substring(0,10) + "...," + mTrack.mLocation.getAltitude() + ")");	
+				mLocationTextView.setText("(" + lat.substring(0,Math.min(lat.length(),10)) + "...," 
+						+ lon.substring(0,Math.min(lon.length(), 10)) + "...," + mTrack.mLocation.getAltitude() + ")");	
 			} else
 				Log.w(TAG, "TrackerActivity, updateView unable to get Location from TrackerState");
 		}
@@ -623,7 +621,7 @@ OnSharedPreferenceChangeListener {
 						Intent intent = new Intent(this, TrackerListActivity.class); // List tracks
 						startActivityForResult(intent, GET_EXPEDITION_ROW_ID);
 					} else { 						// Delete this track
-//						deleteExpedition();
+						deleteExpedition();
 						finish();
 					}
 					break;
