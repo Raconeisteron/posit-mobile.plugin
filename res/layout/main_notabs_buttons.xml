@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"	android:layout_height="wrap_content"
+	android:gravity="center_horizontal|top"	android:orientation="vertical" >
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical" android:layout_width="wrap_content"
+		android:layout_height="match_parent" android:layout_marginTop="10dp"
+		android:layout_gravity="center">
+
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:orientation="horizontal" android:layout_width="wrap_content"
+			android:layout_height="match_parent" android:layout_gravity="center">
+			
+			<ImageButton android:id="@+id/addFindButton" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:src="@drawable/ic_menu_add_text" 
+				android:layout_marginRight="5dp"/>
+				
+			<ImageButton android:id="@+id/listFindButton" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:src="@drawable/ic_menu_view"
+				 android:layout_marginLeft="5dp"/>
+			
+		</LinearLayout>
+		
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:orientation="horizontal" android:layout_width="wrap_content"
+			android:layout_height="match_parent" android:layout_gravity="center">
+
+			<ImageButton android:id="@+id/extraButton" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:visibility="gone"
+				android:text="Extra Button" android:layout_marginRight="5dp"
+				android:layout_marginTop="10dp"/>
+				
+			<ImageButton android:id="@+id/extraButton2" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:visibility="gone"
+				android:text="Extra Button2" android:layout_marginLeft="5dp"
+				android:layout_marginTop="10dp"/>
+
+		</LinearLayout>
+
+	</LinearLayout>
+
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent" android:layout_height="match_parent">
+
+		<TextView android:id="@+id/website" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_gravity="center"
+			android:textSize="16sp" android:textColor="#ffffff" android:text="@string/powered_by_hfoss"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true" android:autoLink="web"
+			android:layout_marginBottom="10dp" />
+
+	</RelativeLayout>
+
+</LinearLayout>
