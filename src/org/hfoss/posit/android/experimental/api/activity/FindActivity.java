@@ -136,6 +136,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				Date date = new Date();
 				mTimeTV.setText(dateFormat.format(date));
 			}
+			
 			if (mGeoTagEnabled) { 
 				// Set Longitude and Latitude
 				mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 0, this);
@@ -151,20 +152,25 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				}
 				
 				if (mCurrentLocation == null) {
-					mLongitudeTV.setText("0.0");
-					mLatitudeTV.setText("0.0");
-					Toast.makeText(this, "Unable to retrieve GPS info." +
-							" Please make sure your Data or Wi-Fi is enabled.", Toast.LENGTH_SHORT).show();
-					Log.i(TAG, "Cannot request location updates; Data or Wifi might not be enabled.");
+					Log.i(TAG, "Location issue, mCurrentLocation = " + mCurrentLocation);
+					if (mLongitudeTV != null) mLongitudeTV.setText("0.0");
+					if (mLatitudeTV != null) mLatitudeTV.setText("0.0");
+//					Toast.makeText(this, "Unable to retrieve GPS info." +
+//							" Please make sure your Data or Wi-Fi is enabled.", Toast.LENGTH_SHORT).show();
+//					Log.i(TAG, "Cannot request location updates; Data or Wifi might not be enabled.");
 				} else {
-					mLongitudeTV.setText(String.valueOf(mCurrentLocation.getLongitude()));
-					mLatitudeTV.setText(String.valueOf(mCurrentLocation.getLatitude()));
+					if (mLongitudeTV != null) mLongitudeTV.setText(String.valueOf(mCurrentLocation.getLongitude()));
+					if (mLatitudeTV != null) mLatitudeTV.setText(String.valueOf(mCurrentLocation.getLatitude()));
 				}
 			} else {
-				mLongTV.setVisibility(TextView.INVISIBLE);
-				mLongitudeTV.setVisibility(TextView.INVISIBLE);
-				mLatTV.setVisibility(TextView.INVISIBLE);
-				mLatitudeTV.setVisibility(TextView.INVISIBLE);
+				if (mLongitudeTV != null) { 
+					mLongitudeTV.setVisibility(TextView.INVISIBLE);
+					mLongTV.setVisibility(TextView.INVISIBLE);
+				}
+				if (mLatitudeTV != null) {
+					mLatitudeTV.setVisibility(TextView.INVISIBLE);
+					mLatTV.setVisibility(TextView.INVISIBLE);
+				}
 			}
 			
 		}
@@ -417,12 +423,14 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		
 		// Set Longitude and Latitude
 		/* To-Do Find */
-		if (mGeoTagEnabled) {
-			find.setLatitude(Double.parseDouble(mLatitudeTV.getText().toString()));
-			find.setLongitude(Double.parseDouble(mLongitudeTV.getText().toString()));
-		} else {
-			find.setLatitude(0);
-			find.setLongitude(0);
+		if (mLatitudeTV != null && mLongitudeTV != null) {
+			if (mGeoTagEnabled) {
+				find.setLatitude(Double.parseDouble(mLatitudeTV.getText().toString()));
+				find.setLongitude(Double.parseDouble(mLongitudeTV.getText().toString()));
+			} else {
+				find.setLatitude(0);
+				find.setLongitude(0);
+			}
 		}
 		/* To-Do Find */
 		
