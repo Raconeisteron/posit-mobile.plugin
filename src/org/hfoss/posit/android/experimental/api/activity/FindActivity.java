@@ -163,11 +163,11 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 					if (mLatitudeTV != null) mLatitudeTV.setText(String.valueOf(mCurrentLocation.getLatitude()));
 				}
 			} else {
-				if (mLongitudeTV != null) { 
+				if (mLongitudeTV != null && mLongTV != null) { 
 					mLongitudeTV.setVisibility(TextView.INVISIBLE);
 					mLongTV.setVisibility(TextView.INVISIBLE);
 				}
-				if (mLatitudeTV != null) {
+				if (mLatitudeTV != null && mLatTV != null) {
 					mLatitudeTV.setVisibility(TextView.INVISIBLE);
 					mLatTV.setVisibility(TextView.INVISIBLE);
 				}
