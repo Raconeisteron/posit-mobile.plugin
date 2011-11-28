@@ -1,6 +1,6 @@
 <PluginsPreferences>
 	<FindPlugins>
-		<Plugin active="true" type="find" name="BasicFind"
+		<Plugin active="false" type="find" name="BasicFind"
 			package="org.hfoss.posit.android.experimental.api" 
 			find_class="org.hfoss.posit.android.experimental.api.Find"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
@@ -22,7 +22,7 @@
 
 <!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
 
-		<Plugin active="false" type="find" name="OutsideInFind"
+		<Plugin active="true" type="find" name="OutsideInFind"
 			package="org.hfoss.posit.android.experimental.plugin.outsidein"
 			find_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
