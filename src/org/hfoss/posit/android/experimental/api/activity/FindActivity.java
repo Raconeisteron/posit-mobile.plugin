@@ -393,8 +393,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 		
 		// Set GUID
+		// NOTE:  Some derived finds may not have a GUID field.  But the Guid must be
+		//  set anyway because it used as the Find ID by the Posit server. 
 		if (mGuidRealTV != null) {
 			find.setGuid(mGuidRealTV.getText().toString());
+		}else {
+			find.setGuid(UUID.randomUUID().toString());
 		}
 		
 		// Set Time
