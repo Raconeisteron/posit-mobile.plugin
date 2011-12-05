@@ -2,27 +2,18 @@ package org.hfoss.posit.android.experimental.api.activity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
-import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.api.service.LocationService;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
 import org.hfoss.posit.android.experimental.sync.SyncActivity;
-import org.hfoss.posit.android.experimental.sync.SyncAdapter;
 
-import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
-
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,14 +27,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
 public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
@@ -99,7 +93,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
 		
 		finds = this.getHelper().getFindsByProjectId(projectId);
-
+		
 		int resId = getResources().getIdentifier(
 				FindPluginManager.mFindPlugin.mListFindLayout, "layout", getPackageName());
 
@@ -169,7 +163,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		switch (item.getItemId()) {
 		case R.id.sync_finds_menu_item:
 			Log.i(TAG, "Sync finds menu item");
-			startActivityForResult(new Intent(this,SyncActivity.class), 0);
+			startActivityForResult(new Intent(this, SyncActivity.class), 0);
 //			Log.i(TAG, "Sync finds menu item");
 //			AccountManager manager = AccountManager.get(this);
 //			Account[] accounts = manager
@@ -235,13 +229,20 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		return true;
 	} // onMenuItemSelected
 	
-//	@Override
-//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//		// TODO Auto-generated method stub
-//		Log.i(TAG, "Notify data set changed");
-//		this.mAdapter.notifyDataSetChanged();
-//		super.onActivityResult(requestCode, resultCode, data);
-//	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == 0 && resultCode == RESULT_OK) {
+			mAdapter = (FindsListAdapter) setUpAdapter();
+			if (!mAdapter.isEmpty()) {
+				while (!mAdapter.items.get(mAdapter.items.size() - 1).getStatusAsString().equals("synced")){
+					mAdapter = (FindsListAdapter) setUpAdapter();
+					fillList(mAdapter);
+				}
+			}
+		}
+		
+	}
 	
 	public static void syncCallback() {
 		Log.i(TAG, "Notified sync callback");
@@ -279,11 +280,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		if (rows >0) {
 			Toast.makeText(ListFindsActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
 			/* To-Do Begins */	
-			boolean allowReminder = prefs.getBoolean("allowReminderKey", true);
-			boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
-			if (allowReminder && allowGeoTag) {
-				this.startService(new Intent(this, LocationService.class));
-			}
+			this.startService(new Intent(this, LocationService.class));
 			/* To-Do Ends */
 		} else {
 			Toast.makeText(ListFindsActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
@@ -315,6 +312,12 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
+			
+			/* To-Do Begins */
+			// Initialize here so it can be referenced in the entire function
+			ImageView alarmIcon = new ImageView(parent.getContext());
+			/* To-Do Ends */
+			
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -322,20 +325,48 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 						FindPluginManager.mFindPlugin.mListFindLayout, "layout",
 						getPackageName());
 				v = vi.inflate(resId, null);
+				
+				/* To-Do Begins */
+				// Add Reminder alarm clock icon in the list row
+				alarmIcon.setImageResource(R.drawable.reminder_alarm);
+				RelativeLayout rl = (RelativeLayout) v.findViewById(R.id.list_row_rl);
+				RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(25, 25);
+				lp.addRule(RelativeLayout.BELOW, R.id.status);
+				lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+				lp.setMargins(0, 6, 0, 0);
+				rl.addView(alarmIcon, lp);
+				/* To-Do Ends */
 			}
 			Find find = items.get(position);
 			if (find != null) {
 				TextView tv = (TextView) v.findViewById(R.id.name);
 				tv.setText(find.getName());
 				tv = (TextView) v.findViewById(R.id.latitude);
-				tv.setText(getText(R.string.latitude) + " " + String.valueOf(find.getLatitude()));
+				String latitude = String.valueOf(find.getLatitude());
+				if (!latitude.equals("0.0")) {
+					latitude = latitude.substring(0, 7);
+				}
+				tv.setText(getText(R.string.latitude) + " " + latitude);
 				tv = (TextView) v.findViewById(R.id.longitude);
-				tv.setText(getText(R.string.longitude) + " " + String.valueOf(find.getLongitude()));
+				String longitude = String.valueOf(find.getLongitude());
+				if (!longitude.equals("0.0")) {
+					longitude = longitude.substring(0, 7);
+				}
+				tv.setText(getText(R.string.longitude) + " " + longitude);
 				tv = (TextView) v.findViewById(R.id.id);
 				tv.setText(Integer.toString(find.getId()));
 				tv = (TextView) v.findViewById(R.id.time);
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-				tv.setText(getText(R.string.timeLabel)+ " " + dateFormat.format(find.getTime()));
+				String time = dateFormat.format(find.getTime());
+				/* To-Do Begins */
+				if (time.substring(11).equals("00:00:00")) {
+					tv.setText(getText(R.string.remindertimeLabel)+ " " + time.substring(0, 10));
+					alarmIcon.setVisibility(ImageView.VISIBLE);
+				} else {
+					tv.setText(getText(R.string.timeLabel) + " " + time);
+					alarmIcon.setVisibility(ImageView.INVISIBLE);
+				}
+				/* To-Do Ends */
 				tv = (TextView) v.findViewById(R.id.status);
 				tv.setText(find.getStatusAsString());
 				tv = (TextView) v.findViewById(R.id.description_id);

@@ -18,6 +18,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -79,14 +80,16 @@ public class FindPluginManager {
 
 				if (plugin_nodes.item(k).getAttributes().getNamedItem("active").getTextContent().compareTo("true") == 0)  {
 					Plugin p = null;
-					if (plugin_nodes.item(k).getAttributes().getNamedItem("type").getTextContent().equals("function") ) {
+					if (plugin_nodes.item(k).getAttributes().getNamedItem("type").getTextContent().equals("find") ) {
+						p = new FindPlugin(mMainActivity, plugin_nodes.item(k));
+						mFindPlugin = (FindPlugin) p;
+						plugins.add(mFindPlugin);	
+					} else if (plugin_nodes.item(k).getAttributes().getNamedItem("type").getTextContent().equals("function") ) {
 						p = new FunctionPlugin(mMainActivity, plugin_nodes.item(k));
 						plugins.add(p);
 					}
 					else {
-						p = new FindPlugin(mMainActivity, plugin_nodes.item(k));
-						mFindPlugin = (FindPlugin) p;
-						plugins.add(mFindPlugin);						
+						// Do sth for other types in the future			
 					}
 					Log.i(TAG, "Plugin " + p.toString());
 				}
@@ -174,6 +177,24 @@ public class FindPluginManager {
 				FunctionPlugin fPlugin = (FunctionPlugin) plugin;
 				if (fPlugin.mExtensionPoint.equals(extensionType))
 					list.add(fPlugin);
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * Returns FunctionPlugins by extension point
+	 * @return
+	 */
+	public static ArrayList<Class<Service>> getAllServices() {
+		ArrayList<Class<Service>> list = (ArrayList<Class<Service>>) new ArrayList<Class<Service>>();
+		for (Plugin plugin : plugins) {
+			if (plugin instanceof FunctionPlugin) {
+				Log.i(TAG, "Function plugin " + plugin.toString());
+				FunctionPlugin fPlugin = (FunctionPlugin) plugin;
+				if (fPlugin.getmServices().size() > 0) {
+					list.addAll(fPlugin.getmServices());
+				}
 			}
 		}
 		return list;

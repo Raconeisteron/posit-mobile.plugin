@@ -171,12 +171,12 @@ public class SettingsActivity extends PreferenceActivity implements
 	 */
 	public static void loadPluginPreferences(Context context,
 			String prefsXmlFileName) {
-		Log.i(TAG, "Loading plugin preferences for Settings Activity");
+		Log.i(TAG, "Loading " + prefsXmlFileName + " preferences for Settings Activity");
 
 		PluginSettings settingsObject = getKeyActivityPairs(context,
 				prefsXmlFileName);
 		if (!pluginXmlList.contains(settingsObject))
-			pluginXmlList.add(0, settingsObject);
+			pluginXmlList.add(settingsObject);
 	}
 
 	/**

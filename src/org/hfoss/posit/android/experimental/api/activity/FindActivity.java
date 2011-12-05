@@ -19,26 +19,28 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
@@ -358,9 +360,23 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		        		String date = bundle.getString("Date");
 		    			Double longitude = bundle.getDouble("Longitude");
 		        		Double latitude = bundle.getDouble("Latitude");
-		        		mTimeTV.setText(date);
 		        		mLongitudeTV.setText(String.valueOf(longitude));
 		        		mLatitudeTV.setText(String.valueOf(latitude));
+		        		ViewGroup parent = (ViewGroup) findViewById(R.id.timeValueTextView).getParent();
+		        		parent.removeAllViews();
+		        		ImageView alarmIcon = new ImageView(this);
+						alarmIcon.setImageResource(R.drawable.reminder_alarm);
+					    TableRow.LayoutParams lp1 = new TableRow.LayoutParams(30, 30);
+					    lp1.setMargins(0, 6, 80, 0);
+						parent.addView(alarmIcon, lp1);
+						TextView mCloneTimeTV = new TextView(this);
+						mCloneTimeTV.setId(R.id.timeValueTextView);
+						mCloneTimeTV.setText(date);
+						mCloneTimeTV.setTextSize(12);
+						mTimeTV = mCloneTimeTV;
+						TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
+					    lp2.setMargins(6, 6, 0, 0);
+						parent.addView(mTimeTV, lp2);
 		    		}
 				} else {
 					// Do something specific for other function plug-ins
@@ -471,9 +487,27 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (mTimeTV != null) {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			String time = dateFormat.format(find.getTime());
+			/* To-Do Begins */
 			if (time.substring(11).equals("00:00:00")){
 				time = time.substring(0, 10);
+        		ViewGroup parent = (ViewGroup) findViewById(R.id.timeValueTextView).getParent();
+        		parent.removeAllViews();
+        		ImageView alarmIcon = new ImageView(this);
+				alarmIcon.setImageResource(R.drawable.reminder_alarm);
+			    TableRow.LayoutParams lp1 = new TableRow.LayoutParams(30, 30);
+			    lp1.setMargins(0, 6, 80, 0);
+				parent.addView(alarmIcon, lp1);
+				TextView mCloneTimeTV = new TextView(this);
+				mCloneTimeTV.setId(R.id.timeValueTextView);
+				mCloneTimeTV.setText(time);
+				mCloneTimeTV.setTextSize(12);
+				mTimeTV = mCloneTimeTV;
+				TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
+			    lp2.setMargins(6, 6, 0, 0);
+				parent.addView(mTimeTV, lp2);
+        		
 			}
+			/* To-Do Ends */
 			mTimeTV.setText(time);
 		}
 
@@ -586,6 +620,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			Toast.makeText(this, "You must provide a valid Id for this Find.", Toast.LENGTH_LONG).show();
 			return false;
 		}
+		
+		// A name is required
+		if (find.getName().equals("")){
+			Toast.makeText(this, "You must provide a name for this Find.", Toast.LENGTH_LONG).show();
+			return false;
+		}
 
 		// Either create a new Find or update the existing Find
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT))
@@ -598,12 +638,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (rows > 0) {
 			Log.i(TAG, "Find inserted successfully: " + find);
 			/* To-Do Begins */
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			boolean allowReminder = prefs.getBoolean("allowReminderKey", true);
-			boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
-			if (allowReminder && allowGeoTag) {
-				this.startService(new Intent(this, LocationService.class));
-			}
+			this.startService(new Intent(this, LocationService.class));
 			/* To-Do Ends */
 		} else
 			Log.e(TAG, "Find not inserted: " + find);
@@ -646,12 +681,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (rows > 0) {
 			Toast.makeText(FindActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
 			/* To-Do Begins */
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			boolean allowReminder = prefs.getBoolean("allowReminderKey", true);
-			boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
-			if (allowReminder && allowGeoTag) {
-				this.startService(new Intent(this, LocationService.class));
-			}
+			this.startService(new Intent(this, LocationService.class));
 			/* To-Do Ends */
 		} else {
 			Toast.makeText(FindActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();

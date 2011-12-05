@@ -51,31 +51,41 @@ public class LocationService extends Service implements LocationListener {
 	
 	@Override
 	public void onCreate() {
-		//Toast.makeText(this, "My Service Created!", Toast.LENGTH_SHORT).show();
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		projectID = prefs.getInt(getString(R.string.projectPref), 0);
+		boolean allowReminder = prefs.getBoolean("allowReminderKey", true);
+		boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
 		
-		reminderFinds = new ArrayList<Find>();
-		
-		mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, ONE_MINUTE, 0, this);
-		mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, ONE_MINUTE, 0, this);
-		
-		Location netLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		Location gpsLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		
-		if (gpsLocation != null) {
-			mCurrentLocation = gpsLocation;
+		if (allowReminder && allowGeoTag) {
+			//Toast.makeText(this, "My Service Created!", Toast.LENGTH_SHORT).show();
+			
+			projectID = prefs.getInt(getString(R.string.projectPref), 0);
+			
+			reminderFinds = new ArrayList<Find>();
+			
+			mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, ONE_MINUTE, 0, this);
+			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, ONE_MINUTE, 0, this);
+			
+			Location netLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			Location gpsLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			
+			if (gpsLocation != null) {
+				mCurrentLocation = gpsLocation;
+			} else {
+				mCurrentLocation = netLocation;
+			}
+			
+			String ns = Context.NOTIFICATION_SERVICE;
+			mNotificationManager = (NotificationManager) getSystemService(ns);
+			
+			player = MediaPlayer.create(this, R.raw.braincandy);
+			player.setLooping(true);
 		} else {
-			mCurrentLocation = netLocation;
+			this.onDestroy();
 		}
 		
-		String ns = Context.NOTIFICATION_SERVICE;
-		mNotificationManager = (NotificationManager) getSystemService(ns);
 		
-		player = MediaPlayer.create(this, R.raw.braincandy);
-		player.setLooping(true);
 	}
 	
 	@Override
