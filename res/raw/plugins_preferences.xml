@@ -1,6 +1,6 @@
 <PluginsPreferences>
 	<FindPlugins>
-		<Plugin active="false" type="find" name="BasicFind"
+		<Plugin active="true" type="find" name="BasicFind"
 			package="org.hfoss.posit.android.experimental.api" 
 			find_class="org.hfoss.posit.android.experimental.api.Find"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
@@ -22,7 +22,7 @@
 
 <!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
 
-		<Plugin active="true" type="find" name="OutsideInFind"
+		<Plugin active="false" type="find" name="OutsideInFind"
 			package="org.hfoss.posit.android.experimental.plugin.outsidein"
 			find_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
@@ -70,12 +70,14 @@
        <!-- Function Button Ends -->
        
        <!-- To-Do Begins -->
-		<Plugin active="false" 
+		<Plugin active="true" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="setReminder" 
 			menuIcon="ic_menu_list" menuTitle="Set Reminder"
+			preferences_xml="todo_preferences" 
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.SetReminder"
+			service="org.hfoss.posit.android.experimental.api.service.LocationService"
 			activity_returns_result="true"
 			activity_result_action="0" />
 		<!-- To-Do Ends -->
@@ -103,7 +105,7 @@
 			activity_result_action="0"
 			/>
 			
-		<Plugin active="true" 
+		<Plugin active="false" 
  			 type="function" 
  			 extensionPoint="mainMenu"
  			 name="tracker" 

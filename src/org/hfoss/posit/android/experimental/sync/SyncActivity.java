@@ -69,11 +69,12 @@ public class SyncActivity extends OrmLiteBaseActivity<DbManager> {
 					getResources().getString(R.string.contentAuthority),
 					extras);
 			Toast.makeText(this, "Sync requested", Toast.LENGTH_LONG).show();
+			setResult(RESULT_OK);
 			}
 		} else {
 			Log.i(TAG, "Sync not requested. Unable to get " + SyncAdapter.ACCOUNT_TYPE);
 			Toast.makeText(this, "Sync error: Unable to get " + SyncAdapter.ACCOUNT_TYPE, Toast.LENGTH_LONG).show();
-		}	
+		}
 		finish();
 	}
 

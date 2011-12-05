@@ -1,4 +1,4 @@
-<resources>
+ <resources>
 	<!-- Application name and the Strings seen in the PositMain -->
 	<string name="app_name">POSITx</string>
 	<string name="version">0.5 beta</string>
@@ -169,6 +169,7 @@
 	<!-- Labels -->
 	<string name="idLabel">Id: </string>
 	<string name="timeLabel">Time: </string>
+	<string name="remindertimeLabel">Reminder Time: </string>
 	<string name="nameLabel">Name: </string>
 	<string name="ghostData_name">Name</string>
 	<string name="ghostData_description">Description</string>
@@ -340,4 +341,7 @@
     <string name="LocaleKey">locale</string>
     <string name="Locale">Locale</string>
     <string name="CancelLabel">Cancel</string>
+    
+    <!-- Authentication -->
+    <string name="todoprefs">Geo-Aware Reminder Preferences</string>
 </resources>
