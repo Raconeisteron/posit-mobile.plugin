@@ -79,8 +79,8 @@ public class ClpListFindsActivity extends ListFindsActivity {
 				tv.setText(String.valueOf(find.getLatitude()));
 				tv = (TextView) v.findViewById(R.id.longitude);
 				tv.setText(String.valueOf(find.getLongitude()));
-//				tv = (TextView) v.findViewById(R.id.id);
-//				tv.setText(Integer.toString(find.getId()));
+				tv = (TextView) v.findViewById(R.id.id);
+				tv.setText(Integer.toString(find.getId()));
 				tv = (TextView) v.findViewById(R.id.status);
 				tv.setText(find.getStatusAsString());			
 				tv = (TextView) v.findViewById(R.id.time);
