@@ -159,6 +159,11 @@ public class OutsideInFindActivity extends FindActivity {
 	@Override
 	protected void prepareForSave(Find find) {
 		((OutsideInFind)find).isLogged = false;
+		
+		if (this.mCurrentLocation != null) {
+			find.setLatitude(mCurrentLocation.getLatitude());
+			find.setLongitude(mCurrentLocation.getLongitude());
+		}
 		super.prepareForSave(find);
 	}
 

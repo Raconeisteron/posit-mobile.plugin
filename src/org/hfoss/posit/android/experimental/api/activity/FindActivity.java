@@ -53,7 +53,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	private boolean mGeoTagEnabled;
 	private LocationManager mLocationManager = null;
 	private String mProvider = null;
-	private Location mCurrentLocation = null;
+	protected Location mCurrentLocation = null;
 	
 	// UI Elements
 	private EditText mNameET = null;
