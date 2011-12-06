@@ -229,20 +229,21 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		return true;
 	} // onMenuItemSelected
 	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == 0 && resultCode == RESULT_OK) {
-			mAdapter = (FindsListAdapter) setUpAdapter();
-			if (!mAdapter.isEmpty()) {
-				while (!mAdapter.items.get(mAdapter.items.size() - 1).getStatusAsString().equals("synced")){
-					mAdapter = (FindsListAdapter) setUpAdapter();
-					fillList(mAdapter);
-				}
-			}
-		}
-		
-	}
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//		
+//		if (requestCode == 0 && resultCode == RESULT_OK) {
+//			mAdapter = (FindsListAdapter) setUpAdapter();
+//			if (!mAdapter.isEmpty()) {
+//				while (!mAdapter.items.get(mAdapter.items.size() - 1).getStatusAsString().equals("synced")){
+//					mAdapter = (FindsListAdapter) setUpAdapter();
+//					fillList(mAdapter);
+//				}
+//			}
+//		}
+//		
+//	}
 	
 	public static void syncCallback() {
 		Log.i(TAG, "Notified sync callback");
