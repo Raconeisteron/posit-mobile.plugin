@@ -184,7 +184,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// New Find Button
 		if (FindPluginManager.mFindPlugin.mAddButtonLabel != null) {
-			final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
+			final Button addFindButton = (Button)findViewById(R.id.addFindButton);
+			//final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 			int resid = this.getResources()
 					.getIdentifier(FindPluginManager.mFindPlugin.mAddButtonLabel, "string", getPackageName());
 
@@ -196,7 +197,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// View Finds Button
 		if (FindPluginManager.mFindPlugin.mListButtonLabel != null) {
-			final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
+			final Button listFindButton = (Button) findViewById(R.id.listFindButton);
+			//final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
 			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mListButtonLabel, "string",
 					getPackageName());
 			if (listFindButton != null) {
@@ -210,10 +212,11 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		
 		for (FunctionPlugin plugin : mMainButtonPlugins) {
 			int buttonID = getResources().getIdentifier(plugin.getName(), "id", getPackageName());
-			int iconID = getResources().getIdentifier(plugin.getmMenuIcon(), "drawable", getPackageName());
-			ImageButton button = (ImageButton) findViewById(buttonID);
-			button.setImageResource(iconID);
-			button.setVisibility(ImageButton.VISIBLE);
+			Button button = (Button) findViewById(buttonID);
+//			int iconID = getResources().getIdentifier(plugin.getmMenuIcon(), "drawable", getPackageName());
+//			ImageButton button = (ImageButton) findViewById(buttonID);
+//			button.setImageResource(iconID);
+			button.setVisibility(Button.VISIBLE);
 			button.setOnClickListener(this);
 		}
 	}
