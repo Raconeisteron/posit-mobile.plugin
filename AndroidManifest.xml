@@ -114,6 +114,22 @@
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
+		<!-- Activities for Outside In plugin -->
+		<activity
+			android:name="org.hfoss.posit.android.experimental.plugin.clp.ClpFindActivity"
+			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden" />
+		<activity
+			android:name="org.hfoss.posit.android.experimental.plugin.clp.ClpListFindsActivity"
+			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden" />
+
+		<activity
+			android:name="org.hfoss.posit.android.experimental.plugin.clp.ClpAboutActivity"
+			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden" />
+
+
 		<!-- Activities pertaining to AcdiVocaFind plugin -->
 		<activity android:name=".plugin.acdivoca.AcdiVocaMchnFindActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
