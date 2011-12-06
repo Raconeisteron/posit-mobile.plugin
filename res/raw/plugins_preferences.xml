@@ -70,7 +70,7 @@
        <!-- Function Button Ends -->
        
        <!-- To-Do Begins -->
-		<Plugin active="true" 
+		<Plugin active="false" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="setReminder" 

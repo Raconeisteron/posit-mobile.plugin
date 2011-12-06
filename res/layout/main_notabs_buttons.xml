@@ -12,13 +12,24 @@
 			android:orientation="horizontal" android:layout_width="wrap_content"
 			android:layout_height="match_parent" android:layout_gravity="center">
 			
-			<ImageButton android:id="@+id/addFindButton" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:src="@drawable/ic_menu_add_text" 
+			<Button android:id="@+id/addFindButton" android:layout_width="wrap_content"
+				android:text="Add Find"
+				android:layout_height="wrap_content" 
 				android:layout_marginRight="5dp"/>
 				
-			<ImageButton android:id="@+id/listFindButton" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:src="@drawable/ic_menu_view"
+			<Button android:id="@+id/listFindButton" android:layout_width="wrap_content"
+				android:text="List Finds"
+				android:layout_height="wrap_content" 
 				 android:layout_marginLeft="5dp"/>
+			
+			
+<!-- 			<ImageButton android:id="@+id/addFindButton" android:layout_width="wrap_content" -->
+<!-- 				android:layout_height="wrap_content" android:src="@drawable/ic_menu_add_text"  -->
+<!-- 				android:layout_marginRight="5dp"/> -->
+				
+<!-- 			<ImageButton android:id="@+id/listFindButton" android:layout_width="wrap_content" -->
+<!-- 				android:layout_height="wrap_content" android:src="@drawable/ic_menu_view" -->
+<!-- 				 android:layout_marginLeft="5dp"/> -->
 			
 		</LinearLayout>
 		
@@ -26,15 +37,26 @@
 			android:orientation="horizontal" android:layout_width="wrap_content"
 			android:layout_height="match_parent" android:layout_gravity="center">
 
-			<ImageButton android:id="@+id/extraButton" android:layout_width="wrap_content"
+<!-- 			<ImageButton android:id="@+id/extraButton" android:layout_width="wrap_content" -->
+<!-- 				android:layout_height="wrap_content" android:visibility="gone" -->
+<!-- 				android:text="Extra Button" android:layout_marginRight="5dp" -->
+<!-- 				android:layout_marginTop="10dp"/> -->
+				
+<!-- 			<ImageButton android:id="@+id/extraButton2" android:layout_width="wrap_content" -->
+<!-- 				android:layout_height="wrap_content" android:visibility="gone" -->
+<!-- 				android:text="Extra Button2" android:layout_marginLeft="5dp" -->
+<!-- 				android:layout_marginTop="10dp"/> -->
+
+			<Button android:id="@+id/extraButton" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:visibility="gone"
 				android:text="Extra Button" android:layout_marginRight="5dp"
 				android:layout_marginTop="10dp"/>
 				
-			<ImageButton android:id="@+id/extraButton2" android:layout_width="wrap_content"
+			<Button android:id="@+id/extraButton2" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:visibility="gone"
 				android:text="Extra Button2" android:layout_marginLeft="5dp"
 				android:layout_marginTop="10dp"/>
+
 
 		</LinearLayout>
 
