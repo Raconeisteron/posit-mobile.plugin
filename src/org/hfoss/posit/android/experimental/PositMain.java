@@ -191,6 +191,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 			if (addFindButton != null) {
 				addFindButton.setTag(resid);
+				addFindButton.setText(resid);
 				addFindButton.setOnClickListener(this);
 			}
 		}
@@ -203,6 +204,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 					getPackageName());
 			if (listFindButton != null) {
 				listFindButton.setTag(resid);
+				listFindButton.setText(resid);
 				listFindButton.setOnClickListener(this);
 			}
 		}
