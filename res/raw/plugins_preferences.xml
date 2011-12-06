@@ -1,6 +1,6 @@
 <PluginsPreferences>
 	<FindPlugins>
-		<Plugin active="false" type="find" name="BasicFind"
+		<Plugin active="true" type="find" name="BasicFind"
 			package="org.hfoss.posit.android.experimental.api" 
 			find_class="org.hfoss.posit.android.experimental.api.Find"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
@@ -12,7 +12,7 @@
 			preferences_xml="posit_preferences" 
 			add_find_layout="add_find"
 			list_find_layout="list_row" 
-			main_list_button_label="listFinds"
+			main_list_button_label="viewFinds"
 			main_add_button_label="addFind" 
 			main_extra_button_label=""
 			main_extra_button_label2="" 
@@ -23,7 +23,7 @@
 <!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
 
 
-		<Plugin active="true" type="find" name="ClpFind"
+		<Plugin active="false" type="find" name="ClpFind"
 			package="org.hfoss.posit.android.experimental.plugin.clp"
 			find_class="org.hfoss.posit.android.experimental.plugin.clp.ClpFind"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
