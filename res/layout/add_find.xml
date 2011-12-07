@@ -102,6 +102,12 @@
         
     </TableLayout>
     
+	<ImageView 
+	    android:id="@+id/photo"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+    />
+    
     <TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
         <Button
         	android:id="@+id/saveButton" android:drawableLeft="@drawable/save_32"
