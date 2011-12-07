@@ -125,7 +125,7 @@
 			activity_result_action="0"
 			/>
 			
-		<Plugin active="false" 
+		<Plugin active="true" 
  			 type="function" 
  			 extensionPoint="mainMenu"
  			 name="tracker" 

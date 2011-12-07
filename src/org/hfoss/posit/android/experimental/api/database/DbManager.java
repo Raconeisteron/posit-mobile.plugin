@@ -205,10 +205,25 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return pointsDao;
 	}
 	
-	public Cursor fetchExpeditionsByProjectId(int mProjectId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	public Cursor fetchExpeditionsByProjectId(int mProjectId) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+	
+	
+	public List<? extends Expedition> fetchExpeditionsByProjectId(int projectId) {
+		List<Expedition> list = null;
+		try {
+			QueryBuilder<Expedition, Integer> builder = getExpeditionDao().queryBuilder();
+			Where<Expedition, Integer> where = builder.where();
+			where.eq(Find.PROJECT_ID, projectId);
+			PreparedQuery<Expedition> preparedQuery = builder.prepare();
+
+			list = getExpeditionDao().query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "Database error getting finds: " + e.getMessage());
+		}		return list;		
+	}	
 
 	public int addNewExpedition(ContentValues values) {
 		Expedition expedition = new Expedition(values);

@@ -22,14 +22,20 @@
 
 package org.hfoss.posit.android.experimental.functionplugins.tracker;
 
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 import org.hfoss.posit.android.experimental.R;
+import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbHelper;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
+import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -37,10 +43,18 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
 /**
@@ -53,8 +67,14 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 	
 	private int mProjectId;
 	private SharedPreferences mSharedPrefs;
+	
 //	private PositDbHelper mDbHelper;
-	private Cursor mCursor;
+//	private Cursor mCursor;
+	
+	List<? extends Expedition> tracks;
+	protected static TrackerListAdapter mAdapter = null;
+
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,35 +103,35 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 	 * Activity.)
 	 */
 	private void displayTracks() {
-		
-//		// These arrays are defined in PositDbHelper to associate columns from the
-//		// Expedition table (columns) with the Views that will display their data.
-//		// columns[0] is displayed in views[0], etc.  See PositDbHelper for their defs.
-//		
-//		String[] columns = getHelper().track_data;
-//		int [] views = getHelper().track_views;
-//		
-//		mCursor = getHelper().fetchExpeditionsByProjectId(mProjectId);
-//		
-//		if (mCursor.getCount() == 0) { // No tracks
-//			setContentView(R.layout.tracker_list);
-//			mCursor.close();
-//			return;
-//		}
-//		
-//		startManagingCursor(mCursor); // NOTE: Can't close DB while managing cursor
-//
-//		// CursorAdapter binds the data in 'columns' to the views in 'views' 
-//		// It repeatedly calls ViewBinder.setViewValue() (see below) for each column
-//		// NOTE: The columns and views are defined in PositDBHelper.  For each column
-//		// there must be a view and vice versa.
-//		
-//		SimpleCursorAdapter adapter = 
-//			new SimpleCursorAdapter(this, R.layout.tracker_row, mCursor, columns, views);
-//		adapter.setViewBinder(this);
-//		setListAdapter(adapter); 
-//		//stopManagingCursor(mCursor);
+		mAdapter = (TrackerListAdapter) setUpAdapter();
+		fillList(mAdapter);
 	}
+	
+	
+	/**
+	 * Puts the items from the DB table into the rows of the view.
+	 */
+	private void fillList(ListAdapter adapter) {
+		setListAdapter(adapter);
+
+		ListView lv = getListView();
+		lv.setTextFilterEnabled(true);
+		lv.setOnItemClickListener(new OnItemClickListener() {
+
+			/**
+			 * Displays an Expedition
+			 */
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Intent intent = new Intent(parent.getContext(), TrackerActivity.class);
+				TextView tv = (TextView) view.findViewById(R.id.expedition_id);
+				int rowId = Integer.parseInt((String) tv.getText());
+				intent.putExtra(Expedition.EXPEDITION_ROW_ID, rowId);
+				startActivity(intent);
+			}
+		});
+	}
+
 	
 	/**
 	 * This can be used to set each view's value.  We use it here to extract
@@ -126,7 +146,7 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 		Intent result = new Intent();
 		result.putExtra(getHelper().EXPEDITION_ROW_ID, id);
 		setResult(Activity.RESULT_OK, result);
-		mCursor.close();
+//		mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onListItemClick position= " + position + " id = " +  id);
 		finish();
 	}
@@ -144,8 +164,6 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (mCursor != null)
-			mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onPause()");
 
 	}
@@ -153,8 +171,6 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (mCursor != null)
-			mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onStop()");
 	}
 
@@ -162,9 +178,56 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (mCursor != null)
-			mCursor.close();
 		Log.d(TAG, "TrackerListActivity, onDestroy()");
 	}
+
+	
+	protected TrackerListAdapter setUpAdapter() {
+
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
+		
+		tracks = this.getHelper().fetchExpeditionsByProjectId(projectId);
+		Log.i(TAG, "# tracks = " + tracks.size());
+
+		int resId = getResources().getIdentifier("tracker_row", "layout", getPackageName());
+		TrackerListAdapter adapter = new TrackerListAdapter(this, resId, tracks);
+
+		return adapter;
+	}
+
+	protected class TrackerListAdapter extends ArrayAdapter<Expedition> {
+		protected List<? extends Expedition> items;
+
+		public TrackerListAdapter(Context context, int textViewResourceId, List list) {
+			super(context, textViewResourceId, list);
+			Log.i(TAG, "TrackerListAdapter constructor");
+			this.items = list;
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View v = convertView;
+			
+			if (v == null) {
+				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+				int resId = getResources().getIdentifier("tracker_row", "layout", getPackageName());
+				v = vi.inflate(resId, null);
+
+			}
+			Expedition expedition = items.get(position);
+			if (expedition != null) {
+				TextView tv = (TextView) v.findViewById(R.id.expedition_id);
+				tv.setText("" + expedition.expedition_num);
+				tv = (TextView) v.findViewById(R.id.project_id);
+				tv.setText("" + expedition.project_id);
+			}
+			return v;
+		}
+		
+	}
+	
+	
 
 }

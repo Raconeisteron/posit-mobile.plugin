@@ -32,6 +32,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -195,13 +196,33 @@ public class TrackerBackgroundService extends OrmLiteBaseService<DbManager> impl
 
 		// Request location updates
  		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE); 
+ 		 		
  		if (mLocationManager != null) {
 	 		Log.i(TrackerActivity.TAG, "TrackerBackgroundService Requesting updates");
- 			mLocationManager.requestLocationUpdates(
- 					LocationManager.GPS_PROVIDER, 
- 					TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, 
- 					mState.mMinDistance, 
- 					this);
+	 		
+	 		mLocationManager.requestLocationUpdates(
+	 				mLocationManager.getBestProvider(new Criteria(), true), 
+	 				TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, 
+	 				 mState.mMinDistance, 
+	 				 this);
+	 		
+//			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, mState.mMinDistance, this);
+//			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, mState.mMinDistance, this);
+
+			Location netLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			Location gpsLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+			if (gpsLocation != null) {
+				mLocation = gpsLocation;
+			} else {
+				mLocation = netLocation;
+			}
+	 		
+// 			mLocationManager.requestLocationUpdates(
+// 					LocationManager.GPS_PROVIDER, 
+// 					TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, 
+// 					mState.mMinDistance, 
+// 					this);
  		}
 	
 		// Register a new expedition and update the UI
@@ -512,6 +533,7 @@ public class TrackerBackgroundService extends OrmLiteBaseService<DbManager> impl
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
+		Log.i(TAG, "onStatusChanged " + provider + " " + status);
 		// Required for location listener interface. Not used
 	}
 	

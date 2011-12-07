@@ -1,6 +1,7 @@
 package org.hfoss.posit.android.experimental.functionplugins.tracker;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.hfoss.posit.android.experimental.api.FindHistory;
 import org.hfoss.posit.android.experimental.api.User;
@@ -124,11 +125,16 @@ public class TrackerDbManager extends DbManager {
 		}
 		return pointsDao;
 	}
-	public Cursor fetchExpeditionsByProjectId(int mProjectId) {
+//	public Cursor fetchExpeditionsByProjectId(int mProjectId) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+
+	public List<? extends Expedition> fetchExpeditionsByProjectId(int mProjectId) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
+	}	
+	
 	public int addNewExpedition(ContentValues values) {
 		// TODO Auto-generated method stub
 		return 0;
