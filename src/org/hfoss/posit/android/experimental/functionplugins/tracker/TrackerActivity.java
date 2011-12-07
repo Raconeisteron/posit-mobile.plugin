@@ -826,7 +826,7 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 		// life cycle of the Activity.
 	
 		@Override protected void onDestroy() {
-//			super.onDestroy();
+			super.onDestroy();
 			
 			// If stopped in Viewing mode, reset the state to IDLE;. 
 			// otherwise leave it in VIEWING_MODE
