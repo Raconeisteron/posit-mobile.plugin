@@ -319,113 +319,113 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 	 * @param rowId Either the rowId of the expedition to be displayed or -1 to indicate
 	 * that we are already displaying the track. 
 	 */
-	//private void displayExistingExpedition(long rowId, boolean isResuming) {
-		//		Log.d(TAG, "TrackerActivity, displayExistingExpedition() ");
-		//			
-		//		if (rowId != -1) { // Unless we are already in VIEWING_MODE
-		//			// Retrieve data from this expedition
-		//			mDbHelper = new PositDbHelper(this);
-		//
-		//			mExpId = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_NUM));
-		//			mPoints = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_POINTS));
-		//			mSynced = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_SYNCED));
-		//			mRegistered = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_REGISTERED));
-		//			Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
-		//					" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
-		//			mDbHelper.fetchExpeditionPointsByExpeditionId(mExpId, mTrack);
-		//		}
-		//	
-		//		// Initialize the View
-		//		mPointsTextView = (TextView)findViewById(R.id.trackerPoints);
-		//		mLocationTextView = (TextView)findViewById(R.id.trackerLocation);
-		//		mStatusTextView = (TextView)findViewById(R.id.trackerStatus);
-		//		mExpeditionTextView = (TextView)findViewById(R.id.trackerExpedition);
-		//		mSwathTextView = (TextView)findViewById(R.id.trackerSwath);
-		//		mMinDistTextView = (TextView)findViewById(R.id.trackerMinDistance);
-		//	    mTrackerButton = (Button)findViewById(R.id.idTrackerButton);
-		//	    mTrackerButton.setOnClickListener(this);
-		//	    mSettingsButton = (Button)findViewById(R.id.idTrackerSettingsButton);
-		//	    mSettingsButton.setOnClickListener(this);
-		//	    mListButton = (Button)findViewById(R.id.idTrackerListButton);
-		//	    mListButton.setOnClickListener(this);
-		//		
-		//		// Set up the View for this expedition
-		//		mExpeditionTextView.setText(""+ mExpId);
-		//		mPointsTextView.setText("" + mPoints);
-		//		mTrackerButton.setClickable(false);
-		//		mTrackerButton.setEnabled(false);
-		//		mTrackerButton.setVisibility(View.GONE);
-		//		mSettingsButton.setClickable(false);
-		//		mSettingsButton.setEnabled(false);	
-		//		mListButton.setText("Delete");
-		//		mListButton.setClickable(true);
-		//		mListButton.setEnabled(true);	
-		//		
-		//		// Make invisible the controls and data fields used in the default Intent.
-		//
-		//		((TextView)findViewById(R.id.trackerSwathLabel)).setText("Synced");
-		//		((TextView)findViewById(R.id.trackerSwath)).setText("" + mSynced);		
-		//		
-		//		((TextView)findViewById(R.id.trackerMinDistLabel)).setVisibility(View.GONE);
-		//		((TextView)findViewById(R.id.trackerMinDistance)).setVisibility(View.GONE);
-		//	
-		//		((TextView)findViewById(R.id.trackerStatusLabel)).setVisibility(View.GONE);
-		//		((TextView)findViewById(R.id.trackerStatus)).setVisibility(View.GONE);
-		//		((TextView)findViewById(R.id.trackerLabel)).setVisibility(View.GONE);
-		//		((TextView)findViewById(R.id.trackerLocation)).setVisibility(View.GONE);
-		//		
-		//		if (rowId != -1) {
-		//			// Get the unsynced points
-		//			ArrayList<ContentValues> points = mDbHelper.fetchExpeditionPointsUnsynced(mExpId);
-		//			// Get middle point in track
-		//
-		//			if (mPoints != 0) {
-		//				List<PointAndTime> pointsList = mTrack.getPoints();
-		//				PointAndTime aPoint = pointsList.get(pointsList.size()/2);
-		//				//			Double geoLat = values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE) * 1E6;
-		//				//			Double geoLng = values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) * 1E6;
-		//				GeoPoint point = aPoint.getGeoPoint();
-		//				mMapController.animateTo(point);
-		//			}
-		//
-		//			// If there are points to sync and we have a network connection now
-		//			if (points.size() > 0 && mConnectivityMgr.getActiveNetworkInfo() != null) {
-		//
-		//				if (mRegistered == PositDbHelper.EXPEDITION_IS_REGISTERED)
-		//					mSettingsButton.setText("Sync");
-		//				else  {
-		//					mSettingsButton.setText("Register");
-		//					Utils.showToast(this, "This expedition needs to be registered with the server. " +
-		//					"Please click the register button");
-		//
-		//				}
-		//				if (isResuming) {
-		//					mSettingsButton.setClickable(false);
-		//					mSettingsButton.setEnabled(false);	
-		//					mListButton.setClickable(false);
-		//					mListButton.setEnabled(false);
-		//					//Utils.showToast(this, "This expedition is still being synced.");
-		//
-		//				} else {
-		//					mSettingsButton.setClickable(true);
-		//					mSettingsButton.setEnabled(true);	
-		//				}
-		//				//			((Button)findViewById(R.id.idTrackerSettingsButton)).setVisibility(View.GONE);
-		//				//			((Button)findViewById(R.id.idTrackerButton)).setVisibility(View.GONE);
-		//			} else {
-		//				mSettingsButton.setVisibility(View.GONE);
-		//			}
-		//		}
-		//		
-		//		// Display the expedition as an overlay
-		//		if (mapView.getOverlays().contains(mTrackerOverlay)) {
-		//			   mapView.getOverlays().remove(mTrackerOverlay);
-		//			 }
-		//		mTrackerOverlay = new TrackerOverlay(mTrack);
-		//		mOverlays.add(mTrackerOverlay);
-		//		Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
-		//				" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
-	//}
+	private void displayExistingExpedition(long rowId, boolean isResuming) {
+				Log.d(TAG, "TrackerActivity, displayExistingExpedition() ");
+					
+				if (rowId != -1) { // Unless we are already in VIEWING_MODE
+					// Retrieve data from this expedition
+//					mDbHelper = new PositDbHelper(this);
+//		
+//					mExpId = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_NUM));
+//					mPoints = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_POINTS));
+//					mSynced = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_SYNCED));
+//					mRegistered = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_REGISTERED));
+					Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
+							" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
+//					mDbHelper.fetchExpeditionPointsByExpeditionId(mExpId, mTrack);
+				}
+			
+				// Initialize the View
+				mPointsTextView = (TextView)findViewById(R.id.trackerPoints);
+				mLocationTextView = (TextView)findViewById(R.id.trackerLocation);
+				mStatusTextView = (TextView)findViewById(R.id.trackerStatus);
+				mExpeditionTextView = (TextView)findViewById(R.id.trackerExpedition);
+				mSwathTextView = (TextView)findViewById(R.id.trackerSwath);
+				mMinDistTextView = (TextView)findViewById(R.id.trackerMinDistance);
+			    mTrackerButton = (Button)findViewById(R.id.idTrackerButton);
+			    mTrackerButton.setOnClickListener(this);
+			    mSettingsButton = (Button)findViewById(R.id.idTrackerSettingsButton);
+			    mSettingsButton.setOnClickListener(this);
+			    mListButton = (Button)findViewById(R.id.idTrackerListButton);
+			    mListButton.setOnClickListener(this);
+				
+				// Set up the View for this expedition
+				mExpeditionTextView.setText(""+ mExpId);
+				mPointsTextView.setText("" + mPoints);
+				mTrackerButton.setClickable(false);
+				mTrackerButton.setEnabled(false);
+				mTrackerButton.setVisibility(View.GONE);
+				mSettingsButton.setClickable(false);
+				mSettingsButton.setEnabled(false);	
+				mListButton.setText("Delete");
+				mListButton.setClickable(true);
+				mListButton.setEnabled(true);	
+				
+				// Make invisible the controls and data fields used in the default Intent.
+		
+				((TextView)findViewById(R.id.trackerSwathLabel)).setText("Synced");
+				((TextView)findViewById(R.id.trackerSwath)).setText("" + mSynced);		
+				
+				((TextView)findViewById(R.id.trackerMinDistLabel)).setVisibility(View.GONE);
+				((TextView)findViewById(R.id.trackerMinDistance)).setVisibility(View.GONE);
+			
+				((TextView)findViewById(R.id.trackerStatusLabel)).setVisibility(View.GONE);
+				((TextView)findViewById(R.id.trackerStatus)).setVisibility(View.GONE);
+				((TextView)findViewById(R.id.trackerLabel)).setVisibility(View.GONE);
+				((TextView)findViewById(R.id.trackerLocation)).setVisibility(View.GONE);
+				
+//				if (rowId != -1) {
+//					// Get the unsynced points
+//					ArrayList<ContentValues> points = mDbHelper.fetchExpeditionPointsUnsynced(mExpId);
+//					// Get middle point in track
+//		
+//					if (mPoints != 0) {
+//						List<PointAndTime> pointsList = mTrack.getPoints();
+//						PointAndTime aPoint = pointsList.get(pointsList.size()/2);
+//						//			Double geoLat = values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE) * 1E6;
+//						//			Double geoLng = values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) * 1E6;
+//						GeoPoint point = aPoint.getGeoPoint();
+//						mMapController.animateTo(point);
+//					}
+//		
+//					// If there are points to sync and we have a network connection now
+//					if (points.size() > 0 && mConnectivityMgr.getActiveNetworkInfo() != null) {
+//		
+//						if (mRegistered == PositDbHelper.EXPEDITION_IS_REGISTERED)
+//							mSettingsButton.setText("Sync");
+//						else  {
+//							mSettingsButton.setText("Register");
+//							Utils.showToast(this, "This expedition needs to be registered with the server. " +
+//							"Please click the register button");
+//		
+//						}
+//						if (isResuming) {
+//							mSettingsButton.setClickable(false);
+//							mSettingsButton.setEnabled(false);	
+//							mListButton.setClickable(false);
+//							mListButton.setEnabled(false);
+//							//Utils.showToast(this, "This expedition is still being synced.");
+//		
+//						} else {
+//							mSettingsButton.setClickable(true);
+//							mSettingsButton.setEnabled(true);	
+//						}
+//						//			((Button)findViewById(R.id.idTrackerSettingsButton)).setVisibility(View.GONE);
+//						//			((Button)findViewById(R.id.idTrackerButton)).setVisibility(View.GONE);
+//					} else {
+//						mSettingsButton.setVisibility(View.GONE);
+//					}
+//				}
+//				
+//				// Display the expedition as an overlay
+//				if (mapView.getOverlays().contains(mTrackerOverlay)) {
+//					   mapView.getOverlays().remove(mTrackerOverlay);
+//					 }
+//				mTrackerOverlay = new TrackerOverlay(mTrack);
+//				mOverlays.add(mTrackerOverlay);
+//				Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
+//						" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
+	}
 
 	/**
 	 * Checks for network and GPS service.
@@ -826,7 +826,7 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 		// life cycle of the Activity.
 	
 		@Override protected void onDestroy() {
-			super.onDestroy();
+//			super.onDestroy();
 			
 			// If stopped in Viewing mode, reset the state to IDLE;. 
 			// otherwise leave it in VIEWING_MODE
