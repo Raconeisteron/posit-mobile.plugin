@@ -61,6 +61,17 @@
 			main_icon="outsidein_logo" />
 
 <!-- Function Plugins -->
+		<Plugin active="true" 
+			type="function" 
+			extensionPoint="addFindMenu"
+			name="Capture Media" 
+			menuIcon="ic_menu_mapmode" 
+			menuTitle="Capture Media"
+			menuActivity="org.hfoss.posit.android.experimental.functionplugins.CameraActivity" 
+			activity_returns_result="true"
+			activity_result_action="1" />
+
+
 		<Plugin active="false" 
 			type="function" 
 			extensionPoint="mainMenu"

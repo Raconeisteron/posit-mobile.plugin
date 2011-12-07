@@ -1,5 +1,9 @@
 package org.hfoss.posit.android.experimental.api.activity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,15 +19,24 @@ import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Images.Media;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -65,6 +78,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	private TextView mLatitudeTV = null;
 	private TextView mLongTV = null;
 	private TextView mLongitudeTV = null;
+	private ImageView photo = null;
+	
+	private String img_str = null; //base64 string representation of photo
 	
 	/* To-Do Begins */
 	private ArrayList<FunctionPlugin> mAddFindMenuPlugins = null;
@@ -102,6 +118,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		mLatitudeTV = (TextView) findViewById(R.id.latitudeValueTextView);
 		mLongTV = (TextView) findViewById(R.id.longitudeTextView);
 		mLongitudeTV = (TextView) findViewById(R.id.longitudeValueTextView);
+	    photo = (ImageView) findViewById(R.id.photo);     
 		
 		// Check if settings allow Geotagging
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);		
@@ -174,7 +191,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 					mLatTV.setVisibility(TextView.INVISIBLE);
 				}
 			}
-			
 		}
 	}
 	
@@ -378,7 +394,19 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 					    lp2.setMargins(6, 6, 0, 0);
 						parent.addView(mTimeTV, lp2);
 		    		}
-				} else {
+				} 
+				else if (plugin.getmMenuTitle().equals("Capture Media")) {
+					if (intent != null) {
+					    //do we get an image back?
+						if(intent.getStringExtra("Photo") != null){
+						    img_str=intent.getStringExtra("Photo");
+							byte[] c = Base64.decode(img_str, Base64.DEFAULT);
+						    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
+						    photo.setImageBitmap(bmp);//display the retrieved image
+						}
+					}
+				}
+				else{
 					// Do something specific for other function plug-ins
 				}
 			}
@@ -527,6 +555,27 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			mLatitudeTV.setText(String.valueOf(find.getLatitude()));
 		}
 
+	    //retrieve the photo, display it, and also encode to base64 string
+	    Cursor managedCursor = managedQuery(Images.Media.EXTERNAL_CONTENT_URI, null, "_DISPLAY_NAME ="+"'"+find.getGuid()+"'", null, null);
+	    if(managedCursor.moveToFirst()){
+	    	Uri photoUri = ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI, managedCursor.getInt(managedCursor.getColumnIndex("_ID")));
+	    	try {
+	    		Bitmap cameraPic = Media.getBitmap(getContentResolver(), photoUri);
+				photo.setImageBitmap(cameraPic);
+			    photo.setVisibility(View.VISIBLE);
+			    
+				//encode to base64 string
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				cameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+				byte[] b = baos.toByteArray();
+				img_str = Base64.encodeToString(b, Base64.DEFAULT); //TODO: it's encoded, now what?
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 	
+	    }
+		
 	}
 
 	/**
@@ -644,6 +693,40 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			/* To-Do Ends */
 		} else
 			Log.e(TAG, "Find not inserted: " + find);
+		
+		//if the find is saved, we can save/update the picture to the phone
+		if(rows > 0){
+			//do we even have an image to save?
+			if(img_str != null){
+				//decode the base64 string so that I can save jpg to phone
+				byte[] c = Base64.decode(img_str, Base64.DEFAULT);
+			    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
+				
+				//in order to replace an image, I delete an existing row and insert a new row.
+			    //delete previous photo if it exists
+			    Cursor managedCursor = managedQuery(Images.Media.EXTERNAL_CONTENT_URI, null, "_DISPLAY_NAME ="+"'"+find.getGuid()+"'", null, null);
+			    if(managedCursor.moveToFirst()){
+			    	Uri photoUri = ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI, managedCursor.getInt(managedCursor.getColumnIndex("_ID")));
+			    	getContentResolver().delete(photoUri, null, null);
+			    }
+			    
+			    //insert a new one
+			    ContentValues values = new ContentValues(2);
+			    values.put(Media.DISPLAY_NAME, find.getGuid()); //put the GUID of find
+			    values.put(Media.MIME_TYPE, "image/jpeg");
+	
+			    Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
+			    
+			    try {
+			        OutputStream outStream = getContentResolver().openOutputStream(uri);
+			        bmp.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+			        outStream.close();
+			    } catch (Exception e) {
+			    	e.printStackTrace();
+			    }
+			}
+		}
+		
 		return rows > 0;
 	}
 	
@@ -663,7 +746,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	protected boolean deleteFind() {
 		int rows = 0;
-
+		String guid = null;
 		// Get the appropriate find class from the plugin manager and
 		// make an instance of it.
 		Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
@@ -678,10 +761,23 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 
 		find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
+		
+		//store the guid of this find so that I can delete photos on phone
+		find = getHelper().getFindById(find.getId());
+		guid = find.getGuid();
+		
 		rows = getHelper().delete(find);
 		
 		if (rows > 0) {
 			Toast.makeText(FindActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
+			
+		    //delete photo if it exists
+		    Cursor managedCursor = managedQuery(Images.Media.EXTERNAL_CONTENT_URI, null, "_DISPLAY_NAME ="+"'"+guid+"'", null, null);
+		    if(managedCursor.moveToFirst()){
+		    	Uri photoUri = ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI, managedCursor.getInt(managedCursor.getColumnIndex("_ID")));
+		    	getContentResolver().delete(photoUri, null, null);
+		    }
+			
 			/* To-Do Begins */
 			this.startService(new Intent(this, LocationService.class));
 			/* To-Do Ends */
