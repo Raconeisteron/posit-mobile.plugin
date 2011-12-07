@@ -108,6 +108,15 @@
 			name="viewfile"
 			menuIcon="ic_menu_view" menuTitle="View File"
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
+			
+		<!-- SMS Plugin Begins -->
+		<Plugin active="true"
+			type="function"
+			extensionPoint="addFindMenu"
+			name="sendsms"
+			menuIcon="ic_menu_send" menuTitle="Send SMS"
+			menuActivity="org.hfoss.posit.android.experimental.functionplugins.sms.SmsActivity" />
+		<!-- SMS Plugin Ends -->
 
 		<Plugin active="false" 
 			type="function" 

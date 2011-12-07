@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"	android:layout_height="match_parent"
+	android:orientation="vertical" android:layout_marginRight="4dp">
+	
+    <TableLayout android:stretchColumns="1"
+    	android:layout_width="match_parent" android:layout_height="wrap_content">
+    	
+        <TableRow android:layout_width="match_parent" android:layout_height="wrap_content">
+            <TextView
+            	android:layout_width="wrap_content" android:layout_height="wrap_content"
+            	android:id="@+id/phoneNumView" android:text="@string/PhoneNum"
+            	android:layout_marginLeft="4dp" android:layout_marginTop="4dp">
+            </TextView>
+            <EditText
+            	android:layout_width="0dp" android:layout_height="wrap_content"
+            	android:id="@+id/phoneEditText" android:layout_marginLeft="4dp" 
+            	android:layout_marginTop="4dp" android:inputType="textCapSentences"> <requestFocus/>
+            </EditText>
+        </TableRow>
+        
+        <TableRow android:layout_width="match_parent" android:layout_height="wrap_content">
+            <TextView
+            	android:layout_width="wrap_content" android:layout_height="wrap_content"
+            	android:id="@+id/smsTextView" android:text="@string/SmsText"
+            	android:layout_marginLeft="4dp" android:layout_marginTop="4dp">
+            </TextView>
+            <EditText
+            	android:layout_width="0dp" android:layout_height="wrap_content"
+            	android:id="@+id/smsEditText" android:layout_marginLeft="4dp" 
+            	android:layout_marginTop="4dp" android:inputType="textCapSentences"> <requestFocus/>
+            </EditText>
+        </TableRow>
+        
+    </TableLayout>
+    
+    <TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
+        <Button
+        	android:id="@+id/sendButton" android:drawableLeft="@drawable/ic_menu_search"
+        	android:layout_width="wrap_content" android:layout_height="wrap_content" 
+        	android:layout_marginLeft="100dp" android:layout_marginRight="100dp"
+        	android:text="@string/Send" android:layout_marginTop="10dp">
+        </Button>
+    </TableRow>
+    
+</LinearLayout>
+
