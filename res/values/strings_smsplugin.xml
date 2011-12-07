@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="PhoneNum">Phone #:</string>
+    <string name="Send">Send</string>
+    <string name="SmsText">Message Text:</string>
+</resources>

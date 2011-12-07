@@ -97,6 +97,8 @@
 			android:name="org.hfoss.posit.android.experimental.functionplugins.FilePickerActivity" />
 		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
+		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.sms.SmsActivity" />
 
 
 		<!-- Activities for Outside In plugin -->
