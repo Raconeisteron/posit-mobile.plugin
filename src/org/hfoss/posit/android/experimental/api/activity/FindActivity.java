@@ -351,6 +351,13 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				    	startActivityForResult(intent, plugin.getActivityResultAction());
 					} else { // all other function plug-ins
 						Intent intent = new Intent(this, plugin.getmMenuActivity());
+						// Put Find information in Intent so that it may be utilized by the plugin.
+						// This is done by creating a find and then extracting the ContentValues object from it
+						// because I want to make sure that we have the same behaviour as retrieveContentFromView()
+						// without having to duplicate code.
+						Find find = retrieveContentFromView();
+						ContentValues cv = find.getDbEntries();
+						intent.putExtra("DbEntries", cv);
 						if (plugin.getActivityReturnsResult())
 							startActivityForResult(intent, plugin.getActivityResultAction());
 						else
