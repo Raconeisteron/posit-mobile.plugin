@@ -65,7 +65,7 @@
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="Capture Media" 
-			menuIcon="ic_menu_mapmode" 
+			menuIcon="ic_menu_camera" 
 			menuTitle="Capture Media"
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.CameraActivity" 
 			activity_returns_result="true"
