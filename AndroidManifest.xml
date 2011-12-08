@@ -192,7 +192,7 @@
 		<activity android:name="org.hfoss.posit.android.experimental.sync.SyncActivity"
 			android:launchMode="singleTop" />
 			
-		<service android:name="org.hfoss.posit.android.api.service.SmsService" />
+		<service android:name="org.hfoss.posit.android.experimental.api.service.SmsService"></service>
 
 		<service android:name="org.hfoss.posit.android.experimental.sync.SyncService"
 			android:exported="true">

@@ -1,5 +1,6 @@
 package org.hfoss.posit.android.experimental.api;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
@@ -408,7 +409,72 @@ public class Find implements FindInterface {
 		}
 	}
 
-
+	/**
+	 * Uses reflection to retrieve a ContentValues object from all of the fields in the Find which have
+	 * the DatabaseField annotation. Sort of like the opposite of updateObject().
+	 * Should work with all subclasses of Find.
+	 * 
+	 * @return A ContentValues object containing all of the Find's database entries.
+	 */
+	public ContentValues getDbEntries()  {		
+		ContentValues cv = new ContentValues();
+		// Get fields from this class
+		Field[] fields = this.getClass().getDeclaredFields();
+		// Get fields from superclass(es) if we are a derived class
+		for(Class current = this.getClass(); current != Find.class; current = current.getSuperclass()) {
+			Field[] superfields = current.getSuperclass().getDeclaredFields();
+			Field[] temp = new Field[fields.length + superfields.length];
+			// Merge both arrays into new array
+			System.arraycopy(fields, 0, temp, 0, fields.length);
+			System.arraycopy(superfields, 0, temp, fields.length, superfields.length);
+			fields = temp;
+		}
+		// For each database field, create a pair and add to list
+		for(Field field : fields) {
+			Annotation[] annotations = field.getDeclaredAnnotations();
+			for (Annotation annotation : annotations) {
+				if(annotation instanceof DatabaseField) {
+					String col = ((DatabaseField) annotation).columnName();
+					field.setAccessible(true);
+					try {
+						Object val = field.get(this);
+						// Sadly, I can't use a dynamic cast of val with cv.put(), so I need to do this
+						// silly compound if statement. Maybe there's a better solution?
+						if (val instanceof Byte) {
+							cv.put(col, (Byte) val);
+						} else if (val instanceof Integer) {
+							cv.put(col, (Integer) val);
+						} else if (val instanceof Float) {
+							cv.put(col, (Float) val);
+						} else if (val instanceof Short) {
+							cv.put(col, (Short) val);
+						} else if (val instanceof byte[]) {
+							cv.put(col, (byte[]) val);
+						} else if (val instanceof String) {
+							cv.put(col, (String) val);
+						} else if (val instanceof Double) {
+							cv.put(col, (Double) val);
+						} else if (val instanceof Long) {
+							cv.put(col, (Long) val);
+						} else if (val instanceof Boolean) {
+							cv.put(col, (Boolean) val);
+						} else {
+							// Illegal type
+							throw new IllegalArgumentException();
+						}
+					} catch (IllegalArgumentException e) {
+						Log.i(TAG, "Illegal Argument " + field.getName() + " in " + this.getClass());
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						Log.i(TAG, "Illegal Access " + field.getName() + " in " + this.getClass());
+						e.printStackTrace();
+					}
+					break;
+				}
+			}
+		}
+		return cv;
+	}
 
 	@Override
 	public String toString() {
