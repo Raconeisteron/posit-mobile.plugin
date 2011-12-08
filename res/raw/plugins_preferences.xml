@@ -148,6 +148,7 @@
 		<Plugin active="true" 
  			 type="function" 
  			 extensionPoint="mainMenu"
+ 			 preferences_xml="tracker_preferences" 			 
  			 name="tracker" 
 			 menuIcon="radar" 
 			 menuTitle="Tracker Activity"
