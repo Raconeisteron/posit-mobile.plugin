@@ -32,13 +32,9 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.http.NameValuePair;
@@ -59,52 +55,39 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
-import org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerActivity;
-//import org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerDbManager;
-import org.hfoss.posit.android.experimental.api.Find;
-import org.hfoss.posit.android.experimental.api.FindHistory;
-import org.hfoss.posit.android.experimental.api.authentication.AuthenticatorActivity;
-//import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
-import org.hfoss.posit.android.experimental.api.database.DbHelper;
-import org.hfoss.posit.android.experimental.api.database.DbManager;
-import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
-import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
-import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
-import org.hfoss.posit.android.experimental.api.activity.OrmLiteBaseMapActivity;
-import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
-import org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind;
-
-import android.util.Log;
-import android.widget.Toast;
-
 import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
-//import org.hfoss.posit.android.provider.PositDbHelper;
-//import org.hfoss.posit.android.TrackerActivity;
-//import org.hfoss.posit.android.provider.PositDbHelper;
-//import org.hfoss.posit.android.utilities.Utils;
-//import org.hfoss.third.Base64Coder;
-import org.json.JSONArray;
+import org.hfoss.posit.android.experimental.api.Find;
+import org.hfoss.posit.android.experimental.api.FindHistory;
+import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
+import org.hfoss.posit.android.experimental.api.authentication.AuthenticatorActivity;
+import org.hfoss.posit.android.experimental.api.database.DbHelper;
+import org.hfoss.posit.android.experimental.api.database.DbManager;
+import org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerActivity;
+import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Images.Media;
 import android.telephony.TelephonyManager;
+import android.util.Base64;
+import android.util.Log;
+import android.widget.Toast;
 
 /**
  * The communication module for POSIT. Handles most calls to the server to get
@@ -120,6 +103,16 @@ public class Communicator {
 	private static final String ERROR_MESSAGE = "errorMessage";
 	private static final String ERROR_CODE = "errorCode";
 	private static final String COLUMN_IMEI = "imei";
+	//Start of addition columns for photo table
+	private static final String COLUMN_GUID = "guid"; 				//guid of the find
+	private static final String COLUMN_IDENTIFIER = "identifier"; 	//does not seem to be useful
+	private static final String COLUMN_PROJECT_ID = "project_id"; 	//project id of the find
+	private static final String COLUMN_TIMESTAMP = "timestamp"; 	//if this is not set, it uses the current timestamp
+	private static final String COLUMN_MIME_TYPE = "mime_type"; 	//data type, in this case, "image/jpeg"
+	private static final String COLUMN_DATA_FULL = "data_full"; 	//data for the image, takes Base64 string of image
+	private static final String COLUMN_DATA_THUMBNAIL = "data_thumbnail"; //data for the image, take Base 64 string of image
+	//End of addition columns for photo table
+	public static final int THUMBNAIL_TARGET_SIZE = 320; //width and height of thumbnail data
 	public static final int CONNECTION_TIMEOUT = 3000; // millisecs
 	public static final int SOCKET_TIMEOUT = 5000;
 	public static final String RESULT_FAIL = "false";
@@ -133,14 +126,14 @@ public class Communicator {
 	private static final String PROJECT_PREF = "projectKey";
 
 	private static String TAG = "Communicator";
-	private String responseString;
+	private static String responseString;
 	private Context mContext;
 	private SharedPreferences applicationPreferences;
 	private HttpParams mHttpParams;
-	private HttpClient mHttpClient;
+	private static HttpClient mHttpClient;
 	private ThreadSafeClientConnManager mConnectionManager;
 	public static long mTotalTime = 0;
-	private long mStart = 0;
+	private static long mStart = 0;
 
 	
 //	public void setContext(Context _context) {
@@ -873,47 +866,56 @@ public class Communicator {
 			success = true;
 		}
 
-		// if (!success)
-		// return false;
+		if (!success){
+			//don't bother sending the images if we can't save the find
+			return false;
+		}
 
-		// // Otherwise send the Find's images
-		//
-		// long id = Long.parseLong(sendMap.get(PositDbHelper.FINDS_ID));
-		// PositDbHelper dbh = new PositDbHelper(mContext);
-		// ArrayList<ContentValues> photosList =
-		// dbh.getImagesListSinceUpdate(id);
-		//
-		// Log.i(TAG, "sendFind, photosList=" + photosList.toString());
-		//
-		// Iterator<ContentValues> it = photosList.listIterator();
-		// while (it.hasNext()) {
-		// ContentValues imageData = it.next();
-		// Uri uri = Uri.parse(imageData
-		// .getAsString(PositDbHelper.PHOTOS_IMAGE_URI));
-		// String base64Data = convertUriToBase64(uri);
-		// uri = Uri.parse(imageData
-		// .getAsString(PositDbHelper.PHOTOS_THUMBNAIL_URI));
-		// String base64Thumbnail = convertUriToBase64(uri);
-		// sendMap = new HashMap<String, String>();
-		// sendMap.put(COLUMN_IMEI, Utils.getIMEI(mContext));
-		// sendMap.put(PositDbHelper.FINDS_GUID, guid);
-		//
-		// sendMap.put(PositDbHelper.PHOTOS_IDENTIFIER,
-		// imageData.getAsString(PositDbHelper.PHOTOS_IDENTIFIER));
-		// sendMap.put(PositDbHelper.FINDS_PROJECT_ID,
-		// imageData.getAsString(PositDbHelper.FINDS_PROJECT_ID));
-		// sendMap.put(PositDbHelper.FINDS_TIME,
-		// imageData.getAsString(PositDbHelper.FINDS_TIME));
-		// sendMap.put(PositDbHelper.PHOTOS_MIME_TYPE,
-		// imageData.getAsString(PositDbHelper.PHOTOS_MIME_TYPE));
-		//
-		// sendMap.put("mime_type", "image/jpeg");
-		//
-		// sendMap.put(PositDbHelper.PHOTOS_DATA_FULL, base64Data);
-		// sendMap.put(PositDbHelper.PHOTOS_DATA_THUMBNAIL, base64Thumbnail);
-		// sendMedia(sendMap);
-		// // it.next();
-		// }
+		// Otherwise send the Find's images
+		String fullPicStr = null; 	//assume find has no picture
+		String thumbPicStr = null;	//thumbnail size of picture
+		
+	    //retrieve the photo for the find from the media store and encode it as a Base64 string
+		Cursor cursor = android.provider.MediaStore.Images.Media.query(context.getContentResolver(), Images.Media.EXTERNAL_CONTENT_URI, null, "_DISPLAY_NAME ="+"'"+find.getGuid()+"'", null, null);
+	    if(cursor.moveToFirst()){
+	    	Uri photoUri = ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI, cursor.getInt(cursor.getColumnIndex("_ID")));
+	    	try {
+	    		Bitmap cameraPic = Media.getBitmap(context.getContentResolver(), photoUri);			    
+				//encode to base64 string
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				cameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+				byte[] b = baos.toByteArray();
+				fullPicStr = Base64.encodeToString(b, Base64.DEFAULT);
+				
+				//get thumbnail and encode as base64 string
+				Bitmap thumbCameraPic = ThumbnailUtils.extractThumbnail(cameraPic, THUMBNAIL_TARGET_SIZE, THUMBNAIL_TARGET_SIZE);
+				thumbCameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+				b = baos.toByteArray();
+				thumbPicStr = Base64.encodeToString(b, Base64.DEFAULT);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 	
+	    }
+	    
+	    //does the find have an image?
+		if(fullPicStr !=null){
+		//fill in the data needed to send to the photo table
+			HashMap<String, String> sendMap = new HashMap<String, String>();
+			sendMap.put(COLUMN_IMEI, imei);
+			sendMap.put(COLUMN_GUID, find.getGuid());
+			sendMap.put(COLUMN_IDENTIFIER,Integer.toString(find.getId()));
+			sendMap.put(COLUMN_PROJECT_ID,Integer.toString(find.getProject_id()));
+//			 sendMap.put("COLUMN_TIMESTAMP",find.getTime()); //uses current timestamp if not set
+//			 sendMap.put("mine_type",imageData.getAsString(PositDbHelper.PHOTOS_MIME_TYPE));		
+			sendMap.put(COLUMN_MIME_TYPE, "image/jpeg");
+			sendMap.put(COLUMN_DATA_FULL, fullPicStr);
+			sendMap.put(COLUMN_DATA_THUMBNAIL, thumbPicStr);
+
+			//ready to send the image to the server
+			sendMedia(sendMap, context);
+	 	}
 
 		DbHelper.releaseDbManager();
 		return success;
@@ -967,15 +969,18 @@ public class Communicator {
 	// * @param data
 	// * @param mimeType
 	// */
-	// public void sendMedia(HashMap<String, String> sendMap) {
-	// Log.i(TAG, "sendMedia, sendMap= " + sendMap);
-	//
-	// String url = server + "/api/attachPicture?authKey=" + authKey;
-	//
-	// responseString = doHTTPPost(url, sendMap);
-	// if (Utils.debug)
-	// Log.i(TAG, "sendImage.ResponseString: " + responseString);
-	// }
+	 public static void sendMedia(HashMap<String, String> sendMap, Context context) {
+		Log.i(TAG, "sendMedia, sendMap= " + sendMap);
+		
+		SharedPreferences applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = applicationPreferences.getString(SERVER_PREF, "");
+			 
+		String url = server + "/api/attachPicture?authKey=" + getAuthKey(context);
+		
+		responseString = doHTTPPost(url, sendMap);
+//		if (Utils.debug)
+//			Log.i(TAG, "sendImage.ResponseString: " + responseString);
+	 }
 	//
 	// /**
 	// * Converts a uri to a base64 encoded String for transmission to server.
@@ -1131,9 +1136,8 @@ public class Communicator {
 	 * @param Uri, the URL to send to/receive from
 	 * @param sendMap, the hashMap of data to send to the server as POST data
 	 * @return the response from the URL
-	 */
-	
-	private String doHTTPPost(String Uri, HashMap<String, String> sendMap) {
+	 */	
+	private static String doHTTPPost(String Uri, HashMap<String, String> sendMap) {
 		return doHTTPPost(Uri, getNameValuePairs(sendMap));
 	}
 
