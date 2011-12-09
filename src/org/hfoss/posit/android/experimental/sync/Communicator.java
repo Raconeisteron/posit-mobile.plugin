@@ -22,6 +22,7 @@
 package org.hfoss.posit.android.experimental.sync;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -78,6 +79,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Handler;
@@ -87,6 +89,7 @@ import android.provider.MediaStore.Images.Media;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -871,34 +874,37 @@ public class Communicator {
 			return false;
 		}
 
-		// Otherwise send the Find's images
+		// Otherwise send the Find's image
 		String fullPicStr = null; 	//assume find has no picture
 		String thumbPicStr = null;	//thumbnail size of picture
-		
-	    //retrieve the photo for the find from the media store and encode it as a Base64 string
-		Cursor cursor = android.provider.MediaStore.Images.Media.query(context.getContentResolver(), Images.Media.EXTERNAL_CONTENT_URI, null, "_DISPLAY_NAME ="+"'"+find.getGuid()+"'", null, null);
-	    if(cursor.moveToFirst()){
-	    	Uri photoUri = ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI, cursor.getInt(cursor.getColumnIndex("_ID")));
-	    	try {
-	    		Bitmap cameraPic = Media.getBitmap(context.getContentResolver(), photoUri);			    
-				//encode to base64 string
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				cameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-				byte[] b = baos.toByteArray();
-				fullPicStr = Base64.encodeToString(b, Base64.DEFAULT);
 				
-				//get thumbnail and encode as base64 string
-				Bitmap thumbCameraPic = ThumbnailUtils.extractThumbnail(cameraPic, THUMBNAIL_TARGET_SIZE, THUMBNAIL_TARGET_SIZE);
-				thumbCameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-				b = baos.toByteArray();
-				thumbPicStr = Base64.encodeToString(b, Base64.DEFAULT);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 	
+	    //Read image's Base64 string back from internal storage
+	    FileInputStream fis;
+	    String content = ""; //should contain the Base64 string
+	    try {
+	    	fis = context.openFileInput(find.getGuid());
+	    	byte[] input = new byte[fis.available()];
+	    	while (fis.read(input) != -1) {}
+	    	content += new String(input); //this should now have the base64 string of the image
+	    	fullPicStr = content; //this is the string that gets sent to the server
+	    	fis.close();
+	    	
+	    	//get thumbnail version by decoding it into an image 
+	    	//then do some bitmap scaling and then encode it into a base64 string
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			byte[] c = Base64.decode(content, Base64.DEFAULT);
+		    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length); //the original image
+		    
+			Bitmap thumbCameraPic = ThumbnailUtils.extractThumbnail(bmp, THUMBNAIL_TARGET_SIZE, THUMBNAIL_TARGET_SIZE);
+			thumbCameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+			byte[] b = baos.toByteArray();
+			thumbPicStr = Base64.encodeToString(b, Base64.DEFAULT); //thumbnail in base64 string
+	    } catch (FileNotFoundException e) {
+	    	e.printStackTrace();
+	    } catch (IOException e) {
+	    	e.printStackTrace(); 
 	    }
-	    
+		
 	    //does the find have an image?
 		if(fullPicStr !=null){
 		//fill in the data needed to send to the photo table
