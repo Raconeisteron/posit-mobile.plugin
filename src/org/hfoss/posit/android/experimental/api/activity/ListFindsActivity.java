@@ -1,10 +1,14 @@
 package org.hfoss.posit.android.experimental.api.activity;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hfoss.posit.android.experimental.R;
+import org.hfoss.posit.android.experimental.R.drawable;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.api.service.LocationService;
@@ -18,8 +22,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -377,6 +384,28 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				} else {
 					tv.setText(description.substring(0,49)+" ...");
 				}
+				
+			    //Read image's Base64 string back from internal storage
+				//Decode it and set into the imageview
+				//If the find does not have an image, then show a default icon
+				ImageView iv = (ImageView) v.findViewById(R.id.find_image);
+			    FileInputStream fis;
+			    String content = "";
+			    try {
+			    	fis = openFileInput(find.getGuid());
+			    	byte[] input = new byte[fis.available()];
+			    	while (fis.read(input) != -1) {}
+			    	content += new String(input);
+			    	fis.close();
+					byte[] c = Base64.decode(content, Base64.DEFAULT);
+				    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
+				    iv.setImageBitmap(bmp);
+			    } catch (FileNotFoundException e) {
+				    iv.setImageResource(R.drawable.ic_menu_camera);
+			    	e.printStackTrace();
+			    } catch (IOException e) {
+			    	e.printStackTrace(); 
+			    }
 			}
 			return v;
 		}
