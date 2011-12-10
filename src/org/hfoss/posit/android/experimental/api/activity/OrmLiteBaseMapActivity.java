@@ -2,6 +2,7 @@ package org.hfoss.posit.android.experimental.api.activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.maps.MapActivity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -9,6 +10,8 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 
 public class OrmLiteBaseMapActivity<H extends OrmLiteSqliteOpenHelper> extends MapActivity {
+	public static String TAG= "OrmLiteBaseMapActivity";
+	
 	private volatile H helper;
 	private volatile boolean created = false;
 	private volatile boolean destroyed = false;
@@ -49,8 +52,10 @@ public class OrmLiteBaseMapActivity<H extends OrmLiteSqliteOpenHelper> extends M
 
 	@Override
 	protected void onDestroy() {
+		Log.i(TAG, "On destroy");
 		super.onDestroy();
-		releaseHelper(helper);
+		if (helper != null && helper.isOpen())
+			releaseHelper(helper);
 		destroyed = true;
 	}
 
