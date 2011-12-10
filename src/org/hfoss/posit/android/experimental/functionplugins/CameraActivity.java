@@ -26,9 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class CameraActivity extends Activity {
-	
-	//TODO:What do I do with the base64 string??
-	//TODO:How do I sync the images to and from the server??
 
 	public static final String PREFERENCES_IMAGE = "Image";
 	static final int TAKE_CAMERA_REQUEST = 1000;
@@ -39,9 +36,7 @@ public class CameraActivity extends Activity {
 	private Button btnPic;
 	private Button btnCont;
 	private ImageView photo;
-	
-//    private String display_name = "test123"; //TODO: replace this value with the find's GUID. Pass it using intents when starting this activity.
-		
+			
     /** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,28 +49,7 @@ public class CameraActivity extends Activity {
 	    photo = new ImageView(this);
 	    photo.setVisibility(View.INVISIBLE); //this is just to change the button text
 	    linear.addView(photo);
-/*
-	    //retrieve the photo, display it, and also encode to base64 string
-	    Cursor managedCursor = managedQuery(Images.Media.EXTERNAL_CONTENT_URI, null, "_DISPLAY_NAME ="+"'"+display_name+"'", null, null);
-	    if(managedCursor.moveToFirst()){
-	    	Uri photoUri = ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI, managedCursor.getInt(managedCursor.getColumnIndex("_ID")));
-	    	try {
-	    		Bitmap cameraPic = Media.getBitmap(getContentResolver(), photoUri);
-				photo.setImageBitmap(cameraPic);
-			    photo.setVisibility(View.VISIBLE);
-			    
-				//encode to base64 string
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				cameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-				byte[] b = baos.toByteArray();
-				img_str = Base64.encodeToString(b, Base64.DEFAULT); //TODO: it's encoded, now what?
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 	
-	    }
-*/	    
+ 
 	    btnPic = new Button(this);
 	    if(photo.getVisibility() == View.INVISIBLE){
 		    btnPic.setText("Take Picture");
@@ -134,31 +108,7 @@ public class CameraActivity extends Activity {
 */			    
 			    photo.setImageBitmap(cameraPic);//display the retrieved image
 			    photo.setVisibility(View.VISIBLE);
-			    btnPic.setText("Retake Picture");//we now have an image
-/*			    
-			    //in order to replace an image, I delete an existing row and insert a new row.
-			    //delete previous photo if it exists
-			    Cursor managedCursor = managedQuery(Images.Media.EXTERNAL_CONTENT_URI, null, "_DISPLAY_NAME ="+"'"+display_name+"'", null, null);
-			    if(managedCursor.moveToFirst()){
-			    	Uri photoUri = ContentUris.withAppendedId(Images.Media.EXTERNAL_CONTENT_URI, managedCursor.getInt(managedCursor.getColumnIndex("_ID")));
-			    	getContentResolver().delete(photoUri, null, null);
-			    }
-			    
-			    //insert a new one
-			    ContentValues values = new ContentValues(2);
-			    values.put(Media.DISPLAY_NAME, display_name);
-			    values.put(Media.MIME_TYPE, "image/jpeg");
-
-			    Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
-			    
-			    try {
-			        OutputStream outStream = getContentResolver().openOutputStream(uri);
-			        bmp.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
-			        outStream.close();
-			    } catch (Exception e) {
-			    	e.printStackTrace();
-			    }
-*/			    
+			    btnPic.setText("Retake Picture");//we now have an image	    
 			}
 			break;
 		}
