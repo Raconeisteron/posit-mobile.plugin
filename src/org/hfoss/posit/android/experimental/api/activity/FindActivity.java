@@ -1,6 +1,7 @@
 package org.hfoss.posit.android.experimental.api.activity;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
@@ -566,20 +568,26 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		//decode it and set into the imageview
 	    FileInputStream fis;
 	    String content = "";
-	    try {
-	    	fis = openFileInput(find.getGuid());
-	    	byte[] input = new byte[fis.available()];
-	    	while (fis.read(input) != -1) {}
-	    	content += new String(input);
-	    	fis.close();
-			byte[] c = Base64.decode(content, Base64.DEFAULT);
-		    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
-		    photo.setImageBitmap(bmp);
-		    photo.setVisibility(View.VISIBLE);
-	    } catch (FileNotFoundException e) {
-	    	e.printStackTrace();
-	    } catch (IOException e) {
-	    	e.printStackTrace(); 
+	    File file = new File(Constants.PATH_TO_PHOTOS+find.getGuid());
+	    if (file.exists()){
+		    try {
+		    	fis = openFileInput(find.getGuid());
+		    	byte[] input = new byte[fis.available()];
+		    	while (fis.read(input) != -1) {}
+		    	content += new String(input);
+		    	fis.close();
+				byte[] c = Base64.decode(content, Base64.DEFAULT);
+			    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
+			    photo.setImageBitmap(bmp);
+			    photo.setVisibility(View.VISIBLE);
+		    } catch (FileNotFoundException e) {
+		    	e.printStackTrace();
+		    } catch (IOException e) {
+		    	e.printStackTrace(); 
+		    }
+	    }
+	    else{//we don't have a photo to show. Nothing should show up but, this is just to make sure.
+		    photo.setVisibility(View.INVISIBLE);
 	    }
 	}
 

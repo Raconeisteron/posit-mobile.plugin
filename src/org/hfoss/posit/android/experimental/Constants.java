@@ -52,4 +52,7 @@ public class Constants {
 	public static final int POSTING = 0x17;
 	public static final int UPDATING = 0x18;
 	public static final int DELETING = 0x18;
+	
+	public static final String CLASS_NAME = "org.hfoss.posit.android.experimental";
+	public static final String PATH_TO_PHOTOS = "/data/data/"+CLASS_NAME+"/files/";
 }
