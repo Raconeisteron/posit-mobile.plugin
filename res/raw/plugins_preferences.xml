@@ -130,6 +130,16 @@
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.sms.SmsActivity" />
 		<!-- SMS Plugin Ends -->
 
+		<Plugin active="true" 
+			type="function" 
+			extensionPoint="addFindMenu"
+			name="twitFind"
+			preferences_xml="twitter_preferences" 
+			menuIcon="ic_twitter_48" menuTitle="Twit Find"
+			activity_returns_result="true"
+			activity_result_action="0" 
+			menuActivity="org.hfoss.posit.android.experimental.functionplugins.TwitFindsActivity" />
+			
 		<Plugin active="false" 
 			type="function" 
 			extensionPoint="listMenu"

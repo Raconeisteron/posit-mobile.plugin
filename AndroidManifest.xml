@@ -99,7 +99,18 @@
 			android:name="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
 		<activity
 			android:name="org.hfoss.posit.android.experimental.functionplugins.sms.SmsActivity" />
-
+		<activity
+			android:name="org.hfoss.posit.android.experimental.functionplugins.TwitFindsActivity" />	
+		<activity 
+			android:name="org.hfoss.posit.android.experimental.functionplugins.LoginTwitterActivity"
+			android:launchMode="singleInstance" >
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"/>
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="twitFinds" />
+			</intent-filter>	
+		</activity>
 
 		<!-- Activities for Outside In plugin -->
 		<activity
