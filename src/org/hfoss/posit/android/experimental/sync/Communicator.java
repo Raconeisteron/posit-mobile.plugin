@@ -24,6 +24,7 @@ package org.hfoss.posit.android.experimental.sync;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -73,23 +74,17 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
-import android.net.Uri;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore.Images;
-import android.provider.MediaStore.Images.Media;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -1322,6 +1317,27 @@ public class Communicator {
 			cv.put(Find.LONGITUDE, find.getDouble(Find.LONGITUDE));
 			cv.put(Find.REVISION, find.getInt(Find.REVISION));
 			
+			// Does this find have an image?
+			if (jobj.has("images")) {
+				String imageIds = jobj.getString("images");		
+				Log.i(TAG, "imageIds = " + imageIds);
+				
+				//check to see if we actually have an image to fetch
+				String imageId = parseImageIds(imageIds); //this returns at most one image id
+				
+				//we have an image to fetch!
+				if(imageId != null){
+					if(getImageOnServer(imageId, context)){
+						//success
+						Log.i(TAG, "Successfully retrieve image for " + find.getString(Find.GUID));
+					}
+					else{
+						//failed
+						Log.i(TAG, "Failed to retrieve image for " + find.getString(Find.GUID));
+					}
+				}
+			}
+			
 			// Is this a extended find?
 			if (jobj.has(Find.EXTENSION)) {
 				String extradata = jobj.getString(Find.EXTENSION);		
@@ -1341,6 +1357,78 @@ public class Communicator {
 		return null;
 	}
 
+	/**
+	 * The data has the form: ["1","2", ...] or '[]'
+	 * @param data
+	 * @return the last image id in the list or null
+	 */
+	private static String parseImageIds(String data) {
+		Log.i(TAG, "imageIdData = " + data  + " " + data.length());
+		if (data.equals("[]")){ 
+			return null;
+		}
+		data = data.trim();
+		data = data.substring(1,data.length()-1); //removes brackets
+		StringTokenizer st = new StringTokenizer(data,","); //in the form "123"
+		String imgId = null; //only care about one image for this version of posit
+		while (st.hasMoreElements()) {
+			imgId = (String) st.nextElement();
+			Log.i(TAG, "Is this with quotes: " + imgId);
+			imgId = imgId.substring(1, imgId.indexOf('"',1)); // removes quotes. find the second " in the string
+			Log.i(TAG, "Is this without quotes: " + imgId);
+		}
+		Log.i(TAG, "Planning to fetch imageId " + imgId + " for a find");
+		return imgId;
+	}
+	
+	 /**
+	 * Retrieve the specified image id from the server and save it to the phone
+	 * @param imageId
+	 * the id of the image to query
+	 * @return true if successful
+	 */
+	 static boolean getImageOnServer(String imageId, Context context) {
+		SharedPreferences applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String server = applicationPreferences.getString(SERVER_PREF, "");
+		 
+		String imageUrl = server + "/api/getPicture?id=" + imageId + "&authKey=" + getAuthKey(context);
+		
+		HashMap<String, String> sendMap = new HashMap<String, String>();
+		sendMap.put(COLUMN_IMEI, getIMEI(context));
+		
+		String imageResponseString = doHTTPPost(imageUrl, sendMap);
+		if (imageResponseString.equals(RESULT_FAIL)){
+			return false;
+		}
+		else{
+			//we got the image data!
+			Log.i(TAG, "imageResponseString = " + imageResponseString);
+			//parse to get the guid and base64 string of the image
+			//then just save it to the phone's internal memory
+			try {
+				JSONObject jobj = new JSONObject(imageResponseString);
+				String guid = jobj.getString(Find.GUID);
+				String imgData = jobj.getString("data_full");
+				
+				//save the Base64 string to internal memory
+			    FileOutputStream fos;
+				fos = context.openFileOutput(guid, Context.MODE_PRIVATE);
+			    fos.write(imgData.getBytes());
+			    fos.close();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return true; //success!
+		}
+	 }
+	
 	/**
 	 * The data has the form: [attr=value, ...] or 'null'
 	 * @param cv
