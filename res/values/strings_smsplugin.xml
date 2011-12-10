@@ -3,4 +3,11 @@
     <string name="PhoneNum">Phone #:</string>
     <string name="Send">Send</string>
     <string name="SmsText">Message Text:</string>
+    <string name="smsprefs">SMS Preferences</string>
+    <string name="defaultPhoneNumLabel">Default Phone #</string>
+    <string name="defaultPhoneNumKey">defaultPhoneNumKey</string>
+    <string name="defaultPhoneNum"></string>
+    <string name="messagePrefixLabel">Message Prefix</string>                                                                                                                                                   
+    <string name="messagePrefixKey">messagePrefixKey</string>                                                                                                                                                   
+    <string name="messagePrefixDefault">~_</string> 
 </resources>
