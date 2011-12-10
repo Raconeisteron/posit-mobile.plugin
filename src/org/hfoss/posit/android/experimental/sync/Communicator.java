@@ -271,7 +271,7 @@ public class Communicator {
 			authKey = accountManager
 					.blockingGetAuthToken(accounts[0], SyncAdapter.AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
 		} catch (OperationCanceledException e) {
-			Log.i(TAG, "getAuthKey(), cancelled during request: " + e.getMessage());
+			Log.e(TAG, "getAuthKey(), cancelled during request: " + e.getMessage());
 			e.printStackTrace();
 		} catch (AuthenticatorException e) {
 			Log.e(TAG, "getAuthKey(), authentication exception: " + e.getMessage());
@@ -279,6 +279,9 @@ public class Communicator {
 		} catch (IOException e) {
 			Log.e(TAG, "getAuthKey() IOException" + e.getMessage());
 			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			Log.e(TAG, "getAuthKey() IllegalStateException" + e.getMessage());
+			e.printStackTrace();			
 		}
 		return authKey;
 	}
