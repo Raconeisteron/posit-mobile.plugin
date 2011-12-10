@@ -1,5 +1,6 @@
 package org.hfoss.posit.android.experimental.api.activity;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,8 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
-import org.hfoss.posit.android.experimental.R.drawable;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.api.service.LocationService;
@@ -391,20 +392,25 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				ImageView iv = (ImageView) v.findViewById(R.id.find_image);
 			    FileInputStream fis;
 			    String content = "";
-			    try {
-			    	fis = openFileInput(find.getGuid());
-			    	byte[] input = new byte[fis.available()];
-			    	while (fis.read(input) != -1) {}
-			    	content += new String(input);
-			    	fis.close();
-					byte[] c = Base64.decode(content, Base64.DEFAULT);
-				    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
-				    iv.setImageBitmap(bmp);
-			    } catch (FileNotFoundException e) {
+			    File file = new File(Constants.PATH_TO_PHOTOS+find.getGuid());
+			    if (file.exists()){
+				    try {
+				    	fis = openFileInput(find.getGuid());
+				    	byte[] input = new byte[fis.available()];
+				    	while (fis.read(input) != -1) {}
+				    	content += new String(input);
+				    	fis.close();
+						byte[] c = Base64.decode(content, Base64.DEFAULT);
+					    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
+					    iv.setImageBitmap(bmp);
+				    } catch (FileNotFoundException e) {
+				    	e.printStackTrace();
+				    } catch (IOException e) {
+				    	e.printStackTrace(); 
+				    }
+			    }
+			    else{//show default icon
 				    iv.setImageResource(R.drawable.ic_menu_camera);
-			    	e.printStackTrace();
-			    } catch (IOException e) {
-			    	e.printStackTrace(); 
 			    }
 			}
 			return v;
