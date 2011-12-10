@@ -52,6 +52,7 @@ public class FindPluginManager {
 
 	private FindPluginManager(Activity activity) {
 		mMainActivity = activity;
+		
 	}
 
 	public static FindPluginManager initInstance(Activity activity) {
@@ -96,44 +97,50 @@ public class FindPluginManager {
 			}
 			Log.i(TAG, "# of plugins = " + plugins.size());
 		} catch (ParserConfigurationException e) {
-			Log.i(TAG, "Failed to load plugin");
-			Log.i(TAG, "reason: " + e);
-			Log.i(TAG, "stack trace: " + e.getStackTrace().toString());
+			Log.e(TAG, "Failed to load plugin");
+			Log.e(TAG, "reason: " + e);
+			Log.e(TAG, "stack trace: ");
+			e.printStackTrace();
 			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
 					Toast.LENGTH_LONG).show();
 			mMainActivity.finish();			
 		} catch (SAXException e) {
-			Log.i(TAG, "Failed to load plugin");
-			Log.i(TAG, "reason: " + e);
-			Log.i(TAG, "stack trace: " + e.getStackTrace().toString());
+			Log.e(TAG, "Failed to load plugin");
+			Log.e(TAG, "reason: " + e);
+			Log.e(TAG, "stack trace: ");
+			e.printStackTrace();
 			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
 					Toast.LENGTH_LONG).show();
 			mMainActivity.finish();				
 		} catch (IOException e) {
-			Log.i(TAG, "Failed to load plugin");
-			Log.i(TAG, "reason: " + e);
-			Log.i(TAG, "stack trace: " + e.getStackTrace().toString());
+			Log.e(TAG, "Failed to load plugin");
+			Log.e(TAG, "reason: " + e);
+			Log.e(TAG, "stack trace: ");
+			e.printStackTrace();
 			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
 					Toast.LENGTH_LONG).show();
 			mMainActivity.finish();				
 		} catch (XPathExpressionException e) {
-			Log.i(TAG, "Failed to load plugin");
-			Log.i(TAG, "reason: " + e);
-			Log.i(TAG, "stack trace: " + e.getStackTrace().toString());
+			Log.e(TAG, "Failed to load plugin");
+			Log.e(TAG, "reason: " + e);
+			Log.e(TAG, "stack trace: ");
+			e.printStackTrace();
 			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
 					Toast.LENGTH_LONG).show();
 			mMainActivity.finish();				
 		} catch (DOMException e) {
-			Log.i(TAG, "Failed to load plugin");
-			Log.i(TAG, "reason: " + e);
-			Log.i(TAG, "stack trace: " + e.getStackTrace().toString());
+			Log.e(TAG, "Failed to load plugin");
+			Log.e(TAG, "reason: " + e);
+			Log.e(TAG, "stack trace: ");
+			e.printStackTrace();
 			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
 					Toast.LENGTH_LONG).show();
 			mMainActivity.finish();				
 		} catch (ClassNotFoundException e) {
-			Log.i(TAG, "Failed to load plugin");
-			Log.i(TAG, "reason: " + e);
-			Log.i(TAG, "stack trace: " + e.getStackTrace().toString());
+			Log.e(TAG, "Failed to load plugin");
+			Log.e(TAG, "reason: " + e);
+			Log.e(TAG, "stack trace: ");
+			e.printStackTrace();
 			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
 					Toast.LENGTH_LONG).show();
 			mMainActivity.finish();				
