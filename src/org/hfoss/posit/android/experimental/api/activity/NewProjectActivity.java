@@ -64,7 +64,8 @@ public class NewProjectActivity extends Activity implements OnClickListener{
 			}
 			SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(this);
 			String authkey = Communicator.getAuthKey(this);
-			String server = prefManager.getString("SERVER_PREF", null);
+//			String server = prefManager.getString("SERVER_PREF", null);
+			String server = prefManager.getString(getString(R.string.serverPref), null);
 			if (server == null) 
 				server = getString(R.string.defaultServer);
 			Communicator com = new Communicator();
