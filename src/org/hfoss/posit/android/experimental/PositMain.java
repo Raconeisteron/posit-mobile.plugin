@@ -399,13 +399,6 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		Log.i(TAG, "onMenuItemSelected " + item.toString());
 		
-		String authKey = Communicator.getAuthKey(this);
-		if (authKey == null) {
-			Toast.makeText(this, "You must go to Android > Settings > Accounts & Sync to " +
-					" set up an account before you use POSIT.", Toast.LENGTH_LONG).show();
-			return false;
-		}
-
 		switch (item.getItemId()) {
 		case R.id.settings_menu_item:
 			startActivity(new Intent(this, SettingsActivity.class));
@@ -421,18 +414,23 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			break;
 			
 		default:
+			
+			// An AuthKey is needed for plugins
+			String authKey = Communicator.getAuthKey(this);
+			if (authKey == null) {
+				Toast.makeText(this, "You must go to Android > Settings > Accounts & Sync to " +
+						" set up an account before you use POSIT.", Toast.LENGTH_LONG).show();
+				return false;
+			}
+			
 			if (mMainMenuPlugins.size() > 0){
 				for (FunctionPlugin plugin: mMainMenuPlugins) {
 					if (item.getTitle().equals(plugin.getmMenuTitle()))
 						startActivity(new Intent(this, plugin.getmMenuActivity()));
 				}
-			
 			}
-
 			break;
-
 		}
-
 		return true;
 	}
 
