@@ -291,6 +291,8 @@ public class SettingsActivity extends PreferenceActivity implements
 		PreferenceManager manager = this.getPreferenceManager();
 		Preference p = manager.findPreference(getString(R.string.projectNamePref));
 		p.setSummary(sp.getString(getString(R.string.projectNamePref), "None"));
+		p = manager.findPreference(getString(R.string.serverPref));
+		p.setSummary(sp.getString(getString(R.string.serverPref), getString(R.string.defaultServer)));
 	}
 
 	/**
