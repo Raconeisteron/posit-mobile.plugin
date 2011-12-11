@@ -220,8 +220,10 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	private void mapFinds() {
 
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		int pid = sp.getInt(getString(R.string.projectPref), 0);
 		
-		List<? extends Find> finds = this.getHelper().getAllFinds();
+//		List<? extends Find> finds = this.getHelper().getAllFinds();
+		List<? extends Find> finds = this.getHelper().getFindsByProjectId(pid);
 		if (finds.size() <= 0) { // No finds
 			Toast.makeText(this, "No finds to display", Toast.LENGTH_SHORT).show();
 			finish();
