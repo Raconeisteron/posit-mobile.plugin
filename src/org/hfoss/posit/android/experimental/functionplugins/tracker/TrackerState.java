@@ -22,6 +22,7 @@
 package org.hfoss.posit.android.experimental.functionplugins.tracker;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.android.maps.GeoPoint;
@@ -180,6 +181,23 @@ public class TrackerState {
 	public void setPoints(List<PointAndTime> points) {
 		pointsAndTimes = points;
 	}
+	
+	/**
+	 * Passes a list of geopoints to this expeditions.
+	 * @param points
+	 */
+	public void setPointsFromDbValues(List<Points> points) {
+		Iterator iterator = points.iterator();
+		List<PointAndTime> ptList = new ArrayList<PointAndTime>();
+		while (iterator.hasNext()) {
+			Points p = (Points)iterator.next();
+			GeoPoint gp = new GeoPoint(
+					(int)(Double.parseDouble(p.latitude) * 1E6), (int)(Double.parseDouble(p.longitude) * 1E6));
+			ptList.add(new PointAndTime(gp, p.time));
+		}
+		pointsAndTimes = ptList;
+	}
+	
 	
 	/**
 	 * Returns the size of the ArrayList storing the geopoints. This is

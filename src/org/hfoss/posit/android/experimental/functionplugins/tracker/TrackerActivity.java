@@ -21,11 +21,13 @@
  */
 package org.hfoss.posit.android.experimental.functionplugins.tracker;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.activity.OrmLiteBaseMapActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
+import org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerState.PointAndTime;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -173,7 +175,7 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 
 		if (mExecutionState == TrackerSettings.SYNCING_POINTS) {
 			mRowIdExpeditionBeingSynced = mPreferences.getInt(TrackerSettings.ROW_ID_EXPEDITION_BEING_SYNCED, -1);
-			//			displayExistingExpedition(mRowIdExpeditionBeingSynced, RESUMING_SYNC); 
+			displayExistingExpedition(mRowIdExpeditionBeingSynced, RESUMING_SYNC); 
 		}
 
 		Log.i(TAG,"TrackerActivity,  created with state = " + 
@@ -300,8 +302,10 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 
 		LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		Criteria crit = new Criteria();
-		crit.setAccuracy(Criteria.ACCURACY_COARSE);
-		String provider = lm.getBestProvider(crit, true);
+//		crit.setAccuracy(Criteria.ACCURACY_COARSE);
+		crit.setAccuracy(Criteria.ACCURACY_FINE);
+		String provider = lm.GPS_PROVIDER;
+		//String provider = lm.getBestProvider(crit, true);
 
 		Location loc = lm.getLastKnownLocation(provider);
 		if (loc != null) {
@@ -319,20 +323,28 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 	 * @param rowId Either the rowId of the expedition to be displayed or -1 to indicate
 	 * that we are already displaying the track. 
 	 */
-	private void displayExistingExpedition(long rowId, boolean isResuming) {
+	private void displayExistingExpedition(int rowId, boolean isResuming) {
 				Log.d(TAG, "TrackerActivity, displayExistingExpedition() ");
 					
 				if (rowId != -1) { // Unless we are already in VIEWING_MODE
 					// Retrieve data from this expedition
-//					mDbHelper = new PositDbHelper(this);
-//		
-//					mExpId = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_NUM));
-//					mPoints = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_POINTS));
-//					mSynced = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_SYNCED));
-//					mRegistered = Integer.parseInt(mDbHelper.fetchExpeditionData(rowId, PositDbHelper.EXPEDITION_REGISTERED));
+					
+					Expedition expedition = this.getHelper().getExpeditionByExpeditionNumber(rowId);
+					Log.i(TAG, "Expedition = " + expedition);
+					Toast.makeText(this, "Expedition " + rowId, Toast.LENGTH_SHORT);
+		
+					mExpId = rowId;
+					mPoints = expedition.getPoints();
+					mSynced = expedition.getIs_synced();
+					mRegistered = expedition.is_registered;
 					Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
 							" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
-//					mDbHelper.fetchExpeditionPointsByExpeditionId(mExpId, mTrack);
+
+					
+					ArrayList<Points> points = (ArrayList<Points>) getHelper().getPointsByExpeditionId(mExpId);
+					mTrack.setPointsFromDbValues(points);
+					
+					//					mDbHelper.fetchExpeditionPointsByExpeditionId(mExpId, mTrack);
 				}
 			
 				// Initialize the View
@@ -374,57 +386,58 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 				((TextView)findViewById(R.id.trackerLabel)).setVisibility(View.GONE);
 				((TextView)findViewById(R.id.trackerLocation)).setVisibility(View.GONE);
 				
-//				if (rowId != -1) {
-//					// Get the unsynced points
-//					ArrayList<ContentValues> points = mDbHelper.fetchExpeditionPointsUnsynced(mExpId);
-//					// Get middle point in track
-//		
-//					if (mPoints != 0) {
-//						List<PointAndTime> pointsList = mTrack.getPoints();
-//						PointAndTime aPoint = pointsList.get(pointsList.size()/2);
-//						//			Double geoLat = values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE) * 1E6;
-//						//			Double geoLng = values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) * 1E6;
-//						GeoPoint point = aPoint.getGeoPoint();
-//						mMapController.animateTo(point);
-//					}
-//		
-//					// If there are points to sync and we have a network connection now
-//					if (points.size() > 0 && mConnectivityMgr.getActiveNetworkInfo() != null) {
-//		
-//						if (mRegistered == PositDbHelper.EXPEDITION_IS_REGISTERED)
-//							mSettingsButton.setText("Sync");
-//						else  {
-//							mSettingsButton.setText("Register");
-//							Utils.showToast(this, "This expedition needs to be registered with the server. " +
-//							"Please click the register button");
-//		
-//						}
-//						if (isResuming) {
-//							mSettingsButton.setClickable(false);
-//							mSettingsButton.setEnabled(false);	
-//							mListButton.setClickable(false);
-//							mListButton.setEnabled(false);
-//							//Utils.showToast(this, "This expedition is still being synced.");
-//		
-//						} else {
-//							mSettingsButton.setClickable(true);
-//							mSettingsButton.setEnabled(true);	
-//						}
-//						//			((Button)findViewById(R.id.idTrackerSettingsButton)).setVisibility(View.GONE);
-//						//			((Button)findViewById(R.id.idTrackerButton)).setVisibility(View.GONE);
-//					} else {
-//						mSettingsButton.setVisibility(View.GONE);
-//					}
-//				}
-//				
-//				// Display the expedition as an overlay
-//				if (mapView.getOverlays().contains(mTrackerOverlay)) {
-//					   mapView.getOverlays().remove(mTrackerOverlay);
-//					 }
-//				mTrackerOverlay = new TrackerOverlay(mTrack);
-//				mOverlays.add(mTrackerOverlay);
-//				Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
-//						" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
+				if (rowId != -1) {
+					// Get the unsynced points
+					
+					ArrayList<Points> unsyncedPoints = (ArrayList<Points>) getHelper().getUnsyncedPointsByExpeditionId(mExpId);
+					// Get middle point in track
+		
+					if (mPoints != 0) {
+						List<PointAndTime> pointsList = mTrack.getPoints();
+						PointAndTime aPoint = pointsList.get(pointsList.size()/2);
+						//			Double geoLat = values.getAsDouble(PositDbHelper.GPS_POINT_LATITUDE) * 1E6;
+						//			Double geoLng = values.getAsDouble(PositDbHelper.GPS_POINT_LONGITUDE) * 1E6;
+						GeoPoint point = aPoint.getGeoPoint();
+						mMapController.animateTo(point);
+					}
+		
+					// If there are points to sync and we have a network connection now
+					if (unsyncedPoints.size() > 0 && mConnectivityMgr.getActiveNetworkInfo() != null) {
+		
+						if (mRegistered == DbManager.EXPEDITION_IS_REGISTERED)
+							mSettingsButton.setText("Sync");
+						else  {
+							mSettingsButton.setText("Register");
+							Toast.makeText(this, "This expedition needs to be registered with the server. " +
+							"Please click the register button", Toast.LENGTH_SHORT);
+		
+						}
+						if (isResuming) {
+							mSettingsButton.setClickable(false);
+							mSettingsButton.setEnabled(false);	
+							mListButton.setClickable(false);
+							mListButton.setEnabled(false);
+							//Utils.showToast(this, "This expedition is still being synced.");
+		
+						} else {
+							mSettingsButton.setClickable(true);
+							mSettingsButton.setEnabled(true);	
+						}
+						//			((Button)findViewById(R.id.idTrackerSettingsButton)).setVisibility(View.GONE);
+						//			((Button)findViewById(R.id.idTrackerButton)).setVisibility(View.GONE);
+					} else {
+						mSettingsButton.setVisibility(View.GONE);
+					}
+				}
+				
+				// Display the expedition as an overlay
+				if (mapView.getOverlays().contains(mTrackerOverlay)) {
+					   mapView.getOverlays().remove(mTrackerOverlay);
+					 }
+				mTrackerOverlay = new TrackerOverlay(mTrack);
+				mOverlays.add(mTrackerOverlay);
+				Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " + mExpId +
+						" mPoints=" + mPoints + " mScynced=" + mSynced +  " mRegistered= " + mRegistered);
 	}
 
 	/**
@@ -645,12 +658,12 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 			case GET_EXPEDITION_ROW_ID:
 				int expRowId = 0;
 				if (resultCode == Activity.RESULT_OK) {
-//					expRowId = (int) data.getLongExtra(PositDbHelper.EXPEDITION_ROW_ID, -1);
+					expRowId = data.getIntExtra(getHelper().EXPEDITION_ROW_ID, -1);
 					Log.d(TrackerActivity.TAG, "onActivityResult expedition rowId = " + expRowId);
 	
 					mExecutionState = updateExecutionState(TrackerSettings.VIEWING_MODE,true);
 					mRowIdExpeditionBeingSynced = expRowId;
-//					displayExistingExpedition(expRowId, !RESUMING_SYNC);  // i.e., starting a new sync
+					displayExistingExpedition(expRowId, !RESUMING_SYNC);  // i.e., starting a new sync
 	 			}
 				break;
 			}
@@ -712,27 +725,26 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 	 * Helper method to delete the current track. Returns to TrackerListActivity
 	 */
 		private void deleteExpedition() {
-//			PositDbHelper dbHelper = new PositDbHelper(this);
-//			int mExpedNum = Integer.parseInt((String) mExpeditionTextView.getText().toString().trim());
-//			boolean success = dbHelper.deleteExpedition(mExpedNum);
-//			if (success) {
-//				if (mPoints > 0) {
-//					success = dbHelper.deleteExpeditionPoints(mExpedNum);
-//					if (success) {
-//						Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
-//						Utils.showToast(this, "Deleted expedition " + mExpedNum);
-//					} else {
-//						Log.i(TAG, "TrackerActivity, Oops, something wrong when deleting expedition " + mExpedNum);
-//						Utils.showToast(this, "Oops, something went wrong when deleting " + mExpedNum);
-//					}
-//				} else {
-//					Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
-//					Utils.showToast(this, "Deleted expedition " + mExpedNum);					
-//				}
-//			} else {
-//				Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
-//				Utils.showToast(this, "Deleted expedition " + mExpedNum);			
-//			}
+			int mExpedNum = Integer.parseInt((String) mExpeditionTextView.getText().toString().trim());
+			boolean success = getHelper().deleteExpedition(mExpedNum);
+			if (success) {
+				if (mPoints > 0) {
+					success = getHelper().deleteExpeditionPoints(mExpedNum);
+					if (success) {
+						Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
+						Toast.makeText(this, "Deleted expedition " + mExpedNum, Toast.LENGTH_SHORT).show();
+					} else {
+						Log.i(TAG, "TrackerActivity, Oops, something wrong when deleting expedition " + mExpedNum);
+						Toast.makeText(this, "Oops, something went wrong when deleting " + mExpedNum, Toast.LENGTH_SHORT).show();
+					}
+				} else {
+					Log.i(TAG, "TrackerActivity, Deleted expedition " + mExpedNum);
+					Toast.makeText(this, "Deleted expedition " + mExpedNum, Toast.LENGTH_SHORT).show();					
+				}
+			} else {
+				Log.i(TAG, "TrackerActivity, Error deleting expedition " + mExpedNum);
+				Toast.makeText(this, "Error deleting expedition " + mExpedNum, Toast.LENGTH_SHORT).show();			
+			}
 		}
 
 

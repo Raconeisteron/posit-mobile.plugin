@@ -282,11 +282,11 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	}
 	
 	protected boolean deleteAllFind() {
-		int rows = 0;
+	
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
-		rows = getHelper().deleteAll(projectId);
-		if (rows >0) {
+		boolean success = getHelper().deleteAll(projectId);
+		if (success) {
 			Toast.makeText(ListFindsActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
 			/* To-Do Begins */	
 			this.startService(new Intent(this, LocationService.class));
@@ -294,7 +294,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		} else {
 			Toast.makeText(ListFindsActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
 		}
-		return rows >= 0;
+		return success;
 	}
 
 	/**

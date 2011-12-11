@@ -200,23 +200,29 @@ public class TrackerBackgroundService extends OrmLiteBaseService<DbManager> impl
  		if (mLocationManager != null) {
 	 		Log.i(TrackerActivity.TAG, "TrackerBackgroundService Requesting updates");
 	 		
+//	 		mLocationManager.requestLocationUpdates(
+//	 				mLocationManager.getBestProvider(new Criteria(), true), 
+//	 				TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, 
+//	 				 mState.mMinDistance, 
+//	 				 this);
+
 	 		mLocationManager.requestLocationUpdates(
-	 				mLocationManager.getBestProvider(new Criteria(), true), 
+	 				mLocationManager.GPS_PROVIDER, 
 	 				TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, 
 	 				 mState.mMinDistance, 
-	 				 this);
+	 				 this);	 		
 	 		
 //			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, mState.mMinDistance, this);
 //			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, TrackerSettings.DEFAULT_MIN_RECORDING_INTERVAL, mState.mMinDistance, this);
-
-			Location netLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			Location gpsLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-			if (gpsLocation != null) {
-				mLocation = gpsLocation;
-			} else {
-				mLocation = netLocation;
-			}
+//
+//			Location netLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//			Location gpsLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//
+//			if (gpsLocation != null) {
+//				mLocation = gpsLocation;
+//			} else {
+//				mLocation = netLocation;
+//			}
 	 		
 // 			mLocationManager.requestLocationUpdates(
 // 					LocationManager.GPS_PROVIDER, 

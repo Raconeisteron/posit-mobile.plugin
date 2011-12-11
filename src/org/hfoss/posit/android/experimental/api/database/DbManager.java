@@ -87,7 +87,10 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	public static String GPS_POINT_LATITUDE = "latitude";
 	public static String GPS_POINT_LONGITUDE = "longitude";
 	public static String GPS_POINT_ALTITUDE = "altitude";
-
+	public static final int POINT_IS_SYNCED = 1;
+	public static final int POINT_NOT_SYNCED = 0;
+	
+	
 	public static final String EXPEDITION_POINTS = "expedition_points";
 	public static final String EXPEDITION_SYNCED = "expedition_synced";
 	public static final String EXPEDITION_REGISTERED = "expedition_registered";
@@ -189,7 +192,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Returns the Database Access Object (DAO) for the Expedition class. It
+	 * Returns the Database Access Object (DAO) for the Points class. It
 	 * will create it or just give the cached value.
 	 */
 	public Dao<Points, Integer> getPointsDao() {
@@ -258,6 +261,54 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		}
 		return point;
 	}
+	
+	public boolean deleteExpeditionPoints(int id) {
+		List<Points> allPoints = getPointsByExpeditionId(id);
+		int size = allPoints.size();
+		int rows = 0;
+		try {
+			Iterator iterator = allPoints.iterator();
+			while (iterator.hasNext()) {
+				rows += getPointsDao().delete( (Points)iterator.next());
+			}
+			//rows = getPointsDao().delete(allPoints);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.i(TAG, "rows = " + rows + " size= " + size);
+		return rows == size;
+	}
+
+	public List<Points> getPointsByExpeditionId(int expeditionId) {
+		List<Points> list = null;
+		try {
+			QueryBuilder<Points, Integer> builder = getPointsDao().queryBuilder();
+			Where<Points, Integer> where = builder.where();
+			where.eq(Points.EXPEDITION, expeditionId);
+			PreparedQuery<Points> preparedQuery = builder.prepare();
+			list = getPointsDao().query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "Database error getting finds: " + e.getMessage());
+		}
+		return list;
+	}
+	
+	public List<Points> getUnsyncedPointsByExpeditionId(int expeditionId) {
+		List<Points> list = null;
+		try {
+			QueryBuilder<Points, Integer> builder = getPointsDao().queryBuilder();
+			Where<Points, Integer> where = builder.where();
+			where.eq(Points.EXPEDITION, expeditionId);
+			where.and();
+			where.eq(Points.GPS_SYNCED, POINT_NOT_SYNCED);
+			PreparedQuery<Points> preparedQuery = builder.prepare();
+			list = getPointsDao().query(preparedQuery);
+		} catch (SQLException e) {
+			Log.e(TAG, "Database error getting finds: " + e.getMessage());
+		}
+		return list;
+	}
 
 	public boolean updateGPSPoint(int rowId, ContentValues vals) {
 		Log.i(TAG, "Updating GPS Point, rowId = " + rowId);
@@ -279,6 +330,19 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return rows == 1;
 	}
 
+	public boolean deleteExpedition(int expNum) {
+		Log.i(TAG, "Deleting Expedition, expNum = " + expNum);
+		int rows = 0;
+		Expedition expedition = getExpeditionByExpeditionNumber(expNum);
+		try {
+			rows = getExpeditionDao().delete(expedition);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return rows == 1;
+	}
+
+	
 	public int updateExpedition(int expNum, ContentValues values) {
 		Log.i(TAG, "Updating Expedition, expNum = " + expNum);
 		int rows = 0;
@@ -537,9 +601,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		try {
 			rows = getFindDao().delete(find);
 			if (rows == 1)
-				Log.i(TAG, "Deleted find:  " + this.toString());
+				Log.i(TAG, "Deleted find:  " + find.toString());
 			else {
-				Log.e(TAG, "Db Error deleting find: " + this.toString());
+				Log.e(TAG, "Db Error deleting find: " + find.toString());
 				rows = 0;
 			}
 		} catch (SQLException e) {
@@ -549,21 +613,31 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	}
 	
-	public int deleteAll(int projectID) {
-		int rows = -1;
+	/**
+	 * Deletes all finds with the given project Id.
+	 * @param projectID
+	 * @return an int giving the number of rows deleted.
+	 * NOTE:  There appears to be a bug in OrmLite's delete(Collection).
+	 * Rather than returning the number of rows deleted it seems to return 1 on success??
+	 */
+	public boolean deleteAll(int projectID) {
+		int rows = 0;
 		List<Find> allFinds = getFindsByProjectId(projectID);
+		int size = allFinds.size();
 		try {
-			rows = getFindDao().delete(allFinds);
-			if (rows == 1)
-				Log.i(TAG, "Deleted find:  " + this.toString());
+			Iterator iterator = allFinds.iterator();
+			while (iterator.hasNext()) {
+				rows += getFindDao().delete((Find)iterator.next());
+			}
+			if (rows == size)
+				Log.i(TAG, "Deleted all finds:  " + rows);
 			else {
-				Log.e(TAG, "Db Error deleting find: " + this.toString());
-				rows = -1;
+				Log.e(TAG, "Db Error deleting all finds " + rows);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return rows;
+		return rows == size;
 	}
 
 	/**
