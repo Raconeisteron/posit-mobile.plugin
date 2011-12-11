@@ -1,29 +1,45 @@
+/*
+ * File: CameraActivity.java
+ * 
+ * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Search and Identification Tool.
+ *
+ * POSIT is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
+
 package org.hfoss.posit.android.experimental.functionplugins;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
 
 import android.app.Activity;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images;
-import android.provider.MediaStore.Images.Media;
 import android.util.Base64;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+
+/**
+ * This class calls the camera application and returns the Base64 string representation of the image
+ *
+ */
 
 public class CameraActivity extends Activity {
 
@@ -32,7 +48,6 @@ public class CameraActivity extends Activity {
 	private String img_str = null; //stores base64 string of the image
 	
 	private LinearLayout linear;
-	private TextView text; 
 	private Button btnPic;
 	private Button btnCont;
 	private ImageView photo;
@@ -100,7 +115,7 @@ public class CameraActivity extends Activity {
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				cameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 				byte[] b = baos.toByteArray();
-				img_str = Base64.encodeToString(b, Base64.DEFAULT); //TODO: it's encoded, now what?
+				img_str = Base64.encodeToString(b, Base64.DEFAULT);
 /*				
 				//test decoding it back into an image
 				byte[] c = Base64.decode(img_str, Base64.DEFAULT);
