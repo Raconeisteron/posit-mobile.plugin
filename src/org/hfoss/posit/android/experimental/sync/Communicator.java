@@ -1380,6 +1380,7 @@ public class Communicator {
 	/**
 	 * The data has the form: ["1","2", ...] or '[]'
 	 * @param data
+	 * the list of image ids
 	 * @return the last image id in the list or null
 	 */
 	private static String parseImageIds(String data) {
@@ -1394,7 +1395,7 @@ public class Communicator {
 		while (st.hasMoreElements()) {
 			imgId = (String) st.nextElement();
 			Log.i(TAG, "Is this with quotes: " + imgId);
-			imgId = imgId.substring(1, imgId.indexOf('"',1)); // removes quotes. find the second " in the string
+			imgId = imgId.substring(1, imgId.indexOf('"',1)); // removes quotes. find the second quote in the string
 			Log.i(TAG, "Is this without quotes: " + imgId);
 		}
 		Log.i(TAG, "Planning to fetch imageId " + imgId + " for a find");
@@ -1405,7 +1406,9 @@ public class Communicator {
 	 * Retrieve the specified image id from the server and save it to the phone
 	 * @param imageId
 	 * the id of the image to query
-	 * @return true if successful
+	 * @param context
+	 * the application context
+	 * @return true if successful, false otherwise
 	 */
 	 static boolean getImageOnServer(String imageId, Context context) {
 		SharedPreferences applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
