@@ -256,6 +256,23 @@ public class Communicator {
 		return false;
 	}
 	
+	/**
+	 * Removes an account. This should be called when, e.g., the user changes
+	 * to a new server.
+	 * @param context
+	 * @param accountType
+	 * @return
+	 */
+	public static boolean removeAccount(Context context, String accountType) {
+		AccountManager am = AccountManager.get(context);
+		am.invalidateAuthToken(accountType, SyncAdapter.AUTHTOKEN_TYPE);
+		Account[] accounts = am.getAccountsByType(accountType);
+		if (accounts.length != 0)
+			am.removeAccount(accounts[0], null, null);
+		String authkey = getAuthKey(context);
+		return authkey == null;
+	}
+	
 	public static String getAuthKey(Context context) {
 		AccountManager accountManager = AccountManager.get(context);
 
