@@ -323,7 +323,9 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			View v = convertView;
 			
 			/* To-Do Begins */
-			// Initialize here so it can be referenced in the entire function
+			// Initialize the alarm clock icon here so
+			// it can be referenced in the entire function
+			// and be set for each list row item
 			ImageView alarmIcon = new ImageView(parent.getContext());
 			/* To-Do Ends */
 			
@@ -336,7 +338,9 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				v = vi.inflate(resId, null);
 				
 				/* To-Do Begins */
-				// Add Reminder alarm clock icon in the list row
+				// Add Reminder alarm clock icon in every list row,
+				// and set its visibility based on if a find has a
+				// reminder attached or not
 				alarmIcon.setImageResource(R.drawable.reminder_alarm);
 				RelativeLayout rl = (RelativeLayout) v.findViewById(R.id.list_row_rl);
 				RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(25, 25);
@@ -369,9 +373,13 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				String time = dateFormat.format(find.getTime());
 				/* To-Do Begins */
 				if (time.substring(11).equals("00:00:00")) {
+					// When the time has not hour/minute/second value, it is set through SetReminder
+					// class, the find has a reminder attached, the alarm clock icon must be visible
 					tv.setText(getText(R.string.remindertimeLabel)+ " " + time.substring(0, 10));
 					alarmIcon.setVisibility(ImageView.VISIBLE);
 				} else {
+					// Otherwise, the find has no reminder attached,
+					// the alarm clock icon must be invisible
 					tv.setText(getText(R.string.timeLabel) + " " + time);
 					alarmIcon.setVisibility(ImageView.INVISIBLE);
 				}
