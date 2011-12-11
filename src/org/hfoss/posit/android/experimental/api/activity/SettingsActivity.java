@@ -32,8 +32,12 @@ import org.hfoss.posit.android.experimental.R.xml;
 import org.hfoss.posit.android.experimental.api.service.LocationService;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaUser;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AttributeManager;
+import org.hfoss.posit.android.experimental.sync.Communicator;
+import org.hfoss.posit.android.experimental.sync.SyncAdapter;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,6 +53,7 @@ import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 /**
  * Manages preferences for core POSIT preferences and all plugins. Plugin
@@ -476,6 +481,21 @@ public class SettingsActivity extends PreferenceActivity implements
 				if (server != null) {
 					Log.i(TAG, "new server = " + server);
 					p.setSummary(server);
+					
+					// Changing the server invalidates the account.
+					boolean success = Communicator.removeAccount(this, SyncAdapter.ACCOUNT_TYPE);
+
+					Toast.makeText(this, "You must authenticate on the new server.", Toast.LENGTH_LONG).show();
+					Log.i(TAG, "Server change invalidates the account");
+					
+					SharedPreferences.Editor editor = sp.edit();	
+					editor.remove(getString(R.string.projectPref));
+					editor.remove(getString(R.string.projectNamePref));
+					//editor.putInt(getString(R.string.projectPref), 0);
+					//editor.putString(getString(R.string.projectNamePref), "");
+					editor.commit();
+					p = manager.findPreference(getString(R.string.projectNamePref));
+					p.setSummary("None");
 				}
 			}
 
