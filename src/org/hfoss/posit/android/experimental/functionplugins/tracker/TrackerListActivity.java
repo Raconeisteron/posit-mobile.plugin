@@ -68,9 +68,6 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 	private int mProjectId;
 	private SharedPreferences mSharedPrefs;
 	
-//	private PositDbHelper mDbHelper;
-//	private Cursor mCursor;
-	
 	List<? extends Expedition> tracks;
 	protected static TrackerListAdapter mAdapter = null;
 
@@ -82,7 +79,6 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 		
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		mProjectId = mSharedPrefs.getInt(TrackerSettings.POSIT_PROJECT_PREFERENCE, -1);
-//		mDbHelper = new PositDbHelper(this);
 		Log.d(TAG, "TrackerListActivity, Created TrackerList for project_id = " + mProjectId);
 	}
 
@@ -119,37 +115,20 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 		lv.setOnItemClickListener(new OnItemClickListener() {
 
 			/**
-			 * Displays an Expedition
+			 * Returns the expedition Id to the TrackerActivity
 			 */
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Intent intent = new Intent(parent.getContext(), TrackerActivity.class);
-				TextView tv = (TextView) view.findViewById(R.id.expedition_id);
-				int rowId = Integer.parseInt((String) tv.getText());
-				intent.putExtra(Expedition.EXPEDITION_ROW_ID, rowId);
-				startActivity(intent);
+				Intent result = new Intent();
+				int exp_id = Integer.parseInt( (String) ((TextView)view.findViewById(R.id.expedition_id)).getText());
+				result.putExtra(getHelper().EXPEDITION_ROW_ID, exp_id);
+				setResult(Activity.RESULT_OK, result);
+				Log.d(TAG, "TrackerListActivity, onListItemClick position= " + position + " id = " +  exp_id);
+				finish();
 			}
 		});
 	}
 
-	
-	/**
-	 * This can be used to set each view's value.  We use it here to extract
-	 * the expedition id's from the views and save them in an array. We retrieve
-	 * them in onListItemClicked().
-	 */
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		super.onListItemClick(l, v, position, id);
-
-		//Intent result = new Intent(null, data);
-		Intent result = new Intent();
-		result.putExtra(getHelper().EXPEDITION_ROW_ID, id);
-		setResult(Activity.RESULT_OK, result);
-//		mCursor.close();
-		Log.d(TAG, "TrackerListActivity, onListItemClick position= " + position + " id = " +  id);
-		finish();
-	}
 
 	/**
 	 * Required for the ViewBinder interface.  Unused at the moment. It could
