@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
+import org.hfoss.posit.android.experimental.api.Camera;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.api.service.LocationService;
@@ -586,31 +587,16 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			mLatitudeTV.setText(String.valueOf(find.getLatitude()));
 		}
 
-	    //Read image's Base64 string back from internal storage
-		//decode it and set into the imageview
-	    FileInputStream fis;
-	    String content = "";
-	    File file = new File(Constants.PATH_TO_PHOTOS+find.getGuid());
-	    if (file.exists()){
-		    try {
-		    	fis = openFileInput(find.getGuid());
-		    	byte[] input = new byte[fis.available()];
-		    	while (fis.read(input) != -1) {}
-		    	content += new String(input);
-		    	fis.close();
-				byte[] c = Base64.decode(content, Base64.DEFAULT);
-			    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
-			    photo.setImageBitmap(bmp);
-			    photo.setVisibility(View.VISIBLE);
-		    } catch (FileNotFoundException e) {
-		    	e.printStackTrace();
-		    } catch (IOException e) {
-		    	e.printStackTrace(); 
-		    }
-	    }
-	    else{//we don't have a photo to show. Nothing should show up but, this is just to make sure.
+		Bitmap bmp = Camera.getPhotoAsBitmap(find.getGuid(), this);
+		if(bmp != null){
+			//we have a picture to display
+		    photo.setImageBitmap(bmp);
+		    photo.setVisibility(View.VISIBLE);
+		}
+		else{
+			//we don't have a picture to display. Nothing should show up, but this is to make sure.
 		    photo.setVisibility(View.INVISIBLE);
-	    }
+		}
 	}
 
 	/**
@@ -731,18 +717,11 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if(rows > 0){
 			//do we even have an image to save?
 			if(img_str != null){
-				//save the Base64 string to internal memory
-			    FileOutputStream fos;
-			    try {
-					fos = openFileOutput(find.getGuid(), Context.MODE_PRIVATE);
-				    fos.write(img_str.getBytes());
-				    fos.close();
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if(Camera.savePhoto(find.getGuid(), img_str, this)){
+				    Log.i(TAG, "Successfully saved photo to phone with guid: "+find.getGuid());
+				}
+				else{
+				    Log.i(TAG, "Failed to save photo to phone with guid: "+find.getGuid());					
 				}
 			}
 		}

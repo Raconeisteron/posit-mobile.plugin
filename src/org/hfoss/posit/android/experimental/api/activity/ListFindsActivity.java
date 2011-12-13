@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
+import org.hfoss.posit.android.experimental.api.Camera;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.api.service.LocationService;
@@ -393,33 +394,17 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				} else {
 					tv.setText(description.substring(0,49)+" ...");
 				}
-				
-			    //Read image's Base64 string back from internal storage
-				//Decode it and set into the imageview
-				//If the find does not have an image, then show a default icon
+
+				//Display the thumbnail picture beside the find
+				//or a default image if there isn't one
 				ImageView iv = (ImageView) v.findViewById(R.id.find_image);
-			    FileInputStream fis;
-			    String content = "";
-			    File file = new File(Constants.PATH_TO_PHOTOS+find.getGuid());
-			    if (file.exists()){
-				    try {
-				    	fis = openFileInput(find.getGuid());
-				    	byte[] input = new byte[fis.available()];
-				    	while (fis.read(input) != -1) {}
-				    	content += new String(input);
-				    	fis.close();
-						byte[] c = Base64.decode(content, Base64.DEFAULT);
-					    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
-					    iv.setImageBitmap(bmp);
-				    } catch (FileNotFoundException e) {
-				    	e.printStackTrace();
-				    } catch (IOException e) {
-				    	e.printStackTrace(); 
-				    }
-			    }
-			    else{//show default icon
+				Bitmap bmp = Camera.getPhotoAsBitmap(find.getGuid(), ListFindsActivity.this);
+				if(bmp != null){
+				    iv.setImageBitmap(bmp);
+				}
+				else{
 				    iv.setImageResource(R.drawable.ic_menu_camera);
-			    }
+				}
 			}
 			return v;
 		}
