@@ -433,6 +433,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 							byte[] c = Base64.decode(img_str, Base64.DEFAULT);
 						    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
 						    photo.setImageBitmap(bmp);//display the retrieved image
+						    photo.setVisibility(View.VISIBLE);
 						}
 					}
 				}
