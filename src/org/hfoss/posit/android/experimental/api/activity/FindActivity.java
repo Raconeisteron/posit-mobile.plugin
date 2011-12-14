@@ -433,7 +433,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 							byte[] c = Base64.decode(img_str, Base64.DEFAULT);
 						    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
 						    photo.setImageBitmap(bmp);//display the retrieved image
-						    photo.setVisibility(View.VISIBLE);
 						}
 					}
 				}
@@ -709,10 +708,10 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		} else
 			rows = 0; // Something wrong with intent
 		if (rows > 0) {
-			Log.i(TAG, "Find inserted successfully: " + find);
+			Log.i(TAG, "Find " + getIntent().getAction() + " successful: " + find);
 			this.startService(new Intent(this, LocationService.class));
 		} else
-			Log.e(TAG, "Find not inserted: " + find);
+			Log.e(TAG, "Find " + getIntent().getAction() + " not successful: " + find);
 		
 		//if the find is saved, we can save/update the picture to the phone
 		if(rows > 0){
