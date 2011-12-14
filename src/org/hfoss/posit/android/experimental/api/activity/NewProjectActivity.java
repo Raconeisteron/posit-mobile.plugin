@@ -48,6 +48,14 @@ public class NewProjectActivity extends Activity implements OnClickListener{
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		if (!Communicator.isServerReachable(this)) {
+		    Log.i(TAG, "Can't add new project. The server not reachable");
+		    Toast.makeText(this, "Can't add new project. The server not reachable.", Toast.LENGTH_LONG).show();
+		    finish();
+		    return;
+		}
+
 		setContentView(R.layout.new_project);
 		mCreateProject = (Button) this.findViewById(R.id.createProject);
 		mCreateProject.setOnClickListener(this);
