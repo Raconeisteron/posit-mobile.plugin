@@ -1,6 +1,6 @@
 <PluginsPreferences>
 	<FindPlugins>
-		<Plugin active="true" type="find" name="BasicFind"
+		<Plugin active="false" type="find" name="BasicFind"
 			package="org.hfoss.posit.android.experimental.api" 
 			find_class="org.hfoss.posit.android.experimental.api.Find"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
@@ -22,6 +22,23 @@
 
 <!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
 
+		<Plugin active="true" type="find" name="SecondHelpings"
+			package="org.hfoss.posit.android.experimental.plugin.sh"
+			find_class="org.hfoss.posit.android.experimental.plugin.sh.ShFind"
+			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
+			find_activity_class="org.hfoss.posit.android.experimental.plugin.sh.ShFindActivity"
+			extra_activity_class="" 
+			extra_activity_class2=""
+			list_finds_activity_class="org.hfoss.posit.android.experimental.plugin.sh.ShListFindsActivity"
+			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
+			preferences_xml="sh_preferences" 
+			add_find_layout="sh_add_find"
+			list_find_layout="list_row" 
+			main_list_button_label="listStops"
+			main_add_button_label="addStop" 
+			main_extra_button_label=""
+			main_extra_button_label2="" 
+			main_icon="secondhelpings_logo" />
 
 		<Plugin active="false" type="find" name="ClpFind"
 			package="org.hfoss.posit.android.experimental.plugin.clp"
@@ -121,7 +138,7 @@
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
 			
 		<!-- SMS Plugin Begins -->
-		<Plugin active="true"
+		<Plugin active="false"
 			type="function"
 			extensionPoint="addFindMenu"
 			name="sendsms"
@@ -130,7 +147,7 @@
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.sms.SmsActivity" />
 		<!-- SMS Plugin Ends -->
 
-		<Plugin active="true" 
+		<Plugin active="false" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="twitFind"

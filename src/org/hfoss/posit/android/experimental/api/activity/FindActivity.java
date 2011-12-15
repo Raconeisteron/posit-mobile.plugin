@@ -17,6 +17,7 @@ import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Camera;
 import org.hfoss.posit.android.experimental.api.Find;
+import org.hfoss.posit.android.experimental.api.LocaleManager;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.api.service.LocationService;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
@@ -206,6 +207,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected void onResume() {
 		super.onResume();
 		
+		LocaleManager.setDefaultLocale(this); // Locale Manager should
+		
 		if (mGeoTagEnabled) { 
 			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 0, this);
 			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 0, this);
@@ -364,8 +367,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 						// because I want to make sure that we have the same behaviour as retrieveContentFromView()
 						// without having to duplicate code.
 						Find find = retrieveContentFromView();
-						ContentValues cv = find.getDbEntries();
-						intent.putExtra("DbEntries", cv);
+						Bundle bundle = find.getDbEntries();
+						intent.putExtra("DbEntries", bundle);
 						if (plugin.getActivityReturnsResult())
 							startActivityForResult(intent, plugin.getActivityResultAction());
 						else
