@@ -22,7 +22,7 @@
 
 <!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
 
-		<Plugin active="true" type="find" name="SecondHelpings"
+		<Plugin active="false" type="find" name="SecondHelpings"
 			package="org.hfoss.posit.android.experimental.plugin.sh"
 			find_class="org.hfoss.posit.android.experimental.plugin.sh.ShFind"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
@@ -59,7 +59,7 @@
 			main_icon="clp_logo" />
 
 
-		<Plugin active="false" type="find" name="OutsideInFind"
+		<Plugin active="true" type="find" name="OutsideInFind"
 			package="org.hfoss.posit.android.experimental.plugin.outsidein"
 			find_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
@@ -138,7 +138,7 @@
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
 			
 		<!-- SMS Plugin Begins -->
-		<Plugin active="false"
+		<Plugin active="true"
 			type="function"
 			extensionPoint="addFindMenu"
 			name="sendsms"

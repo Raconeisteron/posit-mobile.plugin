@@ -6,6 +6,7 @@
 		<EditTextPreference android:title="@string/defaultPhoneNumLabel"
 				android:key="@string/defaultPhoneNumKey" 
 				android:summary="@string/defaultPhoneNum"
+				android:inputType="phone"
 				android:defaultValue="@string/defaultPhoneNum" />
 	
 	</PreferenceCategory>

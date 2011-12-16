@@ -20,6 +20,7 @@ import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.LocaleManager;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.api.service.LocationService;
+import org.hfoss.posit.android.experimental.plugin.FindPlugin;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
 
@@ -71,7 +72,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	private LocationManager mLocationManager = null;
 	private String mProvider = null;
 	protected Location mCurrentLocation = null;
-	
+
 	// UI Elements
 	private EditText mNameET = null;
 	private EditText mDescriptionET = null;
@@ -83,36 +84,40 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	private TextView mLongTV = null;
 	private TextView mLongitudeTV = null;
 	private ImageView photo = null;
-	
-	private String img_str = null; //base64 string representation of photo
-	
+
+	private String img_str = null; // base64 string representation of photo
+
 	/* To-Do Begins */
 	// A list of active Function Plug-in for FindActitivy
 	private ArrayList<FunctionPlugin> mAddFindMenuPlugins = null;
+
 	/* To-Do Ends */
-	
 
 	/**
-	 * This may be invoked by a FindActivity subclass, which may or may not have latitude
-	 * and longitude fields.  
+	 * This may be invoked by a FindActivity subclass, which may or may not have
+	 * latitude and longitude fields.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
 
-		// Get the custom add find layout from the plugin settings, if there is one
-		int resId = getResources().getIdentifier(FindPluginManager.mFindPlugin.mAddFindLayout, "layout", getPackageName());
+		// Get the custom add find layout from the plugin settings, if there is
+		// one
+		int resId = getResources().getIdentifier(
+				FindPluginManager.mFindPlugin.mAddFindLayout, "layout",
+				getPackageName());
 		setContentView(resId);
-		
+
 		// Sets listeners for various UI elements
 		initializeListeners();
-		
+
 		/* To-Do Begins */
 		// Initialize the list of active function plug-ins
-		mAddFindMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.ADD_FIND_MENU_EXTENSION);
+		mAddFindMenuPlugins = FindPluginManager
+				.getFunctionPlugins(FindPluginManager.ADD_FIND_MENU_EXTENSION);
 		/* To-Do Ends */
-		
+
 		// Initialize all UI elements for later uses
 		mNameET = (EditText) findViewById(R.id.nameEditText);
 		mDescriptionET = (EditText) findViewById(R.id.descriptionEditText);
@@ -123,28 +128,59 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		mLatitudeTV = (TextView) findViewById(R.id.latitudeValueTextView);
 		mLongTV = (TextView) findViewById(R.id.longitudeTextView);
 		mLongitudeTV = (TextView) findViewById(R.id.longitudeValueTextView);
-	    photo = (ImageView) findViewById(R.id.photo);     
-		
+		photo = (ImageView) findViewById(R.id.photo);
+
 		// Check if settings allow Geotagging
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);		
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		mGeoTagEnabled = prefs.getBoolean("geotagKey", true);
-		
-		// If enabled, get location manager and provider 
-		if (mGeoTagEnabled) { 
-			mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+		// If enabled, get location manager and provider
+		if (mGeoTagEnabled) {
+			mLocationManager = (LocationManager) this
+					.getSystemService(Context.LOCATION_SERVICE);
 			// This won't work!!!
-			//Criteria criteria = new Criteria();
-			//criteria.setAccuracy(Criteria.ACCURACY_FINE);
-			//criteria.setPowerRequirement(Criteria.POWER_LOW);
-			//mProvider = mLocationManager.getBestProvider(criteria, true);
+			// Criteria criteria = new Criteria();
+			// criteria.setAccuracy(Criteria.ACCURACY_FINE);
+			// criteria.setPowerRequirement(Criteria.POWER_LOW);
+			// mProvider = mLocationManager.getBestProvider(criteria, true);
 		}
-		
-		// Set the content of UI elements, either auto-generated or retrieved from a Find
+
+		// Set the content of UI elements, either auto-generated or retrieved
+		// from a Find
 		Bundle extras = getIntent().getExtras();
 
 		if (extras != null) {
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
+				displayContentInView(find);
+			} else if (getIntent().getAction().equals(Intent.ACTION_VIEW)) {
+				// Pull a Bundle corresponding to a Find from the Intent and put
+				// that in the view
+				Bundle findBundle = extras.getBundle("findbundle");
+				Find find;
+				try {
+					FindPlugin plugin = FindPluginManager.mFindPlugin;
+					if (plugin == null) {
+						Log.e(TAG, "Could not retrieve Find Plugin.");
+						Toast.makeText(this, "A fatal error occurred while trying to start FindActivity", 
+								Toast.LENGTH_LONG).show();
+						finish();
+						return;
+					}
+					find = plugin.getmFindClass().newInstance();
+				} catch (IllegalAccessException e) {
+					Toast.makeText(this, "A fatal error occurred while trying to start FindActivity", 
+							Toast.LENGTH_LONG).show();
+					finish();
+					return;
+				} catch (InstantiationException e) {
+					Toast.makeText(this, "A fatal error occurred while trying to start FindActivity", 
+							Toast.LENGTH_LONG).show();
+					finish();
+					return;
+				}
+				find.updateObject(findBundle);
 				displayContentInView(find);
 			}
 		} else {
@@ -153,41 +189,57 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				mGuidRealTV.setText(UUID.randomUUID().toString());
 			// Set displayed GUID
 			if (mGuidTV != null)
-				mGuidTV.setText(mGuidRealTV.getText().toString().substring(0,8)+"...");
+				mGuidTV.setText(mGuidRealTV.getText().toString()
+						.substring(0, 8)
+						+ "...");
 			// Set Time
 			if (mTimeTV != null) {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				SimpleDateFormat dateFormat = new SimpleDateFormat(
+						"yyyy/MM/dd HH:mm:ss");
 				Date date = new Date();
 				mTimeTV.setText(dateFormat.format(date));
 			}
-			
-			if (mGeoTagEnabled) { 
+
+			if (mGeoTagEnabled) {
 				// Set Longitude and Latitude
-				mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 0, this);
-				mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 0, this);
-				
-				Location netLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				Location gpsLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				
+				mLocationManager.requestLocationUpdates(
+						LocationManager.NETWORK_PROVIDER, 60000, 0, this);
+				mLocationManager.requestLocationUpdates(
+						LocationManager.GPS_PROVIDER, 60000, 0, this);
+
+				Location netLocation = mLocationManager
+						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				Location gpsLocation = mLocationManager
+						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
 				if (gpsLocation != null) {
 					mCurrentLocation = gpsLocation;
 				} else {
 					mCurrentLocation = netLocation;
 				}
-				
+
 				if (mCurrentLocation == null) {
-					Log.i(TAG, "Location issue, mCurrentLocation = " + mCurrentLocation);
-					if (mLongitudeTV != null) mLongitudeTV.setText("0.0");
-					if (mLatitudeTV != null) mLatitudeTV.setText("0.0");
-//					Toast.makeText(this, "Unable to retrieve GPS info." +
-//							" Please make sure your Data or Wi-Fi is enabled.", Toast.LENGTH_SHORT).show();
-//					Log.i(TAG, "Cannot request location updates; Data or Wifi might not be enabled.");
+					Log.i(TAG, "Location issue, mCurrentLocation = "
+							+ mCurrentLocation);
+					if (mLongitudeTV != null)
+						mLongitudeTV.setText("0.0");
+					if (mLatitudeTV != null)
+						mLatitudeTV.setText("0.0");
+					// Toast.makeText(this, "Unable to retrieve GPS info." +
+					// " Please make sure your Data or Wi-Fi is enabled.",
+					// Toast.LENGTH_SHORT).show();
+					// Log.i(TAG,
+					// "Cannot request location updates; Data or Wifi might not be enabled.");
 				} else {
-					if (mLongitudeTV != null) mLongitudeTV.setText(String.valueOf(mCurrentLocation.getLongitude()));
-					if (mLatitudeTV != null) mLatitudeTV.setText(String.valueOf(mCurrentLocation.getLatitude()));
+					if (mLongitudeTV != null)
+						mLongitudeTV.setText(String.valueOf(mCurrentLocation
+								.getLongitude()));
+					if (mLatitudeTV != null)
+						mLatitudeTV.setText(String.valueOf(mCurrentLocation
+								.getLatitude()));
 				}
 			} else {
-				if (mLongitudeTV != null && mLongTV != null) { 
+				if (mLongitudeTV != null && mLongTV != null) {
 					mLongitudeTV.setVisibility(TextView.INVISIBLE);
 					mLongTV.setVisibility(TextView.INVISIBLE);
 				}
@@ -223,9 +275,15 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			}
 
 			if (mCurrentLocation == null) {
-				Toast.makeText(this, "Unable to retrieve GPS info." +
-						" Please make sure your Data or Wi-Fi is enabled.", Toast.LENGTH_SHORT).show();
-				Log.i(TAG, "Cannot request location updates; Data or Wifi might not be enabled.");
+				Toast
+						.makeText(
+								this,
+								"Unable to retrieve GPS info."
+										+ " Please make sure your Data or Wi-Fi is enabled.",
+								Toast.LENGTH_SHORT).show();
+				Log
+						.i(TAG,
+								"Cannot request location updates; Data or Wifi might not be enabled.");
 			}
 		}
 
@@ -240,7 +298,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (mLocationManager != null)
 			mLocationManager.removeUpdates(this);
 	}
-	
+
 	/**
 	 * Remove Updates whenever the activity is finished.
 	 */
@@ -263,7 +321,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (saveButton != null)
 			saveButton.setOnClickListener(this);
 	}
-	
+
 	/**
 	 * Typical onClick stuff--shouldn't need to override anything here for the
 	 * most basic functionality, but you can! (non-Javadoc)
@@ -285,40 +343,45 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		
+
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.add_finds_menu, menu);
-		
+
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT)) {
 			menu.removeItem(R.id.delete_find_menu_item);
 		}
-		
+
 		/* To-Do Begins */
 		// Add menu options based on function plug-ins
-		for (FunctionPlugin plugin: mAddFindMenuPlugins) {
+		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 			if (plugin.getmMenuTitle().equals("Set Reminder")) {
 				// The function plug-in is "Location-Aware Reminder"
 				// Check if the user allows for reminders to be set
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-				boolean allowReminder = prefs.getBoolean("allowReminderKey", true);
+				SharedPreferences prefs = PreferenceManager
+						.getDefaultSharedPreferences(this);
+				boolean allowReminder = prefs.getBoolean("allowReminderKey",
+						true);
 				boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
 				// If the user allows, set the "Set Reminder" menu option
 				if (allowReminder && allowGeoTag) {
 					MenuItem item = menu.add(plugin.getmMenuTitle());
-					int resId = getResources().getIdentifier(plugin.getmMenuIcon(), "drawable", getPackageName());
+					int resId = getResources()
+							.getIdentifier(plugin.getmMenuIcon(), "drawable",
+									getPackageName());
 					item.setIcon(resId);
 				}
 			} else {
 				// For all other funciton plug-ins
 				MenuItem item = menu.add(plugin.getmMenuTitle());
-				int resId = getResources().getIdentifier(plugin.getmMenuIcon(), "drawable", getPackageName());
+				int resId = getResources().getIdentifier(plugin.getmMenuIcon(),
+						"drawable", getPackageName());
 				item.setIcon(resId);
-			}				
+			}
 		}
 		/* To-Do Ends */
-		
+
 		return true;
-		
+
 	}
 
 	/**
@@ -343,34 +406,51 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			break;
 
 		default:
-			for (FunctionPlugin plugin: mAddFindMenuPlugins) {
+			for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 				if (item.getTitle().equals(plugin.getmMenuTitle())) {
-					if (plugin.getmMenuTitle().equals("Set Reminder")) { // MUST use "equals", not "=="
+					if (plugin.getmMenuTitle().equals("Set Reminder")) { // MUST
+																			// use
+																			// "equals",
+																			// not
+																			// "=="
 						Bundle bundle = new Bundle();
-				    	bundle.putString("Date", mTimeTV.getText().toString());
-				    	if (mCurrentLocation == null) {
-				    		bundle.putDouble("CurrentLongitude", 0);
-					    	bundle.putDouble("CurrentLatitude", 0);
-				    	} else {
-				    		bundle.putDouble("CurrentLongitude", mCurrentLocation.getLongitude());
-					    	bundle.putDouble("CurrentLatitude", mCurrentLocation.getLatitude());
-				    	}
-				    	bundle.putDouble("FindsLongitude", Double.parseDouble(mLongitudeTV.getText().toString()));
-				    	bundle.putDouble("FindsLatitude", Double.parseDouble(mLatitudeTV.getText().toString()));
-				    	Intent intent = new Intent(this, plugin.getmMenuActivity());
-				    	intent.putExtras(bundle);
-				    	startActivityForResult(intent, plugin.getActivityResultAction());
+						bundle.putString("Date", mTimeTV.getText().toString());
+						if (mCurrentLocation == null) {
+							bundle.putDouble("CurrentLongitude", 0);
+							bundle.putDouble("CurrentLatitude", 0);
+						} else {
+							bundle.putDouble("CurrentLongitude",
+									mCurrentLocation.getLongitude());
+							bundle.putDouble("CurrentLatitude",
+									mCurrentLocation.getLatitude());
+						}
+						bundle
+								.putDouble("FindsLongitude", Double
+										.parseDouble(mLongitudeTV.getText()
+												.toString()));
+						bundle.putDouble("FindsLatitude", Double
+								.parseDouble(mLatitudeTV.getText().toString()));
+						Intent intent = new Intent(this, plugin
+								.getmMenuActivity());
+						intent.putExtras(bundle);
+						startActivityForResult(intent, plugin
+								.getActivityResultAction());
 					} else { // all other function plug-ins
-						Intent intent = new Intent(this, plugin.getmMenuActivity());
-						// Put Find information in Intent so that it may be utilized by the plugin.
-						// This is done by creating a find and then extracting the ContentValues object from it
-						// because I want to make sure that we have the same behaviour as retrieveContentFromView()
+						Intent intent = new Intent(this, plugin
+								.getmMenuActivity());
+						// Put Find information in Intent so that it may be
+						// utilized by the plugin.
+						// This is done by creating a find and then extracting
+						// the ContentValues object from it
+						// because I want to make sure that we have the same
+						// behaviour as retrieveContentFromView()
 						// without having to duplicate code.
 						Find find = retrieveContentFromView();
 						Bundle bundle = find.getDbEntries();
 						intent.putExtra("DbEntries", bundle);
 						if (plugin.getActivityReturnsResult())
-							startActivityForResult(intent, plugin.getActivityResultAction());
+							startActivityForResult(intent, plugin
+									.getActivityResultAction());
 						else
 							startActivity(intent);
 					}
@@ -380,43 +460,46 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 		return true;
 	}
-	
+
 	/* To-Do Begins */
 	@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {	
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
-		
+
 		// Go through all Function Plug-in to find the
 		// one that matches the intent request code
-		for (FunctionPlugin plugin: mAddFindMenuPlugins) {
+		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 			if (requestCode == plugin.getActivityResultAction()) {
-				
+
 				// This Activity Result is sent from SetReminder class
 				if (plugin.getmMenuTitle().equals("Set Reminder")) {
-					
+
 					// Intent is null, meaning it includes reminder
 					// date and location information set by the user
 					if (intent != null) {
-		    			Bundle bundle = intent.getExtras();
-		    			
-		    			// Get date, longitude, and latitude
-		        		String date = bundle.getString("Date");
-		    			Double longitude = bundle.getDouble("Longitude");
-		        		Double latitude = bundle.getDouble("Latitude");
-		        		
-		        		// Display user specified longitude and latitude
-		        		mLongitudeTV.setText(String.valueOf(longitude));
-		        		mLatitudeTV.setText(String.valueOf(latitude));
-		        		
-		        		// Remove the old row that displays time and replace it
-		        		// with a new row that include an alarm clock icon to
-		        		// visually indicate this find has a reminder attached
-		        		ViewGroup parent = (ViewGroup) findViewById(R.id.timeValueTextView).getParent();
-		        		parent.removeAllViews();
-		        		ImageView alarmIcon = new ImageView(this);
+						Bundle bundle = intent.getExtras();
+
+						// Get date, longitude, and latitude
+						String date = bundle.getString("Date");
+						Double longitude = bundle.getDouble("Longitude");
+						Double latitude = bundle.getDouble("Latitude");
+
+						// Display user specified longitude and latitude
+						mLongitudeTV.setText(String.valueOf(longitude));
+						mLatitudeTV.setText(String.valueOf(latitude));
+
+						// Remove the old row that displays time and replace it
+						// with a new row that include an alarm clock icon to
+						// visually indicate this find has a reminder attached
+						ViewGroup parent = (ViewGroup) findViewById(
+								R.id.timeValueTextView).getParent();
+						parent.removeAllViews();
+						ImageView alarmIcon = new ImageView(this);
 						alarmIcon.setImageResource(R.drawable.reminder_alarm);
-					    TableRow.LayoutParams lp1 = new TableRow.LayoutParams(30, 30);
-					    lp1.setMargins(0, 6, 80, 0);
+						TableRow.LayoutParams lp1 = new TableRow.LayoutParams(
+								30, 30);
+						lp1.setMargins(0, 6, 80, 0);
 						parent.addView(alarmIcon, lp1);
 						TextView mCloneTimeTV = new TextView(this);
 						mCloneTimeTV.setId(R.id.timeValueTextView);
@@ -424,28 +507,29 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 						mCloneTimeTV.setTextSize(12);
 						mTimeTV = mCloneTimeTV;
 						TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
-					    lp2.setMargins(6, 6, 0, 0);
+						lp2.setMargins(6, 6, 0, 0);
 						parent.addView(mTimeTV, lp2);
-		    		}
-				} 
-				else if (plugin.getmMenuTitle().equals("Capture Media")) {
+					}
+				} else if (plugin.getmMenuTitle().equals("Capture Media")) {
 					if (intent != null) {
-					    //do we get an image back?
-						if(intent.getStringExtra("Photo") != null){
-						    img_str=intent.getStringExtra("Photo");
+						// do we get an image back?
+						if (intent.getStringExtra("Photo") != null) {
+							img_str = intent.getStringExtra("Photo");
 							byte[] c = Base64.decode(img_str, Base64.DEFAULT);
-						    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
-						    photo.setImageBitmap(bmp);//display the retrieved image
-						    photo.setVisibility(View.VISIBLE);                                                                                                                           
+							Bitmap bmp = BitmapFactory.decodeByteArray(c, 0,
+									c.length);
+							photo.setImageBitmap(bmp);// display the retrieved
+														// image
+							photo.setVisibility(View.VISIBLE);
+						}
 					}
-					}
-				}
-				else{
+				} else {
 					// Do something specific for other function plug-ins
 				}
 			}
 		}
-    }
+	}
+
 	/* To-Do Ends */
 
 	/**
@@ -456,8 +540,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * @return a new Find object with data from the view.
 	 */
 	protected Find retrieveContentFromView() {
-		
-		// Get the appropriate find class from the plug-in 
+
+		// Get the appropriate find class from the plug-in
 		// manager and make an instance of it
 		Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
 		Find find = null;
@@ -469,19 +553,21 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		}
-		
+
 		// Set GUID
-		// NOTE:  Some derived finds may not have a GUID field.  But the Guid must be
-		//  set anyway because it used as the Find ID by the Posit server. 
+		// NOTE: Some derived finds may not have a GUID field. But the Guid must
+		// be
+		// set anyway because it used as the Find ID by the Posit server.
 		if (mGuidRealTV != null) {
 			find.setGuid(mGuidRealTV.getText().toString());
-		}else {
+		} else {
 			find.setGuid(UUID.randomUUID().toString());
 		}
-		
+
 		// Set Time
 		if (mTimeTV != null) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			SimpleDateFormat dateFormat = new SimpleDateFormat(
+					"yyyy/MM/dd HH:mm:ss");
 			String value = mTimeTV.getText().toString();
 			if (value.length() == 10) {
 				dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -497,28 +583,31 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (mNameET != null) {
 			find.setName(mNameET.getText().toString());
 		}
-		
+
 		// Set Description
 		if (mDescriptionET != null) {
 			find.setDescription(mDescriptionET.getText().toString());
 		}
-		
+
 		// Set Longitude and Latitude
 		if (mLatitudeTV != null && mLongitudeTV != null) {
 			if (mGeoTagEnabled) {
-				find.setLatitude(Double.parseDouble(mLatitudeTV.getText().toString()));
-				find.setLongitude(Double.parseDouble(mLongitudeTV.getText().toString()));
+				find.setLatitude(Double.parseDouble(mLatitudeTV.getText()
+						.toString()));
+				find.setLongitude(Double.parseDouble(mLongitudeTV.getText()
+						.toString()));
 			} else {
 				find.setLatitude(0);
 				find.setLongitude(0);
 			}
 		}
-		
+
 		// Set Project ID
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
 		find.setProject_id(projectId);
-		
+
 		// Mark the find unsynced
 		// find.setSynced(Find.NOT_SYNCED);
 
@@ -528,39 +617,43 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	/**
 	 * Retrieves values from a Find object and puts them in the View.
 	 * 
-	 * @param a Find object
+	 * @param a
+	 *            Find object
 	 */
 	protected void displayContentInView(Find find) {
-		
+
 		// Set real GUID
 		if (mGuidRealTV != null) {
 			mGuidRealTV.setText(find.getGuid());
 		}
-		
+
 		// Set displayed GUID
 		if (mGuidTV != null) {
 			String id = mGuidRealTV.getText().toString();
-			mGuidTV.setText(id.substring(0, Math.min(8,id.length())) + "...");
+			mGuidTV.setText(id.substring(0, Math.min(8, id.length())) + "...");
 		}
-		
+
 		// Set Time
 		if (mTimeTV != null) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+			SimpleDateFormat dateFormat = new SimpleDateFormat(
+					"yyyy/MM/dd HH:mm:ss");
 			String time = dateFormat.format(find.getTime());
 			/* To-Do Begins */
 			// If the time has no hour/minute/seconds value,
 			// this means that the time is set by SetReminder class
-			if (time.substring(11).equals("00:00:00")){
+			if (time.substring(11).equals("00:00:00")) {
 				// Therefore, remove the old row that displays time and replace
-        		// it with a new row that include an alarm clock icon to visually
-        		// indicate this find has a reminder attached
+				// it with a new row that include an alarm clock icon to
+				// visually
+				// indicate this find has a reminder attached
 				time = time.substring(0, 10);
-        		ViewGroup parent = (ViewGroup) findViewById(R.id.timeValueTextView).getParent();
-        		parent.removeAllViews();
-        		ImageView alarmIcon = new ImageView(this);
+				ViewGroup parent = (ViewGroup) findViewById(
+						R.id.timeValueTextView).getParent();
+				parent.removeAllViews();
+				ImageView alarmIcon = new ImageView(this);
 				alarmIcon.setImageResource(R.drawable.reminder_alarm);
-			    TableRow.LayoutParams lp1 = new TableRow.LayoutParams(30, 30);
-			    lp1.setMargins(0, 6, 80, 0);
+				TableRow.LayoutParams lp1 = new TableRow.LayoutParams(30, 30);
+				lp1.setMargins(0, 6, 80, 0);
 				parent.addView(alarmIcon, lp1);
 				TextView mCloneTimeTV = new TextView(this);
 				mCloneTimeTV.setId(R.id.timeValueTextView);
@@ -568,7 +661,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				mCloneTimeTV.setTextSize(12);
 				mTimeTV = mCloneTimeTV;
 				TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
-			    lp2.setMargins(6, 6, 0, 0);
+				lp2.setMargins(6, 6, 0, 0);
 				parent.addView(mTimeTV, lp2);
 			}
 			/* To-Do Ends */
@@ -579,12 +672,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (mNameET != null) {
 			mNameET.setText(find.getName());
 		}
-		
+
 		// Set Description
 		if (mDescriptionET != null) {
 			mDescriptionET.setText(find.getDescription());
 		}
-		
+
 		// Set Longitude and Latitude
 		if (mLongitudeTV != null && mLatitudeTV != null) {
 			mLongitudeTV.setText(String.valueOf(find.getLongitude()));
@@ -592,14 +685,14 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 
 		Bitmap bmp = Camera.getPhotoAsBitmap(find.getGuid(), this);
-		if(bmp != null){
-			//we have a picture to display
-		    photo.setImageBitmap(bmp);
-		    photo.setVisibility(View.VISIBLE);
-		}
-		else{
-			//we don't have a picture to display. Nothing should show up, but this is to make sure.
-		    photo.setVisibility(View.INVISIBLE);
+		if (bmp != null) {
+			// we have a picture to display
+			photo.setImageBitmap(bmp);
+			photo.setVisibility(View.VISIBLE);
+		} else {
+			// we don't have a picture to display. Nothing should show up, but
+			// this is to make sure.
+			photo.setVisibility(View.INVISIBLE);
 		}
 	}
 
@@ -609,7 +702,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	public void onLocationChanged(Location location) {
 		if (isBetterLocation(location, mCurrentLocation)) {
 			mCurrentLocation = location;
-			Log.i(TAG, "Got a new location: " + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
+			Log.i(TAG, "Got a new location: " + mCurrentLocation.getLatitude()
+					+ "," + mCurrentLocation.getLongitude());
 		}
 	}
 
@@ -635,17 +729,22 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_DELETE_DIALOG:
-			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon)
-					.setTitle(R.string.alert_dialog_2)
-					.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
+			return new AlertDialog.Builder(this).setIcon(
+					R.drawable.alert_dialog_icon).setTitle(
+					R.string.alert_dialog_2).setPositiveButton(
+					R.string.alert_dialog_ok,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
 							// User clicked OK so do some stuff
 							if (deleteFind()) {
 								finish();
 							}
 						}
-					}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
+					}).setNegativeButton(R.string.alert_dialog_cancel,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
 							// User clicked cancel so do nothing
 						}
 					}).create();
@@ -688,23 +787,26 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		int rows = 0;
 		Find find = retrieveContentFromView();
 		prepareForSave(find);
-		
+
 		// A valid GUID is required
 		if (!isValidGuid(find.getGuid())) {
-			Toast.makeText(this, "You must provide a valid Id for this Find.", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "You must provide a valid Id for this Find.",
+					Toast.LENGTH_LONG).show();
 			return false;
 		}
-		
+
 		// A name is not always required in derived classes
 		String name = find.getName();
 		if (name != null && name.equals("")) {
-//		if (find.getName().equals("")){
-			Toast.makeText(this, "You must provide a name for this Find.", Toast.LENGTH_LONG).show();
+			// if (find.getName().equals("")){
+			Toast.makeText(this, "You must provide a name for this Find.",
+					Toast.LENGTH_LONG).show();
 			return false;
 		}
 
 		// Either create a new Find or update the existing Find
-		if (getIntent().getAction().equals(Intent.ACTION_INSERT))
+		if (getIntent().getAction().equals(Intent.ACTION_INSERT) 
+				|| getIntent().getAction().equals(Intent.ACTION_VIEW))
 			rows = getHelper().insert(find);
 		else if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 			find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
@@ -712,34 +814,38 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		} else
 			rows = 0; // Something wrong with intent
 		if (rows > 0) {
-			Log.i(TAG, "Find " + getIntent().getAction() + " successful: " + find);
+			Log.i(TAG, "Find " + getIntent().getAction() + " successful: "
+					+ find);
 			this.startService(new Intent(this, LocationService.class));
 		} else
-			Log.e(TAG, "Find " + getIntent().getAction() + " not successful: " + find);
-		
-		//if the find is saved, we can save/update the picture to the phone
-		if(rows > 0){
-			//do we even have an image to save?
-			if(img_str != null){
-				if(Camera.savePhoto(find.getGuid(), img_str, this)){
-				    Log.i(TAG, "Successfully saved photo to phone with guid: "+find.getGuid());
-				}
-				else{
-				    Log.i(TAG, "Failed to save photo to phone with guid: "+find.getGuid());					
+			Log.e(TAG, "Find " + getIntent().getAction() + " not successful: "
+					+ find);
+
+		// if the find is saved, we can save/update the picture to the phone
+		if (rows > 0) {
+			// do we even have an image to save?
+			if (img_str != null) {
+				if (Camera.savePhoto(find.getGuid(), img_str, this)) {
+					Log.i(TAG, "Successfully saved photo to phone with guid: "
+							+ find.getGuid());
+				} else {
+					Log.i(TAG, "Failed to save photo to phone with guid: "
+							+ find.getGuid());
 				}
 			}
 		}
-		
+
 		return rows > 0;
 	}
-	
+
 	protected void prepareForSave(Find find) {
-		// Stub :  meant to be overridden in subclass
+		// Stub : meant to be overridden in subclass
 	}
-	
+
 	/**
-	 * By default a Guid must not be the empty string. This method can
-	 * be overridden in the plugin extension. 
+	 * By default a Guid must not be the empty string. This method can be
+	 * overridden in the plugin extension.
+	 * 
 	 * @param guid
 	 * @return
 	 */
@@ -764,83 +870,95 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 
 		find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
-		
-		//store the guid of this find so that I can delete photos on phone
+
+		// store the guid of this find so that I can delete photos on phone
 		find = getHelper().getFindById(find.getId());
 		guid = find.getGuid();
-		
+
 		rows = getHelper().delete(find);
-		
+
 		if (rows > 0) {
-			Toast.makeText(FindActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
-			
-		    //delete photo if it exists
-			if(FindActivity.this.deleteFile(guid)){
-			    Log.i(TAG, "Image with guid: "+guid+" deleted.");
+			Toast.makeText(FindActivity.this, R.string.deleted_from_database,
+					Toast.LENGTH_SHORT).show();
+
+			// delete photo if it exists
+			if (FindActivity.this.deleteFile(guid)) {
+				Log.i(TAG, "Image with guid: " + guid + " deleted.");
 			}
 
 			this.startService(new Intent(this, LocationService.class));
 		} else {
-			Toast.makeText(FindActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
+			Toast.makeText(FindActivity.this, R.string.delete_failed,
+					Toast.LENGTH_SHORT).show();
 		}
-		
+
 		return rows > 0;
 
 	}
-	
-	/* Determines whether one Location reading is better than the current Location fix
+
+	/*
+	 * Determines whether one Location reading is better than the current
+	 * Location fix
 	 * 
-	 * @param location  The new Location that you want to evaluate
-	 * @param currentBestLocation  The current Location fix, to which you want to compare the new one
+	 * @param location The new Location that you want to evaluate
+	 * 
+	 * @param currentBestLocation The current Location fix, to which you want to
+	 * compare the new one
 	 */
-	protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-	    if (currentBestLocation == null) {
-	        // A new location is always better than no location
-	        return true;
-	    }
+	protected boolean isBetterLocation(Location location,
+			Location currentBestLocation) {
+		if (currentBestLocation == null) {
+			// A new location is always better than no location
+			return true;
+		}
 
-	    // Check whether the new location fix is newer or older
-	    long timeDelta = location.getTime() - currentBestLocation.getTime();
-	    boolean isSignificantlyNewer = timeDelta > 1000 * 60 * 2;
-	    boolean isSignificantlyOlder = timeDelta < - 1000 * 60 * 2;
-	    boolean isNewer = timeDelta > 0;
+		// Check whether the new location fix is newer or older
+		long timeDelta = location.getTime() - currentBestLocation.getTime();
+		boolean isSignificantlyNewer = timeDelta > 1000 * 60 * 2;
+		boolean isSignificantlyOlder = timeDelta < -1000 * 60 * 2;
+		boolean isNewer = timeDelta > 0;
 
-	    // If it's been more than two minutes since the current location, use the new location
-	    // because the user has likely moved
-	    if (isSignificantlyNewer) {
-	        return true;
-	    // If the new location is more than two minutes older, it must be worse
-	    } else if (isSignificantlyOlder) {
-	        return false;
-	    }
+		// If it's been more than two minutes since the current location, use
+		// the new location
+		// because the user has likely moved
+		if (isSignificantlyNewer) {
+			return true;
+			// If the new location is more than two minutes older, it must be
+			// worse
+		} else if (isSignificantlyOlder) {
+			return false;
+		}
 
-	    // Check whether the new location fix is more or less accurate
-	    int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-	    boolean isLessAccurate = accuracyDelta > 0;
-	    boolean isMoreAccurate = accuracyDelta < 0;
-	    boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+		// Check whether the new location fix is more or less accurate
+		int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation
+				.getAccuracy());
+		boolean isLessAccurate = accuracyDelta > 0;
+		boolean isMoreAccurate = accuracyDelta < 0;
+		boolean isSignificantlyLessAccurate = accuracyDelta > 200;
 
-	    // Check if the old and new location are from the same provider
-	    boolean isFromSameProvider = isSameProvider(location.getProvider(),
-	            currentBestLocation.getProvider());
+		// Check if the old and new location are from the same provider
+		boolean isFromSameProvider = isSameProvider(location.getProvider(),
+				currentBestLocation.getProvider());
 
-	    // Determine location quality using a combination of timeliness and accuracy
-	    if (isMoreAccurate) {
-	        return true;
-	    } else if (isNewer && !isLessAccurate) {
-	        return true;
-	    } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-	        return true;
-	    }
-	    return false;
+		// Determine location quality using a combination of timeliness and
+		// accuracy
+		if (isMoreAccurate) {
+			return true;
+		} else if (isNewer && !isLessAccurate) {
+			return true;
+		} else if (isNewer && !isSignificantlyLessAccurate
+				&& isFromSameProvider) {
+			return true;
+		}
+		return false;
 	}
 
 	/* Checks whether two providers are the same */
 	private boolean isSameProvider(String provider1, String provider2) {
-	    if (provider1 == null) {
-	      return provider2 == null;
-	    }
-	    return provider1.equals(provider2);
+		if (provider1 == null) {
+			return provider2 == null;
+		}
+		return provider1.equals(provider2);
 	}
 
 }
