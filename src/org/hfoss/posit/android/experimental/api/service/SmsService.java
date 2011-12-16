@@ -88,39 +88,59 @@ public class SmsService extends Service {
 		return super.onStartCommand(intent, flags, startId);
 	}
 
+	/**
+	 * This function contains code for handling the result of attempting to send
+	 * a Find.
+	 * 
+	 * @param context
+	 *            The context in which the calling BroadcastReceiver is running.
+	 * @param receiver
+	 *            Currently unused. Intended as a special BroadcastReceiver to
+	 *            send results to. (For instance, if another plugin wanted to do
+	 *            its own handling.)
+	 * @param resultCode
+	 * @param seq
+	 * @param smsMsg
+	 */
 	private synchronized void handleSentMessage(Context context,
-			BroadcastReceiver receiver, int resultCode, Intent intent,
-			String seq, String smsMsg) {
+			BroadcastReceiver receiver, int resultCode, String seq,
+			String smsMsg) {
 		switch (resultCode) {
 		case Activity.RESULT_OK:
 			Log.i(TAG, "Received OK, seq = " + seq + " msg:" + smsMsg);
 			++nMsgsSent;
-			Toast.makeText(context, "Message " + seq + " was sent successfully", Toast.LENGTH_SHORT).show();
 			break;
 		case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
 			Log.e(TAG, "Received generic failure, seq =  " + seq + " msg:"
 					+ smsMsg);
 			++nMsgsPending;
-			Toast.makeText(context, "Sending message " + seq + "failed.", Toast.LENGTH_LONG).show();
 			break;
 		case SmsManager.RESULT_ERROR_NO_SERVICE:
 			Log.e(TAG, "Received no service error, seq =  " + seq + " msg:"
 					+ smsMsg);
 			++nMsgsPending;
-			Toast.makeText(context, "No SMS service available.", Toast.LENGTH_LONG).show();
+			Toast.makeText(context, "No service available.", Toast.LENGTH_SHORT).show();
 			break;
 		case SmsManager.RESULT_ERROR_NULL_PDU:
 			Log.e(TAG, "Received null PDU error, seq =  " + seq + " msg:"
 					+ smsMsg);
 			++nMsgsPending;
-			Toast.makeText(context, "Sending message " + seq + " failed.", Toast.LENGTH_LONG).show();
 			break;
 		case SmsManager.RESULT_ERROR_RADIO_OFF:
 			Log.e(TAG, "Received radio off error, seq =  " + seq + " msg:"
 					+ smsMsg);
-			Toast.makeText(context, "Could not send message. Radio is disabled.", Toast.LENGTH_LONG).show();
+			Toast.makeText(context, "Could not send SMS message: radio off.", Toast.LENGTH_LONG).show();
 			++nMsgsPending;
 			break;
+		}
+		--mBroadcastsOutstanding;
+		// Notify the user if all messages have been attempted
+		if (mBroadcastsOutstanding == 0) {
+			if (nMsgsPending == 0) {
+				Toast.makeText(context, "All messages sent successfully.", Toast.LENGTH_LONG).show();
+			} else {
+				Toast.makeText(context, "One or more messages failed to be sent.", Toast.LENGTH_LONG).show();
+			}
 		}
 	}
 
@@ -159,9 +179,8 @@ public class SmsService extends Service {
 					@Override
 					public synchronized void onReceive(Context arg0, Intent arg1) {
 						try {
-							handleSentMessage(arg0, this, getResultCode(),
-									arg1, seq, message);
-							--mBroadcastsOutstanding;
+							handleSentMessage(arg0, null, getResultCode(), seq,
+									message);
 							context.unregisterReceiver(this);
 							Log.i(TAG, "Broadcasts outstanding  = "
 									+ mBroadcastsOutstanding);
@@ -175,7 +194,8 @@ public class SmsService extends Service {
 
 					}
 				};
-				context.registerReceiver(sendReceiver, new IntentFilter(SENT + seq));
+				context.registerReceiver(sendReceiver, new IntentFilter(SENT
+						+ seq));
 
 				// We need to determine how many message we need to send this
 				// as.
@@ -204,6 +224,7 @@ public class SmsService extends Service {
 						Log.e(TAG,
 								"IllegalArgumentException, probably phone number = "
 										+ phoneNum);
+						Toast.makeText(context, "Could not send SMS " + seq + ". Check phone number.", Toast.LENGTH_LONG).show();
 						mErrorMsg = e.getMessage();
 						e.printStackTrace();
 						return;

@@ -178,6 +178,7 @@ public class FindPluginManager {
 	 */
 	public static ArrayList<FunctionPlugin> getFunctionPlugins(String extensionType) {
 		ArrayList<FunctionPlugin> list = new ArrayList<FunctionPlugin>();
+		if (plugins == null) return list;
 		for (Plugin plugin : plugins) {
 			if (plugin instanceof FunctionPlugin) {
 				Log.i(TAG, "Function plugin " + plugin.toString());

@@ -1,26 +1,25 @@
 package org.hfoss.posit.android.experimental.api;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.http.message.BasicNameValuePair;
 import org.hfoss.posit.android.experimental.Constants;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 
 /**
  * Represents a specific find for a project, with a unique identifier.
@@ -35,9 +34,10 @@ public class Find implements FindInterface {
 	public static final String ORM_ID = "id";
 	public static final String GUID = "guid";
 	public static final String PROJECT_ID = "project_id";
-	
+
 	public static final String NAME = "name";
-	public static final String CLASS_NAME = "class_name";   // Either Find or some subclass
+	public static final String CLASS_NAME = "class_name"; // Either Find or some
+	// subclass
 
 	public static final String DESCRIPTION = "description";
 	public static final String LATITUDE = "latitude";
@@ -47,20 +47,19 @@ public class Find implements FindInterface {
 
 	public static final String IS_ADHOC = "is_adhoc";
 	public static final String DELETED = "deleted";
-	
+
 	public static final String REVISION = "revision";
 	public static final String ACTION = "action";
-	
+
 	public static final String EXTENSION = "extension";
-	
-	// For syncing.  Operation will store what operation is being performed
-	// on this record--posting, updating, deleting.  Status will
+
+	// For syncing. Operation will store what operation is being performed
+	// on this record--posting, updating, deleting. Status will
 	// record the state of the sync--transacting or done.
 	public static final String SYNC_OPERATION = "sync_operation";
-	public static final String STATUS= "status";
+	public static final String STATUS = "status";
 	public static final int IS_SYNCED = 1;
 	public static final int IS_NOT_SYNCED = 0;
-
 
 	// Instance variables, automatically mapped to DB columns
 	@DatabaseField(columnName = ORM_ID, generatedId = true)
@@ -85,12 +84,12 @@ public class Find implements FindInterface {
 	protected int is_adhoc;
 	@DatabaseField(columnName = DELETED)
 	protected int deleted;
-	
+
 	@DatabaseField(columnName = REVISION)
 	protected int revision;
 	@DatabaseField(columnName = ACTION)
 	protected String action;
-	
+
 	@DatabaseField(columnName = SYNC_OPERATION)
 	protected int syncOperation;
 	@DatabaseField(columnName = STATUS)
@@ -152,13 +151,15 @@ public class Find implements FindInterface {
 	 */
 	public Find(Context context, String guid) {
 	}
-	
+
 	/**
 	 * Creates a find object from content values.
-	 * @param content ContentValues object that contains all the fields of a Find
+	 * 
+	 * @param content
+	 *            ContentValues object that contains all the fields of a Find
 	 */
 	public Find(ContentValues cv) {
-//		updateObject(cv);
+		// updateObject(cv);
 	}
 
 	public String getGuid() {
@@ -248,12 +249,12 @@ public class Find implements FindInterface {
 	public void setProject_id(int projectId) {
 		this.project_id = projectId;
 	}
-	
+
 	public int getRevision() {
 		return revision;
 	}
-	
-	public void setRevision(int revision){
+
+	public void setRevision(int revision) {
 		this.revision = revision;
 	}
 
@@ -265,11 +266,10 @@ public class Find implements FindInterface {
 		return status;
 	}
 
-
 	public void setStatus(int status) {
 		this.status = status;
 	}
-	
+
 	public String getStatusAsString() {
 		switch (getStatus()) {
 		case Constants.POSTING:
@@ -282,10 +282,10 @@ public class Find implements FindInterface {
 			return "unsynced";
 		}
 	}
-	
+
 	public void setSyncOperation(int syncOperation) {
 		this.syncOperation = syncOperation;
-		
+
 	}
 
 	public String getAction() {
@@ -302,9 +302,13 @@ public class Find implements FindInterface {
 
 	/**
 	 * Converts a value to the type that matches a given field in this class
-	 * NOTE: This method is incomplete. It needs more cases for both field's and val's type.
-	 * @param field, the field's typed as represented by a Class object
-	 * @param val, the value being converted
+	 * NOTE: This method is incomplete. It needs more cases for both field's and
+	 * val's type.
+	 * 
+	 * @param field
+	 *            , the field's typed as represented by a Class object
+	 * @param val
+	 *            , the value being converted
 	 * @return an Object whose dynamic type is Integer or Boolean or ...
 	 */
 	protected Object convertValueTypeForField(Class field, Object val) {
@@ -313,15 +317,16 @@ public class Find implements FindInterface {
 		Log.i(TAG, "Convert argument for " + oType + " field for value " + val);
 		try {
 			if (oType.equals("java.lang.Integer") || oType.equals("int")) {
-				result = Integer.parseInt((String)val);
-			} else if (oType.equals("java.lang.Boolean") || oType.equals("boolean"))  {
+				result = Integer.parseInt((String) val);
+			} else if (oType.equals("java.lang.Boolean")
+					|| oType.equals("boolean")) {
 				result = Boolean.parseBoolean((String) val);
-			} else if (oType.equals("java.lang.Double") || oType.equals("double"))
+			} else if (oType.equals("java.lang.Double")
+					|| oType.equals("double"))
 				result = Double.parseDouble((String) val);
 			else if (oType.equals("java.lang.String")) {
 				result = val.toString();
-			} 
-			else  {
+			} else {
 				result = val;
 			}
 			Log.i(TAG, "Returning " + result + " of type " + result.getClass());
@@ -331,67 +336,81 @@ public class Find implements FindInterface {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * Uses reflection to copy data from a ContentValues object to this Find object.
-	 * This should also work for subclasses of Find.
+	 * Uses reflection to copy data from a ContentValues object to this Find
+	 * object. This should also work for subclasses of Find.
 	 * 
-	 * NOTE: This is a little ugly.  Can it be simplified?  The main complication is
-	 * that it seems like you have to handel the cases of the derived fields and the
-	 * Find fields separately.  
+	 * NOTE: This is a little ugly. Can it be simplified? The main complication
+	 * is that it seems like you have to handel the cases of the derived fields
+	 * and the Find fields separately.
 	 * 
-	 * @param cv, the ContentValues (key=val, key2=val2, ...)
+	 * @param cv
+	 *            , the ContentValues (key=val, key2=val2, ...)
 	 */
 	public void updateObject(ContentValues cv) {
-		Set <Entry <String, Object>> cvSet = cv.valueSet();
+		Set<Entry<String, Object>> cvSet = cv.valueSet();
 		Iterator it = cvSet.iterator();
-		
+
 		// For each key/val pair
 		while (it.hasNext()) {
-			Entry<String, Object> entry = (Entry<String,Object>)it.next();
+			Entry<String, Object> entry = (Entry<String, Object>) it.next();
 			String key = entry.getKey();
 			Object val = entry.getValue();
-			Log.i(TAG, "Key = " + key + " val = " + val + " " + val.getClass().getName());
-				
+			Log.i(TAG, "Key = " + key + " val = " + val + " "
+					+ val.getClass().getName());
+
 			Field field = null;
 			try {
-				// Find a field with the same name as the key.  This will throw and exception
-				// when the field is declared in the (Find) superclass for a derived object.
+				// Find a field with the same name as the key. This will throw
+				// and exception
+				// when the field is declared in the (Find) superclass for a
+				// derived object.
 				field = this.getClass().getDeclaredField(key);
-				
+
 				// Get the field's type.
 				Class fieldType = field.getType();
-				
-				// Make the field accessible so that it can be referenced here. 
+
+				// Make the field accessible so that it can be referenced here.
 				field.setAccessible(true);
 
 				// If there's no type conflict
-				if (fieldType.getSimpleName().equals(val.getClass().getSimpleName())) 
+				if (fieldType.getSimpleName().equals(
+						val.getClass().getSimpleName()))
 					field.set(this, val);
 				else {
-					Log.i(TAG, "field type = " + fieldType.getSimpleName() + " val type = " + val.getClass().getSimpleName());
-					// Convert the value, val, to object of the same type as the field's type
-					Object obj = convertValueTypeForField(fieldType, val.toString());
-					//Log.i(TAG, "obj = " + obj.toString() + " of type " + obj.getClass());
+					Log.i(TAG, "field type = " + fieldType.getSimpleName()
+							+ " val type = " + val.getClass().getSimpleName());
+					// Convert the value, val, to object of the same type as the
+					// field's type
+					Object obj = convertValueTypeForField(fieldType, val
+							.toString());
+					// Log.i(TAG, "obj = " + obj.toString() + " of type " +
+					// obj.getClass());
 
 					// Set the field's value
 					field.set(this, obj);
 				}
 				Log.i(TAG, ">>>>>>> Set" + field + "=" + val);
-			}  catch (NoSuchFieldException e) {
+			} catch (NoSuchFieldException e) {
 				try {
-					// This will handle the case where the field is declared in the superclass
+					// This will handle the case where the field is declared in
+					// the superclass
 					// and the current (dynamic) object is a derived Find.
-					Log.i(TAG, "#####Exception: no such field " + key + " in " + this.getClass());
-					
+					Log.i(TAG, "#####Exception: no such field " + key + " in "
+							+ this.getClass());
+
 					// Get the superclass field
-					field = this.getClass().getSuperclass().getDeclaredField(key);
-					
-					// Set its value -- for the Find class, the type's should match.
+					field = this.getClass().getSuperclass().getDeclaredField(
+							key);
+
+					// Set its value -- for the Find class, the type's should
+					// match.
 					field.set(this, val);
-					Log.i(TAG, ">>>>>>> Set" + field + "=" + val);					
+					Log.i(TAG, ">>>>>>> Set" + field + "=" + val);
 				} catch (NoSuchFieldException ex) {
-					Log.i(TAG, "Exception: no such field " + key + " in " + this.getClass().getSuperclass());
+					Log.i(TAG, "Exception: no such field " + key + " in "
+							+ this.getClass().getSuperclass());
 					e.printStackTrace();
 				} catch (IllegalArgumentException ex) {
 					e.printStackTrace();
@@ -400,87 +419,216 @@ public class Find implements FindInterface {
 					e.printStackTrace();
 				}
 			} catch (IllegalArgumentException e) {
-				Log.i(TAG, "Illegal Argument " + field.getName() + " in " + this.getClass());
+				Log.i(TAG, "Illegal Argument " + field.getName() + " in "
+						+ this.getClass());
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				Log.i(TAG, "Illegal Access " + field.getName() + " in " + this.getClass());
+				Log.i(TAG, "Illegal Access " + field.getName() + " in "
+						+ this.getClass());
 				e.printStackTrace();
 			}
 		}
 	}
 
 	/**
-	 * Uses reflection to retrieve a ContentValues object from all of the fields in the Find which have
-	 * the DatabaseField annotation. Sort of like the opposite of updateObject().
-	 * Should work with all subclasses of Find.
+	 * Uses reflection to copy data from a Bundle object to this Find object.
+	 * This should also work for subclasses of Find. This is a more flexible
+	 * version than the one that uses a ContentValues object as ContentValues
+	 * can only contain a fairly limited range of types, whereas this will work
+	 * for all Parcelable or Serializable types. (The ContentValues version of
+	 * this function doesn't even work for all of the basic Find's fields.)
 	 * 
-	 * @return A ContentValues object containing all of the Find's database entries.
+	 * This function was created for the SMS plugin, but could very likely serve
+	 * other uses as well.
+	 * 
+	 * @param bundle
+	 *            Bundle containing (key,value) pairs corresponding to the
+	 *            Find's fields.
 	 */
-	public ContentValues getDbEntries()  {		
-		ContentValues cv = new ContentValues();
+	public void updateObject(Bundle bundle) {
+		Set<String> keySet = bundle.keySet();
+		Iterator<String> it = keySet.iterator();
+		// For each key/val pair
+		while (it.hasNext()) {
+			String key = it.next();
+			Object val = bundle.get(key);
+			if (val != null) {
+				Log.i(TAG, "Key = " + key + " val = " + val + " "
+					+ val.getClass().getName());
+			} else {
+				Log.i(TAG, "Key = " + key + " val = null");
+			}
+
+			Field field = null;
+			try {
+				// Find a field with the same name as the key. This will throw
+				// and exception
+				// when the field is declared in the (Find) superclass for a
+				// derived object.
+				field = this.getClass().getDeclaredField(key);
+
+				// Get the field's type.
+				Class fieldType = field.getType();
+
+				// Make the field accessible so that it can be referenced here.
+				field.setAccessible(true);
+
+				// If there's no type conflict
+				if (val == null || fieldType.getSimpleName().equals(
+						val.getClass().getSimpleName()))
+					field.set(this, val);
+				else {
+					Log.i(TAG, "field type = " + fieldType.getSimpleName()
+							+ " val type = " + val.getClass().getSimpleName());
+					// Convert the value, val, to object of the same type as the
+					// field's type
+					Object obj = convertValueTypeForField(fieldType, val
+							.toString());
+					// Log.i(TAG, "obj = " + obj.toString() + " of type " +
+					// obj.getClass());
+
+					// Set the field's value
+					field.set(this, obj);
+				}
+				Log.i(TAG, ">>>>>>> Set" + field + "=" + val);
+			} catch (NoSuchFieldException e) {
+				try {
+					// This will handle the case where the field is declared in
+					// the superclass
+					// and the current (dynamic) object is a derived Find.
+					Log.i(TAG, "#####Exception: no such field " + key + " in "
+							+ this.getClass());
+
+					// Get the superclass field
+					field = this.getClass().getSuperclass().getDeclaredField(
+							key);
+
+					// Set its value -- for the Find class, the type's should
+					// match.
+					field.set(this, val);
+					Log.i(TAG, ">>>>>>> Set" + field + "=" + val);
+				} catch (NoSuchFieldException ex) {
+					Log.i(TAG, "Exception: no such field " + key + " in "
+							+ this.getClass().getSuperclass());
+					e.printStackTrace();
+				} catch (IllegalArgumentException ex) {
+					e.printStackTrace();
+				} catch (IllegalAccessException ex) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} catch (IllegalArgumentException e) {
+				Log.i(TAG, "Illegal Argument " + field.getName() + " in "
+						+ this.getClass());
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				Log.i(TAG, "Illegal Access " + field.getName() + " in "
+						+ this.getClass());
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Uses reflection to retrieve a bundle of all of the Find's database
+	 * entries. Should work on all subclasses of Find.
+	 * 
+	 * @return A bundle containing all of the fields' names/values.
+	 * @throws IllegalArgumentException
+	 *             if one of the database fields is neither parcelable nor
+	 *             serializable.
+	 */
+	public Bundle getDbEntries() {
+		Bundle bundle = new Bundle();
 		// Get fields from this class
 		Field[] fields = this.getClass().getDeclaredFields();
 		// Get fields from superclass(es) if we are a derived class
-		for(Class current = this.getClass(); current != Find.class; current = current.getSuperclass()) {
+		for (Class current = this.getClass(); current != Find.class; current = current
+				.getSuperclass()) {
 			Field[] superfields = current.getSuperclass().getDeclaredFields();
 			Field[] temp = new Field[fields.length + superfields.length];
 			// Merge both arrays into new array
 			System.arraycopy(fields, 0, temp, 0, fields.length);
-			System.arraycopy(superfields, 0, temp, fields.length, superfields.length);
+			System.arraycopy(superfields, 0, temp, fields.length,
+					superfields.length);
 			fields = temp;
 		}
 		// For each database field, create a pair and add to list
-		for(Field field : fields) {
+		for (Field field : fields) {
 			Annotation[] annotations = field.getDeclaredAnnotations();
 			for (Annotation annotation : annotations) {
-				if(annotation instanceof DatabaseField) {
-					String col = ((DatabaseField) annotation).columnName();
+				if (annotation instanceof DatabaseField) {
+					String key = field.getName();
 					field.setAccessible(true);
 					try {
 						Object val = field.get(this);
-						// Sadly, I can't use a dynamic cast of val with cv.put(), so I need to do this
-						// silly compound if statement. Maybe there's a better solution?
-						if (val instanceof Byte) {
-							cv.put(col, (Byte) val);
-						} else if (val instanceof Integer) {
-							cv.put(col, (Integer) val);
-						} else if (val instanceof Float) {
-							cv.put(col, (Float) val);
-						} else if (val instanceof Short) {
-							cv.put(col, (Short) val);
-						} else if (val instanceof byte[]) {
-							cv.put(col, (byte[]) val);
-						} else if (val instanceof String) {
-							cv.put(col, (String) val);
-						} else if (val instanceof Double) {
-							cv.put(col, (Double) val);
-						} else if (val instanceof Long) {
-							cv.put(col, (Long) val);
-						} else if (val instanceof Boolean) {
-							cv.put(col, (Boolean) val);
+						if (val == null) {
+							bundle.putParcelable(key, null);
+						} else if (val instanceof Parcelable) {
+							bundle.putParcelable(key, (Parcelable) val);
+						} else if (val instanceof Serializable) {
+							bundle.putSerializable(key, (Serializable) val);
 						} else {
 							// Illegal type
 							throw new IllegalArgumentException();
 						}
 					} catch (IllegalArgumentException e) {
-						Log.i(TAG, "Illegal Argument " + field.getName() + " in " + this.getClass());
+						Log.i(TAG, "Illegal Argument " + field.getName()
+								+ " in " + this.getClass());
 						e.printStackTrace();
 					} catch (IllegalAccessException e) {
-						Log.i(TAG, "Illegal Access " + field.getName() + " in " + this.getClass());
+						Log.i(TAG, "Illegal Access " + field.getName() + " in "
+								+ this.getClass());
 						e.printStackTrace();
 					}
 					break;
 				}
 			}
 		}
-		return cv;
+		return bundle;
+	}
+
+	/**
+	 * Uses reflection to retrieve the type of a particular field.
+	 * @param key The name of the query field.
+	 * @return The type of the field as a Class<Object>
+	 * @throws NoSuchFieldException if no such field exists.
+	 */
+	public Class<Object> getType(String key) throws NoSuchFieldException {
+		Field field = null;
+		Class<Object> fieldType = null;
+		try {
+			field = this.getClass().getDeclaredField(key);
+			// Get the field's type.
+			fieldType = (Class<Object>) field.getType();
+		} catch (NoSuchFieldException e) {
+			// Check superclass
+			if (! this.getClass().getSuperclass().equals(Find.class))
+				throw e;
+			try {
+				field = this.getClass().getSuperclass().getDeclaredField(key);
+				fieldType = (Class<Object>) field.getType();
+			} catch (SecurityException e1) {
+				Log.e(TAG, "Security exception with field: " + field.getName()
+						+ "in " + this.getClass().getSuperclass());
+				e1.printStackTrace();
+			}
+		} catch (SecurityException e) {
+			Log.e(TAG, "Security exception with field: " + field.getName()
+					+ "in " + this.getClass());
+			e.printStackTrace();
+		}
+		return fieldType;
 	}
 
 	@Override
 	public String toString() {
-		return "Find [id=" + id + ", guid=" + guid + ", project_id=" + project_id + ", name=" + name + ", description="
-				+ description + ", latitude=" + latitude + ", longitude=" + longitude + ", time=" + time
-				+ ", modify_time=" + modify_time + ", is_adhoc=" + is_adhoc + ", deleted=" + deleted + ", revision="
-				+ revision + ", syncOperation=" + syncOperation + ", status=" + status + "]";
+		return "Find [id=" + id + ", guid=" + guid + ", project_id="
+				+ project_id + ", name=" + name + ", description="
+				+ description + ", latitude=" + latitude + ", longitude="
+				+ longitude + ", time=" + time + ", modify_time=" + modify_time
+				+ ", is_adhoc=" + is_adhoc + ", deleted=" + deleted
+				+ ", revision=" + revision + ", syncOperation=" + syncOperation
+				+ ", status=" + status + "]";
 	}
 }

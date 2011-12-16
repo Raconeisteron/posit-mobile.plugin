@@ -10,4 +10,10 @@
     <string name="messagePrefixLabel">Message Prefix</string>                                                                                                                                                   
     <string name="messagePrefixKey">messagePrefixKey</string>                                                                                                                                                   
     <string name="messagePrefixDefault">~_</string> 
+    <string name="smsDismiss">Dismiss Find</string>                                                                                                                                                             
+	<string name="smsSave">Save Find to Current Project</string>                                                                                                                                                
+	<string name="smsFindLabel">Find details:</string>                                                                                                                                                          
+	<string name="smsSenderLabel">SMS Received from:</string>                                                                                                                                                   
+	<string name="smsContentsLabel">SMS contents:</string>                                                                                                                                                      
+	<string name="smsNumMessagesLabel"># of messages to send:</string>     
 </resources>
