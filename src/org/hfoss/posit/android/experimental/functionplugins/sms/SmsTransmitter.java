@@ -131,8 +131,6 @@ public class SmsTransmitter {
 		addFind(find.getDbEntries(), phoneNumber);
 	}
 
-
-
 	/**
 	 * Add a text message to be sent later.
 	 * 
