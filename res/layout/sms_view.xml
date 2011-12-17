@@ -5,14 +5,28 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent">
 		
-		<TableLayout android:stretchColumns="*"
-    	android:layout_width="match_parent" android:layout_height="wrap_content">
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="match_parent"	android:layout_height="wrap_content"
+			android:orientation="vertical" android:layout_marginRight="4dp">
 		
+    		<TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
+    			<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+  					android:id="@+id/smsSenderView"
+  					android:layout_width="wrap_content"
+  					android:layout_height="wrap_content" />
+    		</TableRow>
+    		<TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
+    			<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+  					android:id="@+id/smsFindInfoLabel"
+  					android:layout_width="fill_parent"
+  					android:layout_height="wrap_content"
+  					android:text="@string/smsFindLabel" />
+    		</TableRow>
 			<TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
 				<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-  					android:id="@+id/smsFindView"
-  					android:layout_width="fill_parent"
-  					android:layout_height="wrap_content" />
+  					android:id="@+id/smsFindView" android:background="@color/white_color"
+  					android:layout_height="wrap_content" android:layout_width="wrap_content"
+  					android:textColor="@color/black_color" />
   			</TableRow>
   			<TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
         		<Button
@@ -21,7 +35,6 @@
         			android:layout_marginLeft="10dp" android:layout_marginRight="10dp"
         			android:text="@string/smsSave" android:layout_marginTop="10dp">
         		</Button>
-        	
     		</TableRow>
     		
     		<TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
@@ -31,8 +44,6 @@
         			android:layout_marginLeft="10dp" android:layout_marginRight="10dp"
         			android:text="@string/smsDismiss" android:layout_marginTop="10dp">
         		</Button>
-        	
     		</TableRow>
-    	
-    	</TableLayout>
+    	</LinearLayout>
   	</ScrollView>

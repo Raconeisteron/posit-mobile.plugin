@@ -1,12 +1,11 @@
 /*
  * File: SmsService.java
  * 
- * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of the ACDI/VOCA plugin for POSIT, Portable Open Search 
- * and Identification Tool.
+ * This file is part of POSIT, Portable Open Search and Identification Tool.
  *
- * This plugin is free software; you can redistribute it and/or modify
+ * POSIT is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
  * by the Free Software Foundation; either version 3.0 of the License, or (at
  * your option) any later version.

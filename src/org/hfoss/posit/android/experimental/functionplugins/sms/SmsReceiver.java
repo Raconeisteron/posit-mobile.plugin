@@ -158,6 +158,7 @@ public class SmsReceiver extends BroadcastReceiver {
 				notificationIntent.putExtra("notificationid", mNextNotificationId);
 				PendingIntent contentIntent = PendingIntent.getActivity(
 						context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+				notification.contentIntent = contentIntent;
 				notification.setLatestEventInfo(context, contentTitle,
 						contentText, contentIntent);
 				notificationMgr.notify(mNextNotificationId++, notification);

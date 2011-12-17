@@ -46,7 +46,6 @@ public class SmsActivity extends Activity {
 	protected Button mSendButton;
 	protected Bundle mDbEntries;
 	protected TextView mNumMessagesView;
-	protected SmsTransmitter mTransmitter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,10 +63,10 @@ public class SmsActivity extends Activity {
 		mEditPhoneNum.setText(defaultNum);
 		// Retrieve DbEntries of Find from intent
 		mDbEntries = getIntent().getParcelableExtra("DbEntries");
-		// Create transmitter and add Find
-		mTransmitter = new SmsTransmitter(this);
+		// Get message text and set listener
 		try {
-			String contents = mTransmitter.addFind(mDbEntries, mEditPhoneNum
+			SmsTransmitter trans = new SmsTransmitter(this);
+			String contents = trans.addFind(mDbEntries, mEditPhoneNum
 					.getText().toString());
 			mContents.setText(contents);
 			// Get # of messages that need to be sent and display
@@ -75,7 +74,9 @@ public class SmsActivity extends Activity {
 			mNumMessagesView.setText(String.valueOf(length[0]));
 			mSendButton.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					mTransmitter.sendAll();
+					SmsTransmitter transmitter = new SmsTransmitter(v.getContext());
+					transmitter.addFind(mDbEntries, mEditPhoneNum.getText().toString());
+					transmitter.sendAll();
 					finish();
 				}
 			});
