@@ -68,11 +68,12 @@ public class SmsViewActivity extends OrmLiteBaseActivity<DbManager> {
 		mNotificationId = getIntent().getIntExtra("notificationid", 0);
 		if (mNotificationId == 0) {
 			Log.e(TAG, "Could not retrieve notification ID.");
-			Toast.makeText(this, "A fatal error has occurred in SMS viewer.", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "A fatal error has occurred in SMS viewer.",
+					Toast.LENGTH_LONG).show();
 			finish();
 			return;
 		}
-		
+
 		refreshViews(bundle, sender);
 
 		// Listener for Save button click
@@ -86,17 +87,21 @@ public class SmsViewActivity extends OrmLiteBaseActivity<DbManager> {
 				int projectId = prefs
 						.getInt(getString(R.string.projectPref), 0);
 				find.setProject_id(projectId);
-				// Start the appropriate FindActivity so we can actually save the find
+				// Start the appropriate FindActivity so we can actually save
+				// the find
 				FindPlugin plugin = FindPluginManager.mFindPlugin;
 				if (plugin == null) {
 					Log.e(TAG, "Could not retrieve Find Plugin.");
-					Toast.makeText(v.getContext(), "A fatal error occurred while trying to start FindActivity", 
-							Toast.LENGTH_LONG).show();
+					Toast
+							.makeText(
+									v.getContext(),
+									"A fatal error occurred while trying to start FindActivity",
+									Toast.LENGTH_LONG).show();
 					finish();
 					return;
 				}
 				Intent intent = new Intent();
-				intent.setAction(Intent.ACTION_VIEW);
+				intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
 				intent.putExtra("findbundle", bundle);
 				intent.setClass(v.getContext(), plugin.getmFindActivityClass());
 				startActivity(intent);

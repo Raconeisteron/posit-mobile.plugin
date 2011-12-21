@@ -154,7 +154,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
 				displayContentInView(find);
-			} else if (getIntent().getAction().equals(Intent.ACTION_VIEW)) {
+			} else if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
 				// Pull a Bundle corresponding to a Find from the Intent and put
 				// that in the view
 				Bundle findBundle = extras.getBundle("findbundle");
@@ -805,12 +805,20 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 
 		// Either create a new Find or update the existing Find
-		if (getIntent().getAction().equals(Intent.ACTION_INSERT) 
-				|| getIntent().getAction().equals(Intent.ACTION_VIEW))
+		if (getIntent().getAction().equals(Intent.ACTION_INSERT))
 			rows = getHelper().insert(find);
 		else if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 			find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
 			rows = getHelper().update(find);
+		} else if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
+			// Check if a Find with the same GUID already exists and update it if so
+			Find sameguid = getHelper().getFindByGuid(find.getGuid());
+			if (sameguid == null) {
+				rows = getHelper().insert(find);
+			} else {
+				find.setId(sameguid.getId());
+				rows = getHelper().update(find);
+			}
 		} else
 			rows = 0; // Something wrong with intent
 		if (rows > 0) {
