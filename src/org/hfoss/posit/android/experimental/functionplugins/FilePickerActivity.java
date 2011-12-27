@@ -1,11 +1,31 @@
+/*
+ * File: FilePickerActivity.java
+ * 
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool. 
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
+
 package org.hfoss.posit.android.experimental.functionplugins;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +39,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.hfoss.posit.android.experimental.R;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 
-// @see http://www.dreamincode.net/forums/topic/190013-creating-simple-file-chooser/
+/**
+ * Simple file chooser allows the user to browse the file system.  Returns 
+ * onActivityResult the name of the selected file. No browsing restrictions are
+ * enforced.
+ * 
+ * @see http://www.dreamincode.net/forums/topic/190013-creating-simple-file-chooser/
+ */
 public class FilePickerActivity extends ListActivity {
 
 	public static final String TAG = "FilePicker";
@@ -44,12 +69,44 @@ public class FilePickerActivity extends ListActivity {
 			}
 		String home = extras.getString("home");
 		currentDir = new File(home);
+		Log.i(TAG, "Current directory =" + currentDir);
 		
-		File files[] = currentDir.listFiles();
+		displayFiles(currentDir);
+
+	}
+	
+	/**
+	 * Helper to display files given a directory name.  Files
+	 * and hidden directories are ignored. 
+	 * @param dir, a File which can be either a file or a directory.
+	 */
+	private void displayFiles(File dir) {
+		Log.i(TAG, "displayFiles, dir=" + dir);
+		if (!dir.isDirectory() || dir.isHidden())
+			return;
+		currentDir = dir;
+		List<String> datafiles = getFileNames(dir);
+		if (datafiles.size() == 0) 
+			setContentView(R.layout.acdivoca_list_files);
+        adapter = new FileArrayAdapter(this, R.layout.acdivoca_list_files, datafiles );
+        this.setListAdapter(adapter);		
+	}
+	
+	/**
+	 * Helper method returns a list of files and directories in the
+	 * current directory.
+	 * @param dir
+	 * @return
+	 */
+	private List<String> getFileNames(File dir) {
+		Log.i(TAG, "dir=" + dir);
+		File files[] = dir.listFiles();
 		List<String> datafiles = new ArrayList<String>();
 		try {
+			datafiles.add("..");
 			for (File ff: files) {
-				if (ff.isFile()) {
+				if ((ff.isFile() && !ff.getName().startsWith(".")) || 
+						(ff.isDirectory() && !ff.getName().startsWith("."))) {
 					datafiles.add(ff.getName());
 				}
 			}
@@ -60,26 +117,50 @@ public class FilePickerActivity extends ListActivity {
 			setResult(RESULT_ERROR, returnIntent);
 			finish();
 		}
-		
-		if (datafiles.size() == 0) 
-			setContentView(R.layout.acdivoca_list_files);
-
-        adapter = new FileArrayAdapter(this, R.layout.acdivoca_list_files, datafiles );
-        this.setListAdapter(adapter);
+		return datafiles;
 	}
 	
 	
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        String filename = adapter.getItem(position);
-	    Intent returnIntent = new Intent();
-	    returnIntent.putExtra(Intent.ACTION_CHOOSER, filename);
+	/**
+	 * Inherited method for handling clicks on list items.  If a filename
+	 * is clicked, return it.  If a directory is picked, make it the current
+	 * directory and continue.
+	 */
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		String filename = adapter.getItem(position);
+		Log.i(TAG, "filename clicked =" + filename);
 
-		setResult(RESULT_OK, returnIntent);
-		finish();
-    }
+		File f = null;
 
+		try {
+			if (filename.equals("..") ) { // Can't go above sdcard
+				f = new File(currentDir.getParentFile().getAbsolutePath());
+			} else {
+				f = new File(currentDir + File.separator + filename);
+			}
+			if (f.isDirectory()) {
+				displayFiles(f);
+			} else {
+				Intent returnIntent = new Intent();
+				returnIntent.putExtra(Intent.ACTION_CHOOSER, f.getAbsolutePath());
+				setResult(RESULT_OK, returnIntent);
+				finish();
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "IO Exception");
+			e.printStackTrace();
+			Intent returnIntent = new Intent();
+			setResult(RESULT_ERROR, returnIntent);
+			finish();
+		}
+	}
+
+	/**
+	 * Adapter for displaying file names.
+	 *
+	 */
 	class FileArrayAdapter extends ArrayAdapter<String>{
 
 		private Context c;
@@ -111,9 +192,5 @@ public class FilePickerActivity extends ListActivity {
 			}
 			return v;
 		}
-
 	}
-
-
-
 }
