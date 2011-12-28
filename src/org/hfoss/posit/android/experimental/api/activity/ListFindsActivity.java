@@ -51,7 +51,7 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 	private static final String TAG = "ListFindsActivity";
-	private ArrayList<FunctionPlugin> mListMenuPlugins = null;
+	protected ArrayList<FunctionPlugin> mListMenuPlugins = null;
 
 	private static final int CONFIRM_DELETE_DIALOG = 0;
 	List<? extends Find> finds;
@@ -173,35 +173,6 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		case R.id.sync_finds_menu_item:
 			Log.i(TAG, "Sync finds menu item");
 			startActivityForResult(new Intent(this, SyncActivity.class), 0);
-//			Log.i(TAG, "Sync finds menu item");
-//			AccountManager manager = AccountManager.get(this);
-//			Account[] accounts = manager
-//					.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
-//			
-//			// Just pick the first account for now.. TODO: make this work for
-//			// multiple accounts of same type?
-//			Bundle extras = new Bundle();
-//			
-//			// Avoids index-out-of-bounds error if no such account
-//			// Must be a better way to do this?
-//			if (accounts.length != 0) {
-//				Log.i(TAG, "Requesting sync");
-//				if (!ContentResolver.getSyncAutomatically(accounts[0],getResources().getString(R.string.contentAuthority))) {
-//					Log.i(TAG, "Sync not requested. " + SyncAdapter.ACCOUNT_TYPE + " is not ON");
-//					Toast.makeText(this, "Sync not requested: " + SyncAdapter.ACCOUNT_TYPE + " is not ON", Toast.LENGTH_LONG).show();
-//				} else {
-//				ContentResolver
-//				.requestSync(
-//						accounts[0],
-//						getResources().getString(R.string.contentAuthority),
-//						extras);
-////				mAdapter.notifyDataSetChanged();
-//				Toast.makeText(this, "Sync requested", Toast.LENGTH_LONG).show();
-//				}
-//			} else {
-//				Log.i(TAG, "Sync not requested. Unable to get " + SyncAdapter.ACCOUNT_TYPE);
-//				Toast.makeText(this, "Sync error: Unable to get " + SyncAdapter.ACCOUNT_TYPE, Toast.LENGTH_LONG).show();
-//			}
 			break;
 		case R.id.map_finds_menu_item:
 			Log.i(TAG, "Map finds menu item");
@@ -220,39 +191,10 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 						startActivity(new Intent(this, plugin.getmMenuActivity()));
 				}
 			}
-
 			break;
-	
-
-		// case R.id.save_find_menu_item:
-		// saveFind();
-		// break;
-		//
-		// case R.id.delete_find_menu_item:
-		// showDialog(CONFIRM_DELETE_DIALOG);
-		// break;
-		//
-		// default:
-		// return false;
 		}
 		return true;
 	} // onMenuItemSelected
-	
-//	@Override
-//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//		super.onActivityResult(requestCode, resultCode, data);
-//		
-//		if (requestCode == 0 && resultCode == RESULT_OK) {
-//			mAdapter = (FindsListAdapter) setUpAdapter();
-//			if (!mAdapter.isEmpty()) {
-//				while (!mAdapter.items.get(mAdapter.items.size() - 1).getStatusAsString().equals("synced")){
-//					mAdapter = (FindsListAdapter) setUpAdapter();
-//					fillList(mAdapter);
-//				}
-//			}
-//		}
-//		
-//	}
 	
 	public static void syncCallback() {
 		Log.i(TAG, "Notified sync callback");
