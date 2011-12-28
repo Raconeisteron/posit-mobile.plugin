@@ -28,6 +28,8 @@ import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.activity.FindActivity;
 import org.hfoss.posit.android.experimental.plugin.FindActivityProvider;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
+import org.hfoss.posit.android.experimental.plugin.csv.CsvFindActivity;
+import org.hfoss.posit.android.experimental.plugin.csv.CsvListFindsActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -43,14 +45,16 @@ public class FindOverlay extends ItemizedOverlay {
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 	private Context mContext;
 	private boolean isTappable;
+	private String action;
 
 	/**
 	 * @param defaultMarker
 	 */
-	public FindOverlay(Drawable defaultMarker, Context c, boolean isTappable) {
+	public FindOverlay(Drawable defaultMarker, Context c, boolean isTappable, String action) {
 		super(boundCenterBottom(defaultMarker));
 		mContext = c;
 		this.isTappable = isTappable;
+		this.action = action;
 	}
 
 	/* (non-Javadoc)
@@ -85,12 +89,20 @@ public class FindOverlay extends ItemizedOverlay {
 		// Toast.makeText(mContext, mOverlays.get(pIndex).getSnippet(), Toast.LENGTH_LONG).show();
 		if (!isTappable)
 			return false;
-		Intent intent = new Intent(mContext, FindPluginManager.mFindPlugin.getmFindActivityClass());
-		intent.setAction(Intent.ACTION_EDIT);
+//		Intent intent = new Intent(mContext, FindPluginManager.mFindPlugin.getmFindActivityClass());
+		Intent intent = new Intent();
 		int id = Integer.parseInt(mOverlays.get(pIndex).getTitle());
 		Log.i(TAG, "id= " + id);
-
-		intent.putExtra(Find.ORM_ID, id); // Pass the RowID to FindActivity
+		
+		if (this.action.equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+			intent.setAction(action);
+			intent.putExtra(action, id); // Pass the RowID to FindActivity
+			intent.setClass(mContext, CsvFindActivity.class);
+		}  else  {
+			intent.setAction(Intent.ACTION_EDIT);
+			intent.putExtra(Find.ORM_ID, id); // Pass the RowID to FindActivity
+			intent.setClass(mContext, FindPluginManager.mFindPlugin.getmFindActivityClass());
+		}
 		mContext.startActivity(intent);
 		return true;
 	}

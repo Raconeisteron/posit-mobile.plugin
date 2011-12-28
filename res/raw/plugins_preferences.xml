@@ -1,6 +1,6 @@
 <PluginsPreferences>
 	<FindPlugins>
-		<Plugin active="false" type="find" name="BasicFind"
+		<Plugin active="true" type="find" name="BasicFind"
 			package="org.hfoss.posit.android.experimental.api" 
 			find_class="org.hfoss.posit.android.experimental.api.Find"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
@@ -18,9 +18,24 @@
 			main_extra_button_label2="" 
 			main_icon="posit" />
 
-<!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
-
-<!-- 			login_activity_class="org.hfoss.posit.android.experimental.api.activity.LoginActivity" -->
+<!--  Downloads Find data from a open CSV dataset -->
+		<Plugin active="false" type="find" name="CsvFind"
+			package="org.hfoss.posit.android.experimental.plugin"
+			find_class="org.hfoss.posit.android.experimental.plugin.csv.CsvFind"
+			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
+			find_activity_class="org.hfoss.posit.android.experimental.plugin.csv.CsvFindActivity"
+			extra_activity_class="" 
+			extra_activity_class2=""
+			list_finds_activity_class="org.hfoss.posit.android.experimental.plugin.csv.CsvListFindsActivity"
+			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
+			preferences_xml="posit_preferences" 
+			add_find_layout="csv_add_find"
+			list_find_layout="csv_list_row" 
+			main_list_button_label="listMuseums"
+			main_add_button_label="invisible" 
+			main_extra_button_label=""
+			main_extra_button_label2="" 
+			main_icon="posit_museum" />
 
 		<Plugin active="false" type="find" name="SecondHelpings"
 			package="org.hfoss.posit.android.experimental.plugin.sh"
@@ -59,7 +74,7 @@
 			main_icon="clp_logo" />
 
 
-		<Plugin active="true" type="find" name="OutsideInFind"
+		<Plugin active="false" type="find" name="OutsideInFind"
 			package="org.hfoss.posit.android.experimental.plugin.outsidein"
 			find_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind"
 			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
@@ -130,11 +145,11 @@
 			activity_result_action="0" />
 		<!-- To-Do Ends -->
 
-		<Plugin active="false"
+		<Plugin active="true"
 			type="function"
 			extensionPoint="listMenu"
 			name="viewfile"
-			menuIcon="ic_menu_view" menuTitle="View File"
+			menuIcon="ic_menu_view_32" menuTitle="View File"
 			menuActivity="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
 			
 		<!-- SMS Plugin Begins -->
