@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
+import org.hfoss.posit.android.experimental.plugin.sh.ShFind;
 
 import android.content.ContentValues;
 import android.util.Log;
