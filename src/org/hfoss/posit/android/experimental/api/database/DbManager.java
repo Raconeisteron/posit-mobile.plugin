@@ -482,6 +482,22 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
+	 * Inserts the list of Finds returning the number inserted.
+	 * @param finds
+	 * @return
+	 */
+	public int insertAll(List<Find> finds) {
+		int count = 0;
+		Iterator<Find> it = finds.iterator();
+		while (it.hasNext()) {
+			Find find = it.next();
+			count += insert(find);
+		}
+		return count;
+	}
+	
+	
+	/**
 	 * Inserts this find into the database.
 	 * 
 	 * @param dao
@@ -594,15 +610,16 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param dao
 	 *            the DAO provided by the ORMLite helper class.
-	 * @return the number of rows deleted.
+	 * @return the number of rows deleted. 
 	 */
 	public int delete(Find find) {
 		int rows = 0;
 		try {
 			rows = getFindDao().delete(find);
-			if (rows == 1)
+			if (rows == 1) {
 				Log.i(TAG, "Deleted find:  " + find.toString());
-			else {
+				recordChangedFind(new FindHistory(find, FindHistory.ACTION_DELETE));
+			} else {
 				Log.e(TAG, "Db Error deleting find: " + find.toString());
 				rows = 0;
 			}
@@ -692,10 +709,17 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		}
 		return rows;
 	}
-
+	
 	/**
-	 * Gets finds changed since the last sync in a given project. TODO: Fix
-	 * this, doesn't seem to get finds from the specific project id. Just
+     * Returns a list of all Finds that have been created,
+     * updated or deleted since the last sync with the server.  Each
+     * change to a Find is recorded in find_history.
+     * 
+     * Policy: We don't send the server those finds that were created
+     *  and then deleted since the last sync.  Finds are not removed
+     *  from the Db, but just marked for deletion.
+     *  
+     * TODO: Fix this, doesn't seem to get finds from the specific project id. Just
 	 * returns all finds changed since the last sync.
 	 * 
 	 * @param projectId
@@ -711,12 +735,14 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 			String lastSyncString = formatter.format(lastSync);
-
+						
 			// Query taken from old POSIT DbHelper.java.. not sure it works
 			// properly.
 			// I don't think it's properly getting the finds from your current
 			// project.
 			// It seems to return all changed finds from all the projects.
+			
+			// This query gets all changes except deletions.
 			GenericRawResults<String[]> raw = getFindHistoryDao().queryRaw(
 					"SELECT DISTINCT findhistory" + "." + FindHistory.FIND + ",findhistory" + "."
 							+ FindHistory.FIND_ACTION + " FROM findhistory, find" + " WHERE find." + Find.PROJECT_ID
@@ -725,6 +751,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 							+ lastSyncString + "'");
 
 			List<String[]> results = raw.getResults();
+			Log.i(TAG, "# change results = " + results.size());
 			finds = new ArrayList<Find>();
 
 			for (String[] result : results) {
