@@ -26,6 +26,7 @@ import java.util.List;
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
+import org.hfoss.posit.android.experimental.plugin.csv.CsvListFindsActivity;
 //
 //import org.hfoss.adhoc.AdhocService;
 //import org.hfoss.posit.android.provider.PositDbHelper;
@@ -83,6 +84,8 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	private Button search_next_Btn;
 	private Button search_prev_Btn;
 	private Button search_last_Btn;
+	
+	private static List<? extends Find> finds = null;
 
 	//private Cursor mCursor;  // Used for DB accesses
 	//private PositDbHelper mDbHelper;
@@ -95,6 +98,13 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.map_finds);
+		
+		// Check if this is a CSV Finds case
+		Intent intent = getIntent();
+		if (intent.getAction().equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+			finds = CsvListFindsActivity.getFinds();
+		}
+		
 		linearLayout = (LinearLayout) findViewById(R.id.zoomView);
 		mMapView = (MapView) findViewById(R.id.mapView);
 		mZoom = (ZoomControls) mMapView.getZoomControls();
@@ -176,6 +186,8 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		
 		searchLayout.setVisibility(LinearLayout.INVISIBLE);
 	}
+	
+	
 
 	/*
 	 * Called every 60 seconds for map updates.
@@ -222,8 +234,8 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		int pid = sp.getInt(getString(R.string.projectPref), 0);
 		
-//		List<? extends Find> finds = this.getHelper().getAllFinds();
-		List<? extends Find> finds = this.getHelper().getFindsByProjectId(pid);
+		if (finds == null) 
+			finds = this.getHelper().getFindsByProjectId(pid);
 		if (finds.size() <= 0) { // No finds
 			Toast.makeText(this, "No finds to display", Toast.LENGTH_SHORT).show();
 			finish();
@@ -242,14 +254,18 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		int longitude = 0;
 		int id = 0;
 
-		drawable = this.getResources().getDrawable(R.drawable.androidmarker);
-		FindOverlay mPoints = new FindOverlay(drawable, this, true);
+		drawable = this.getResources().getDrawable(R.drawable.bubble);
+		FindOverlay mPoints = new FindOverlay(drawable, this, true, this.getIntent().getAction());
 
 		for(Find find  : finds) {
 			latitude = (int) (find.getLatitude()*1E6);
 			longitude = (int) (find.getLongitude()*1E6);
 
-			id = find.getId();
+			if (getIntent().getAction().equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+				id = Integer.parseInt(find.getGuid());
+			} else {
+				id = find.getId();
+			}
 			String description = find.getGuid() + "\n" + find.getName() + "\n" + find.getDescription(); 
 
 			Log.i(TAG, latitude + " " + longitude + " " + description);
