@@ -48,6 +48,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ScaleDrawable;
@@ -183,7 +185,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		}
 
 		// New Find Button
-		if (FindPluginManager.mFindPlugin.mAddButtonLabel != null) {
+		if (FindPluginManager.mFindPlugin.mAddButtonLabel != null 
+				&& !FindPluginManager.mFindPlugin.mAddButtonLabel.equals(getString(R.string.invisible))) {
 			final Button addFindButton = (Button)findViewById(R.id.addFindButton);
 			//final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 			int resid = this.getResources()
@@ -194,10 +197,19 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 				addFindButton.setText(resid);
 				addFindButton.setOnClickListener(this);
 			}
+		} else {
+			Button b = (Button)findViewById(R.id.addFindButton);
+			b.setVisibility(View.GONE);
+			b = (Button)findViewById(R.id.listFindButton);
+			b.setWidth(200);
+			b.setHeight(100);
+			b.setTextSize(20);
+			b.setTextColor(Color.BLUE);
 		}
 
 		// View Finds Button
-		if (FindPluginManager.mFindPlugin.mListButtonLabel != null) {
+		if (FindPluginManager.mFindPlugin.mListButtonLabel != null
+				&& !FindPluginManager.mFindPlugin.mListButtonLabel.equals(getString(R.string.invisible))) {
 			final Button listFindButton = (Button) findViewById(R.id.listFindButton);
 			//final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
 			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mListButtonLabel, "string",
@@ -207,6 +219,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 				listFindButton.setText(resid);
 				listFindButton.setOnClickListener(this);
 			}
+		} else {
+			Button b = (Button)findViewById(R.id.listFindButton);
+			b.setVisibility(View.GONE);
 		}
 		
 		// Extra function plugin buttons
