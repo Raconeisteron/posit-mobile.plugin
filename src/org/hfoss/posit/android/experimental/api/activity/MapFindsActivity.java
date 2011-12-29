@@ -29,13 +29,9 @@ import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.csv.CsvListFindsActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -43,10 +39,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.widget.ZoomControls;
-
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -60,19 +53,17 @@ import com.google.android.maps.OverlayItem;
  *  the finds start a FindActivity. Allowing them to be edited.
  *
  */
-public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implements LocationListener {
+public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 
 	private static final String TAG = "MapFindsActivity";
 	private MapView mMapView;
 	private MapController mapController;
 	private MyLocationOverlay myLocationOverlay;
-	private List<Overlay> mOverlays;
 	private static int mapZoomLevel = 0;
-	private ZoomControls mZoom;
-	private LinearLayout linearLayout;
+//	private LinearLayout linearLayout;
 	private List<Overlay> mapOverlays;
 	private Drawable drawable;
-	private boolean zoomFirst;
+	private boolean zoomFirst = true;
 //	private LinearLayout searchLayout;
 //	private Button search_first_Btn;
 //	private Button search_next_Btn;
@@ -81,7 +72,6 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	
 	private static List<? extends Find> finds = null;
 	
-	private LocationManager mLocationManager;
 
 	/* (non-Javadoc)
 	 * @see com.google.android.maps.MapActivity#onCreate(android.os.Bundle)
@@ -100,7 +90,6 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 			}
 		}
 		
-		linearLayout = (LinearLayout) findViewById(R.id.zoomView);
 		mMapView = (MapView) findViewById(R.id.mapView);
 		mMapView.setBuiltInZoomControls(true);
 		
@@ -108,9 +97,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	    myLocationOverlay = new MyLocationOverlay(this, mMapView);
 	    mMapView.getOverlays().add(myLocationOverlay);
 	    mMapView.postInvalidate();
-	    
-		zoomFirst = true;
-		
+	    		
 //		searchLayout = (LinearLayout) findViewById(R.id.search_finds_layout);
 //		search_first_Btn = (Button) findViewById(R.id.search_finds_first);
 //		search_next_Btn = (Button) findViewById(R.id.search_finds_next);
@@ -120,10 +107,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 //		search_first_Btn.setOnClickListener(search_first_lstn);
 //		search_next_Btn.setOnClickListener(search_next_lstn);
 //		search_prev_Btn.setOnClickListener(search_prev_lstn);
-//		search_last_Btn.setOnClickListener(search_last_lstn);
-		
-		// Update location every 60 seconds
-		mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+//		search_last_Btn.setOnClickListener(search_last_lstn);		
 	}
     
 	/** 
@@ -139,24 +123,14 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		// Enable my location
 	    myLocationOverlay.enableMyLocation();
 		myLocationOverlay.enableCompass();	
-
-		mLocationManager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER, 
-				60000 /* Updates Every minute */, 
-				50, 
-				this);
 		mapFinds();
 		
-		if (zoomFirst) {
-			// Zoom into current position
-			Log.d("MapFindsActivity:onResume", "Zoom into currrent location");
-			int latitude = 0;
-			int longitude = 0;
-			
-			LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);	
-			Location loc = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			Log.d("MapFindsActivity:onResume", "Got Location " + loc);
-			
+//		if (zoomFirst) {
+//			// Zoom into current position
+//			Log.d("MapFindsActivity:onResume", "Zoom into currrent location");
+//			int latitude = 0;
+//			int longitude = 0;
+//						
 //			if (loc != null) {
 //				latitude = (int) (loc.getLatitude()*1E6);
 //				longitude = (int) (loc.getLongitude()*1E6);
@@ -179,20 +153,11 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 //					zoomFirst = false;
 //				}
 //			}
-		}
+//		}
 		
 //		searchLayout.setVisibility(LinearLayout.INVISIBLE);
 	}
-	
-	/*
-	 * Called every 60 seconds for map updates.
-	 * (non-Javadoc)
-	 * @see android.location.LocationListener#onLocationChanged(android.location.Location)
-	 */
-	public void onLocationChanged(Location location) {
 		
-	}
-	
 	/**
 	 * Called when the system is about to resume some other activity.
 	 *  It can be used to save state, if necessary.  In this case
@@ -202,24 +167,15 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	@Override
 	protected void onPause(){
 		super.onPause();
-		if (mLocationManager != null) {
-			mLocationManager.removeUpdates(this);
-		}
 		myLocationOverlay.disableMyLocation();
 	}
 
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-	}
-
+	/**
+	 * Gets the Finds to be mapped.  These may have been passed in from
+	 * Csv plugin, in which case the finds list is non-null.  Otherwise
+	 * get the Finds from the Db.
+	 */
 	private void mapFinds() {
-
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		int pid = sp.getInt(getString(R.string.projectPref), 0);
 		
@@ -240,6 +196,11 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 			mapController.setZoom(14);
 	}
 
+	/**
+	 * Displays each Find in the map View.
+	 * @param finds, a List of Finds
+	 * @return
+	 */
 	private  FindOverlay mapLayoutItems(List<? extends Find> finds) {
 		int latitude = 0;
 		int longitude = 0;
@@ -268,11 +229,6 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 			mPoints.addOverlay(new OverlayItem(new GeoPoint(latitude,longitude),String.valueOf(id),description));
 		}
 		return mPoints;
-	}
-
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
 	}
 
 	@Override
@@ -493,19 +449,4 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 //		}
 //		
 //	} // centerFinds
-
-	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-		
-	}
 }
