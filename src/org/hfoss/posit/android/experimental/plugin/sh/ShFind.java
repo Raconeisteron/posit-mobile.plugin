@@ -1,25 +1,45 @@
+/*
+ * File: ShFind.java
+ * 
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool. 
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
 package org.hfoss.posit.android.experimental.plugin.sh;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.sh.ShFind;
-
-import android.content.ContentValues;
 import android.util.Log;
-
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTable;
-import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+
+/**
+ * ShFind is an experimental Find Plugin for Second Helpings,
+ * a non-profit organization that picks up left over food 
+ * from sources and drops it off at destinations.
+ * 
+ * This version was written as a proof-of-concept.
+ * 
+ * Note that we use the FIND_TABLE_NAME rather than the class name.
+ */
 @DatabaseTable(tableName = DbManager.FIND_TABLE_NAME)
 public class ShFind extends Find {
 
@@ -29,15 +49,22 @@ public class ShFind extends Find {
 	public static final int DROPOFF = 1;
 	public static final int NOVALUE = -1;
 
+	/**
+	 * stopType is the only additional field and only
+	 * additional Db column beyond those inherited from Find.
+	 */
 	@DatabaseField(columnName = STOP_TYPE)
 	protected int stopType = NOVALUE;   // 0 = pickup, 1 = dropoff
 
-	public ShFind() {
-		// Necessary by ormlite
-	}
-	
 	/**
-	 * Creates the table for this class.
+	 * Default constructor required by OrmLite.
+	 */
+	public ShFind() {
+	}
+
+	/**
+	 * Creates the table for this class. This happens automatically
+	 * when the first Db operation is performed. 
 	 * 
 	 * @param connectionSource
 	 */
@@ -49,9 +76,7 @@ public class ShFind extends Find {
 			e.printStackTrace();
 		}
 	}
-	
-	
-		
+
 	public int getStopType() {
 		return stopType;
 	}
@@ -75,7 +100,7 @@ public class ShFind extends Find {
 			sb.append(TIME).append("=").append("").append(",");
 		if (modify_time != null)
 			sb.append(MODIFY_TIME).append("=").append(modify_time.toString())
-					.append(",");
+			.append(",");
 		else
 			sb.append(MODIFY_TIME).append("=").append("").append(",");
 		//sb.append(REVISION).append("=").append(revision).append(",");
