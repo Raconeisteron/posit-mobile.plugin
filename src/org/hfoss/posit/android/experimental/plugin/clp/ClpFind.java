@@ -1,29 +1,53 @@
-package org.hfoss.posit.android.experimental.plugin.clp;
+/*
+ * File: ClpFind.java
+ * 
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool. 
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+package org.hfoss.posit.android.experimental.plugin.clp; 
+
+
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
-
-import android.content.ContentValues;
 import android.util.Log;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.DatabaseTable;
-import com.j256.ormlite.table.DatabaseTableConfig;
 import com.j256.ormlite.table.TableUtils;
+
+/**
+ * ClpFind is an experimental Find Plugin for CL&P
+ * the electric company as an example of how a mobile
+ * app might help report and track storm damage.
+ * 
+ * This version was written as a proof-of-concept.
+ * 
+ * Note that we use the FIND_TABLE_NAME rather than the class name.
+ */
 @DatabaseTable(tableName = DbManager.FIND_TABLE_NAME)
 public class ClpFind extends Find {
 
 	public static final String TAG = "ClpInFind";
 
+	/**
+	 * Default constructor required by OrmLite.
+	 */
 	public ClpFind() {
 		// Necessary by ormlite
 	}
@@ -66,5 +90,4 @@ public class ClpFind extends Find {
 		sb.append(DELETED).append("=").append(deleted).append(",");
 		return sb.toString();
 	}
-
 }
