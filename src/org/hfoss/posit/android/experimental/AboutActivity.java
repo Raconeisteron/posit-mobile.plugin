@@ -3,7 +3,7 @@
  * 
  * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of POSIT, Portable Open Search and Identification Tool.
+ * This file is part of POSIT, Portable Open Source Information Tool.
  *
  * POSIT is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
@@ -20,15 +20,11 @@
  * 
  */
 package org.hfoss.posit.android.experimental;
-import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+
 
 /**
  * Displays basic information about POSIT, including name,
@@ -38,8 +34,7 @@ public class AboutActivity extends Activity {
 	private static final String TAG = "AboutActivity";
 	 
 	/**
-	 * To add a name to the development team, edit strings.xml and
-	 *  about_copyright.xml.
+	 * To change 'about posit' edit the about_copyright XML.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
