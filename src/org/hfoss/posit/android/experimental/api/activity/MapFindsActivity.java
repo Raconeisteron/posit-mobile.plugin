@@ -1,10 +1,9 @@
-package org.hfoss.posit.android.experimental.api.activity;
 /*
  * File: MapFindsActivity.java
  * 
  * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of POSIT, Portable Open Search and Identification Tool.
+ * This file is part of POSIT, Portable Open Source Information Tool.
  *
  * POSIT is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
@@ -20,6 +19,9 @@ package org.hfoss.posit.android.experimental.api.activity;
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
+
+package org.hfoss.posit.android.experimental.api.activity;
+
 
 import java.util.List;
 
@@ -63,13 +65,15 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	private static final String TAG = "MapFindsActivity";
 	private MapView mMapView;
 	private MapController mapController;
+	private MyLocationOverlay myLocationOverlay;
+	private List<Overlay> mOverlays;
 	private static int mapZoomLevel = 0;
 	private ZoomControls mZoom;
 	private LinearLayout linearLayout;
 	private List<Overlay> mapOverlays;
 	private Drawable drawable;
 	private boolean zoomFirst;
-	private LinearLayout searchLayout;
+//	private LinearLayout searchLayout;
 //	private Button search_first_Btn;
 //	private Button search_next_Btn;
 //	private Button search_prev_Btn;
@@ -98,10 +102,15 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		
 		linearLayout = (LinearLayout) findViewById(R.id.zoomView);
 		mMapView = (MapView) findViewById(R.id.mapView);
-		mZoom = (ZoomControls) mMapView.getZoomControls();
-		linearLayout.addView(mZoom);
+		mMapView.setBuiltInZoomControls(true);
+		
+		// Create a mylocation overlay, add it and refresh it
+	    myLocationOverlay = new MyLocationOverlay(this, mMapView);
+	    mMapView.getOverlays().add(myLocationOverlay);
+	    mMapView.postInvalidate();
+	    
 		zoomFirst = true;
-
+		
 //		searchLayout = (LinearLayout) findViewById(R.id.search_finds_layout);
 //		search_first_Btn = (Button) findViewById(R.id.search_finds_first);
 //		search_next_Btn = (Button) findViewById(R.id.search_finds_next);
@@ -126,6 +135,11 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		// Enable my location
+	    myLocationOverlay.enableMyLocation();
+		myLocationOverlay.enableCompass();	
+
 		mLocationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
 				60000 /* Updates Every minute */, 
@@ -188,26 +202,20 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	@Override
 	protected void onPause(){
 		super.onPause();
-		//stopManagingCursor(mCursor);
-		//mDbHelper.close(); // NOTE WELL: Can't close while managing cursor
-		//mCursor.close();
 		if (mLocationManager != null) {
 			mLocationManager.removeUpdates(this);
 		}
+		myLocationOverlay.disableMyLocation();
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		//mDbHelper.close();
-		//mCursor.close();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//mDbHelper.close();
-		//mCursor.close();
 	}
 
 	private void mapFinds() {
@@ -315,7 +323,16 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.my_location_mapfind_menu_item:
-			myLocation();
+			if (myLocationOverlay.isMyLocationEnabled()) {
+				myLocationOverlay.disableMyLocation();
+				myLocationOverlay.disableCompass();
+				item.setTitle(R.string.my_location_on);
+			} else {
+				myLocationOverlay.enableMyLocation();
+				myLocationOverlay.enableCompass();	
+				mapController.setCenter(myLocationOverlay.getMyLocation());
+				item.setTitle(R.string.my_location_off);
+			}
 			break;
 //		case R.id.search_finds_mapfind_menu_item:
 //			searchFinds();
@@ -332,50 +349,6 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		return true;
 	} // onMenuItemSelected
 	
-	
-	/**
-	 * Zoom in a center on your current GPS position.
-	 * If no GPS position is found it will present a toast.
-	 */
-	private void myLocation() {
-		int latitude = 0;
-		int longitude = 0;
-		
-		LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
-		Location loc = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		
-		Log.d("MapFindsActivity:onResume", "Got Location " + loc);
-		
-		if (mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			if (loc != null) {
-				latitude = (int) (loc.getLatitude()*1E6);
-				longitude = (int) (loc.getLongitude()*1E6);
-				mapController.setCenter(new GeoPoint(latitude, longitude));
-				mapController.setZoom(14);
-			} else {
-				Toast.makeText(this, "Could not retrieve GPS position. ", Toast.LENGTH_SHORT).show();
-			}
-		} else {
-			if (loc != null) {
-				Toast.makeText(this, "GPS is disabled\nMoving to last known position. ", Toast.LENGTH_SHORT).show();
-				latitude = (int) (loc.getLatitude()*1E6);
-				longitude = (int) (loc.getLongitude()*1E6);
-				mapController.setCenter(new GeoPoint(latitude, longitude));
-				mapController.setZoom(14);
-			} else {
-				Toast.makeText(this, "GPS is disabled\nCurrent position is unknown. ", Toast.LENGTH_SHORT).show();
-			}
-//			// Add an overlay for my location
-//			List<Overlay> mOverlays = mMapView.getOverlays();
-//			if (mOverlays.contains(myLocationOverlay)) {
-//				mOverlays.remove(myLocationOverlay);
-//			}
-//			myLocationOverlay = new MyLocationOverlay(this, mapView);
-//			mOverlays.add(myLocationOverlay);
-		}
-		
-	} // myLocation
 	
 //	/**
 //	 * Toggle arrows that will allow you to move between different finds.
