@@ -1,5 +1,3 @@
-package org.hfoss.posit.android.experimental.api.authentication;
-
 /*
  * Copyright (C) 2010 The Android Open Source Project
  * 
@@ -16,6 +14,8 @@ package org.hfoss.posit.android.experimental.api.authentication;
  * the License.
  */
 
+package org.hfoss.posit.android.experimental.api.authentication;
+
 import org.hfoss.posit.android.experimental.sync.Communicator;
 import org.hfoss.posit.android.experimental.sync.SyncAdapter;
 
@@ -28,8 +28,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-
-//import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 
 /**
  * This class is an implementation of AbstractAccountAuthenticator for
@@ -120,7 +118,7 @@ class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public String getAuthTokenLabel(String authTokenType) {
         if (SyncAdapter.AUTHTOKEN_TYPE.equals(authTokenType)) {
-            return "I dont know what htis is supposed to return";
+            return "I dont know what this is supposed to return";
         }
         return null;
     }
