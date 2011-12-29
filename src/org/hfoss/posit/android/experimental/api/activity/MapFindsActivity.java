@@ -101,8 +101,11 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		
 		// Check if this is a CSV Finds case
 		Intent intent = getIntent();
-		if (intent.getAction().equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
-			finds = CsvListFindsActivity.getFinds();
+		if (intent != null) {
+			String action = intent.getAction();
+			if (action != null && action.equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+				finds = CsvListFindsActivity.getFinds();
+			}
 		}
 		
 		linearLayout = (LinearLayout) findViewById(R.id.zoomView);
@@ -261,11 +264,15 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 			latitude = (int) (find.getLatitude()*1E6);
 			longitude = (int) (find.getLongitude()*1E6);
 
-			if (getIntent().getAction().equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
-				id = Integer.parseInt(find.getGuid());
-			} else {
-				id = find.getId();
+			id = find.getId();
+			Intent intent = getIntent();
+			if (intent != null) {
+				String action = intent.getAction();
+				if (action != null && action.equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+					id = Integer.parseInt(find.getGuid());
+				}
 			}
+		
 			String description = find.getGuid() + "\n" + find.getName() + "\n" + find.getDescription(); 
 
 			Log.i(TAG, latitude + " " + longitude + " " + description);

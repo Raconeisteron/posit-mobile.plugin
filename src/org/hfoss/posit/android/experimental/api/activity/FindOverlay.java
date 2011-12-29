@@ -89,12 +89,11 @@ public class FindOverlay extends ItemizedOverlay {
 		// Toast.makeText(mContext, mOverlays.get(pIndex).getSnippet(), Toast.LENGTH_LONG).show();
 		if (!isTappable)
 			return false;
-//		Intent intent = new Intent(mContext, FindPluginManager.mFindPlugin.getmFindActivityClass());
 		Intent intent = new Intent();
 		int id = Integer.parseInt(mOverlays.get(pIndex).getTitle());
 		Log.i(TAG, "id= " + id);
 		
-		if (this.action.equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+		if (action != null && action.equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
 			intent.setAction(action);
 			intent.putExtra(action, id); // Pass the RowID to FindActivity
 			intent.setClass(mContext, CsvFindActivity.class);
