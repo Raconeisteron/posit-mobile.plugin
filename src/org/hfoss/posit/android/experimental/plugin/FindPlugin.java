@@ -1,3 +1,25 @@
+/*
+ * File: FindPlugin.java
+ * 
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool. 
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
+
 package org.hfoss.posit.android.experimental.plugin;
 
 import org.hfoss.posit.android.experimental.api.Find;
@@ -10,6 +32,11 @@ import org.w3c.dom.Node;
 import android.app.Activity;
 import android.util.Log;
 
+/**
+ * A FindPlugin extends the BasicFind.  Its data is
+ * typically an extension of the data in the Posit Db.
+ *
+ */
 public class FindPlugin extends Plugin {
 
 	public static String mAddFindLayout = null;
@@ -20,7 +47,6 @@ public class FindPlugin extends Plugin {
 	public static String mExtraButtonLabel = null;
 	public static String mExtraButtonLabel2 = null;
 	
-	//protected Activity mMainActivity = null;
 	protected Class<Find> mFindClass;
 	protected Class<FindActivity> mFindActivityClass = null;
 	protected Class<ListFindsActivity> mListFindsActivityClass = null;
@@ -189,6 +215,4 @@ public class FindPlugin extends Plugin {
 	public void setmLoginActivityClass(Class<Activity> mLoginActivityClass) {
 		this.mLoginActivityClass = mLoginActivityClass;
 	}
-	
-	
 }

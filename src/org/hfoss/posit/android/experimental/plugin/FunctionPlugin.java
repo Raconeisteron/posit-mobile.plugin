@@ -1,3 +1,25 @@
+/*
+ * File: FunctionPlugin.java
+ * 
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool. 
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
+
 package org.hfoss.posit.android.experimental.plugin;
 
 import java.util.ArrayList;
@@ -10,6 +32,12 @@ import android.app.Activity;
 import android.app.Service;
 import android.util.Log;
 
+/**
+ * Function plugins implement various functions and are
+ * (supposedly) independent of each other. Function plugins
+ * attach to POSIT at pre-defined extension points.
+ *
+ */
 public class FunctionPlugin extends Plugin {
 		
 	// Extension point in PositMain
@@ -19,9 +47,9 @@ public class FunctionPlugin extends Plugin {
 	protected String mMenuTitle;
 	protected Boolean activityReturnsResult = false;
 	protected int activityResultAction = 0;
-	/* BEGINS - A list of all services this funtion plug-in requires*/
-	protected ArrayList<Class<Service>> mServices = new ArrayList<Class<Service>>();
-	/* ENDS - A list of all services this funtion plug-in requires*/
+	
+	// Function plugins can start services.
+ 	protected ArrayList<Class<Service>> mServices = new ArrayList<Class<Service>>();
 	
 	public FunctionPlugin (Activity activity, Node node) throws DOMException, ClassNotFoundException {
 		mMainActivity = activity;
@@ -122,11 +150,9 @@ public class FunctionPlugin extends Plugin {
 		this.activityResultAction = activityResultAction;
 	}
 	
-	/* BEGINS - A list of all services this funtion plug-in requires*/
 	public ArrayList<Class<Service>> getmServices() {
 		return mServices;
 	}
-	/* ENDS - A list of all services this funtion plug-in requires*/
 
 	public String toString() {
 		return super.toString() + " " + mExtensionPoint;

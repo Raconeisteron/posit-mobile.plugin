@@ -1,3 +1,25 @@
+/*
+ * File: FindPluginManager.java
+ * 
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool. 
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
+
 package org.hfoss.posit.android.experimental.plugin;
 
 import java.io.IOException;
@@ -23,6 +45,13 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+/**
+ * This class reads Plugin specifications and preferences from the
+ * raw XML file, plugins-preferences.xml, and constructs a list 
+ * of currently active plugins. Its static methods are used by Posit
+ * to access plugin activities and other plugin elements
+ *
+ */
 public class FindPluginManager {
 	private static FindPluginManager sInstance = null;
 
@@ -52,7 +81,6 @@ public class FindPluginManager {
 
 	private FindPluginManager(Activity activity) {
 		mMainActivity = activity;
-		
 	}
 
 	public static FindPluginManager initInstance(Activity activity) {
@@ -63,10 +91,15 @@ public class FindPluginManager {
 
 	public static FindPluginManager getInstance() {
 		assert (sInstance != null);
-
 		return sInstance;
 	}
 
+	/**
+	 * Reads the plugins_xml file and creates plugin objects, storing
+	 * them in the plugins list.
+	 * @param context
+	 * @param plugins_xml
+	 */
 	public void initFromResource(Context context, int plugins_xml){	
 		plugins = new ArrayList<Plugin>();
 		
@@ -191,7 +224,7 @@ public class FindPluginManager {
 	}
 	
 	/**
-	 * Returns FunctionPlugins by extension point
+	 * Returns a list of all services created by plugins.
 	 * @return
 	 */
 	public static ArrayList<Class<Service>> getAllServices() {
