@@ -621,6 +621,34 @@ public class Find implements FindInterface {
 		return fieldType;
 	}
 
+	/**
+	 * Uses the ‘haversine’ formula to calculate the great-circle distance 
+	 * between two points – that is, the shortest distance over the earth’s 
+	 * surface – giving an ‘as-the-crow-flies’ distance between the points 
+	 * (ignoring any hills, of course!).
+	 * @see http://www.movable-type.co.uk/scripts/latlong.html
+	 * @param mylat
+	 * @param mylong
+	 * @param lat
+	 * @param lon
+	 * @return
+	 */
+	public static double distance(double mylat, double mylong, double lat, double lon) {
+		//40.785148,-73.978828  Walde's apartment
+		mylat = 40.785148;
+		mylong = -73.978828;
+		double R = 6371;  // radius of earth
+		double dLat = Math.toRadians(mylat - lat);
+		double dLon = Math.toRadians(mylong - lon);
+		double lat1 = Math.toRadians(mylat);
+		double lat2 = Math.toRadians(lat);
+		double A = Math.sin(dLat/2) * Math.sin(dLat/2) +
+		Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+		double C  =  2 * Math.atan2(Math.sqrt(A), Math.sqrt(1-A)); 
+		double D = R * C;
+		return D;
+	}
+	
 	@Override
 	public String toString() {
 		return "Find [id=" + id + ", guid=" + guid + ", project_id="
