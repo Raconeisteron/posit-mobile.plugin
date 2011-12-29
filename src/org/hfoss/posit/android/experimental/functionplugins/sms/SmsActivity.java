@@ -3,7 +3,7 @@
  * 
  * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of POSIT, Portable Open Search and Identification Tool.
+ * This file is part of POSIT, Portable Open Source Information Tool.
  *
  * POSIT is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
