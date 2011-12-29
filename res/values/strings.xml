@@ -304,7 +304,8 @@
     <string name="bluetooth_sync">Sync over Bluetooth</string>
 
 	<!--  Map Finds Activity -->
-	<string name="my_location">My Location</string>
+	<string name="my_location_off">Hide My Location</string>
+	<string name="my_location_on">Show My Location</string>
 	<string name="search_finds">Search Finds</string>
 	<string name="toggle_tracks">Toggle Tracks</string>
 	<string name="center_finds">Center Finds</string>   
