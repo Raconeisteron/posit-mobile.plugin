@@ -1,12 +1,11 @@
 /*
- * File: AcdiVocaDbHelper.java
+ * File: DbManager.java
  * 
  * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of the ACDI/VOCA plugin for POSIT, Portable Open Search 
- * and Identification Tool.
+ * This file is part of POSIT, Portable Open Source Information Tool.
  *
- * This plugin is free software; you can redistribute it and/or modify
+ * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
  * by the Free Software Foundation; either version 3.0 of the License, or (at
  * your option) any later version.
@@ -23,7 +22,6 @@
 
 package org.hfoss.posit.android.experimental.api.database;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,9 +39,8 @@ import org.hfoss.posit.android.experimental.functionplugins.tracker.Expedition;
 import org.hfoss.posit.android.experimental.functionplugins.tracker.Points;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaMessage;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaUser;
 
+import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
@@ -55,19 +52,35 @@ import com.j256.ormlite.table.TableUtils;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 /**
- * The class is the interface with the Database. It controls all Db access and
- * directly handles all Db queries.
+ * The class is the interface with the SqlLite Database as mediated
+ * by the OrmLite Object-relational-mapper.  It controls all Db access 
+ * and handles all Db queries.
+ * 
+ * This class should be included as the type in all OrmLiteBaseActivities:
+ * -- e.g., ListFindsActivity extends OrmLiteBaseListActivity<DbManager>.
+ * 
+ * When so used, an DbManager object can be retrieved using the getHelper()
+ * method.
  */
 public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	private static final String TAG = "DbManager";
+	
+	// DAO objects used to access the Db tables
+	private Dao<User, Integer> userDao = null;
+	private Dao<Find, Integer> findDao = null;
+	private Dao<FindHistory, Integer> findHistoryDao = null;
+	private Dao<SyncHistory, Integer> syncHistoryDao = null;
+		
+	// DAO objects used to access the Db tables
+	private Dao<Expedition, Integer> expeditionDao = null;
+	private Dao<Points, Integer> pointsDao = null;
 
+	// Static constants used in Db queries
 	public static final String DATABASE_NAME = "posit";
 	public static final int DATABASE_VERSION = 2;
 	public static final String FIND_TABLE_NAME = "find"; // All find extensions should use this table name
@@ -80,7 +93,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	public static final String FINDS_HISTORY_TABLE = "acdi_voca_finds_history";
 	public static final String HISTORY_ID = "_id";
 	
-	
 	public static final String EXPEDITION_GPS_POINTS_TABLE = "points";
 	public static String EXPEDITION = "expedition";
 	public static final String GPS_SYNCED = "synced";
@@ -89,7 +101,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	public static String GPS_POINT_ALTITUDE = "altitude";
 	public static final int POINT_IS_SYNCED = 1;
 	public static final int POINT_NOT_SYNCED = 0;
-	
 	
 	public static final String EXPEDITION_POINTS = "expedition_points";
 	public static final String EXPEDITION_SYNCED = "expedition_synced";
@@ -105,23 +116,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	public static final String GPS_TIME = "time";
 	public static final String EXPEDITION_GPS_POINT_ROW_ID = "_id";
 
-	
-	
-	
-	
-
-	// DAO objects used to access the Db tables
-	private Dao<User, Integer> userDao = null;
-	private Dao<Find, Integer> findDao = null;
-	private Dao<FindHistory, Integer> findHistoryDao = null;
-	private Dao<SyncHistory, Integer> syncHistoryDao = null;
-	
-	
-	// DAO objects used to access the Db tables
-	private Dao<Expedition, Integer> expeditionDao = null;
-	private Dao<Points, Integer> pointsDao = null;
-
-
 	/**
 	 * Constructor just saves and opens the Db.
 	 * 
@@ -133,7 +127,8 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Invoked automatically if the Database does not exist.
+	 * Invoked automatically if the Database does not exist. It 
+	 * creates the Db tables. 
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
@@ -208,12 +203,77 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return pointsDao;
 	}
 	
-//	public Cursor fetchExpeditionsByProjectId(int mProjectId) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	/**
+	 * Returns the Database Access Object (DAO) for the AcdiVocaUser class. It
+	 * will create it or just give the cached value.
+	 */
+	public Dao<User, Integer> getUserDao() {
+		if (userDao == null) {
+			try {
+				userDao = getDao(User.class);
+			} catch (SQLException e) {
+				Log.e(TAG, "Get user DAO failed.");
+				e.printStackTrace();
+			}
+		}
+		return userDao;
+	}
+
+	/**
+	 * Returns the Database Access Object (DAO) for the Find class. It will
+	 * create it or just give the cached value.
+	 */
+	public Dao<Find, Integer> getFindDao() {
+		if (findDao == null) {
+			Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
+			try {
+				findDao = getDao(findClass);
+			} catch (SQLException e) {
+				Log.e(TAG, "Get find DAO failed.");
+				e.printStackTrace();
+			}
+		}
+		return findDao;
+	}
+
+	/**
+	 * Returns the Database Access Object (DAO) for the FindHistory class. It
+	 * will create it or just give the cached value.
+	 */
+	public Dao<FindHistory, Integer> getFindHistoryDao() {
+		if (findHistoryDao == null) {
+			try {
+				findHistoryDao = getDao(FindHistory.class);
+			} catch (SQLException e) {
+				Log.e(TAG, "Get find DAO failed.");
+				e.printStackTrace();
+			}
+		}
+		return findHistoryDao;
+	}
+
+	/**
+	 * Returns the Database Access Object (DAO) for the AcdiVocaUser class. It
+	 * will create it or just give the cached value.
+	 */
+	public Dao<SyncHistory, Integer> getSyncHistoryDao() {
+		if (syncHistoryDao == null) {
+			try {
+				syncHistoryDao = getDao(SyncHistory.class);
+			} catch (SQLException e) {
+				Log.e(TAG, "Get user DAO failed.");
+				e.printStackTrace();
+			}
+		}
+		return syncHistoryDao;
+	}
 	
-	
+
+	/**
+	 * Returns a list of Expeditions for a given project.
+	 * @param projectId, the Id of the given project.
+	 * @return 
+	 */
 	public List<? extends Expedition> fetchExpeditionsByProjectId(int projectId) {
 		List<Expedition> list = null;
 		try {
@@ -228,6 +288,11 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		}		return list;		
 	}	
 
+	/**
+	 * Creates a new expedition in the Db given its content values.
+	 * @param values, the Expedition's attr=val pairs.
+	 * @return
+	 */
 	public int addNewExpedition(ContentValues values) {
 		Expedition expedition = new Expedition(values);
 		int rows = 0;
@@ -246,10 +311,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 	
 	/**
-	 * Looks up a POInt by its row id.
+	 * Looks up a Point by its row id.
 	 * 
-	 * @param rowId
-	 *            the id of the point to look up
+	 * @param rowId the id of the point to look up
 	 * @return the point
 	 */
 	public Points getPointById(int rowId) {
@@ -262,6 +326,11 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return point;
 	}
 	
+	/**
+	 * Delete's all the point associated with a given Expedition.
+	 * @param id, the id of the given Expedition.
+	 * @return
+	 */
 	public boolean deleteExpeditionPoints(int id) {
 		List<Points> allPoints = getPointsByExpeditionId(id);
 		int size = allPoints.size();
@@ -280,6 +349,11 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return rows == size;
 	}
 
+	/**
+	 * Get an expedition's points.
+	 * @param expeditionId, the expedition's id.
+	 * @return
+	 */
 	public List<Points> getPointsByExpeditionId(int expeditionId) {
 		List<Points> list = null;
 		try {
@@ -294,6 +368,11 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return list;
 	}
 	
+	/**
+	 * Get a list of points that haven't been sent to the server.
+	 * @param expeditionId, the Expedition's Id.
+	 * @return
+	 */
 	public List<Points> getUnsyncedPointsByExpeditionId(int expeditionId) {
 		List<Points> list = null;
 		try {
@@ -310,6 +389,12 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return list;
 	}
 
+	/**
+	 * Updates a given point -- mostly marking it synced.
+	 * @param rowId, the point's id.
+	 * @param vals, the update values.
+	 * @return
+	 */
 	public boolean updateGPSPoint(int rowId, ContentValues vals) {
 		Log.i(TAG, "Updating GPS Point, rowId = " + rowId);
 		int rows = 0;
@@ -330,6 +415,12 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return rows == 1;
 	}
 
+	/**
+	 * Delete an expedition given its number (not its row id).
+	 * @param expNum, the expedition's Posit Number, as returned from
+	 * the server.
+	 * @return
+	 */
 	public boolean deleteExpedition(int expNum) {
 		Log.i(TAG, "Deleting Expedition, expNum = " + expNum);
 		int rows = 0;
@@ -342,7 +433,13 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		return rows == 1;
 	}
 
-	
+	/**
+	 * Update the given expedition, either updating its points count
+	 *  or marking it synced.
+	 * @param expNum, the expedition's number as assigned by Posit server.
+	 * @param values
+	 * @return
+	 */
 	public int updateExpedition(int expNum, ContentValues values) {
 		Log.i(TAG, "Updating Expedition, expNum = " + expNum);
 		int rows = 0;
@@ -428,6 +525,11 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	}
 
+	/**
+	 * Returns a list of Finds associated with a given project.
+	 * @param projectId, the given project's Id as assigned by Posit server.
+	 * @return
+	 */
 	public List<Find> getFindsByProjectId(int projectId) {
 		List<Find> list = null;
 		try {
@@ -444,10 +546,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Looks up a find by its ID.
+	 * Looks up a find by its row (OrmLite) ID.
 	 * 
-	 * @param id
-	 *            the id of the find to look up
+	 * @param id the id of the find to look up
 	 * @return the find
 	 */
 	public Find getFindById(int id) {
@@ -461,10 +562,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 	
 	/**
-	 * Looks up a find by its GUID.
+	 * Looks up a find by its GUID, globally unique Id.
 	 * 
-	 * @param guid
-	 *            the guid of the find to look up
+	 * @param guid the guid of the find to look up
 	 * @return the find
 	 */
 	public Find getFindByGuid(String guid) {
@@ -498,10 +598,10 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	
 	
 	/**
-	 * Inserts this find into the database.
+	 * Inserts this find into the database and updates the FindHistory
+	 *  table.
 	 * 
-	 * @param dao
-	 *            the DAO object provided by the ORMLite helper class.
+	 * @param find, the Find to be inserted
 	 * @return the number of rows inserted.
 	 */
 
@@ -524,11 +624,10 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 	
 	/**
-	 * Inserts this find into the database without an entry
+	 * Inserts this find into the database without making an entry
 	 * in FindHistory.  Used for syncing.
 	 * 
-	 * @param dao
-	 *            the DAO object provided by the ORMLite helper class.
+	 * @param find, the Find object to be inserted
 	 * @return the number of rows inserted.
 	 */
 
@@ -551,12 +650,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Updates this find in the database with the given values.
+	 * Updates the Db for the given find.
 	 * 
-	 * @param dao
-	 *            the DAO provided by the ORMLite helper class.
-	 * @param values
-	 *            a ContentValues object containing all of the values to update.
+	 * @param find, the updated Find object
 	 * @return the number of rows updated.
 	 */
 	public int update(Find find) {
@@ -578,13 +674,10 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 	
 	/**
-	 * Updates this find in the database with the given values
-	 * without adding an entry to FindHistory.  Used for syncing.
+	 * Updates the Db for the given Find without 
+	 * adding an entry to FindHistory.  Used for syncing.
 	 * 
-	 * @param dao
-	 *            the DAO provided by the ORMLite helper class.
-	 * @param values
-	 *            a ContentValues object containing all of the values to update.
+	 * @param find, the updated Find.
 	 * @return the number of rows updated.
 	 */
 	public int updateWithoutHistory(Find find) {
@@ -606,10 +699,10 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Deletes this find.
+	 * Deletes a find from the Db. Note that OrmLite truly
+	 *  removes the Find.  It doesn't just mark it deleted. 
 	 * 
-	 * @param dao
-	 *            the DAO provided by the ORMLite helper class.
+	 * @param find, the Find being deleted.  
 	 * @return the number of rows deleted. 
 	 */
 	public int delete(Find find) {
@@ -633,7 +726,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Deletes all finds with the given project Id.
 	 * @param projectID
-	 * @return an int giving the number of rows deleted.
+	 * @return a boolean representing success or failure.
 	 * NOTE:  There appears to be a bug in OrmLite's delete(Collection).
 	 * Rather than returning the number of rows deleted it seems to return 1 on success??
 	 */
@@ -822,71 +915,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			Log.e(TAG, "Db error inserting a find history: " + e.getMessage());
 		}
 		return rows;
-	}
-
-	/**
-	 * Returns the Database Access Object (DAO) for the AcdiVocaUser class. It
-	 * will create it or just give the cached value.
-	 */
-	public Dao<User, Integer> getUserDao() {
-		if (userDao == null) {
-			try {
-				userDao = getDao(User.class);
-			} catch (SQLException e) {
-				Log.e(TAG, "Get user DAO failed.");
-				e.printStackTrace();
-			}
-		}
-		return userDao;
-	}
-
-	/**
-	 * Returns the Database Access Object (DAO) for the Find class. It will
-	 * create it or just give the cached value.
-	 */
-	public Dao<Find, Integer> getFindDao() {
-		if (findDao == null) {
-			Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
-			try {
-				findDao = getDao(findClass);
-			} catch (SQLException e) {
-				Log.e(TAG, "Get find DAO failed.");
-				e.printStackTrace();
-			}
-		}
-		return findDao;
-	}
-
-	/**
-	 * Returns the Database Access Object (DAO) for the FindHistory class. It
-	 * will create it or just give the cached value.
-	 */
-	public Dao<FindHistory, Integer> getFindHistoryDao() {
-		if (findHistoryDao == null) {
-			try {
-				findHistoryDao = getDao(FindHistory.class);
-			} catch (SQLException e) {
-				Log.e(TAG, "Get find DAO failed.");
-				e.printStackTrace();
-			}
-		}
-		return findHistoryDao;
-	}
-
-	/**
-	 * Returns the Database Access Object (DAO) for the AcdiVocaUser class. It
-	 * will create it or just give the cached value.
-	 */
-	public Dao<SyncHistory, Integer> getSyncHistoryDao() {
-		if (syncHistoryDao == null) {
-			try {
-				syncHistoryDao = getDao(SyncHistory.class);
-			} catch (SQLException e) {
-				Log.e(TAG, "Get user DAO failed.");
-				e.printStackTrace();
-			}
-		}
-		return syncHistoryDao;
 	}
 
 	/**
