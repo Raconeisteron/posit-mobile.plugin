@@ -1,9 +1,9 @@
 /*
  * File: CameraActivity.java
  * 
- * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of POSIT, Portable Open Search and Identification Tool.
+ * This file is part of POSIT, Portable Open Source Information Tool.
  *
  * POSIT is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
@@ -32,9 +32,7 @@ import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 /**
  * This class calls the camera application and returns the Base64 string representation of the image
@@ -47,9 +45,6 @@ public class CameraActivity extends Activity {
 	static final int TAKE_CAMERA_REQUEST = 1000;
 	private String img_str = null; //stores base64 string of the image
 	
-	private LinearLayout linear;
-	private Button btnPic;
-	private Button btnCont;
 	private ImageView photo;
 			
     /** Called when the activity is first created. */
@@ -58,48 +53,12 @@ public class CameraActivity extends Activity {
 	    super.onCreate(savedInstanceState);
 	    requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    
-	    linear = new LinearLayout(this);
-	    linear.setOrientation(LinearLayout.VERTICAL);
-	    
-	    photo = new ImageView(this);
-	    photo.setVisibility(View.INVISIBLE); //this is just to change the button text
-	    linear.addView(photo);
- 
-	    btnPic = new Button(this);
-	    if(photo.getVisibility() == View.INVISIBLE){
-		    btnPic.setText("Take Picture");
-	    }
-	    else{
-		    btnPic.setText("Retake Picture");
-	    }
-	    linear.addView(btnPic);
-	    
-	    btnPic.setOnClickListener(new View.OnClickListener(){
-	    	public void onClick(View v){
-	    		//launch the camera
-	    		Intent pictureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-	    		//get the full picture
-	    		pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString());
-	    		//how to handle the picture taken
-	    		startActivityForResult(pictureIntent, TAKE_CAMERA_REQUEST);
-	    	}
-	    });
-	    
-	    btnCont = new Button(this);
-	    btnCont.setText("Continue");
-	    linear.addView(btnCont);
-	    
-	    btnCont.setOnClickListener(new View.OnClickListener(){
-	    	public void onClick(View v){
-	    		//pass base64 string to calling function
-				Intent intent=new Intent();  
-				intent.putExtra("Photo", img_str);
-				setResult(RESULT_OK, intent);
-	    		finish();
-	    	}
-	    });
-	    
-	    setContentView(linear);
+		//launch the camera
+		Intent pictureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		//get the full picture
+		pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString());
+		//how to handle the picture taken
+		startActivityForResult(pictureIntent, TAKE_CAMERA_REQUEST);
 	}
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -116,14 +75,16 @@ public class CameraActivity extends Activity {
 				cameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 				byte[] b = baos.toByteArray();
 				img_str = Base64.encodeToString(b, Base64.DEFAULT);
-/*				
-				//test decoding it back into an image
-				byte[] c = Base64.decode(img_str, Base64.DEFAULT);
-			    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
-*/			    
+
+				photo = new ImageView(this);
 			    photo.setImageBitmap(cameraPic);//display the retrieved image
 			    photo.setVisibility(View.VISIBLE);
-			    btnPic.setText("Retake Picture");//we now have an image	    
+
+			    //pass base64 string to calling function
+				Intent intent=new Intent();  
+				intent.putExtra("Photo", img_str);
+				setResult(RESULT_OK, intent);
+	    		finish();
 			}
 			break;
 		}
