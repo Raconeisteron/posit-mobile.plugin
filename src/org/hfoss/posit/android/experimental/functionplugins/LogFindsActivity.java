@@ -1,3 +1,25 @@
+/*
+ * File: LogFindsActivity.java
+ * 
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool. 
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
+
 package org.hfoss.posit.android.experimental.functionplugins;
 
 import java.io.BufferedWriter;
@@ -5,7 +27,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -17,12 +38,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
-
-import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
-import org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind;
-
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
+/**
+ * Plugin to log a Find to a log file.
+ *
+ */
 public class LogFindsActivity extends OrmLiteBaseActivity<DbManager> {
 
 	public static final String TAG = "LogFindsActivity";
@@ -98,8 +119,7 @@ public class LogFindsActivity extends OrmLiteBaseActivity<DbManager> {
 				
 				if (find.getIs_adhoc() != IS_LOGGED) {
 					find.setIs_adhoc(IS_LOGGED);
-//				if (((OutsideInFind)find).getIsLogged() == false) {
-//					((OutsideInFind) find).setIsLogged(true);
+
 					getHelper().update(find);
 					writer.println(new Date() + ": " + find);
 					Log.i(TAG, "Wrote to file: " + find);

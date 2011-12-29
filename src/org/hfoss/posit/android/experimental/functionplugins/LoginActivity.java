@@ -3,10 +3,9 @@
  * 
  * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of the ACDI/VOCA plugin for POSIT, Portable Open Search 
- * and Identification Tool.
+ * This file is part of POSIT, Portable Open Source Information Tool.
  *
- * This plugin is free software; you can redistribute it and/or modify
+ * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
  * by the Free Software Foundation; either version 3.0 of the License, or (at
  * your option) any later version.
@@ -22,10 +21,6 @@
  */
 package org.hfoss.posit.android.experimental.functionplugins;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.AppControlManager;
@@ -33,7 +28,6 @@ import org.hfoss.posit.android.experimental.api.LocaleManager;
 import org.hfoss.posit.android.experimental.api.User;
 import org.hfoss.posit.android.experimental.api.User.UserType;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
@@ -42,11 +36,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -54,7 +44,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 /**
- * Handles Login for ACDI/VOCA application.
+ * Handles Login for applications where users share a single phone.
  * 
  */
 public class LoginActivity extends OrmLiteBaseActivity<DbManager> implements OnClickListener {
@@ -105,7 +95,7 @@ public class LoginActivity extends OrmLiteBaseActivity<DbManager> implements OnC
 		super.onResume();
 		Log.i(TAG, "onResume");
 		
-		//AcdiVocaLocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
+		LocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
 		setContentView(R.layout.login);  // Should be done after locale configuration
 		
