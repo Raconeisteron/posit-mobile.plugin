@@ -5,16 +5,16 @@
 		android:title="@string/my_location"
 		android:icon="@android:drawable/ic_menu_mylocation" /> 
 		
-	<item android:id="@+id/search_finds_mapfind_menu_item" 
-		android:title="@string/search_finds"
-		android:icon="@android:drawable/ic_menu_search" /> 
+<!-- 	<item android:id="@+id/search_finds_mapfind_menu_item"  -->
+<!-- 		android:title="@string/search_finds" -->
+<!-- 		android:icon="@android:drawable/ic_menu_search" />  -->
 		
 	<!-- item android:id="@+id/toggle_tracks_mapfind_menu_item"
 		android:title="@string/toggle_tracks"
 		android:icon="@android:drawable/ic_menu_myplaces" /--> 
 		
-	<item android:id="@+id/center_finds_mapfind_menu_item"
-		android:title="@string/center_finds"
-		android:icon="@android:drawable/ic_menu_mapmode" /> 
+<!-- 	<item android:id="@+id/center_finds_mapfind_menu_item" -->
+<!-- 		android:title="@string/center_finds" -->
+<!-- 		android:icon="@android:drawable/ic_menu_mapmode" />  -->
 		
 </menu> 

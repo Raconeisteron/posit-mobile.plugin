@@ -27,17 +27,9 @@ import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.csv.CsvListFindsActivity;
-//
-//import org.hfoss.adhoc.AdhocService;
-//import org.hfoss.posit.android.provider.PositDbHelper;
-//import org.hfoss.posit.android.utilities.MyItemizedOverlay;
-//import org.hfoss.posit.android.utilities.Utils;
-
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -49,22 +41,19 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ZoomControls;
 
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 /**
- *  This class retrieves Finds from the POSIT DB and
+ *  This class retrieves Finds from the Db or from a Csv List and
  *  displays them as an overlay on a Google map. When clicked, 
  *  the finds start a FindActivity. Allowing them to be edited.
  *
@@ -74,21 +63,20 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	private static final String TAG = "MapFindsActivity";
 	private MapView mMapView;
 	private MapController mapController;
+	private static int mapZoomLevel = 0;
 	private ZoomControls mZoom;
 	private LinearLayout linearLayout;
 	private List<Overlay> mapOverlays;
 	private Drawable drawable;
 	private boolean zoomFirst;
 	private LinearLayout searchLayout;
-	private Button search_first_Btn;
-	private Button search_next_Btn;
-	private Button search_prev_Btn;
-	private Button search_last_Btn;
+//	private Button search_first_Btn;
+//	private Button search_next_Btn;
+//	private Button search_prev_Btn;
+//	private Button search_last_Btn;
 	
 	private static List<? extends Find> finds = null;
-
-	//private Cursor mCursor;  // Used for DB accesses
-	//private PositDbHelper mDbHelper;
+	
 	private LocationManager mLocationManager;
 
 	/* (non-Javadoc)
@@ -114,11 +102,11 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		linearLayout.addView(mZoom);
 		zoomFirst = true;
 
-		searchLayout = (LinearLayout) findViewById(R.id.search_finds_layout);
-		search_first_Btn = (Button) findViewById(R.id.search_finds_first);
-		search_next_Btn = (Button) findViewById(R.id.search_finds_next);
-		search_prev_Btn = (Button) findViewById(R.id.search_finds_previous);
-		search_last_Btn = (Button) findViewById(R.id.search_finds_last);
+//		searchLayout = (LinearLayout) findViewById(R.id.search_finds_layout);
+//		search_first_Btn = (Button) findViewById(R.id.search_finds_first);
+//		search_next_Btn = (Button) findViewById(R.id.search_finds_next);
+//		search_prev_Btn = (Button) findViewById(R.id.search_finds_previous);
+//		search_last_Btn = (Button) findViewById(R.id.search_finds_last);
 		
 //		search_first_Btn.setOnClickListener(search_first_lstn);
 //		search_next_Btn.setOnClickListener(search_next_lstn);
@@ -151,17 +139,9 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 			int latitude = 0;
 			int longitude = 0;
 			
-			LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-			
+			LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);	
 			Location loc = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			
 			Log.d("MapFindsActivity:onResume", "Got Location " + loc);
-			
-			/*if (mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-				
-			} else {
-				
-			}*/
 			
 //			if (loc != null) {
 //				latitude = (int) (loc.getLatitude()*1E6);
@@ -187,11 +167,9 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 //			}
 		}
 		
-		searchLayout.setVisibility(LinearLayout.INVISIBLE);
+//		searchLayout.setVisibility(LinearLayout.INVISIBLE);
 	}
 	
-	
-
 	/*
 	 * Called every 60 seconds for map updates.
 	 * (non-Javadoc)
@@ -248,8 +226,10 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		mapOverlays = mMapView.getOverlays();
 		mapOverlays.add(mapLayoutItems(finds));	
 		mapController = mMapView.getController();
-
-
+		if (mapZoomLevel != 0)
+			mapController.setZoom(mapZoomLevel);
+		else
+			mapController.setZoom(14);
 	}
 
 	private  FindOverlay mapLayoutItems(List<? extends Find> finds) {
@@ -291,12 +271,12 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_I) {
 			// Zoom In
-			int level = mMapView.getZoomLevel();
+			mapZoomLevel = mMapView.getZoomLevel();
 			mapController.zoomIn();
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_O) {
 			// Zoom Out
-			int level = mMapView.getZoomLevel();
+			mapZoomLevel = mMapView.getZoomLevel();
 			mapController.zoomOut();
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_S) {
@@ -337,15 +317,15 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 		case R.id.my_location_mapfind_menu_item:
 			myLocation();
 			break;
-		case R.id.search_finds_mapfind_menu_item:
-			searchFinds();
-			break;
+//		case R.id.search_finds_mapfind_menu_item:
+//			searchFinds();
+//			break;
 		//case R.id.toggle_tracks_mapfind_menu_item:
 		//	toggleTracks();
 		//	break;
-		case R.id.center_finds_mapfind_menu_item:
-			centerFinds();
-			break;
+//		case R.id.center_finds_mapfind_menu_item:
+//			centerFinds();
+//			break;
 		default:
 			return false;
 		}
@@ -386,21 +366,28 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 			} else {
 				Toast.makeText(this, "GPS is disabled\nCurrent position is unknown. ", Toast.LENGTH_SHORT).show();
 			}
+//			// Add an overlay for my location
+//			List<Overlay> mOverlays = mMapView.getOverlays();
+//			if (mOverlays.contains(myLocationOverlay)) {
+//				mOverlays.remove(myLocationOverlay);
+//			}
+//			myLocationOverlay = new MyLocationOverlay(this, mapView);
+//			mOverlays.add(myLocationOverlay);
 		}
 		
 	} // myLocation
 	
-	/**
-	 * Toggle arrows that will allow you to move between different finds.
-	 * Also shows a toast to reflect the find that you are currently looking at.
-	 */
-	private void searchFinds() {
-		if (searchLayout.getVisibility() == LinearLayout.VISIBLE) {
-			searchLayout.setVisibility(LinearLayout.INVISIBLE);
-		} else {
-			searchLayout.setVisibility(LinearLayout.VISIBLE);
-		}
-	} // searchFinds
+//	/**
+//	 * Toggle arrows that will allow you to move between different finds.
+//	 * Also shows a toast to reflect the find that you are currently looking at.
+//	 */
+//	private void searchFinds() {
+//		if (searchLayout.getVisibility() == LinearLayout.VISIBLE) {
+//			searchLayout.setVisibility(LinearLayout.INVISIBLE);
+//		} else {
+//			searchLayout.setVisibility(LinearLayout.VISIBLE);
+//		}
+//	} // searchFinds
 	
 //	private OnClickListener search_first_lstn = new OnClickListener() {
 //        public void onClick(View v) {
@@ -488,49 +475,51 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager> implemen
 //	} // toggleTracks
 	
 	
-	/**
-	 * Center and scale the map to show all of the views in the current project.
-	 */
-	private void centerFinds() {
-		int minLat;
-		int maxLat;
-		int minLong;
-		int maxLong;
-		
-		int latitude;
-		int longitude;
-		
-		List<? extends Find> finds = this.getHelper().getAllFinds();
-		if (finds.size() <= 0) {
-			// No finds at all
-			mapController.setZoom(1);
-		} else {
-			latitude = (int) (finds.get(0).getLatitude()*1E6);
-			minLat = latitude;
-			maxLat = latitude;
-			longitude = (int) (finds.get(0).getLongitude()*1E6);
-			minLong = longitude;
-			maxLong = longitude;
-			// Go through all finds
-			for (Find find : finds) {
-				latitude = (int) (find.getLatitude()*1E6);
-				longitude = (int) (find.getLongitude()*1E6);
-				// Find min and max for all latitudes and longitudes
-				if (latitude < minLat)
-					minLat = latitude;
-				if (latitude > maxLat)
-					maxLat = latitude;
-				if (longitude < minLong)
-					minLong = longitude;
-				if (longitude > maxLong)
-					maxLong = longitude;
-			}
-			mapController.zoomToSpan(maxLat - minLat, maxLong - minLong);
-			mapController.zoomOut(); // One extra zoom out so it doesn't cut off icons
-			mapController.setCenter(new GeoPoint((minLat + maxLat) / 2, (minLong + maxLong) / 2));
-		}
-		
-	} // centerFinds
+//	/**
+//	 * Center and scale the map to show all of the views in the current project.
+//   * TODO:  This needs to be revised now that MapFinds can be invoked from 
+//	 *  CsvFind which doesn't store Finds in the Db.
+//	 */
+//	private void centerFinds() {
+//		int minLat;
+//		int maxLat;
+//		int minLong;
+//		int maxLong;
+//		
+//		int latitude;
+//		int longitude;
+//		
+//		List<? extends Find> finds = this.getHelper().getAllFinds();
+//		if (finds.size() <= 0) {
+//			// No finds at all
+//			mapController.setZoom(1);
+//		} else {
+//			latitude = (int) (finds.get(0).getLatitude()*1E6);
+//			minLat = latitude;
+//			maxLat = latitude;
+//			longitude = (int) (finds.get(0).getLongitude()*1E6);
+//			minLong = longitude;
+//			maxLong = longitude;
+//			// Go through all finds
+//			for (Find find : finds) {
+//				latitude = (int) (find.getLatitude()*1E6);
+//				longitude = (int) (find.getLongitude()*1E6);
+//				// Find min and max for all latitudes and longitudes
+//				if (latitude < minLat)
+//					minLat = latitude;
+//				if (latitude > maxLat)
+//					maxLat = latitude;
+//				if (longitude < minLong)
+//					minLong = longitude;
+//				if (longitude > maxLong)
+//					maxLong = longitude;
+//			}
+//			mapController.zoomToSpan(maxLat - minLat, maxLong - minLong);
+//			mapController.zoomOut(); // One extra zoom out so it doesn't cut off icons
+//			mapController.setCenter(new GeoPoint((minLat + maxLat) / 2, (minLong + maxLong) / 2));
+//		}
+//		
+//	} // centerFinds
 
 	public void onProviderDisabled(String provider) {
 		// TODO Auto-generated method stub
