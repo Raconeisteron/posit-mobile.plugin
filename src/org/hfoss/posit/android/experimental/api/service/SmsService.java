@@ -3,7 +3,7 @@
  * 
  * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of POSIT, Portable Open Search and Identification Tool.
+ * This file is part of POSIT, Portable Open Source Information Tool.
  *
  * POSIT is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
@@ -39,6 +39,12 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
+/**
+ * Background service for sending SMS messages and handling
+ * the callback from the phone's Radio regarding the status
+ * of the attempt to send the message.
+ *
+ */
 public class SmsService extends Service {
 	public static final String TAG = "SmsManager";
 
@@ -88,8 +94,10 @@ public class SmsService extends Service {
 	}
 
 	/**
-	 * This function contains code for handling the result of attempting to send
-	 * a Find.
+	 * Callback method to handle the result of attempting to send a message. 
+	 * Each message is assigned a Broadcast receiver that is notified by 
+	 * the phone's radio regarding the status of the sent message. The 
+	 * receivers call this method.  (See transmitMessage() method below.)
 	 * 
 	 * @param context
 	 *            The context in which the calling BroadcastReceiver is running.
@@ -97,9 +105,9 @@ public class SmsService extends Service {
 	 *            Currently unused. Intended as a special BroadcastReceiver to
 	 *            send results to. (For instance, if another plugin wanted to do
 	 *            its own handling.)
-	 * @param resultCode
-	 * @param seq
-	 * @param smsMsg
+	 * @param resultCode, the code sent back by the phone's Radio
+	 * @param seq, the message's sequence number
+	 * @param smsMsg, the message being processed
 	 */
 	private synchronized void handleSentMessage(Context context,
 			BroadcastReceiver receiver, int resultCode, String seq,
@@ -161,6 +169,12 @@ public class SmsService extends Service {
 			return null;
 		}
 
+		/**
+		 * Transmits the messages stored in mMessages list. For each
+		 * message a BroadcastReceiver is created to receive the
+		 * status report on the message from the phone's radio.
+		 * @param context
+		 */
 		protected void transmitMessages(final Context context) {
 
 			mBroadcastsOutstanding = mMessages.size();
@@ -211,6 +225,8 @@ public class SmsService extends Service {
 				Log.i(TAG, "Length - 16 bit encoding = " + length[0] + " "
 						+ length[1] + " " + length[2] + " " + length[3]);
 
+				// This is where the message is actually sent. The sentPI
+				// argument links the message to its receiver. 
 				SmsManager smsMgr = SmsManager.getDefault();
 				if (length[0] == 1) {
 					// Single part message
