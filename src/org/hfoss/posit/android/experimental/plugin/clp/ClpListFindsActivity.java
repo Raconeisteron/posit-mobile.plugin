@@ -1,23 +1,36 @@
+/*
+ * File: ClpFindActivity.java
+ * 
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool. 
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
+
 package org.hfoss.posit.android.experimental.plugin.clp;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
-
-import org.hfoss.posit.android.experimental.Constants;
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Camera;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
-
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,13 +42,11 @@ public class ClpListFindsActivity extends ListFindsActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 	}
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 	}
 	
