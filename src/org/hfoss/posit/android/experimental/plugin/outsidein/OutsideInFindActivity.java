@@ -1,22 +1,38 @@
-/**
+/*
+ * File: OutsideInFindActivity.java
+ * 
+ * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool. 
+ *
+ * This code is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
+
 package org.hfoss.posit.android.experimental.plugin.outsidein;
 
 import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.activity.FindActivity;
-
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.CheckBox;
-import android.widget.Toast;
 
 
 /**
- * FindActivity subclass for Outside In plugin.
+ * FindActivity subclass for OutsideIn plugin.
  * 
  */
 public class OutsideInFindActivity extends FindActivity {
@@ -28,11 +44,6 @@ public class OutsideInFindActivity extends FindActivity {
 		Log.i(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
 
-	}
-
-	@Override
-	protected void initializeListeners() {
-		super.initializeListeners();
 	}
 
 	/**
@@ -79,8 +90,6 @@ public class OutsideInFindActivity extends FindActivity {
 	@Override
 	protected void displayContentInView(Find find) {
 		OutsideInFind oiFind = (OutsideInFind)find;
-//		EditText et = (EditText)findViewById(R.id.guidEditText);
-//		et.setText(oiFind.getGuid());
 		
 		EditText et = (EditText)findViewById(R.id.syringesInEditText);
 		et.setText(Integer.toString(oiFind.getSyringesIn()));
@@ -102,12 +111,11 @@ public class OutsideInFindActivity extends FindActivity {
 			et = (EditText)findViewById(R.id.idEditText_ybirth);
 			et.setText(guid.substring(6, 8));
 		}	
-		
 	}
-	
-	
+
 	/**
-	 * A valid Guid must have the form AABB0011
+	 * A valid Guid must have the form AABB0011. This overrides
+	 * the default validity test.
 	 */
 	@Override
 	protected boolean isValidGuid(String guid) {
@@ -154,8 +162,6 @@ public class OutsideInFindActivity extends FindActivity {
 		return guid.toString();
 	}
 	
-
-	
 	@Override
 	protected void prepareForSave(Find find) {
 		((OutsideInFind)find).isLogged = false;
@@ -166,9 +172,4 @@ public class OutsideInFindActivity extends FindActivity {
 		}
 		super.prepareForSave(find);
 	}
-
-	public void onClick(View v) {
-		super.onClick(v);
-	}
-
 }
