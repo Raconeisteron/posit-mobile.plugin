@@ -23,6 +23,7 @@ import org.hfoss.posit.android.experimental.api.service.LocationService;
 import org.hfoss.posit.android.experimental.plugin.FindPlugin;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
+import org.hfoss.posit.android.experimental.plugin.csv.CsvListFindsActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -152,7 +153,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		if (extras != null) {
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
-				Find find = getHelper().getFindById(extras.getInt(Find.ORM_ID));
+				int id = extras.getInt(Find.ORM_ID);
+				Log.i(TAG, "ORM_id = " + id);
+				Find find = getHelper().getFindById(id);
 				displayContentInView(find);
 			} else if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
 				// Pull a Bundle corresponding to a Find from the Intent and put
@@ -182,6 +185,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				}
 				find.updateObject(findBundle);
 				displayContentInView(find);
+			} else if (getIntent().getAction().equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+				
 			}
 		} else {
 			// Set real GUID
