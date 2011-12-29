@@ -1,5 +1,3 @@
-package org.hfoss.posit.android.experimental.api.authentication;
-
 /*
  * Copyright (C) 2010 The Android Open Source Project
  * 
@@ -15,6 +13,8 @@ package org.hfoss.posit.android.experimental.api.authentication;
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
+package org.hfoss.posit.android.experimental.api.authentication;
 
 import android.util.Log;
 
