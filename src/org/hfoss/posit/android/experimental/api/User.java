@@ -1,12 +1,10 @@
-package org.hfoss.posit.android.experimental.api;
-
 /*
- * File: AcdiVocaDbUser.java
+ * File: User.java
  * 
  * Copyright (C) 2011 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of the ACDI/VOCA plugin for POSIT, Portable Open Search 
- * and Identification Tool.
+ * This file is part of the ACDI/VOCA plugin for POSIT, Portable Open Source 
+ * and Information Tool.
  *
  * This plugin is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
@@ -22,6 +20,9 @@ package org.hfoss.posit.android.experimental.api;
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
+
+package org.hfoss.posit.android.experimental.api;
+
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -44,12 +45,14 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+/**
+ * 
+ * The User object for creating and persisting data for the 
+ * user table in the database. This is used with the Login
+ * Activity, which is meant for apps where multiple users 
+ * share the same phone. 
+ */
 public class User {
-
-	/**
-	 * The User object for creating and persisting data for the user table in
-	 * the database.
-	 */
 
 	public static final String TAG = "User";
 

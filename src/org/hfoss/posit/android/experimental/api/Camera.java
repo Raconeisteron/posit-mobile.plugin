@@ -37,6 +37,9 @@ import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.util.Base64;
 
+/**
+ * Utility class used primarily by the Camera function plugin.
+ */
 public class Camera {
 
 	static final int THUMBNAIL_TARGET_SIZE = 320; //width and height of thumbnail data
