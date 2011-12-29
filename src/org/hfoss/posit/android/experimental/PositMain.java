@@ -3,7 +3,7 @@
  * 
  * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
  * 
- * This file is part of POSIT, Portable Open Search and Identification Tool.
+ * This file is part of POSIT, Portable Open Source Information Tool.
  *
  * POSIT is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License (LGPL) as published 
@@ -30,14 +30,10 @@ import org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.experimental.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.experimental.api.activity.SettingsActivity;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
-import org.hfoss.posit.android.experimental.api.service.LocationService;
-import org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerDbManager;
 import org.hfoss.posit.android.experimental.plugin.FindActivityProvider;
 import org.hfoss.posit.android.experimental.plugin.FindPluginManager;
 import org.hfoss.posit.android.experimental.plugin.FunctionPlugin;
-import org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaFind;
 import org.hfoss.posit.android.experimental.plugin.acdivoca.AttributeManager;
-import org.hfoss.posit.android.experimental.plugin.Plugin;
 import org.hfoss.posit.android.experimental.sync.Communicator;
 
 import android.app.Activity;
@@ -73,39 +69,29 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
  */
 public class PositMain extends OrmLiteBaseActivity<DbManager> implements android.view.View.OnClickListener {
 
-	// extends Activity implements OnClickListener { //,RWGConstants {
-
 	private static final String TAG = "PositMain";
 
 	private static final int CONFIRM_EXIT = 0;
-
-//	public static final int LOGIN_CANCELED = 3;
-//	public static final int LOGIN_SUCCESSFUL = 4;
-
 	private SharedPreferences mSharedPrefs;
-	private Editor mSpEditor;
-	
-	//private boolean mMainMenuExtensionPointEnabled = false;
+	private Editor mSpEditor;	
 	private ArrayList<FunctionPlugin> mMainMenuPlugins = null;
 	private FunctionPlugin mMainLoginPlugin = null;
-	/* Function Button Begins */
-	private ArrayList<FunctionPlugin> mMainButtonPlugins = null;
-	/* Function Button Ends */
-	/* All Services Begins */
-	private ArrayList<Class<Service>> mServices = null;
-	/* All Services Ends */
 	
+	// A list of function plugins for this activity
+	private ArrayList<FunctionPlugin> mMainButtonPlugins = null;
+	
+	// A list of services for Posit Main
+	private ArrayList<Class<Service>> mServices = null;	
 
 	/**
-	 * Called when the activity is first created. Sets the UI layout, adds the
-	 * buttons, checks whether the phone is registered with a POSIT server.
-	 */
+	 * Handles the app's initialization.
+	 */ 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "Creating");
 
-		// Initialize plugins and managers
+		// Import all active plug-ins and attach this activity's plugins
 		FindPluginManager.initInstance(this);
 		mMainMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_MENU_EXTENSION);
 		Log.i(TAG, "# main menu plugins = " + mMainMenuPlugins.size());
@@ -118,7 +104,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		// NOTE: Not sure if this is the best way to do this -- perhaps these kinds of prefs
 		//  should go in the plugins_preferences.xml
 		// A newly installed POSIT should have no shared prefs. Set the default phone pref if
-		// it is not already set.
+		// and server prefs if not already set.
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		try {
 			String phone = mSharedPrefs.getString(getString(R.string.smsPhoneKey), "");
@@ -139,7 +125,6 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			e.printStackTrace();
 		}
 
-		
 		// Login Extension Point
 		// Run login plugin, if necessary
 		
@@ -155,40 +140,41 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 				this.startActivity(intent);
 		}
 		
-		/* All Services Begins */
+		// Start all active services, some of which are defined by plugins. 
 		mServices = FindPluginManager.getAllServices();
 		for (Class<Service> s : mServices) {
 			this.startService(new Intent(this, s));
 		}
-		/* All Services Ends */
-		
+	}
+	
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Log.i(TAG, "Resuming");
+		LocaleManager.setDefaultLocale(this); // Locale Manager should be in the API
+		startPOSIT();
 	}
 
 	/**
-	 * When POSIT starts it should either display a Registration View, if the
-	 * phone is not registered with a POSIT server, or it should display the
-	 * main View (ListFinds, AddFinds). This helper method is called in various
-	 * places in the Android, including in onCreate() and onRestart().
+	 * Initializes the PositMain UI, which can vary depending on which plugins
+	 * are active.
 	 */
 	private void startPOSIT() {
 		setContentView(R.layout.main);
 
-		// Change visibility of buttons based on UserType
-
-		// Log.i(TAG, "POSIT Start, distrStage = " +
-		// AppControlManager.displayDistributionStage(this));
-
+		// Install the app's custom icon, based on the active plugin.
 		if (FindPluginManager.mFindPlugin.mMainIcon != null) {
 			final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
 			int resID = getResources().getIdentifier(FindPluginManager.mFindPlugin.mMainIcon, "drawable", this.getPackageName());
 			mainLogo.setImageResource(resID);
 		}
 
-		// New Find Button
+		// Create and customize the AddButton.  A plugin can make this button go
+		// away by setting its label to "invisible".
 		if (FindPluginManager.mFindPlugin.mAddButtonLabel != null 
 				&& !FindPluginManager.mFindPlugin.mAddButtonLabel.equals(getString(R.string.invisible))) {
 			final Button addFindButton = (Button)findViewById(R.id.addFindButton);
-			//final ImageButton addFindButton = (ImageButton) findViewById(R.id.addFindButton);
 			int resid = this.getResources()
 					.getIdentifier(FindPluginManager.mFindPlugin.mAddButtonLabel, "string", getPackageName());
 
@@ -200,14 +186,15 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		} else {
 			Button b = (Button)findViewById(R.id.addFindButton);
 			b.setVisibility(View.GONE);
-			b = (Button)findViewById(R.id.listFindButton);
-			b.setWidth(200);
-			b.setHeight(100);
-			b.setTextSize(20);
+			b = (Button)findViewById(R.id.listFindButton);  // HACK: for Csv plugin
+			b.setWidth(200);                                // Makes the button bigger.
+			b.setHeight(100);                               // and adds color scheme.
+			b.setTextSize(20);                              // Should be generlized in Specs
 			b.setTextColor(Color.BLUE);
 		}
 
-		// View Finds Button
+		// Create and customize the ListButton.  A plugin can make this button go
+		// away by setting its label to "invisible".
 		if (FindPluginManager.mFindPlugin.mListButtonLabel != null
 				&& !FindPluginManager.mFindPlugin.mListButtonLabel.equals(getString(R.string.invisible))) {
 			final Button listFindButton = (Button) findViewById(R.id.listFindButton);
@@ -224,22 +211,18 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			b.setVisibility(View.GONE);
 		}
 		
-		// Extra function plugin buttons
+		// Activate extra buttons if necessary.
 		mMainButtonPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_BUTTON_EXTENSION);
 		
 		for (FunctionPlugin plugin : mMainButtonPlugins) {
 			int buttonID = getResources().getIdentifier(plugin.getName(), "id", getPackageName());
 			Button button = (Button) findViewById(buttonID);
-//			int iconID = getResources().getIdentifier(plugin.getmMenuIcon(), "drawable", getPackageName());
-//			ImageButton button = (ImageButton) findViewById(buttonID);
-//			button.setImageResource(iconID);
 			button.setVisibility(Button.VISIBLE);
 			button.setOnClickListener(this);
 		}
 	}
 
-	// Lifecycle methods just generate Log entries to help debug and understand
-	// flow
+	// Lifecycle methods just generate Log entries to help debug and understand flow
 
 	@Override
 	protected void onPause() {
@@ -247,15 +230,6 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		Log.i(TAG, "Pausing");
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		Log.i(TAG, "Resuming");
-
-		LocaleManager.setDefaultLocale(this); // Locale Manager should
-														// be in API
-		startPOSIT();
-	}
 
 	@Override
 	protected void onStart() {
@@ -282,6 +256,10 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	}
 
 	
+	/**
+	 * Generic onActivityResult designed to handle plugin activities that require
+	 * a result.
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.i(TAG, "onActivityResult resultcode = " + resultCode);
@@ -326,11 +304,11 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 				break;
 			case R.id.listFindButton:
 				intent = new Intent();
-//				intent.setAction(Intent.ACTION_SEND);
 				intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
 				startActivity(intent);
 				break;
-			/* Function Button Begins */
+				
+			// The default case handles all Function plugins
 			default:
 				for (FunctionPlugin plugin: mMainButtonPlugins) {
 					int buttonID = getResources().getIdentifier(plugin.getName(), "id", getPackageName());
@@ -368,7 +346,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	}
 
 	/**
-	 * Shows/Hides menus based on user type, SUPER, ADMIN, USER
+	 * Prepares custom menus based on plugin specs. 
 	 * 
 	 * @see android.app.Activity#onPrepareOptionsMenu(android.view.Menu)
 	 */
@@ -378,7 +356,6 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		// Re-inflate to force localization.
 		menu.clear();
 		MenuInflater inflater = getMenuInflater();
-//		if (mMainMenuExtensionPointEnabled){
 		if (mMainMenuPlugins.size() > 0) {
 			for (FunctionPlugin plugin: mMainMenuPlugins) {
 				MenuItem item = menu.add(plugin.getmMenuTitle());
@@ -389,17 +366,18 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		}
 		inflater.inflate(R.menu.positmain_menu, menu);
 
-		MenuItem adminMenu = menu.findItem(R.id.admin_menu_item);
-
-		// Log.i(TAG, "UserType = " + AppControlManager.getUserType());
-		// Log.i(TAG, "distribution stage = " +
-		// AppControlManager.getDistributionStage());
-		// // Hide the ADMIN menu from regular users
-		// if (AppControlManager.isRegularUser() ||
-		// AppControlManager.isAgriUser())
-		// adminMenu.setVisible(false);
-		// else
-		// adminMenu.setVisible(true);
+        // TODO: This is AcdiVoca stuff that eventually needs to go
+		// into a plugin.
+//		MenuItem adminMenu = menu.findItem(R.id.admin_menu_item);
+//		 Log.i(TAG, "UserType = " + AppControlManager.getUserType());
+//		 Log.i(TAG, "distribution stage = " +
+//		 AppControlManager.getDistributionStage());
+//		 // Hide the ADMIN menu from regular users
+//		 if (AppControlManager.isRegularUser() ||
+//		 AppControlManager.isAgriUser())
+//		 adminMenu.setVisible(false);
+//		 else
+//		 adminMenu.setVisible(true);
 
 		return super.onPrepareOptionsMenu(menu);
 
@@ -430,7 +408,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			
 		default:
 			
-			// An AuthKey is needed for plugins
+			// An AuthKey is required.  Nothing can be done until the phone
+			// sets up a POSITx account using the Android settings.  This is
+			// like setting up a Gmail account.
 			String authKey = Communicator.getAuthKey(this);
 			if (authKey == null) {
 				Toast.makeText(this, "You must go to Android > Settings > Accounts & Sync to " +
