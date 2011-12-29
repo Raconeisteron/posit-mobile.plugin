@@ -1,3 +1,25 @@
+/*
+ * File: OrmLiteBaseMapActivity.java
+ * 
+ * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Search and Identification Tool.
+ *
+ * POSIT is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
+
 package org.hfoss.posit.android.experimental.api.activity;
 
 import android.content.Context;
@@ -9,6 +31,12 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 
+/**
+ * Defines a base class that can be used to do ORM with
+ * Android MapActivity.
+ *
+ * @param <H>
+ */
 public class OrmLiteBaseMapActivity<H extends OrmLiteSqliteOpenHelper> extends MapActivity {
 	public static String TAG= "OrmLiteBaseMapActivity";
 	
