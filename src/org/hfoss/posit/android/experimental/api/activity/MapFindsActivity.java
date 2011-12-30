@@ -29,6 +29,8 @@ import org.hfoss.posit.android.experimental.R;
 import org.hfoss.posit.android.experimental.api.Find;
 import org.hfoss.posit.android.experimental.api.database.DbManager;
 import org.hfoss.posit.android.experimental.plugin.csv.CsvListFindsActivity;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -39,6 +41,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.view.View.OnClickListener;
 import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
@@ -56,19 +62,22 @@ import com.google.android.maps.OverlayItem;
 public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 
 	private static final String TAG = "MapFindsActivity";
+	
+	private static List<? extends Find> finds = null;
+
 	private MapView mMapView;
 	private MapController mapController;
 	private MyLocationOverlay myLocationOverlay;
 	private List<Overlay> mapOverlays;
 	private Drawable drawable;
 	private boolean zoomFirst = true;
-//	private LinearLayout searchLayout;
-//	private Button search_first_Btn;
-//	private Button search_next_Btn;
-//	private Button search_prev_Btn;
-//	private Button search_last_Btn;
+	private LinearLayout searchLayout;
+	private Button search_first_Btn;
+	private Button search_next_Btn;
+	private Button search_prev_Btn;
+	private Button search_last_Btn;
 	
-	private static List<? extends Find> finds = null;
+	private int mSearchIndex = 0;
 	
 
 	/* (non-Javadoc)
@@ -103,16 +112,16 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 	    mMapView.getOverlays().add(myLocationOverlay);
 	    mMapView.postInvalidate();
 	    		
-//		searchLayout = (LinearLayout) findViewById(R.id.search_finds_layout);
-//		search_first_Btn = (Button) findViewById(R.id.search_finds_first);
-//		search_next_Btn = (Button) findViewById(R.id.search_finds_next);
-//		search_prev_Btn = (Button) findViewById(R.id.search_finds_previous);
-//		search_last_Btn = (Button) findViewById(R.id.search_finds_last);
+		searchLayout = (LinearLayout) findViewById(R.id.search_finds_layout);
+		search_first_Btn = (Button) findViewById(R.id.search_finds_first);
+		search_next_Btn = (Button) findViewById(R.id.search_finds_next);
+		search_prev_Btn = (Button) findViewById(R.id.search_finds_previous);
+		search_last_Btn = (Button) findViewById(R.id.search_finds_last);
 		
-//		search_first_Btn.setOnClickListener(search_first_lstn);
-//		search_next_Btn.setOnClickListener(search_next_lstn);
-//		search_prev_Btn.setOnClickListener(search_prev_lstn);
-//		search_last_Btn.setOnClickListener(search_last_lstn);		
+		search_first_Btn.setOnClickListener(search_first_lstn);
+		search_next_Btn.setOnClickListener(search_next_lstn);
+		search_prev_Btn.setOnClickListener(search_prev_lstn);
+		search_last_Btn.setOnClickListener(search_last_lstn);		
 	}
     
 	/** 
@@ -129,38 +138,6 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 	    myLocationOverlay.enableMyLocation();
 		myLocationOverlay.enableCompass();	
 		mapFinds();
-		
-//		if (zoomFirst) {
-//			// Zoom into current position
-//			Log.d("MapFindsActivity:onResume", "Zoom into currrent location");
-//			int latitude = 0;
-//			int longitude = 0;
-//						
-//			if (loc != null) {
-//				latitude = (int) (loc.getLatitude()*1E6);
-//				longitude = (int) (loc.getLongitude()*1E6);
-//				mapController.setCenter(new GeoPoint(latitude, longitude));
-//				mapController.setZoom(14);
-//				zoomFirst = false;
-//			} else {
-//				// Move to first find
-//				if (!mCursor.moveToFirst()) {
-//					// No Finds
-//					Toast.makeText(this,"No finds.", 10000);
-//					mapController.setZoom(1);
-//				} else {
-//					// Get first "Find"
-//					Toast.makeText(this,"Could not retrieve GPS position\nMoving to first find. ", 1000);
-//					//latitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LATITUDE))*1E6);
-//					//longitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LONGITUDE))*1E6);
-//					mapController.setCenter(new GeoPoint(latitude, longitude));
-//					mapController.setZoom(14);
-//					zoomFirst = false;
-//				}
-//			}
-//		}
-		
-//		searchLayout.setVisibility(LinearLayout.INVISIBLE);
 	}
 		
 	/**
@@ -197,11 +174,6 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 		mapController = mMapView.getController();
 		
 		centerFinds();
-		
-//		if (mapZoomLevel != 0)
-//			mapController.setZoom(mapZoomLevel);
-//		else
-//			mapController.setZoom(14);
 	}
 
 	/**
@@ -240,6 +212,9 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 		return mPoints;
 	}
 
+	/**
+	 * Only works on phones with a keyboard. Should we keep?
+	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_I) {
@@ -252,7 +227,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_S) {
 			// Switch on the satellite images
-			mMapView.setSatellite(!mMapView.isSatellite());		
+			mMapView.setSatellite(!mMapView.isSatellite());	
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_T) {
 			// Switch on traffic overlays
@@ -297,9 +272,9 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 				item.setTitle(R.string.my_location_off);
 			}
 			break;
-//		case R.id.search_finds_mapfind_menu_item:
-//			searchFinds();
-//			break;
+		case R.id.search_finds_mapfind_menu_item:
+			searchFinds();
+			break;
 		//case R.id.toggle_tracks_mapfind_menu_item:
 		//	toggleTracks();
 		//	break;
@@ -313,107 +288,63 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 	} // onMenuItemSelected
 	
 	
-//	/**
-//	 * Toggle arrows that will allow you to move between different finds.
-//	 * Also shows a toast to reflect the find that you are currently looking at.
-//	 */
-//	private void searchFinds() {
-//		if (searchLayout.getVisibility() == LinearLayout.VISIBLE) {
-//			searchLayout.setVisibility(LinearLayout.INVISIBLE);
-//		} else {
-//			searchLayout.setVisibility(LinearLayout.VISIBLE);
-//		}
-//	} // searchFinds
+	/**
+	 * Toggle arrows that will allow you to move between different finds.
+	 * Also shows a toast to reflect the find that you are currently looking at.
+	 */
+	private void searchFinds() {
+		if (searchLayout.getVisibility() == LinearLayout.VISIBLE) {
+			searchLayout.setVisibility(LinearLayout.INVISIBLE);
+		} else {
+			searchLayout.setVisibility(LinearLayout.VISIBLE);
+		}
+	} // searchFinds
 	
-//	private OnClickListener search_first_lstn = new OnClickListener() {
-//        public void onClick(View v) {
-//            // On Click for Search Finds First
-//        	if (!mCursor.moveToFirst()) {
-//				// No Finds
-//				Utils.showToast(v.getContext(), "No finds.");
-//        	} else {
-//        		int latitude;
-//        		int longitude;
-//        		
-//        		Utils.showToast(v.getContext(), "Find " + (mCursor.getPosition() + 1) + " of " + mCursor.getCount());
-//        		latitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LATITUDE))*1E6);
-//				longitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LONGITUDE))*1E6);
-//				mapController.setCenter(new GeoPoint(latitude, longitude));
-//				//mapController.setZoom(14);
-//        	}
-//        }
-//    };
-//
-//    private OnClickListener search_next_lstn = new OnClickListener() {
-//        public void onClick(View v) {
-//            // On Click for Search Finds Next
-//        	if (!mCursor.moveToNext()) {
-//				// No further Finds
-//        		mCursor.moveToLast();
-//				Utils.showToast(v.getContext(), "No further finds.");
-//        	} else {
-//        		int latitude;
-//        		int longitude;
-//        		
-//        		Utils.showToast(v.getContext(), "Find " + (mCursor.getPosition() + 1) + " of " + mCursor.getCount());
-//        		latitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LATITUDE))*1E6);
-//				longitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LONGITUDE))*1E6);
-//				mapController.setCenter(new GeoPoint(latitude, longitude));
-//				//mapController.setZoom(14);
-//        	}
-//        }
-//    };
-//    
-//    private OnClickListener search_prev_lstn = new OnClickListener() {
-//        public void onClick(View v) {
-//            // On Click for Search Finds Previous
-//        	if (!mCursor.moveToPrevious()) {
-//				// No further Finds
-//        		mCursor.moveToFirst();
-//				Utils.showToast(v.getContext(), "No further finds.");
-//        	} else {
-//        		int latitude;
-//        		int longitude;
-//        		
-//        		Utils.showToast(v.getContext(), "Find " + (mCursor.getPosition() + 1) + " of " + mCursor.getCount());
-//        		latitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LATITUDE))*1E6);
-//				longitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LONGITUDE))*1E6);
-//				mapController.setCenter(new GeoPoint(latitude, longitude));
-//				//mapController.setZoom(14);
-//        	}
-//        }
-//    };
-//    
-//    private OnClickListener search_last_lstn = new OnClickListener() {
-//        public void onClick(View v) {
-//            // On Click for Search Finds Last
-//        	if (!mCursor.moveToLast()) {
-//				// No further Finds
-//				Utils.showToast(v.getContext(), "No finds.");
-//        	} else {
-//        		int latitude;
-//        		int longitude;
-//        		
-//        		Utils.showToast(v.getContext(), "Find " + (mCursor.getPosition() + 1) + " of " + mCursor.getCount());
-//        		latitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LATITUDE))*1E6);
-//				longitude = (int) (mCursor.getDouble(mCursor.getColumnIndex(PositDbHelper.FINDS_LONGITUDE))*1E6);
-//				mapController.setCenter(new GeoPoint(latitude, longitude));
-//				//mapController.setZoom(14);
-//        	}
-//        }
-//    };	
+	private void centerSelectedFind(Context context) {
+       	Find find = finds.get(mSearchIndex);
+    	double latitude = find.getLatitude();
+    	double longitude = find.getLongitude();
+    	Toast.makeText(context, "" + (mSearchIndex + 1) + "/" + finds.size()
+    			+ " " + find.getName(), Toast.LENGTH_SHORT).show();
+		mapController.setCenter(new GeoPoint((int)(latitude *1E6), (int)(longitude *1E6)));
+	}
 	
-//	/**
-//	 * Toggle the display of tracks on the map overlay.
-//	 */
-//	private void toggleTracks() {
-//		startActivity(new Intent(this, TrackerActivity.class));
-//	} // toggleTracks
-	
-	
+	private OnClickListener search_first_lstn = new OnClickListener() {
+        public void onClick(View v) {
+            // On Click for Search Finds First
+        	mSearchIndex = 0;
+        	centerSelectedFind(v.getContext());
+         }
+    };
+
+    private OnClickListener search_next_lstn = new OnClickListener() {
+        public void onClick(View v) {
+            // On Click for Search Finds Next
+        	mSearchIndex = (mSearchIndex + 1) % finds.size();
+        	centerSelectedFind(v.getContext());
+        }
+    };
+    
+    private OnClickListener search_prev_lstn = new OnClickListener() {
+        public void onClick(View v) {
+            // On Click for Search Finds Previous
+        	mSearchIndex = (mSearchIndex - 1);
+        	if (mSearchIndex <= 0)
+        		mSearchIndex = finds.size()-1;
+        	centerSelectedFind(v.getContext());
+        }
+    };
+    
+    private OnClickListener search_last_lstn = new OnClickListener() {
+        public void onClick(View v) {
+            // On Click for Search Finds Last
+           	mSearchIndex = finds.size()-1;
+        	centerSelectedFind(v.getContext());
+         }
+    };	
+		
 	/**
 	 * Center and scale the map to show all of the views in the current project.
-   * TODO:  This needs to be revised now that MapFinds can be invoked from 
 	 *  CsvFind which doesn't store Finds in the Db.
 	 */
 	private void centerFinds() {
