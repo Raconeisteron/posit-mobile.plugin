@@ -7,7 +7,7 @@
 		
 			<Preference android:key="oiAboutKey" 
 				android:title="@string/aboutItem"
-				activity_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInAboutActivity"
+				activity_class="org.hfoss.posit.android.plugin.outsidein.OutsideInAboutActivity"
 				android:summary="" />
 	
 		</PreferenceScreen>

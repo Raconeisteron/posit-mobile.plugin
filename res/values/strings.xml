@@ -3,8 +3,7 @@
 	<string name="app_name">POSITx</string>
 	<string name="version">0.5 beta</string>
 	
-<!-- 	<string name="open_helper_classname">org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInDbManager</string> -->
-	<string name="open_helper_classname">org.hfoss.posit.android.experimental.api.database.DbManager</string>
+	<string name="open_helper_classname">org.hfoss.posit.android.api.database.DbManager</string>
 		
 <!-- 	<string name="defaultServer">http://www.posit-project.org/sandbox</string> -->
 <!-- 	<string name="defaultServer">http://www.cs.trincoll.edu/~rfoeckin/positweb3</string> -->

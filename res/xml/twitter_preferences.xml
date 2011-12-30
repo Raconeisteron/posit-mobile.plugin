@@ -6,7 +6,7 @@
 		<Preference android:title="@string/twitterlogin"
 			android:defaultValue="true" android:summary="@string/twitterloginsummary"
 			android:key="@string/twitterlogin" 
-			activity_class="org.hfoss.posit.android.experimental.functionplugins.LoginTwitterActivity" />
+			activity_class="org.hfoss.posit.android.functionplugins.LoginTwitterActivity" />
 
 	</PreferenceCategory>
 

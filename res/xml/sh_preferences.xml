@@ -7,7 +7,7 @@
 		
 			<Preference android:key="shAboutKey" 
 				android:title="@string/aboutItem"
-				activity_class="org.hfoss.posit.android.experimental.plugin.sh.ShAboutActivity"
+				activity_class="org.hfoss.posit.android.plugin.sh.ShAboutActivity"
 				android:summary="" />
 	
 		</PreferenceScreen>

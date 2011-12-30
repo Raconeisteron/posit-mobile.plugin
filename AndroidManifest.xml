@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	android:versionCode="1" android:versionName="@string/version"
-	package="org.hfoss.posit.android.experimental">
+	package="org.hfoss.posit.android">
 	<uses-sdk android:minSdkVersion="8" />
 	<!-- <uses-permission android:name="android.permission.CAMERA"></uses-permission> -->
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
@@ -50,66 +50,67 @@
 			android:screenOrientation="portrait" />
 
 		<provider android:name=".api.database.FindContentProvider"
-			android:authorities="org.hfoss.posit" android:enabled="true"></provider>
-
+			android:authorities="org.hfoss.posit" android:enabled="true">
+		</provider>
 
 
 		<!-- Activities for basic POSIT plugin -->
 		<activity
-			android:name="org.hfoss.posit.android.experimental.api.activity.ListFindsActivity"
+			android:name="org.hfoss.posit.android.api.activity.ListFindsActivity"
 			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.api.activity.FindActivity"
+			android:name="org.hfoss.posit.android.api.activity.FindActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.api.activity.MapFindsActivity"
+			android:name="org.hfoss.posit.android.api.activity.MapFindsActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerActivity" />
-			
-		<activity
-			android:name="org.hfoss.posit.android.experimental.api.activity.ListProjectsActivity"
+			android:name="org.hfoss.posit.android.api.activity.ListProjectsActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<activity
-			android:name="org.hfoss.posit.android.experimental.api.activity.NewProjectActivity" 
+			android:name="org.hfoss.posit.android.api.activity.NewProjectActivity" 
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
 			
 		<!--  Activities for Function Plugins -->	
 		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.LogFindsActivity" />
+			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerActivity" />			
 		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.LoginActivity" />
+			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerListActivity" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.TrackerActivity" />
+			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerSettings" />
+		<service android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerBackgroundService"/>
+
+
 		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerListActivity" />
+			android:name="org.hfoss.posit.android.functionplugin.sms.SmsActivity" />	
 		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerSettings" />
-		<service android:name="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerBackgroundService"/>
-		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.FilePickerActivity" />
-		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
-		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.sms.SmsActivity" />	
-		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.sms.SmsViewActivity" />
-		<receiver android:name="org.hfoss.posit.android.experimental.functionplugins.sms.SmsReceiver"> 
+			android:name="org.hfoss.posit.android.functionplugin.sms.SmsViewActivity" />
+		<receiver android:name="org.hfoss.posit.android.functionplugin.sms.SmsReceiver"> 
  			<intent-filter> 
  				<action android:name="android.provider.Telephony.SMS_RECEIVED" /> 
  			</intent-filter> 
  		</receiver> 
+
+ 		<!--  Miscellaneous Function Plugins -->
 		<activity
-			android:name="org.hfoss.posit.android.experimental.functionplugins.TwitFindsActivity" />	
+			android:name="org.hfoss.posit.android.functionplugins.LogFindsActivity" />
+		<activity
+			android:name="org.hfoss.posit.android.functionplugins.LoginActivity" />
+		<activity
+			android:name="org.hfoss.posit.android.functionplugins.FilePickerActivity" />
+		<activity
+			android:name="org.hfoss.posit.android.functionplugins.FileViewActivity" />
+		<activity
+			android:name="org.hfoss.posit.android.functionplugins.TwitFindsActivity" />	
 		<activity 
-			android:name="org.hfoss.posit.android.experimental.functionplugins.LoginTwitterActivity"
+			android:name="org.hfoss.posit.android.functionplugins.LoginTwitterActivity"
 			android:launchMode="singleInstance" >
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW"/>
@@ -119,59 +120,59 @@
 			</intent-filter>	
 		</activity>
 
-		<!-- Activities for CsvFind plugin -->
+		<!-- Activities for Find Plugin CsvFind plugin -->
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.csv.CsvFindActivity"
+			android:name="org.hfoss.posit.android.plugin.csv.CsvFindActivity"
 			android:screenOrientation="portrait"
 			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.csv.CsvListFindsActivity"
+			android:name="org.hfoss.posit.android.plugin.csv.CsvListFindsActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<!-- Activities for Outside In plugin -->
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFindActivity"
+			android:name="org.hfoss.posit.android.plugin.outsidein.OutsideInFindActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInListFindsActivity"
+			android:name="org.hfoss.posit.android.plugin.outsidein.OutsideInListFindsActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInAboutActivity"
+			android:name="org.hfoss.posit.android.plugin.outsidein.OutsideInAboutActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<!-- Activities for CLP plugin -->
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.clp.ClpFindActivity"
+			android:name="org.hfoss.posit.android.plugin.clp.ClpFindActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.clp.ClpListFindsActivity"
+			android:name="org.hfoss.posit.android.plugin.clp.ClpListFindsActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.clp.ClpAboutActivity"
+			android:name="org.hfoss.posit.android.plugin.clp.ClpAboutActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<!-- Activities for SecondHelpings plugin -->
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.sh.ShFindActivity"
+			android:name="org.hfoss.posit.android.plugin.sh.ShFindActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.sh.ShListFindsActivity"
+			android:name="org.hfoss.posit.android.plugin.sh.ShListFindsActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.sh.ShAboutActivity"
+			android:name="org.hfoss.posit.android.plugin.sh.ShAboutActivity"
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 
@@ -184,41 +185,41 @@
 			android:launchMode="singleTop" android:screenOrientation="portrait"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaListFindsActivity"
+			android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaListFindsActivity"
 			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaLookupActivity"
+			android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaLookupActivity"
 			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 		<activity android:name=".plugin.acdivoca.AcdiVocaUpdateFindActivity"
 
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.api.activity.LoginActivity"
+			android:name="org.hfoss.posit.android.api.activity.LoginActivity"
 			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.api.activity.SearchFindsActivity"
+			android:name="org.hfoss.posit.android.api.activity.SearchFindsActivity"
 			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.acdivoca.SearchFilterActivity"
+			android:name="org.hfoss.posit.android.plugin.acdivoca.SearchFilterActivity"
 			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaAdminActivity"
-			android:configChanges="orientation|keyboardHidden"
-			android:screenOrientation="portrait" android:launchMode="singleTop" />
-
-		<activity
-			android:name="org.hfoss.posit.android.experimental.api.activity.SettingsActivity"
+			android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaAdminActivity"
 			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 
+		<activity
+			android:name="org.hfoss.posit.android.api.activity.SettingsActivity"
+			android:configChanges="orientation|keyboardHidden"
+			android:screenOrientation="portrait" android:launchMode="singleTop" />
+
 
 		<activity
-			android:name="org.hfoss.posit.android.experimental.plugin.acdivoca.AcdiVocaSmsManager"
+			android:name="org.hfoss.posit.android.plugin.acdivoca.AcdiVocaSmsManager"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 
 		<activity android:name=".SettingsActivity"
@@ -227,12 +228,12 @@
 		<activity android:name=".api.authentication.AuthenticatorActivity"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 
-		<activity android:name="org.hfoss.posit.android.experimental.sync.SyncActivity"
+		<activity android:name="org.hfoss.posit.android.sync.SyncActivity"
 			android:launchMode="singleTop" />
 			
-		<service android:name="org.hfoss.posit.android.experimental.api.service.SmsService"></service>
+		<service android:name="org.hfoss.posit.android.api.service.SmsService"></service>
 
-		<service android:name="org.hfoss.posit.android.experimental.sync.SyncService"
+		<service android:name="org.hfoss.posit.android.sync.SyncService"
 			android:exported="true">
 			<intent-filter>
 				<action android:name="android.content.SyncAdapter" />
@@ -250,9 +251,11 @@
 			<meta-data android:name="android.accounts.AccountAuthenticator"
 				android:resource="@xml/authenticator" />
 		</service>
+		
 		<activity android:name=".functionplugins.SetReminder" android:theme="@android:style/Theme.Translucent"></activity>
 		<service android:name=".api.service.LocationService"></service>
 		<activity android:name=".functionplugins.NotifyReminder" android:theme="@android:style/Theme.Translucent"></activity>
 		<activity android:name=".functionplugins.CameraActivity" android:screenOrientation="portrait"></activity>
+
 	</application>
 </manifest>
