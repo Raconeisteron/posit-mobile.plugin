@@ -54,7 +54,9 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	protected ArrayList<FunctionPlugin> mListMenuPlugins = null;
 
 	private static final int CONFIRM_DELETE_DIALOG = 0;
-	List<? extends Find> finds;
+	public static final String ACTION_LIST_FINDS = "list_finds";
+
+	private static List<? extends Find> finds;
 	
 	protected static FindsListAdapter mAdapter = null;
 	
@@ -176,7 +178,10 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 			break;
 		case R.id.map_finds_menu_item:
 			Log.i(TAG, "Map finds menu item");
-			startActivity(new Intent(this, MapFindsActivity.class));
+			intent = new Intent();
+			intent.setAction(ACTION_LIST_FINDS);
+			intent.setClass(this, MapFindsActivity.class);			
+			startActivity(intent);
 			break;
 
 		case R.id.delete_finds_menu_item:
@@ -240,6 +245,13 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		return success;
 	}
 
+	/**
+	 * Returns a list of Finds.
+	 */
+	public static List<? extends Find> getFinds() {
+		return finds;
+	}
+	
 	/**
 	 * Adapter for displaying finds.
 	 * 
