@@ -5,9 +5,9 @@
 		android:title="@string/my_location_off"
 		android:icon="@android:drawable/ic_menu_mylocation" /> 
 		
-<!-- 	<item android:id="@+id/search_finds_mapfind_menu_item"  -->
-<!-- 		android:title="@string/search_finds" -->
-<!-- 		android:icon="@android:drawable/ic_menu_search" />  -->
+	<item android:id="@+id/search_finds_mapfind_menu_item" 
+		android:title="@string/search_finds"
+		android:icon="@android:drawable/ic_menu_search" /> 
 		
 	<!-- item android:id="@+id/toggle_tracks_mapfind_menu_item"
 		android:title="@string/toggle_tracks"
