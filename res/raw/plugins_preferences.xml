@@ -2,15 +2,15 @@
 <!-- FindPlugins are mutually exclusive. Only 1 of the following can be active. -->
 	<FindPlugins>
 	    <!-- BasicFind is the original POSIT: name, desc, lat, long,  -->
-		<Plugin active="false" type="find" name="BasicFind"
-			package="org.hfoss.posit.android.experimental.api" 
-			find_class="org.hfoss.posit.android.experimental.api.Find"
-			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
-			find_activity_class="org.hfoss.posit.android.experimental.api.activity.FindActivity"
+		<Plugin active="true" type="find" name="BasicFind"
+			package="org.hfoss.posit.android.api" 
+			find_class="org.hfoss.posit.android.api.Find"
+			find_factory="org.hfoss.posit.android.api.FindFactory"
+			find_activity_class="org.hfoss.posit.android.api.activity.FindActivity"
 			extra_activity_class="" 
 			extra_activity_class2=""
-			list_finds_activity_class="org.hfoss.posit.android.experimental.api.activity.ListFindsActivity"
-			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
+			list_finds_activity_class="org.hfoss.posit.android.api.activity.ListFindsActivity"
+			find_data_manager="org.hfoss.posit.android.api.database.DbManager"
 			preferences_xml="posit_preferences" 
 			add_find_layout="add_find"
 			list_find_layout="list_row" 
@@ -22,14 +22,14 @@
 
 		<!--  A CsvFind is uneditable. Used to download and display Csv data. -->
 		<Plugin active="false" type="find" name="CsvFind"
-			package="org.hfoss.posit.android.experimental.plugin"
-			find_class="org.hfoss.posit.android.experimental.plugin.csv.CsvFind"
-			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
-			find_activity_class="org.hfoss.posit.android.experimental.plugin.csv.CsvFindActivity"
+			package="org.hfoss.posit.android.plugin"
+			find_class="org.hfoss.posit.android.plugin.csv.CsvFind"
+			find_factory="org.hfoss.posit.android.api.FindFactory"
+			find_activity_class="org.hfoss.posit.android.plugin.csv.CsvFindActivity"
 			extra_activity_class="" 
 			extra_activity_class2=""
-			list_finds_activity_class="org.hfoss.posit.android.experimental.plugin.csv.CsvListFindsActivity"
-			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
+			list_finds_activity_class="org.hfoss.posit.android.plugin.csv.CsvListFindsActivity"
+			find_data_manager="org.hfoss.posit.android.api.database.DbManager"
 			preferences_xml="posit_preferences" 
 			add_find_layout="csv_add_find"
 			list_find_layout="csv_list_row" 
@@ -41,14 +41,14 @@
 
 		<!--  SecondHelpings is a plugin for a nonprofit in SC -->
 		<Plugin active="false" type="find" name="SecondHelpings"
-			package="org.hfoss.posit.android.experimental.plugin.sh"
-			find_class="org.hfoss.posit.android.experimental.plugin.sh.ShFind"
-			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
-			find_activity_class="org.hfoss.posit.android.experimental.plugin.sh.ShFindActivity"
+			package="org.hfoss.posit.android.plugin.sh"
+			find_class="org.hfoss.posit.android.plugin.sh.ShFind"
+			find_factory="org.hfoss.posit.android.api.FindFactory"
+			find_activity_class="org.hfoss.posit.android.plugin.sh.ShFindActivity"
 			extra_activity_class="" 
 			extra_activity_class2=""
-			list_finds_activity_class="org.hfoss.posit.android.experimental.plugin.sh.ShListFindsActivity"
-			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
+			list_finds_activity_class="org.hfoss.posit.android.plugin.sh.ShListFindsActivity"
+			find_data_manager="org.hfoss.posit.android.api.database.DbManager"
 			preferences_xml="sh_preferences" 
 			add_find_layout="sh_add_find"
 			list_find_layout="list_row" 
@@ -60,14 +60,14 @@
 
 		<!-- Proof-of-concept prototype for CL&P -->
 		<Plugin active="false" type="find" name="ClpFind"
-			package="org.hfoss.posit.android.experimental.plugin.clp"
-			find_class="org.hfoss.posit.android.experimental.plugin.clp.ClpFind"
-			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
-			find_activity_class="org.hfoss.posit.android.experimental.plugin.clp.ClpFindActivity"
+			package="org.hfoss.posit.android.plugin.clp"
+			find_class="org.hfoss.posit.android.plugin.clp.ClpFind"
+			find_factory="org.hfoss.posit.android.api.FindFactory"
+			find_activity_class="org.hfoss.posit.android.plugin.clp.ClpFindActivity"
 			extra_activity_class="" 
 			extra_activity_class2=""
-			list_finds_activity_class="org.hfoss.posit.android.experimental.plugin.clp.ClpListFindsActivity"
-			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
+			list_finds_activity_class="org.hfoss.posit.android.plugin.clp.ClpListFindsActivity"
+			find_data_manager="org.hfoss.posit.android.api.database.DbManager"
 			preferences_xml="clp_preferences" 
 			add_find_layout="add_find"
 			list_find_layout="list_row" 
@@ -78,15 +78,15 @@
 			main_icon="clp_logo" />
 
 		<!--  Proof-of-concept prototype for nonprofit in Portland, OR -->
-		<Plugin active="true" type="find" name="OutsideInFind"
-			package="org.hfoss.posit.android.experimental.plugin.outsidein"
-			find_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFind"
-			find_factory="org.hfoss.posit.android.experimental.api.FindFactory"
-			find_activity_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInFindActivity"
+		<Plugin active="false" type="find" name="OutsideInFind"
+			package="org.hfoss.posit.android.plugin.outsidein"
+			find_class="org.hfoss.posit.android.plugin.outsidein.OutsideInFind"
+			find_factory="org.hfoss.posit.android.api.FindFactory"
+			find_activity_class="org.hfoss.posit.android.plugin.outsidein.OutsideInFindActivity"
 			extra_activity_class="" 
 			extra_activity_class2=""
-			list_finds_activity_class="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInListFindsActivity"
-			find_data_manager="org.hfoss.posit.android.experimental.api.database.DbManager"
+			list_finds_activity_class="org.hfoss.posit.android.plugin.outsidein.OutsideInListFindsActivity"
+			find_data_manager="org.hfoss.posit.android.api.database.DbManager"
 			preferences_xml="outsidein_preferences" 
 			add_find_layout="outsidein_add_find"
 			list_find_layout="outsidein_list_row" 
@@ -105,7 +105,7 @@
 			name="Capture Media" 
 			menuIcon="ic_menu_camera" 
 			menuTitle="Capture Media"
-			menuActivity="org.hfoss.posit.android.experimental.functionplugins.CameraActivity" 
+			menuActivity="org.hfoss.posit.android.functionplugins.CameraActivity" 
 			activity_returns_result="true"
 			activity_result_action="1" />
 
@@ -116,7 +116,7 @@
 			name="map" 
 			menuIcon="ic_menu_mapmode" 
 			menuTitle="Map Finds"
-			menuActivity="org.hfoss.posit.android.experimental.api.activity.MapFindsActivity" />
+			menuActivity="org.hfoss.posit.android.api.activity.MapFindsActivity" />
 
        <!-- Two extra buttons in PositMain -->
        <Plugin active="false"
@@ -124,7 +124,7 @@
             extensionPoint="mainButton"
             name="extraButton"
             menuIcon="ic_menu_add_text" menuTitle="Extra Button"
-            menuActivity="org.hfoss.posit.android.experimental.api.activity.FindActivity"
+            menuActivity="org.hfoss.posit.android.api.activity.FindActivity"
             activity_returns_result="false"
             activity_result_action="0" />
 
@@ -133,7 +133,7 @@
             extensionPoint="mainButton"
             name="extraButton2"
             menuIcon="ic_menu_view" menuTitle="Extra Button 2"
-            menuActivity="org.hfoss.posit.android.experimental.plugin.outsidein.OutsideInListFindsActivity"
+            menuActivity="org.hfoss.posit.android.plugin.outsidein.OutsideInListFindsActivity"
             activity_returns_result="false"
             activity_result_action="0" />
        
@@ -144,8 +144,8 @@
 			name="setReminder" 
 			menuIcon="ic_menu_list" menuTitle="Set Reminder"
 			preferences_xml="todo_preferences" 
-			menuActivity="org.hfoss.posit.android.experimental.functionplugins.SetReminder"
-			service="org.hfoss.posit.android.experimental.api.service.LocationService"
+			menuActivity="org.hfoss.posit.android.functionplugins.SetReminder"
+			service="org.hfoss.posit.android.api.service.LocationService"
 			activity_returns_result="true"
 			activity_result_action="0" />
 
@@ -155,16 +155,16 @@
 			extensionPoint="listMenu"
 			name="viewfile"
 			menuIcon="ic_menu_view_32" menuTitle="View File"
-			menuActivity="org.hfoss.posit.android.experimental.functionplugins.FileViewActivity" />
+			menuActivity="org.hfoss.posit.android.functionplugins.FileViewActivity" />
 			
 		<!-- SMS Plugin sends and receives Finds as SMS messages. -->
-		<Plugin active="true"
+		<Plugin active="false"
 			type="function"
 			extensionPoint="addFindMenu"
 			name="sendsms"
 			menuIcon="ic_menu_send" menuTitle="Send SMS"
 			preferences_xml="sms_preferences"
-			menuActivity="org.hfoss.posit.android.experimental.functionplugins.sms.SmsActivity" />
+			menuActivity="org.hfoss.posit.android.functionplugin.sms.SmsActivity" />
 
 		<!--  TwitFind posts Finds on Twitter -->
 		<Plugin active="false" 
@@ -175,7 +175,7 @@
 			menuIcon="ic_twitter_48" menuTitle="Twit Find"
 			activity_returns_result="true"
 			activity_result_action="0" 
-			menuActivity="org.hfoss.posit.android.experimental.functionplugins.TwitFindsActivity" />
+			menuActivity="org.hfoss.posit.android.functionplugins.TwitFindsActivity" />
 			
 		<!--  Log plugin logs Find data to a log file on the SdCard. -->	
 		<Plugin active="false" 
@@ -183,14 +183,14 @@
 			extensionPoint="listMenu"
 			name="log" 
 			menuIcon="menu_log_med_grey" menuTitle="Log Finds"
-			menuActivity="org.hfoss.posit.android.experimental.functionplugins.LogFindsActivity" />
+			menuActivity="org.hfoss.posit.android.functionplugins.LogFindsActivity" />
 
 		<!--  Login plugin provides support for apps that share a phone among users. -->
 		<Plugin active="false" 
 			type="function" 
 			extensionPoint="mainLogin"
 			name="login"
-			activity="org.hfoss.posit.android.experimental.functionplugins.LoginActivity" 
+			activity="org.hfoss.posit.android.functionplugins.LoginActivity" 
 			activity_returns_result="true"
 			activity_result_action="0"
 			/>
@@ -203,11 +203,11 @@
  			 name="tracker" 
 			 menuIcon="radar" 
 			 menuTitle="Tracker Activity"
-			 menuActivity="org.hfoss.posit.android.experimental.functionplugins.tracker.TrackerActivity" />			
+			 menuActivity="org.hfoss.posit.android.functionplugin.tracker.TrackerActivity" />			
 
 
 		<!-- <Plugin active="true" name="AcdiVocaFind" -->
-		<!-- package="org.hfoss.posit.android.experimental.plugin.acdivoca" -->
+		<!-- package="org.hfoss.posit.android.plugin.acdivoca" -->
 		<!-- find_factory="AcdiVocaFindFactory" -->
 		<!-- find_activity_class="AcdiVocaMchnFindActivity" -->
 		<!-- extra_activity_class="AcdiVocaUpdateFindActivity" -->
@@ -225,7 +225,7 @@
 		<!-- list_finds_activity_class="AcdiVocaSendSmsActivity" -->
 
 		<!-- <Plugin active="true" name="AcdiVocaFind2" -->
-		<!-- package="org.hfoss.posit.android.experimental.plugin.acdivoca" -->
+		<!-- package="org.hfoss.posit.android.plugin.acdivoca" -->
 		<!-- find_factory="AcdiVocaFindFactory" -->
 		<!-- find_activity_class="AcdiVocaFindActivity" -->
 		<!-- extra_activity_class="AcdiVocaUpdateActivity" -->

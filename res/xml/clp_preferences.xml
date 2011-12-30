@@ -7,7 +7,7 @@
 		
 			<Preference android:key="clpAboutKey" 
 				android:title="@string/aboutItem"
-				activity_class="org.hfoss.posit.android.experimental.plugin.clp.ClpAboutActivity"
+				activity_class="org.hfoss.posit.android.plugin.clp.ClpAboutActivity"
 				android:summary="" />
 	
 		</PreferenceScreen>
