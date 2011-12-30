@@ -360,11 +360,13 @@ public class CsvListFindsActivity extends ListFindsActivity {
 	 */
 	protected class CsvListAdapter extends ArrayAdapter<Find> {
 		protected List<? extends Find> items;
+		Context context;
 
 		public CsvListAdapter(Context context, int textViewResourceId, List list) {
 			super(context, textViewResourceId, list);
 			Log.i(TAG, "FileViewListAdapter constructor");
 			this.items = list;
+			this.context = context;
 		}
 
 		@Override
@@ -373,33 +375,40 @@ public class CsvListFindsActivity extends ListFindsActivity {
 
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-				int resId = getResources().getIdentifier(FindPluginManager.mFindPlugin.mListFindLayout, "layout", getPackageName());
+				int resId = getResources().getIdentifier("csv_list_row", "layout", getPackageName());
 				v = vi.inflate(resId, null);
 
 			}
 			Find find = items.get(position);
 			if (find != null) {
 				TextView tv = (TextView) v.findViewById(R.id.name);
-				tv.setText("" + find.getName());
+				if (tv != null) 
+					tv.setText("" + find.getName());
 				tv = (TextView) v.findViewById(R.id.description_id);
-				tv.setText(((CsvFind)find).getFullAddress());
+				if (tv != null)
+					tv.setText(((CsvFind)find).getFullAddress());
 				tv = (TextView) v.findViewById(R.id.latitude);
-				tv.setVisibility(View.GONE);
-				tv.setText("" + find.getLatitude());
+				if (tv != null) {
+					tv.setVisibility(View.GONE);
+					tv.setText("" + find.getLatitude());
+				}
 				tv = (TextView) v.findViewById(R.id.longitude);
-				tv.setVisibility(View.GONE);
-				tv.setText("" + find.getLongitude());
+				if (tv != null) {
+					tv.setVisibility(View.GONE);
+					tv.setText("" + find.getLongitude());
+				}
 				tv = (TextView) v.findViewById(R.id.id);
-				tv.setText(find.getGuid());
-				tv.setVisibility(View.GONE);
+				if (tv != null) {
+					tv.setText(find.getGuid());
+					tv.setVisibility(View.GONE);
+				}
 				
 				ImageView iv = (ImageView) v.findViewById(R.id.find_image);
-				if (Integer.parseInt(find.getGuid()) % 2 == 0) {
+				if (iv != null && Integer.parseInt(find.getGuid()) % 2 == 0) {
 					iv.setImageResource(R.drawable.museum_icon_32);
 					v.setBackgroundColor(Color.DKGRAY);
 				}
-				else {
+				else if (iv != null) {
 					iv.setImageResource(R.drawable.museum_icon);
 					v.setBackgroundColor(Color.BLACK);
 				}
