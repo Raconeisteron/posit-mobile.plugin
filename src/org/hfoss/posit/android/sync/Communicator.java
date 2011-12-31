@@ -65,7 +65,7 @@ import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
 import org.hfoss.posit.android.api.database.DbHelper;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.functionplugin.tracker.TrackerActivity;
+//import org.hfoss.posit.android.functionplugin.tracker.TrackerActivity;
 import org.hfoss.posit.android.plugin.FindPluginManager;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1477,7 +1477,7 @@ public class Communicator {
 			Integer i = Integer.parseInt(response);
 			return i;
 		} catch (NumberFormatException e) {
-			Log.e(TrackerActivity.TAG, "Communicator, registerExpeditionId, Invalid response received");
+			Log.e(TAG, "Communicator, registerExpeditionId, Invalid response received");
 			return -1;
 		}
 	}
@@ -1518,10 +1518,10 @@ public class Communicator {
 		String server = prefs.getString(SERVER_PREF, "");
 
 			//long swath, int expedition) {
-		Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint " + lat + " " + lng + " " + time);
+		Log.i(TAG, "Communicator, registerExpeditionPoint " + lat + " " + lng + " " + time);
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(sendMap);
-		Log.i(TrackerActivity.TAG, "Sendmap= " + sendMap.toString());
+		Log.i(TAG, "Sendmap= " + sendMap.toString());
 		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="  + this.getAuthKey(context);
 		sendMap.put(DbManager.GPS_POINT_LATITUDE, "" + lat);
 		sendMap.put(DbManager.GPS_POINT_LONGITUDE, lng + "");
@@ -1529,10 +1529,10 @@ public class Communicator {
 		sendMap.put(DbManager.GPS_POINT_SWATH, "" + swath);
 		sendMap.put(DbManager.EXPEDITION, expedition + "");
 		sendMap.put(DbManager.GPS_TIME, time + "");
-		Log.i(TrackerActivity.TAG, "Sendmap= " + sendMap.toString());
+		Log.i(TAG, "Sendmap= " + sendMap.toString());
 		
 		String response = doHTTPPost(addExpeditionUrl, sendMap);
-		Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint, response: " + response);
+		Log.i(TAG, "Communicator, registerExpeditionPoint, response: " + response);
 		return response;
 	}
 	

@@ -121,7 +121,7 @@ public class LoginActivity extends OrmLiteBaseActivity<DbManager> implements OnC
 				
 				// Remember what type of user this is -- for controlling menus, etc.			
 				AppControlManager.setUserType(userTypeOrdinal);
-				Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
+//				Log.i(TAG, "UserType = " + AppControlManager.getUserType()); 
 				
 				finish();
 			} else {

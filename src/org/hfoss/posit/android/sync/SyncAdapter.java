@@ -36,7 +36,6 @@ import org.hfoss.posit.android.api.FindHistory;
 import org.hfoss.posit.android.api.SyncHistory;
 import org.hfoss.posit.android.api.database.DbHelper;
 import org.hfoss.posit.android.R;
-//import org.hfoss.posit.android.experimental.api.authentication.NetworkUtilities;
 import org.json.JSONException;
 
 import java.io.IOException;

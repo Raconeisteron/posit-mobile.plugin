@@ -38,7 +38,7 @@ import org.hfoss.posit.android.api.User;
 import org.hfoss.posit.android.functionplugin.tracker.Expedition;
 import org.hfoss.posit.android.functionplugin.tracker.Points;
 import org.hfoss.posit.android.plugin.FindPluginManager;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
+//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -87,7 +87,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	public static final int DELETE_FIND = 1;
 	public static final int UNDELETE_FIND = 0;
-	public static final String WHERE_NOT_DELETED = " " + AcdiVocaFind.DELETED + " != " + DELETE_FIND + " ";
+//	public static final String WHERE_NOT_DELETED = " " + AcdiVocaFind.DELETED + " != " + DELETE_FIND + " ";
 	public static final String DATETIME_NOW = "`datetime('now')`";
 
 	public static final String FINDS_HISTORY_TABLE = "acdi_voca_finds_history";

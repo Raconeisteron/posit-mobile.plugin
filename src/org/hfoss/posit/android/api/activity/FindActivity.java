@@ -834,9 +834,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			Log.e(TAG, "Find " + getIntent().getAction() + " not successful: "
 					+ find);
 
+		Log.i(TAG, "Rows = " + rows);
+
 		// if the find is saved, we can save/update the picture to the phone
 		if (rows > 0) {
 			// do we even have an image to save?
+			Log.i(TAG, "We have an image to save");
 			if (img_str != null) {
 				if (Camera.savePhoto(find.getGuid(), img_str, this)) {
 					Log.i(TAG, "Successfully saved photo to phone with guid: "
