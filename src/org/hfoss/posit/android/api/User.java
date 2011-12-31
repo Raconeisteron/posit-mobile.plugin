@@ -33,8 +33,8 @@ import java.util.Map;
 
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
+//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
+//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import android.content.Context;
 import android.util.Log;

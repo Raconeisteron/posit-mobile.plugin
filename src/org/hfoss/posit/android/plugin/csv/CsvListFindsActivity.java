@@ -132,7 +132,7 @@ public class CsvListFindsActivity extends ListFindsActivity {
 			for (FunctionPlugin plugin: mListMenuPlugins) {
 				MenuItem item = menu.add(plugin.getmMenuTitle());
 				int id = getResources().getIdentifier(
-						plugin.getmMenuIcon(), "drawable", "org.hfoss.posit.android.experimental");
+						plugin.getmMenuIcon(), "drawable", "org.hfoss.posit.android");
 				Log.i(TAG, "icon =  " + plugin.getmMenuIcon() + " id =" + id);
 				item.setIcon(id);
 				//item.setIcon(android.R.drawable.ic_menu_mapmode);				

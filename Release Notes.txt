@@ -1,4 +1,44 @@
-=== Version 0.7.2 beta ====
+=== POSITx 0.6 beta ===
+New/Revised Features
+  * Removes 'experimental' from package names.
+  * Reorganizes code into more hierarchical package structure
+  * Implements several proof-of-concept FindPlugins
+  * Implements the following FunctionPlugins
+    Sms, Camera, Tracker, Twitter, Maps, Log, FileView, Reminder, Login
+  * All of POSIT's previous functionality is restored in the new plugin
+    architecture.
+  
+Contributors:
+ Rachel Foecking
+ Christopher Nobile
+ Ryan McLeod
+ Eric Yao
+ Stanley Fung
+ Gordon Leung
+ Kalin Ash-Elliot
+
+=== POSITx 0.5 beta ===
+POSITx (Portable Open Source Information Tool-eXtensible) uses a newly designed plugin
+architecture. There are two types of plugins. FindPlugins are extended data records of
+the BasicFind, which now contains only name, description, lat, long, timestamp fields, 
+plus some hidden fields (isSynced, etc.).  A FindPlugin can replace or extend the
+BasicFind data record.  There can only be 1 active FindPlugin per POSITx instance.  
+A FunctionPlugin is one that implements a particular function.  These are supposed
+to be independent of each other and can be used (activated) in various combinations. 
+
+New Features
+ * The base package is renamed to org.hfoss.posit.android.experimental.
+ * Implements the OrmLite Object-Relational-Mapper to handle all Db functions.
+ * Implements Android Accounts & Syncing capability for POSITx 
+   (similar to how Gmail accounts are synced).  The app syncs once with the
+   designated PositWeb server.
+ * Implements res/raw/plugins_preferences where Plugins are specified
+ * Combines FindPlugin and FunctionPlugin settings into an integrated SettingsActivity
+ 
+ Contributors:
+ Rachel Foecking
+ 
+=== Version 0.7.2 beta ===
 New Features
  * Coverage Tracker integrated with the Application and on the sandbox server
  * User Login/registration bugs on the phone works

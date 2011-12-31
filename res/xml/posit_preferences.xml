@@ -4,7 +4,7 @@
  <!-- The preferences that begin with "Preference" must have activities associated with them. -->
 			<Preference android:key="@string/aboutPref" 
 				android:title="@string/aboutItem"
-				activity_class="org.hfoss.posit.android..AboutActivity"
+				activity_class="org.hfoss.posit.android.AboutActivity"
 				android:summary="" />
 				
 			<CheckBoxPreference android:title="@string/geotaggingPref"
@@ -13,7 +13,7 @@
 				
 			<Preference android:key="@string/projectNamePref" 
 				android:title="@string/currProjectLabel" 
-				activity_class="org.hfoss.posit.android..api.activity.ListProjectsActivity"
+				activity_class="org.hfoss.posit.android.api.activity.ListProjectsActivity"
 				android:summary="Something"
 			/>
 			

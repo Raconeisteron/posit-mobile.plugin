@@ -33,7 +33,7 @@ import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.FindActivityProvider;
 import org.hfoss.posit.android.plugin.FindPluginManager;
 import org.hfoss.posit.android.plugin.FunctionPlugin;
-import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
+//import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.sync.Communicator;
 
 import android.app.Activity;
@@ -99,7 +99,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// NOTE: This is AcdiVoca stuff and should be put in a plugin
 		// AcdiVocaSmsManager.initInstance(this);
-		AttributeManager.init();
+//		AttributeManager.init();
 
 		// NOTE: Not sure if this is the best way to do this -- perhaps these kinds of prefs
 		//  should go in the plugins_preferences.xml
