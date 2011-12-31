@@ -20,7 +20,7 @@
  * 
  */
 
-package org.hfoss.posit.android.functionplugins;
+package org.hfoss.posit.android.functionplugin.camera;
 
 import java.io.ByteArrayOutputStream;
 

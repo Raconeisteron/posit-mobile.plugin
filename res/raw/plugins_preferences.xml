@@ -105,7 +105,7 @@
 			name="Capture Media" 
 			menuIcon="ic_menu_camera" 
 			menuTitle="Capture Media"
-			menuActivity="org.hfoss.posit.android.functionplugins.CameraActivity" 
+			menuActivity="org.hfoss.posit.android.functionplugin.camera.CameraActivity" 
 			activity_returns_result="true"
 			activity_result_action="1" />
 

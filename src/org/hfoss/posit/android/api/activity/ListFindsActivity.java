@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hfoss.posit.android.Constants;
-import org.hfoss.posit.android.api.Camera;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.api.service.LocationService;
+import org.hfoss.posit.android.functionplugin.camera.Camera;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.FindPluginManager;
 import org.hfoss.posit.android.plugin.FunctionPlugin;
