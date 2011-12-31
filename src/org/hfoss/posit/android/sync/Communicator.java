@@ -21,8 +21,6 @@
  */
 package org.hfoss.posit.android.sync;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -57,13 +55,13 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.hfoss.posit.android.Constants;
-import org.hfoss.posit.android.api.Camera;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindHistory;
 import org.hfoss.posit.android.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
 import org.hfoss.posit.android.api.database.DbHelper;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.functionplugin.camera.Camera;
 import org.hfoss.posit.android.R;
 //import org.hfoss.posit.android.functionplugin.tracker.TrackerActivity;
 import org.hfoss.posit.android.plugin.FindPluginManager;
@@ -77,13 +75,9 @@ import android.accounts.OperationCanceledException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 

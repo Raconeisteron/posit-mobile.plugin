@@ -22,7 +22,8 @@
 package org.hfoss.posit.android;
 
 /**
- * A class of useful static constants.
+ * A class of useful static constants. Only core POSIT constants should be defined 
+ * here.  Plugin classes should not modify this class.
  *
  */
 public class Constants {
@@ -56,7 +57,4 @@ public class Constants {
 	public static final int POSTING = 0x17;
 	public static final int UPDATING = 0x18;
 	public static final int DELETING = 0x18;
-	
-	public static final String CLASS_NAME = "org.hfoss.posit.android";
-	public static final String PATH_TO_PHOTOS = "/data/data/"+CLASS_NAME+"/files/";
 }

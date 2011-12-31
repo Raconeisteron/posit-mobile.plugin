@@ -20,7 +20,7 @@
  * 
  */
 
-package org.hfoss.posit.android.api;
+package org.hfoss.posit.android.functionplugin.camera;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -29,21 +29,21 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.hfoss.posit.android.Constants;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 import android.util.Base64;
+import android.util.Log;
 
 /**
  * Utility class used primarily by the Camera function plugin.
  */
 public class Camera {
 
+	public static final String TAG = "Camera";
 	static final int THUMBNAIL_TARGET_SIZE = 320; //width and height of thumbnail data
-	
+		
 	/**
 	 * Saves the Base64 string of the phonto to internal memory 
 	 * @param guid
@@ -102,7 +102,9 @@ public class Camera {
 	public static String getPhotoAsString(String guid, Context context){
 	    FileInputStream fis;
 	    String content = "";
-	    File file = new File(Constants.PATH_TO_PHOTOS+guid);
+	    String filename_fullpath = "/data/data/" + context.getPackageName() + "/files/" + guid;
+//	    Log.i(TAG, "fullpath=" + filename_fullpath);
+	    File file = new File(filename_fullpath);
 	    if (file.exists()){
 		    try {
 		    	fis = context.openFileInput(guid);
