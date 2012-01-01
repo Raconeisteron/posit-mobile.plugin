@@ -252,9 +252,9 @@
 				android:resource="@xml/authenticator" />
 		</service>
 		
-		<activity android:name=".functionplugins.SetReminder" android:theme="@android:style/Theme.Translucent"></activity>
-		<service android:name=".api.service.LocationService"></service>
-		<activity android:name=".functionplugins.NotifyReminder" android:theme="@android:style/Theme.Translucent"></activity>
+		<activity android:name=".functionplugin.reminder.SetReminder" android:theme="@android:style/Theme.Translucent"></activity>
+		<service android:name=".functionplugin.reminder.LocationService"></service>
+		<activity android:name=".functionplugin.reminder.NotifyReminder" android:theme="@android:style/Theme.Translucent"></activity>
 		<activity android:name=".functionplugin.camera.CameraActivity" android:screenOrientation="portrait"></activity>
 
 	</application>

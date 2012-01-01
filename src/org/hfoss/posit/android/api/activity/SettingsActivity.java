@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.hfoss.posit.android.api.service.LocationService;
+import org.hfoss.posit.android.functionplugin.reminder.LocationService;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.R.xml;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;

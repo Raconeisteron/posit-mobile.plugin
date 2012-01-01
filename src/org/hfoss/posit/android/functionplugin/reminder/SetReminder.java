@@ -20,7 +20,7 @@
  * 
  */
 
-package org.hfoss.posit.android.functionplugins;
+package org.hfoss.posit.android.functionplugin.reminder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
