@@ -20,11 +20,10 @@
  * 
  */
 
-package org.hfoss.posit.android.functionplugins;
+package org.hfoss.posit.android.functionplugin.reminder;
 
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.api.service.LocationService;
 import org.hfoss.posit.android.R;
 
 import android.app.AlertDialog;

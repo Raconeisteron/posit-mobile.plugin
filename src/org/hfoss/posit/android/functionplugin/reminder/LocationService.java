@@ -20,7 +20,7 @@
  * 
  */
 
-package org.hfoss.posit.android.api.service;
+package org.hfoss.posit.android.functionplugin.reminder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,7 +30,6 @@ import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbHelper;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.functionplugins.NotifyReminder;
 
 import android.app.Notification;
 import android.app.NotificationManager;
