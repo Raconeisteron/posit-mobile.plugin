@@ -18,7 +18,7 @@ import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.functionplugin.camera.Camera;
-import org.hfoss.posit.android.functionplugin.reminder.LocationService;
+import org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.FindPlugin;
 import org.hfoss.posit.android.plugin.FindPluginManager;
@@ -829,7 +829,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (rows > 0) {
 			Log.i(TAG, "Find " + getIntent().getAction() + " successful: "
 					+ find);
-			this.startService(new Intent(this, LocationService.class));
+			this.startService(new Intent(this, ToDoReminderService.class));
 		} else
 			Log.e(TAG, "Find " + getIntent().getAction() + " not successful: "
 					+ find);
@@ -902,7 +902,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				Log.i(TAG, "Image with guid: " + guid + " deleted.");
 			}
 
-			this.startService(new Intent(this, LocationService.class));
+			this.startService(new Intent(this, ToDoReminderService.class));
 		} else {
 			Toast.makeText(FindActivity.this, R.string.delete_failed,
 					Toast.LENGTH_SHORT).show();

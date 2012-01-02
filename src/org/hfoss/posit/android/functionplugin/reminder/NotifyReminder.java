@@ -96,7 +96,7 @@ public class NotifyReminder extends OrmLiteBaseActivity<DbManager> {
 			builder.setNegativeButton("Discard the find", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					getHelper().delete(find);
-					getApplicationContext().startService(new Intent(getApplicationContext(), LocationService.class));
+					getApplicationContext().startService(new Intent(getApplicationContext(), ToDoReminderService.class));
 				}
 			});
 			

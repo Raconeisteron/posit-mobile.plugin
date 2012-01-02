@@ -253,7 +253,7 @@
 		</service>
 		
 		<activity android:name=".functionplugin.reminder.SetReminder" android:theme="@android:style/Theme.Translucent"></activity>
-		<service android:name=".functionplugin.reminder.LocationService"></service>
+		<service android:name=".functionplugin.reminder.ToDoReminderService"></service>
 		<activity android:name=".functionplugin.reminder.NotifyReminder" android:theme="@android:style/Theme.Translucent"></activity>
 		<activity android:name=".functionplugin.camera.CameraActivity" android:screenOrientation="portrait"></activity>
 

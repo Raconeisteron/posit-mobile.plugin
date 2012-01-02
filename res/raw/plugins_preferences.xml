@@ -145,7 +145,7 @@
 			menuIcon="ic_menu_list" menuTitle="Set Reminder"
 			preferences_xml="todo_preferences" 
 			menuActivity="org.hfoss.posit.android.functionplugin.reminder.SetReminder"
-			service="org.hfoss.posit.android.functionplugin.reminder.LocationService"
+			service="org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService"
 			activity_returns_result="true"
 			activity_result_action="0" />
 
