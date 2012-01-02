@@ -92,6 +92,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		Log.i(TAG, "Creating");
 
 		// Import all active plug-ins and attach this activity's plugins
+		Log.i(TAG, "Import active plugins");
 		FindPluginManager.initInstance(this);
 		mMainMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_MENU_EXTENSION);
 		Log.i(TAG, "# main menu plugins = " + mMainMenuPlugins.size());
@@ -105,6 +106,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		//  should go in the plugins_preferences.xml
 		// A newly installed POSIT should have no shared prefs. Set the default phone pref if
 		// and server prefs if not already set.
+		Log.i(TAG, "Setting default Prefs");
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		try {
 			String phone = mSharedPrefs.getString(getString(R.string.smsPhoneKey), "");
@@ -127,8 +129,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Login Extension Point
 		// Run login plugin, if necessary
-		
+		Log.i(TAG, "Checking if login preference active");
 		if (mMainLoginPlugin != null) {
+			Log.i(TAG, "Starting login preference");
 			Intent intent = new Intent();
 			Class<Activity> loginActivity = mMainLoginPlugin.getActivity();
 			intent.setClass(this, loginActivity);
@@ -138,11 +141,15 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 				this.startActivityForResult(intent, mMainLoginPlugin.getActivityResultAction());
 			else
 				this.startActivity(intent);
+		} else {
+			Log.i(TAG, "Login preference NOT active");
 		}
 		
 		// Start all active services, some of which are defined by plugins. 
+		Log.i(TAG, "Starting active services");
 		mServices = FindPluginManager.getAllServices();
 		for (Class<Service> s : mServices) {
+			Log.i(TAG,"Starting service " + s.getSimpleName());
 			this.startService(new Intent(this, s));
 		}
 	}
@@ -165,11 +172,13 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Install the app's custom icon, based on the active plugin.
 		if (FindPluginManager.mFindPlugin.mMainIcon != null) {
+			Log.i(TAG, "Installing custom icon");
 			final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
 			int resID = getResources().getIdentifier(FindPluginManager.mFindPlugin.mMainIcon, "drawable", this.getPackageName());
 			mainLogo.setImageResource(resID);
 		}
 
+		Log.i(TAG, "Installing Add button");
 		// Create and customize the AddButton.  A plugin can make this button go
 		// away by setting its label to "invisible".
 		if (FindPluginManager.mFindPlugin.mAddButtonLabel != null 
@@ -193,6 +202,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			b.setTextColor(Color.BLUE);
 		}
 
+		Log.i(TAG, "Installing List button");
 		// Create and customize the ListButton.  A plugin can make this button go
 		// away by setting its label to "invisible".
 		if (FindPluginManager.mFindPlugin.mListButtonLabel != null
@@ -213,8 +223,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		
 		// Activate extra buttons if necessary.
 		mMainButtonPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_BUTTON_EXTENSION);
-		
+		Log.i(TAG, "Installing Extra buttons");
 		for (FunctionPlugin plugin : mMainButtonPlugins) {
+			Log.i(TAG, "Installing Extra button " + plugin.getName());
 			int buttonID = getResources().getIdentifier(plugin.getName(), "id", getPackageName());
 			Button button = (Button) findViewById(buttonID);
 			button.setVisibility(Button.VISIBLE);
