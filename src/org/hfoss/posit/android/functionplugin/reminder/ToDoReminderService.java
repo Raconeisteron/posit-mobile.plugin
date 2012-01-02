@@ -41,7 +41,6 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -57,7 +56,7 @@ import android.util.Log;
  * the user of the associated reminder.
  * 
  **/
-public class LocationService extends Service implements LocationListener {
+public class ToDoReminderService extends Service  implements LocationListener  {
 	
 	private static final String TAG = "LocationService";
 	// Time interval used to receive location
@@ -78,7 +77,7 @@ public class LocationService extends Service implements LocationListener {
 	private DbManager dbManager = null;
 	
 	private NotificationManager mNotificationManager = null;
-
+	
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -86,8 +85,9 @@ public class LocationService extends Service implements LocationListener {
 	
 	@Override
 	public void onCreate() {
-
-		// Set the currently used project
+		Log.i(TAG, "onCreate()");
+		
+		// Set the current project
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		projectID = prefs.getInt(getString(R.string.projectPref), 0);
 		
@@ -95,17 +95,31 @@ public class LocationService extends Service implements LocationListener {
 		
 		reminderFinds = new ArrayList<Find>();
 		reminderIDs = new ArrayList<Integer>();
-		
+
+		// Initialize Managers
 		mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		String ns = Context.NOTIFICATION_SERVICE;
 		mNotificationManager = (NotificationManager) getSystemService(ns);
+				
+	}
+	
+	@Override
+	/*
+	 * This is called right after onCreate and is also called
+	 * every time when startService() is called from other classes 
+	 */
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.i(TAG, "onStartCommand()");
 		
-		// Check settings to see if the user allows for reminders to be set
+		// Get the preferences from the Preference Manager
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean allowReminder = prefs.getBoolean("allowReminderKey", true);
 		boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
+		Log.i(TAG, "rmdrPref=" + allowReminder + " geoPref=" + allowGeoTag);
 		
 		if (allowReminder && allowGeoTag) {
+			
 			// The user allows reminders to be set
 			// Request Location updates every minute
 			mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, ONE_MINUTE, 0, this);
@@ -122,28 +136,8 @@ public class LocationService extends Service implements LocationListener {
 				mCurrentLocation = netLocation;
 			}
 		} else {
-			// The user does not allows reminders to be set
-			// Destroy / Cancel the running service
-			this.onDestroy();
-		}
-
-	}
-	
-	@Override
-	/*
-	 * This is called right after onCreate and is also called
-	 * every time when startService() is called from other classes 
-	 */
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		
-		// Get the preferences from the Preference Manager
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean allowReminder = prefs.getBoolean("allowReminderKey", true);
-		boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
-		
-		// Stop the service if the user does not allow for reminders to be set
-		if (!allowReminder || !allowGeoTag) {
-			this.onDestroy();
+			Log.i(TAG,"Stopping service, not allowed by user");
+			stopService();
 			return START_STICKY;
 		}
 		
@@ -179,33 +173,45 @@ public class LocationService extends Service implements LocationListener {
 		
 		// If there is no finds with reminders, stop the service
 		if (reminderFinds.size() <= 0) {
-			this.onDestroy();
+			Log.i(TAG,"Stopping service, no reminders");
+			stopService();
 			return START_STICKY;
 		}
 
 		return START_STICKY;
 	}
 	
-	@Override
-	public void onDestroy() {
-		Log.i(TAG, "My Service Stopped!");
-		
+	/**
+	 * Helper method to stop the service and clean up.
+	 */
+	private void stopService() {
 		// Remove the location updates to conserve battery
 		if (mLocationManager != null) {
 			mLocationManager.removeUpdates(this);
+			Log.i(TAG, "Location Updates Cancelled!");
 		}
 		
 		// Release DbManager resources
 		if (dbManager != null) {
 			DbHelper.releaseDbManager();
 			dbManager = null;
+			Log.i(TAG, "Releasing Db manager!");
 		}
 		
 		//  Cancel all notifications
 		if (mNotificationManager != null) {
 			mNotificationManager.cancelAll();
-			Log.i(TAG, "Location Update Cancelled!");
-		}
+			Log.i(TAG, "Notifications Cancelled!");
+		}	
+		Log.i(TAG, "Stopping self");
+		this.stopSelf();
+	}
+	
+	@Override
+	public void onDestroy() {
+		Log.i(TAG, "onDestroy()");
+		
+//		stopService();
 
 	}
 	
@@ -279,8 +285,6 @@ public class LocationService extends Service implements LocationListener {
 						mNotificationManager.notify(find.getId(), notification);
 						
 					}
-					
-					
 				}
 			}
 		}
@@ -347,5 +351,4 @@ public class LocationService extends Service implements LocationListener {
 	public void onProviderEnabled(String provider) {}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
-	
 }

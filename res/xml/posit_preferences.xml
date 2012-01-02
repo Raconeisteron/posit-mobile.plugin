@@ -5,7 +5,7 @@
 			<Preference android:key="@string/aboutPref" 
 				android:title="@string/aboutItem"
 				activity_class="org.hfoss.posit.android.AboutActivity"
-				android:summary="" />
+				android:summary="Display information about POSITx" />
 				
 			<CheckBoxPreference android:title="@string/geotaggingPref"
 				android:defaultValue="true" android:summary="@string/geotaggingSummary"
