@@ -24,35 +24,24 @@ package org.hfoss.posit.android.api.activity;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 
-import org.hfoss.posit.android.functionplugin.reminder.LocationService;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.R.xml;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
-//import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -78,7 +67,8 @@ import android.widget.Toast;
 public class SettingsActivity extends PreferenceActivity implements
 		OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 	private static final String TAG = "API Settings";
-
+	public static final String SETTINGS_ACTION = "settings_action";
+	
 	private static SettingsActivity mInstance;
 
 	public static SettingsActivity getInstance(Context context,
@@ -100,7 +90,7 @@ public class SettingsActivity extends PreferenceActivity implements
 
 	/**
 	 * Inner class for a plugin setting, which consists of a preference name and
-	 * and associated activity. A PluginSetting is created only for those
+	 * and associated activity of service. A PluginSetting is created only for those
 	 * preferences that require an associated Activity, not for preferences that
 	 * are handled automatically by PreferenceActivity.
 	 * 
@@ -108,24 +98,29 @@ public class SettingsActivity extends PreferenceActivity implements
 	 * 
 	 */
 	static class PluginSetting {
+		public static final String TYPE_SERVICE = "service";
+		public static final String TYPE_ACTIVITY = "activity";
 		public String prefName;
-		public String activityName;
+		public String activityOrServiceName;
+		public String type;                   // Either activity or service
 
-		public PluginSetting(String prefName, String activityName) {
+		public PluginSetting(String prefName, String activityOrServiceName, String type) {
 			this.prefName = prefName;
-			this.activityName = activityName;
+			this.activityOrServiceName = activityOrServiceName;
+			this.type = type;
 		}
 
 		@Override
 		public String toString() {
-			return prefName + "," + activityName;
+			return prefName + "," + activityOrServiceName + ", " + type;
 		}
 	}
 
 	/**
 	 * Inner class for PluginSettings. Stores a record for each plugin
 	 * consisting of the plugin's preferences XML file (in res/xml) and
-	 * key/activity pairs for each preference that requires an Activity launch.
+	 * key/activity  or key/service pairs for each preference that requires an 
+	 * Activity or Service launch.
 	 * 
 	 * @author rmorelli
 	 * 
@@ -139,8 +134,8 @@ public class SettingsActivity extends PreferenceActivity implements
 			preferencesList = new ArrayList<PluginSetting>();
 		}
 
-		public void put(String prefName, String activityName) {
-			preferencesList.add(new PluginSetting(prefName, activityName));
+		public void put(String prefName, String activityName, String type) {
+			preferencesList.add(new PluginSetting(prefName, activityName, type));
 		}
 
 		public String getPreferencesXmlFile() {
@@ -186,7 +181,7 @@ public class SettingsActivity extends PreferenceActivity implements
 
 	/**
 	 * Utility method parses an XML preferences file pulling out domain-specific
-	 * attributes that associate a Preference key with an Activity.
+	 * attributes that associate a Preference key with an Activity or Service.
 	 * 
 	 * @param context
 	 *            this Activity
@@ -208,9 +203,12 @@ public class SettingsActivity extends PreferenceActivity implements
 
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_TAG) {
-					if (xpp.getName().equals("Preference")) {
+//					if (xpp.getName().equals("Preference")) {
+					 Log.i(TAG," xml pref tag = " + xpp.getName());
+					if (xpp.getName().endsWith("Preference")) {
 						String preference_name = "";
-						String activity_name = "";
+						String activity_or_service_name = "";
+						String type = "";
 						for (int k = 0; k < xpp.getAttributeCount(); k++) {
 							String attribute = xpp.getAttributeName(k);
 							// Log.i(TAG,"Attribute = " + attribute);
@@ -219,12 +217,16 @@ public class SettingsActivity extends PreferenceActivity implements
 										xpp.getAttributeValue(k));
 								Log.i(TAG, "pref: " + preference_name);
 							} else if (attribute.equals("activity_class")) {
-								activity_name = xpp.getAttributeValue(k);
+								activity_or_service_name = xpp.getAttributeValue(k);
+								type = PluginSetting.TYPE_ACTIVITY;
+							} else if (attribute.equals("service_class")) {
+								activity_or_service_name = xpp.getAttributeValue(k);
+								type = PluginSetting.TYPE_SERVICE;
 							}
 						}
 						// Log.i(TAG,"Settings = " + preference_name + " " +
 						// activity_name);
-						settingsObject.put(preference_name, activity_name);
+						settingsObject.put(preference_name, activity_or_service_name, type);
 
 					}
 				}
@@ -428,6 +430,9 @@ public class SettingsActivity extends PreferenceActivity implements
 	 * Called automatically when a preference is clicked in the View. Go through
 	 * all the plugins and see if one with an associated activity was clicked
 	 * and, if so, start the activity.
+	 * 
+	 * NOTE: This method is not invoked for CheckboxPreference, ListPreference, etc.
+	 * only for Preference.
 	 */
 	public boolean onPreferenceClick(Preference preference) {
 		Log.i(TAG, "API onPreferenceClick " + preference.toString());
@@ -441,15 +446,30 @@ public class SettingsActivity extends PreferenceActivity implements
 			Log.i(TAG, "list = " + list.toString());
 			for (int j = 0; j < list.size(); j++) {
 				if (preference.getKey().equals(list.get(j).prefName)) {
-					String className = list.get(j).activityName;
-					Log.i(TAG, "Class = " + className);
-					try {
-						Class activity = Class.forName(className);
-						Log.i(TAG, "Class = " + activity);
-						Intent intent = new Intent(this, activity);
-						startActivity(intent);
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
+					String className = list.get(j).activityOrServiceName;
+					String type = list.get(j).type;
+					Log.i(TAG, "Class = " + className + " type = " + type);
+					if (type.equals(PluginSetting.TYPE_ACTIVITY)) {
+						try {
+							Class activity = Class.forName(className);
+							Log.i(TAG, "Class = " + activity);
+							Intent intent = new Intent(this, activity);
+							intent.setAction(SETTINGS_ACTION);
+							startActivity(intent);
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+						} 
+					} else  {
+						try {
+							Class service = Class.forName(className);
+							Log.i(TAG, "Class = " + service);
+							Intent intent = new Intent(this, service);
+							intent.setAction(SETTINGS_ACTION);
+							startService(intent);              // This will either stop or start it
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+						} 
+
 					}
 				}
 			}
@@ -458,9 +478,9 @@ public class SettingsActivity extends PreferenceActivity implements
 	}
 
 	/**
-	 * Adjusts the summary string when a shared preference is changed. NOTE the
-	 * exception for USER_TYPE_KEY, which has an int value. All the rest are
-	 * String. Hence the ClassCastException.
+	 * Adjusts the summary string for certain preferences when a shared preference is changed.
+	 *  
+	 * NOTE: Should this method also handle plugin string keys?  Integer or boolean keys?
 	 * 
 	 * @see android.content.SharedPreferences.OnSharedPreferenceChangeListener#onSharedPreferenceChanged(android.content.SharedPreferences,
 	 *      java.lang.String)
@@ -469,8 +489,11 @@ public class SettingsActivity extends PreferenceActivity implements
 
 		try {
 
-			Log.i(TAG, "onSharedPreferenceChanged, key= " + key + " value = "
-					+ sp.getString(key, ""));
+			// Note: How can we tell whether key has a String value?
+			Log.i(TAG, "onSharedPreferenceChanged, key= " + key 
+//				+ " value = " + sp.getString(key, "") 
+			);
+
 			Log.i(TAG, "Preferences= " + sp.getAll().toString());
 			PreferenceManager manager = this.getPreferenceManager();
 			Preference p = manager.findPreference(key);
@@ -509,9 +532,6 @@ public class SettingsActivity extends PreferenceActivity implements
 		} catch (ClassCastException e) {
 			Log.e(TAG, "Class Cast Exception on " + key);
 			//e.printStackTrace();
-			/* To-Do Begins */
-			this.startService(new Intent(this, LocationService.class));
-			/* To-Do Ends */
 		}
 	}
 }
