@@ -46,7 +46,7 @@ public class FindPlugin extends Plugin {
 	public static String mListButtonLabel = null;
 	public static String mExtraButtonLabel = null;
 	public static String mExtraButtonLabel2 = null;
-	
+		
 	protected Class<Find> mFindClass;
 	protected Class<FindActivity> mFindActivityClass = null;
 	protected Class<ListFindsActivity> mListFindsActivityClass = null;
@@ -68,7 +68,7 @@ public class FindPlugin extends Plugin {
 		String listfindsactivity_name = node.getAttributes().getNamedItem("list_finds_activity_class").getTextContent();
 		String extra_activity_name = node.getAttributes().getNamedItem("extra_activity_class").getTextContent();
 		String extra_activity_name2 = node.getAttributes().getNamedItem("extra_activity_class2").getTextContent();
-		
+				
 		Node aNode = node.getAttributes().getNamedItem("login_activity_class");
 		String login_activity_name = "";
 		if (aNode != null) 
@@ -215,4 +215,5 @@ public class FindPlugin extends Plugin {
 	public void setmLoginActivityClass(Class<Activity> mLoginActivityClass) {
 		this.mLoginActivityClass = mLoginActivityClass;
 	}
+	
 }
