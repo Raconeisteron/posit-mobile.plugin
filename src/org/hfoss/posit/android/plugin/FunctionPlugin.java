@@ -48,6 +48,9 @@ public class FunctionPlugin extends Plugin {
 	protected Boolean activityReturnsResult = false;
 	protected int activityResultAction = 0;
 	
+	protected String listFindCallbackClass = null;
+	protected String addFindCallbackClass = null;
+
 	// Function plugins can start services.
  	protected ArrayList<Class<Service>> mServices = new ArrayList<Class<Service>>();
 	
@@ -97,7 +100,15 @@ public class FunctionPlugin extends Plugin {
 				Class<Service> service = (Class<Service>) Class.forName(aNode.getTextContent());
 				mServices.add(service);
 			}
-			/* ENDS - A list of all services this funtion plug-in requires*/
+			/* ENDS - A list of all services this function plug-in requires*/
+		
+			if (aNode.getNodeName().equals("list_find_callback")) {
+				listFindCallbackClass = aNode.getTextContent();
+			}
+			
+			if (aNode.getNodeName().equals("add_find_callback")) {
+				addFindCallbackClass = aNode.getTextContent();
+			}
 		}
 		
 	}
@@ -154,8 +165,27 @@ public class FunctionPlugin extends Plugin {
 		return mServices;
 	}
 
+
+	public String getListFindCallbackClass() {
+		return listFindCallbackClass;
+	}
+
+	public void setListFindCallbackClass(String listFindCallbackClass) {
+		this.listFindCallbackClass = listFindCallbackClass;
+	}
+	
+	public String getAddFindCallbackClass() {
+		return addFindCallbackClass;
+	}
+
+	public void setAddFindCallbackClass(String addFindCallbackClass) {
+		this.addFindCallbackClass = addFindCallbackClass;
+	}
+
 	public String toString() {
 		return super.toString() + " " + mExtensionPoint;
 	}
+	
+	
 
 }

@@ -224,6 +224,23 @@ public class FindPluginManager {
 	}
 	
 	/**
+	 * Returns all FunctionPlugins
+	 * @return
+	 */
+	public static ArrayList<FunctionPlugin> getFunctionPlugins() {
+		ArrayList<FunctionPlugin> list = new ArrayList<FunctionPlugin>();
+		if (plugins == null) return list;
+		for (Plugin plugin : plugins) {
+			if (plugin instanceof FunctionPlugin) {
+				Log.i(TAG, "Function plugin " + plugin.toString());
+				FunctionPlugin fPlugin = (FunctionPlugin) plugin;
+				list.add(fPlugin);
+			}
+		}
+		return list;
+	}
+	
+	/**
 	 * Returns a list of all services created by plugins.
 	 * @return
 	 */
