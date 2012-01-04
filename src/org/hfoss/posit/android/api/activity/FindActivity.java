@@ -30,13 +30,11 @@ import java.util.UUID;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.functionplugin.camera.Camera;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.plugin.FindPlugin;
 import org.hfoss.posit.android.plugin.FindPluginManager;
 import org.hfoss.posit.android.plugin.FunctionPlugin;
-import org.hfoss.posit.android.plugin.ListFindPluginCallback;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
 
 import android.app.AlertDialog;
@@ -45,14 +43,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,7 +59,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -90,10 +84,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	private TextView mLatitudeTV = null;
 	private TextView mLongTV = null;
 	private TextView mLongitudeTV = null;
-	private ImageView photo = null;
 	private TextView mAdhocTV = null;
 
-	private String img_str = null; // base64 string representation of photo
 
 	private ArrayList<FunctionPlugin> mAddFindMenuPlugins = null;
 
@@ -101,6 +93,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * This may be invoked by a FindActivity subclass, which may or may not have
 	 * latitude and longitude fields.
 	 */
+	@SuppressWarnings("static-access")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -128,7 +121,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		mLatitudeTV = (TextView) findViewById(R.id.latitudeValueTextView);
 		mLongTV = (TextView) findViewById(R.id.longitudeTextView);
 		mLongitudeTV = (TextView) findViewById(R.id.longitudeValueTextView);
-		photo = (ImageView) findViewById(R.id.photo);
 		mAdhocTV = (TextView) findViewById(R.id.isAdhocTextView);
 
 		// Check if settings allow Geotagging
@@ -379,6 +371,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * @param item
 	 *            is the MenuItem selected by the user
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
@@ -399,12 +392,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 					Intent intent = new Intent(this, plugin.getmMenuActivity());
 
 					Log.i(TAG, "plugin=" + plugin);
-					Class callbackClass = null;
+					Class<AddFindPluginCallback> callbackClass = null;
 					Object o;
 					try {
 						Find find = retrieveContentFromView();
 						View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
-						callbackClass = Class.forName(plugin.getAddFindCallbackClass());
+						callbackClass = (Class<AddFindPluginCallback>) Class.forName(plugin.getAddFindCallbackClass());
 						o = (AddFindPluginCallback) callbackClass.newInstance();
 						((AddFindPluginCallback) o).menuItemSelectedCallback(
 								this.getApplication(),
@@ -441,9 +434,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-			Intent intent) {
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 		super.onActivityResult(requestCode, resultCode, intent);
 
 		// Go through all Function Plug-in to find the
@@ -451,12 +444,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 			if (requestCode == plugin.getActivityResultAction()) {
 				Log.i(TAG, "plugin=" + plugin);
-				Class callbackClass = null;
+				Class<AddFindPluginCallback> callbackClass = null;
 				Object o;
 				try {
 					Find find = retrieveContentFromView();
 					View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
-					callbackClass = Class.forName(plugin.getAddFindCallbackClass());
+					callbackClass = (Class<AddFindPluginCallback>) Class.forName(plugin.getAddFindCallbackClass());
 					o = (AddFindPluginCallback) callbackClass.newInstance();
 					((AddFindPluginCallback) o).onActivityResultCallback(
 							this.getApplication(),
@@ -471,22 +464,23 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 					e.printStackTrace();
 				}
 
-				if (plugin.getmMenuTitle().equals("Capture Media")) {
-					if (intent != null) {
-						// do we get an image back?
-						if (intent.getStringExtra("Photo") != null) {
-							img_str = intent.getStringExtra("Photo");
-							byte[] c = Base64.decode(img_str, Base64.DEFAULT);
-							Bitmap bmp = BitmapFactory.decodeByteArray(c, 0,
-									c.length);
-							photo.setImageBitmap(bmp);// display the retrieved
-							// image
-							photo.setVisibility(View.VISIBLE);
-						}
-					}
-				} else {
-					// Do something specific for other function plug-ins
-				}
+//				if (plugin.getmMenuTitle().equals("Capture Media")) {
+//					if (intent != null) {
+//						// do we get an image back?
+//						if (intent.getStringExtra("Photo") != null) {
+//							img_str = intent.getStringExtra("Photo");
+//							byte[] c = Base64.decode(img_str, Base64.DEFAULT);
+//							Bitmap bmp = BitmapFactory.decodeByteArray(c, 0,
+//									c.length);
+//							photo.setImageBitmap(bmp);// display the retrieved
+//							// image
+//							photo.setVisibility(View.VISIBLE);
+//						}
+//					}
+//				} 
+//				else {
+//					// Do something specific for other function plug-ins
+//				}
 			}
 		}
 	}
@@ -582,6 +576,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * @param a
 	 *            Find object
 	 */
+	@SuppressWarnings("unchecked")
 	protected void displayContentInView(Find find) {
 
 		// Set real GUID
@@ -619,15 +614,28 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			mLatitudeTV.setText(String.valueOf(find.getLatitude()));
 		}
 
-		Bitmap bmp = Camera.getPhotoAsBitmap(find.getGuid(), this);
-		if (bmp != null) {
-			// we have a picture to display
-			photo.setImageBitmap(bmp);
-			photo.setVisibility(View.VISIBLE);
-		} else {
-			// we don't have a picture to display. Nothing should show up, but
-			// this is to make sure.
-			photo.setVisibility(View.INVISIBLE);
+		/**
+		 * For each plugin, call its displayFindInViewCallback.
+		 */
+		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
+			Log.i(TAG, "plugin=" + plugin);
+			Class<AddFindPluginCallback> callbackClass = null;
+			Object o;
+			try {
+				View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+				callbackClass = (Class<AddFindPluginCallback>) Class.forName(plugin.getAddFindCallbackClass());
+				o = (AddFindPluginCallback) callbackClass.newInstance();
+				((AddFindPluginCallback) o).displayFindInViewCallback(
+						this.getApplication(),
+						find,
+						view);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -718,6 +726,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected boolean saveFind() {
 		int rows = 0;
 		Find find = retrieveContentFromView();
@@ -756,31 +765,36 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			}
 		} else
 			rows = 0; // Something wrong with intent
+		
 		if (rows > 0) {
-			Log.i(TAG, "Find " + getIntent().getAction() + " successful: "
-					+ find);
-//			this.startService(new Intent(this, ToDoReminderService.class));
+			Log.i(TAG, "Find " + getIntent().getAction() + " successful: " + find);
 		} else
-			Log.e(TAG, "Find " + getIntent().getAction() + " not successful: "
-					+ find);
+			Log.e(TAG, "Find " + getIntent().getAction() + " not successful: " + find);
 
-		Log.i(TAG, "Rows = " + rows);
-
-		// if the find is saved, we can save/update the picture to the phone
-		if (rows > 0) {
-			// do we even have an image to save?
-			Log.i(TAG, "We have an image to save");
-			if (img_str != null) {
-				if (Camera.savePhoto(find.getGuid(), img_str, this)) {
-					Log.i(TAG, "Successfully saved photo to phone with guid: "
-							+ find.getGuid());
-				} else {
-					Log.i(TAG, "Failed to save photo to phone with guid: "
-							+ find.getGuid());
-				}
+		/**
+		 * For each plugin, call its displayFindInViewCallback.
+		 */
+		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
+			Log.i(TAG, "plugin=" + plugin);
+			Class<AddFindPluginCallback> callbackClass = null;
+			Object o;
+			try {
+				View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+				callbackClass = (Class<AddFindPluginCallback>) Class.forName(plugin.getAddFindCallbackClass());
+				o = (AddFindPluginCallback) callbackClass.newInstance();
+				((AddFindPluginCallback) o).afterSaveCallback(
+						this.getApplication(),
+						find,
+						view,
+						rows > 0);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
 			}
 		}
-
 		return rows > 0;
 	}
 

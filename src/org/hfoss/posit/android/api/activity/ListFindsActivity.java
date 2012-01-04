@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.functionplugin.camera.Camera;
+//import org.hfoss.posit.android.functionplugin.camera.Camera;
 //import org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.FindPlugin;
@@ -356,16 +356,16 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 					}
 				}
 	
-				//Display the thumbnail picture beside the find
-				//or a default image if there isn't one
-				ImageView iv = (ImageView) v.findViewById(R.id.find_image);
-				Bitmap bmp = Camera.getPhotoAsBitmap(find.getGuid(), ListFindsActivity.this);
-				if(bmp != null){
-				    iv.setImageBitmap(bmp);
-				}
-				else{
-				    iv.setImageResource(R.drawable.ic_menu_camera);
-				}
+//				//Display the thumbnail picture beside the find
+//				//or a default image if there isn't one
+//				ImageView iv = (ImageView) v.findViewById(R.id.find_image);
+//				Bitmap bmp = Camera.getPhotoAsBitmap(find.getGuid(), ListFindsActivity.this);
+//				if(bmp != null){
+//				    iv.setImageBitmap(bmp);
+//				}
+//				else{
+//				    iv.setImageResource(R.drawable.ic_menu_camera);
+//				}
 			}
 			return v;
 		}

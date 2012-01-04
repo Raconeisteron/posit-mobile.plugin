@@ -87,7 +87,7 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
  * 
  **/
 public class SetReminder extends OrmLiteBaseActivity<DbManager> 
-implements ListFindPluginCallback, AddFindPluginCallback {
+	implements ListFindPluginCallback, AddFindPluginCallback {
 
 	private static final String TAG = "SetReminder";
 
@@ -739,5 +739,15 @@ implements ListFindPluginCallback, AddFindPluginCallback {
 			lp2.setMargins(6, 6, 0, 0);
 			parent.addView(mTimeTV, lp2);
 		}
+	}
+
+	public void displayFindInViewCallback(Context context, Find find, View view) {
+		// TODO Auto-generated method stub
+	}
+
+	public void afterSaveCallback(Context context, Find find, View view,
+			boolean isSaved) {
+		// TODO Auto-generated method stub
+		
 	}
 }
