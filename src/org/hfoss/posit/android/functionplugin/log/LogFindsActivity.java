@@ -20,7 +20,7 @@
  * 
  */
 
-package org.hfoss.posit.android.functionplugins;
+package org.hfoss.posit.android.functionplugin.log;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -117,9 +117,12 @@ public class LogFindsActivity extends OrmLiteBaseActivity<DbManager> {
 				Find find = it.next();
 				Log.i(TAG, "Find = " + find);
 				
-				if (find.getIs_adhoc() != IS_LOGGED) {
-					find.setIs_adhoc(IS_LOGGED);
+				if (find.getDeleted() != IS_LOGGED) {
+					find.setDeleted(IS_LOGGED);
+//				if (find.getIs_adhoc() != IS_LOGGED) {
+//					find.setIs_adhoc(IS_LOGGED);
 
+					
 					getHelper().update(find);
 					writer.println(new Date() + ": " + find);
 					Log.i(TAG, "Wrote to file: " + find);

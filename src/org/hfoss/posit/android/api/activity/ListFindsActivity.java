@@ -42,7 +42,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -55,10 +54,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -122,7 +119,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		finds = this.getHelper().getFindsByProjectId(projectId);
 		
 		int resId = getResources().getIdentifier(
-				FindPluginManager.mFindPlugin.mListFindLayout, "layout", getPackageName());
+				FindPlugin.mListFindLayout, "layout", getPackageName());
 
 		FindsListAdapter adapter = new FindsListAdapter(this, resId, finds);
 
@@ -274,6 +271,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		protected List<? extends Find> items;
 		Context context;
 
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public FindsListAdapter(Context context, int textViewResourceId, List list) {
 			super(context, textViewResourceId, list);
 			this.items = list;
@@ -296,7 +294,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 				int resId = getResources().getIdentifier(
-						FindPluginManager.mFindPlugin.mListFindLayout, "layout",
+						FindPlugin.mListFindLayout, "layout",
 						getPackageName());
 				v = vi.inflate(resId, null);
 			}
@@ -349,27 +347,13 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 							((ListFindPluginCallback) o).listFindCallback(context,find,v);
 						}
 					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (InstantiationException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-	
-//				//Display the thumbnail picture beside the find
-//				//or a default image if there isn't one
-//				ImageView iv = (ImageView) v.findViewById(R.id.find_image);
-//				Bitmap bmp = Camera.getPhotoAsBitmap(find.getGuid(), ListFindsActivity.this);
-//				if(bmp != null){
-//				    iv.setImageBitmap(bmp);
-//				}
-//				else{
-//				    iv.setImageResource(R.drawable.ic_menu_camera);
-//				}
 			}
 			return v;
 		}

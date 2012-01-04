@@ -182,12 +182,12 @@
 			menuActivity="org.hfoss.posit.android.functionplugin.twitter.TwitFindsActivity" />
 			
 		<!--  Log plugin logs Find data to a log file on the SdCard. -->	
-		<Plugin active="false" 
+		<Plugin active="true" 
 			type="function" 
 			extensionPoint="listMenu"
 			name="log" 
 			menuIcon="menu_log_med_grey" menuTitle="Log Finds"
-			menuActivity="org.hfoss.posit.android.functionplugins.LogFindsActivity" />
+			menuActivity="org.hfoss.posit.android.functionplugin.log.LogFindsActivity" />
 
 		<!--  Login plugin provides support for apps that share a phone among users. -->
 		<Plugin active="false" 
