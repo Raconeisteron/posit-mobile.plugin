@@ -1,4 +1,4 @@
-package org.hfoss.posit.android.functionplugins;
+package org.hfoss.posit.android.functionplugin.twitter;
 
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.plugin.FindActivityProvider;

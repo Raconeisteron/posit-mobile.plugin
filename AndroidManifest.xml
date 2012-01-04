@@ -108,9 +108,9 @@
 		<activity
 			android:name="org.hfoss.posit.android.functionplugins.FileViewActivity" />
 		<activity
-			android:name="org.hfoss.posit.android.functionplugins.TwitFindsActivity" />	
+			android:name=".functionplugin.twitter.TwitFindsActivity" />	
 		<activity 
-			android:name="org.hfoss.posit.android.functionplugins.LoginTwitterActivity"
+			android:name=".functionplugin.twitter.LoginTwitterActivity"
 			android:launchMode="singleInstance" >
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW"/>

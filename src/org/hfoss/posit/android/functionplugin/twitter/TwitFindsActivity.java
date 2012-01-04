@@ -1,4 +1,4 @@
-package org.hfoss.posit.android.functionplugins;
+package org.hfoss.posit.android.functionplugin.twitter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
+import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.plugin.FindActivityProvider;
+import org.hfoss.posit.android.plugin.ListFindPluginCallback;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -15,6 +18,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -27,7 +31,8 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
-public class TwitFindsActivity extends OrmLiteBaseActivity<DbManager> {
+public class TwitFindsActivity extends OrmLiteBaseActivity<DbManager> 
+	implements AddFindPluginCallback, ListFindPluginCallback {
 
 	public static final String TAG = "TwitFindsActivity";
 
@@ -175,5 +180,29 @@ public class TwitFindsActivity extends OrmLiteBaseActivity<DbManager> {
 		results.add(result.toString());
 		
 		return results.toArray(new String[results.size()]);
+	}
+
+	/**
+	 * Required for function plugins. Unused here.
+	 */
+	public void listFindCallback(Context context, Find find, View view) {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * Required for function plugins. Unused here.
+	 */
+	public void menuItemSelectedCallback(Context context, Find find, View view,
+			Intent intent) {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * Required for function plugins. Unused here.
+	 */
+	public void onActivityResultCallback(Context context, Find find, View view,
+			Intent intent) {
+		// TODO Auto-generated method stub
+		
 	}
 }

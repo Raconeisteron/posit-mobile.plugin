@@ -169,7 +169,7 @@
 			menuActivity="org.hfoss.posit.android.functionplugin.sms.SmsActivity" />
 
 		<!--  TwitFind posts Finds on Twitter -->
-		<Plugin active="false" 
+		<Plugin active="true" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="twitFind"
@@ -177,7 +177,9 @@
 			menuIcon="ic_twitter_48" menuTitle="Twit Find"
 			activity_returns_result="true"
 			activity_result_action="0" 
-			menuActivity="org.hfoss.posit.android.functionplugins.TwitFindsActivity" />
+			add_find_callback = "org.hfoss.posit.android.functionplugin.twitter.TwitFindsActivity"
+			list_find_callback = "org.hfoss.posit.android.functionplugin.twitter.TwitFindsActivity"
+			menuActivity="org.hfoss.posit.android.functionplugin.twitter.TwitFindsActivity" />
 			
 		<!--  Log plugin logs Find data to a log file on the SdCard. -->	
 		<Plugin active="false" 
