@@ -790,13 +790,15 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			try {
 				View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
 				String className = plugin.getAddFindCallbackClass();
-				callbackClass = (Class<AddFindPluginCallback>) Class.forName(className);
-				o = (AddFindPluginCallback) callbackClass.newInstance();
-				((AddFindPluginCallback) o).afterSaveCallback(
-						this.getApplication(),
-						find,
-						view,
-						rows > 0);
+				if (className != null) {
+					callbackClass = (Class<AddFindPluginCallback>) Class.forName(className);
+					o = (AddFindPluginCallback) callbackClass.newInstance();
+					((AddFindPluginCallback) o).afterSaveCallback(
+							this.getApplication(),
+							find,
+							view,
+							rows > 0);
+				}
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

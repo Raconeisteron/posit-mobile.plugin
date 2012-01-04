@@ -100,7 +100,7 @@
 
  		<!--  Miscellaneous Function Plugins -->
 		<activity
-			android:name="org.hfoss.posit.android.functionplugins.LogFindsActivity" />
+			android:name=".functionplugin.log.LogFindsActivity" />
 		<activity
 			android:name="org.hfoss.posit.android.functionplugins.LoginActivity" />
 		<activity

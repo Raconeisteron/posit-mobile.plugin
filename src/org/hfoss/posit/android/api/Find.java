@@ -311,6 +311,7 @@ public class Find implements FindInterface {
 	 *            , the value being converted
 	 * @return an Object whose dynamic type is Integer or Boolean or ...
 	 */
+	@SuppressWarnings("rawtypes")
 	protected Object convertValueTypeForField(Class field, Object val) {
 		String oType = field.getName();
 		Object result = null;
