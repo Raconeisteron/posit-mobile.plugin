@@ -53,8 +53,8 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
-public class TwitFindsActivity extends OrmLiteBaseActivity<DbManager> 
-	implements AddFindPluginCallback, ListFindPluginCallback {
+public class TwitFindsActivity extends OrmLiteBaseActivity<DbManager> {
+//	implements AddFindPluginCallback, ListFindPluginCallback {
 
 	public static final String TAG = "TwitFindsActivity";
 
@@ -204,38 +204,38 @@ public class TwitFindsActivity extends OrmLiteBaseActivity<DbManager>
 		return results.toArray(new String[results.size()]);
 	}
 
-	/**
-	 * Required for function plugins. Unused here.
-	 */
-	public void listFindCallback(Context context, Find find, View view) {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * Required for function plugins. Unused here.
-	 */
-	public void menuItemSelectedCallback(Context context, Find find, View view,
-			Intent intent) {
-		// TODO Auto-generated method stub
-		
-	}
-	/**
-	 * Required for function plugins. Unused here.
-	 */
-	public void onActivityResultCallback(Context context, Find find, View view,
-			Intent intent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void displayFindInViewCallback(Context context, Find find, View view) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void afterSaveCallback(Context context, Find find, View view,
-			boolean isSaved) {
-		// TODO Auto-generated method stub
-		
-	}
+//	/**
+//	 * Required for function plugins. Unused here.
+//	 */
+//	public void listFindCallback(Context context, Find find, View view) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//	/**
+//	 * Required for function plugins. Unused here.
+//	 */
+//	public void menuItemSelectedCallback(Context context, Find find, View view,
+//			Intent intent) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//	/**
+//	 * Required for function plugins. Unused here.
+//	 */
+//	public void onActivityResultCallback(Context context, Find find, View view,
+//			Intent intent) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	public void displayFindInViewCallback(Context context, Find find, View view) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	public void afterSaveCallback(Context context, Find find, View view,
+//			boolean isSaved) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 }

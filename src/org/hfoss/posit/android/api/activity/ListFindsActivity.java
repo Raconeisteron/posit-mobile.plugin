@@ -287,6 +287,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		}
 
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
@@ -338,12 +339,15 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				// Call each plugin's callback method to update view
 				for (FunctionPlugin plugin: plugins) {
 					Log.i(TAG, "plugin=" + plugin);
-					Class callbackClass = null;
+					Class<ListFindPluginCallback> callbackClass = null;
 					Object o;
 					try {
-						callbackClass = Class.forName(plugin.getListFindCallbackClass());
-						o = (ListFindPluginCallback) callbackClass.newInstance();
-						((ListFindPluginCallback) o).listFindCallback(context,find,v);
+						String className = plugin.getListFindCallbackClass();
+						if (className != null) {
+							callbackClass = (Class<ListFindPluginCallback>) Class.forName(className);
+							o = (ListFindPluginCallback) callbackClass.newInstance();
+							((ListFindPluginCallback) o).listFindCallback(context,find,v);
+						}
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
