@@ -19,7 +19,7 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-package org.hfoss.posit.android.functionplugins;
+package org.hfoss.posit.android.functionplugin.login;
 
 
 import org.hfoss.posit.android.api.AppControlManager;

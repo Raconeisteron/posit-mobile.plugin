@@ -194,13 +194,13 @@
 			type="function" 
 			extensionPoint="mainLogin"
 			name="login"
-			activity="org.hfoss.posit.android.functionplugins.LoginActivity" 
+			activity="org.hfoss.posit.android.functionplugin.login.LoginActivity" 
 			activity_returns_result="true"
 			activity_result_action="0"
 			/>
 			
 		<!--  Tracker plugin tracks the phone's expeditions and syncs to server. -->		
-		<Plugin active="false" 
+		<Plugin active="true" 
  			 type="function" 
  			 extensionPoint="mainMenu"
  			 preferences_xml="tracker_preferences" 			 
