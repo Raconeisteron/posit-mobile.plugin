@@ -2,7 +2,7 @@
 <!-- FindPlugins are mutually exclusive. Only 1 of the following can be active. -->
 	<FindPlugins>
 	    <!-- BasicFind is the original POSIT: name, desc, lat, long,  -->
-		<Plugin active="false" type="find" name="BasicFind"
+		<Plugin active="true" type="find" name="BasicFind"
 			package="org.hfoss.posit.android.api" 
 			find_class="org.hfoss.posit.android.api.Find"
 			find_factory="org.hfoss.posit.android.api.FindFactory"
@@ -40,7 +40,7 @@
 			main_icon="posit_museum" />
 
 		<!--  SecondHelpings is a plugin for a nonprofit in SC -->
-		<Plugin active="true" type="find" name="SecondHelpings"
+		<Plugin active="false" type="find" name="SecondHelpings"
 			package="org.hfoss.posit.android.plugin.sh"
 			find_class="org.hfoss.posit.android.plugin.sh.ShFind"
 			find_factory="org.hfoss.posit.android.api.FindFactory"
@@ -99,7 +99,7 @@
 <!-- Function Plugins can co-exist. Make active those that you want accessible in the app. -->
 
 		<!--  Capture Media plugin attaches to FindActivity. Takes a picture. -->
-		<Plugin active="true" 
+		<Plugin active="false" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="Capture Media" 
@@ -144,13 +144,15 @@
 			name="setReminder" 
 			menuIcon="ic_menu_list" menuTitle="Set Reminder"
 			preferences_xml="todo_preferences" 
+			add_find_callback = "org.hfoss.posit.android.functionplugin.reminder.SetReminder"
+			list_find_callback = "org.hfoss.posit.android.functionplugin.reminder.SetReminder"
 			menuActivity="org.hfoss.posit.android.functionplugin.reminder.SetReminder"
 			service="org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService"
 			activity_returns_result="true"
 			activity_result_action="0" />
 
 		<!--  ViewFile plugin reads and displays Csv, Txt, XML files from SdCard. -->
-		<Plugin active="true"
+		<Plugin active="false"
 			type="function"
 			extensionPoint="listMenu"
 			name="viewfile"

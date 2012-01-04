@@ -1,49 +1,37 @@
 package org.hfoss.posit.android.api.activity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
-import org.hfoss.posit.android.Constants;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.functionplugin.camera.Camera;
-import org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService;
+//import org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.plugin.FindPlugin;
 import org.hfoss.posit.android.plugin.FindPluginManager;
 import org.hfoss.posit.android.plugin.FunctionPlugin;
+import org.hfoss.posit.android.plugin.ListFindPluginCallback;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore.Images;
-import android.provider.MediaStore.Images.Media;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -85,14 +73,13 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	private TextView mLongTV = null;
 	private TextView mLongitudeTV = null;
 	private ImageView photo = null;
+	private TextView mAdhocTV = null;
 
 	private String img_str = null; // base64 string representation of photo
 
-	/* To-Do Begins */
-	// A list of active Function Plug-in for FindActitivy
 	private ArrayList<FunctionPlugin> mAddFindMenuPlugins = null;
-
-	/* To-Do Ends */
+	private int mContentViewId;
+	private View mView;
 
 	/**
 	 * This may be invoked by a FindActivity subclass, which may or may not have
@@ -105,19 +92,21 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		// Get the custom add find layout from the plugin settings, if there is
 		// one
-		int resId = getResources().getIdentifier(
+//		int resId 
+		mContentViewId = getResources().getIdentifier(
 				FindPluginManager.mFindPlugin.mAddFindLayout, "layout",
 				getPackageName());
-		setContentView(resId);
+		setContentView(mContentViewId);
+		
+		mView = findViewById(mContentViewId);
+		if (mView == null) 
+			Log.i(TAG,"mView null");
 
 		// Sets listeners for various UI elements
 		initializeListeners();
 
-		/* To-Do Begins */
-		// Initialize the list of active function plug-ins
 		mAddFindMenuPlugins = FindPluginManager
 				.getFunctionPlugins(FindPluginManager.ADD_FIND_MENU_EXTENSION);
-		/* To-Do Ends */
 
 		// Initialize all UI elements for later uses
 		mNameET = (EditText) findViewById(R.id.nameEditText);
@@ -130,6 +119,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		mLongTV = (TextView) findViewById(R.id.longitudeTextView);
 		mLongitudeTV = (TextView) findViewById(R.id.longitudeValueTextView);
 		photo = (ImageView) findViewById(R.id.photo);
+		mAdhocTV = (TextView) findViewById(R.id.isAdhocTextView);
 
 		// Check if settings allow Geotagging
 		SharedPreferences prefs = PreferenceManager
@@ -152,12 +142,16 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		Bundle extras = getIntent().getExtras();
 
 		if (extras != null) {
-			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
+			// Existing Find
+			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) { 
 				int id = extras.getInt(Find.ORM_ID);
 				Log.i(TAG, "ORM_id = " + id);
 				Find find = getHelper().getFindById(id);
 				displayContentInView(find);
-			} else if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
+			} else 
+				
+			// Bundled Find
+			if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
 				// Pull a Bundle corresponding to a Find from the Intent and put
 				// that in the view
 				Bundle findBundle = extras.getBundle("findbundle");
@@ -185,10 +179,14 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				}
 				find.updateObject(findBundle);
 				displayContentInView(find);
-			} else if (getIntent().getAction().equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+			} else 
+				
+			// CSV Find	
+			if (getIntent().getAction().equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
 				
 			}
-		} else {
+		// New Find
+		} else {  
 			// Set real GUID
 			if (mGuidRealTV != null)
 				mGuidRealTV.setText(UUID.randomUUID().toString());
@@ -271,7 +269,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000, 0, this);
 			
 			Location netLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			Location gpsLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			Location gpsLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			
 			if (gpsLocation != null) {
 				mCurrentLocation = gpsLocation;
@@ -356,34 +354,14 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			menu.removeItem(R.id.delete_find_menu_item);
 		}
 
-		/* To-Do Begins */
 		// Add menu options based on function plug-ins
 		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
-			if (plugin.getmMenuTitle().equals("Set Reminder")) {
-				// The function plug-in is "Location-Aware Reminder"
-				// Check if the user allows for reminders to be set
-				SharedPreferences prefs = PreferenceManager
-						.getDefaultSharedPreferences(this);
-				boolean allowReminder = prefs.getBoolean("allowReminderKey",
-						true);
-				boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
-				// If the user allows, set the "Set Reminder" menu option
-				if (allowReminder && allowGeoTag) {
-					MenuItem item = menu.add(plugin.getmMenuTitle());
-					int resId = getResources()
-							.getIdentifier(plugin.getmMenuIcon(), "drawable",
-									getPackageName());
-					item.setIcon(resId);
-				}
-			} else {
-				// For all other funciton plug-ins
+				// For all other function plug-ins
 				MenuItem item = menu.add(plugin.getmMenuTitle());
 				int resId = getResources().getIdentifier(plugin.getmMenuIcon(),
 						"drawable", getPackageName());
 				item.setIcon(resId);
-			}
 		}
-		/* To-Do Ends */
 
 		return true;
 
@@ -413,34 +391,38 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		default:
 			for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 				if (item.getTitle().equals(plugin.getmMenuTitle())) {
-					if (plugin.getmMenuTitle().equals("Set Reminder")) { // MUST
-																			// use
-																			// "equals",
-																			// not
-																			// "=="
-						Bundle bundle = new Bundle();
-						bundle.putString("Date", mTimeTV.getText().toString());
-						if (mCurrentLocation == null) {
-							bundle.putDouble("CurrentLongitude", 0);
-							bundle.putDouble("CurrentLatitude", 0);
-						} else {
-							bundle.putDouble("CurrentLongitude",
-									mCurrentLocation.getLongitude());
-							bundle.putDouble("CurrentLatitude",
-									mCurrentLocation.getLatitude());
-						}
-						bundle
-								.putDouble("FindsLongitude", Double
-										.parseDouble(mLongitudeTV.getText()
-												.toString()));
-						bundle.putDouble("FindsLatitude", Double
-								.parseDouble(mLatitudeTV.getText().toString()));
-						Intent intent = new Intent(this, plugin
-								.getmMenuActivity());
-						intent.putExtras(bundle);
-						startActivityForResult(intent, plugin
-								.getActivityResultAction());
-					} else { // all other function plug-ins
+					
+					
+//					if (plugin.getmMenuTitle().equals("Set Reminder")) { // MUST
+//																			// use
+//																			// "equals",
+//																			// not
+//																			// "=="
+//						Bundle bundle = new Bundle();
+//						bundle.putString("Date", mTimeTV.getText().toString());
+//						if (mCurrentLocation == null) {
+//							bundle.putDouble("CurrentLongitude", 0);
+//							bundle.putDouble("CurrentLatitude", 0);
+//						} else {
+//							bundle.putDouble("CurrentLongitude",
+//									mCurrentLocation.getLongitude());
+//							bundle.putDouble("CurrentLatitude",
+//									mCurrentLocation.getLatitude());
+//						}
+//						bundle
+//								.putDouble("FindsLongitude", Double
+//										.parseDouble(mLongitudeTV.getText()
+//												.toString()));
+//						bundle.putDouble("FindsLatitude", Double
+//								.parseDouble(mLatitudeTV.getText().toString()));
+//						Intent intent = new Intent(this, plugin
+//								.getmMenuActivity());
+//						intent.putExtras(bundle);
+//						startActivityForResult(intent, plugin
+//								.getActivityResultAction());
+//					} 
+//					
+//					else { // all other function plug-ins
 						Intent intent = new Intent(this, plugin
 								.getmMenuActivity());
 						// Put Find information in Intent so that it may be
@@ -458,7 +440,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 									.getActivityResultAction());
 						else
 							startActivity(intent);
-					}
+//					}
 				}
 			}
 			break;
@@ -476,46 +458,77 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		// one that matches the intent request code
 		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 			if (requestCode == plugin.getActivityResultAction()) {
-
-				// This Activity Result is sent from SetReminder class
-				if (plugin.getmMenuTitle().equals("Set Reminder")) {
-
-					// Intent is null, meaning it includes reminder
-					// date and location information set by the user
-					if (intent != null) {
-						Bundle bundle = intent.getExtras();
-
-						// Get date, longitude, and latitude
-						String date = bundle.getString("Date");
-						Double longitude = bundle.getDouble("Longitude");
-						Double latitude = bundle.getDouble("Latitude");
-
-						// Display user specified longitude and latitude
-						mLongitudeTV.setText(String.valueOf(longitude));
-						mLatitudeTV.setText(String.valueOf(latitude));
-
-						// Remove the old row that displays time and replace it
-						// with a new row that include an alarm clock icon to
-						// visually indicate this find has a reminder attached
-						ViewGroup parent = (ViewGroup) findViewById(
-								R.id.timeValueTextView).getParent();
-						parent.removeAllViews();
-						ImageView alarmIcon = new ImageView(this);
-						alarmIcon.setImageResource(R.drawable.reminder_alarm);
-						TableRow.LayoutParams lp1 = new TableRow.LayoutParams(
-								30, 30);
-						lp1.setMargins(0, 6, 80, 0);
-						parent.addView(alarmIcon, lp1);
-						TextView mCloneTimeTV = new TextView(this);
-						mCloneTimeTV.setId(R.id.timeValueTextView);
-						mCloneTimeTV.setText(date);
-						mCloneTimeTV.setTextSize(12);
-						mTimeTV = mCloneTimeTV;
-						TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
-						lp2.setMargins(6, 6, 0, 0);
-						parent.addView(mTimeTV, lp2);
-					}
-				} else if (plugin.getmMenuTitle().equals("Capture Media")) {
+				Log.i(TAG, "plugin=" + plugin);
+				Class callbackClass = null;
+				Object o;
+				try {
+					Find find = retrieveContentFromView();
+					View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+					callbackClass = Class.forName(plugin.getAddFindCallbackClass());
+					o = (AddFindPluginCallback) callbackClass.newInstance();
+					((AddFindPluginCallback) o).onActivityResultCallback(
+							this.getApplication(),
+							find,
+							view,
+							intent);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+//				// This Activity Result is sent from SetReminder class
+//				if (plugin.getmMenuTitle().equals("Set Reminder")) {
+//
+//					// Intent is null, meaning it includes reminder
+//					// date and location information set by the user
+//					if (intent != null) {
+//						Bundle bundle = intent.getExtras();
+//
+//						// Get date, longitude, and latitude
+//						String date = bundle.getString(Find.TIME);
+//						Double longitude = bundle.getDouble(Find.LONGITUDE);
+//						Double latitude = bundle.getDouble(Find.LATITUDE);
+//						
+//						Integer is_adhoc = bundle.getInt(Find.IS_ADHOC);
+//						Log.i(TAG, "is_adhoc = " + is_adhoc);
+//						if (mAdhocTV != null)
+//							mAdhocTV.setText("" + is_adhoc);
+//
+//						// Display user specified longitude and latitude
+//						mLongitudeTV.setText(String.valueOf(longitude));
+//						mLatitudeTV.setText(String.valueOf(latitude));
+//
+//						// Remove the old row that displays time and replace it
+//						// with a new row that include an alarm clock icon to
+//						// visually indicate this find has a reminder attached
+//						ViewGroup parent = (ViewGroup) findViewById(
+//								R.id.timeValueTextView).getParent();
+//						parent.removeAllViews();
+//						ImageView alarmIcon = new ImageView(this);
+//						alarmIcon.setImageResource(R.drawable.reminder_alarm);
+//						TableRow.LayoutParams lp1 = new TableRow.LayoutParams(
+//								30, 30);
+//						lp1.setMargins(0, 6, 80, 0);
+//						parent.addView(alarmIcon, lp1);
+//						TextView mCloneTimeTV = new TextView(this);
+//						mCloneTimeTV.setId(R.id.timeValueTextView);
+//						mCloneTimeTV.setText(date);
+//						mCloneTimeTV.setTextSize(12);
+//						mTimeTV = mCloneTimeTV;
+//						TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
+//						lp2.setMargins(6, 6, 0, 0);
+//						parent.addView(mTimeTV, lp2);
+//					}
+//				} 
+				
+//				else 
+					if (plugin.getmMenuTitle().equals("Capture Media")) {
 					if (intent != null) {
 						// do we get an image back?
 						if (intent.getStringExtra("Photo") != null) {
@@ -607,6 +620,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			}
 		}
 
+		if (mAdhocTV != null) {
+			find.setIs_adhoc(Integer.parseInt((String) mAdhocTV.getText()));
+		}
 		// Set Project ID
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
@@ -643,33 +659,34 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			SimpleDateFormat dateFormat = new SimpleDateFormat(
 					"yyyy/MM/dd HH:mm:ss");
 			String time = dateFormat.format(find.getTime());
-			/* To-Do Begins */
-			// If the time has no hour/minute/seconds value,
-			// this means that the time is set by SetReminder class
-			if (time.substring(11).equals("00:00:00")) {
-				// Therefore, remove the old row that displays time and replace
-				// it with a new row that include an alarm clock icon to
-				// visually
-				// indicate this find has a reminder attached
-				time = time.substring(0, 10);
-				ViewGroup parent = (ViewGroup) findViewById(
-						R.id.timeValueTextView).getParent();
-				parent.removeAllViews();
-				ImageView alarmIcon = new ImageView(this);
-				alarmIcon.setImageResource(R.drawable.reminder_alarm);
-				TableRow.LayoutParams lp1 = new TableRow.LayoutParams(30, 30);
-				lp1.setMargins(0, 6, 80, 0);
-				parent.addView(alarmIcon, lp1);
-				TextView mCloneTimeTV = new TextView(this);
-				mCloneTimeTV.setId(R.id.timeValueTextView);
-				mCloneTimeTV.setText(time);
-				mCloneTimeTV.setTextSize(12);
-				mTimeTV = mCloneTimeTV;
-				TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
-				lp2.setMargins(6, 6, 0, 0);
-				parent.addView(mTimeTV, lp2);
-			}
-			/* To-Do Ends */
+			
+//			/* To-Do Begins */
+//			// If the time has no hour/minute/seconds value,
+//			// this means that the time is set by SetReminder class
+//			if (time.substring(11).equals("00:00:00")) {
+//				// Therefore, remove the old row that displays time and replace
+//				// it with a new row that include an alarm clock icon to
+//				// visually
+//				// indicate this find has a reminder attached
+//				time = time.substring(0, 10);
+//				ViewGroup parent = (ViewGroup) findViewById(
+//						R.id.timeValueTextView).getParent();
+//				parent.removeAllViews();
+//				ImageView alarmIcon = new ImageView(this);
+//				alarmIcon.setImageResource(R.drawable.reminder_alarm);
+//				TableRow.LayoutParams lp1 = new TableRow.LayoutParams(30, 30);
+//				lp1.setMargins(0, 6, 80, 0);
+//				parent.addView(alarmIcon, lp1);
+//				TextView mCloneTimeTV = new TextView(this);
+//				mCloneTimeTV.setId(R.id.timeValueTextView);
+//				mCloneTimeTV.setText(time);
+//				mCloneTimeTV.setTextSize(12);
+//				mTimeTV = mCloneTimeTV;
+//				TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
+//				lp2.setMargins(6, 6, 0, 0);
+//				parent.addView(mTimeTV, lp2);
+//			}
+//			/* To-Do Ends */
 			mTimeTV.setText(time);
 		}
 
@@ -829,7 +846,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (rows > 0) {
 			Log.i(TAG, "Find " + getIntent().getAction() + " successful: "
 					+ find);
-			this.startService(new Intent(this, ToDoReminderService.class));
+//			this.startService(new Intent(this, ToDoReminderService.class));
 		} else
 			Log.e(TAG, "Find " + getIntent().getAction() + " not successful: "
 					+ find);
@@ -902,7 +919,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				Log.i(TAG, "Image with guid: " + guid + " deleted.");
 			}
 
-			this.startService(new Intent(this, ToDoReminderService.class));
+//			this.startService(new Intent(this, ToDoReminderService.class));
 		} else {
 			Toast.makeText(FindActivity.this, R.string.delete_failed,
 					Toast.LENGTH_SHORT).show();

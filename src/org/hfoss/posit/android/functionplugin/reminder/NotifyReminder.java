@@ -53,9 +53,11 @@ public class NotifyReminder extends OrmLiteBaseActivity<DbManager> {
 	
 	// Notification Pop-up Dialog ID
 	private static final int NOTIFICATION_ID = 0;
-	
+	private static final int NOTIFICATION_CANCEL = 1;
+
 	// Find associated with the reminder
 	private Find find;
+	private int findId;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,27 +70,48 @@ public class NotifyReminder extends OrmLiteBaseActivity<DbManager> {
 		mNotificationManager = (NotificationManager) getSystemService(ns);
 		
 		// Initialize the find through find ID passed in by the intent
-		Bundle bundle = getIntent().getExtras();
-		find = getHelper().getFindById(bundle.getInt(Find.ORM_ID));
+		final Bundle bundle = getIntent().getExtras();
+		findId = bundle.getInt(Find.ORM_ID);
+		find = getHelper().getFindById(findId);
 		
-		// Show the Notification Pop-up Dialog
-		showDialog(NOTIFICATION_ID);	
+		// Check that the find still exists
+		if (find == null)  {
+			showDialog(NOTIFICATION_CANCEL);
+		} else {  // Show the Notification Pop-up Dialog
+			showDialog(NOTIFICATION_ID);
+		}
 	}
 	
 	// Create and show Notification Pop-up Dialog
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
+		
+		case NOTIFICATION_CANCEL:
+			mNotificationManager.cancel(findId);
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Reminder: Find # " + findId);
+			builder.setMessage("This Find no longer exists in Db");
+			// Do nothing when the user press "Dismiss"
+			builder.setPositiveButton("Dismiss", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+				}
+			});
+			
+			AlertDialog cancel = builder.create();
+			return cancel;
 	        
 		case NOTIFICATION_ID:
 			// Create Notification Dialog
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder = new AlertDialog.Builder(this);
 			builder.setTitle("Reminder: " + find.getName());
 			builder.setMessage(find.getDescription());
 			
 			// Do nothing when the user press "Keep the find"
 			builder.setPositiveButton("Keep the find", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
+					find.setIs_adhoc(SetReminder.REMINDER_UNSET);
+					getHelper().update(find);
 				}
 			});
 			
@@ -96,7 +119,7 @@ public class NotifyReminder extends OrmLiteBaseActivity<DbManager> {
 			builder.setNegativeButton("Discard the find", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					getHelper().delete(find);
-					getApplicationContext().startService(new Intent(getApplicationContext(), ToDoReminderService.class));
+//					getApplicationContext().startService(new Intent(getApplicationContext(), ToDoReminderService.class));
 				}
 			});
 			

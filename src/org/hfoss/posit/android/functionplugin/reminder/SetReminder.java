@@ -26,7 +26,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -35,7 +37,10 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.plugin.AddFindPluginCallback;
+import org.hfoss.posit.android.plugin.ListFindPluginCallback;
 import org.hfoss.posit.android.R;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,14 +52,24 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -66,7 +81,8 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
  * information required for a reminder, including date and location.
  * This reminder is then attached to the find.
  **/
-public class SetReminder extends OrmLiteBaseActivity<DbManager> {
+public class SetReminder extends OrmLiteBaseActivity<DbManager> 
+	implements ListFindPluginCallback, AddFindPluginCallback {
 	
 	private static final String TAG = "SetReminder";
 	
@@ -75,6 +91,11 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager> {
 	private static final int ADDRESS_PICKER_DIALOG_ID = 1;
 	private static final int ADDRESS_ENTER_DIALOG_ID = 2;
 	private static final int ADDRESS_CONFIRM_DIALOG_ID = 3;
+	
+	// Reminder Status
+	public static final int REMINDER_UNSET = 0;
+	public static final int REMINDER_SET = 1;
+	public static final int REMINDER_NOTIFIED = 2;
 	
 	// Pop-up Dialogs
 	private DatePickerDialog datePickerDialog;
@@ -105,28 +126,76 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager> {
 	// A list of addressed received from Google
 	private JSONArray addressArray;
 	
+	// Bundle passed in the Intent
+	protected Bundle mDbEntries;
+
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Set the transparent blank screen as a background for dialogs
 		setContentView(R.layout.blank_screen);
 		
+		// Exit the Activity if the proper settings are not enabled
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean allowReminder = prefs.getBoolean("allowReminderKey",true);
+		boolean allowGeoTag = prefs.getBoolean("geotagKey", true);
+		// If the user allows, set the "Set Reminder" menu option
+		if (!allowReminder || !allowGeoTag) {
+			Toast.makeText(this, "Sorry. Geotagging and Allow Reminder settings must "
+					+ " be enabled to run the Set Reminder Activity.", Toast.LENGTH_LONG).show();
+			finish();
+		}
+
+		mDbEntries = getIntent().getParcelableExtra("DbEntries");
+
+		
 		dateSetPressed = false;
 		
-		// Get intent passed in from FindActivity
-		Bundle bundle = getIntent().getExtras();
-		date = bundle.getString("Date");
+//		// Get intent passed in from FindActivity
+//		Bundle bundle = getIntent().getExtras();
+//		date = bundle.getString("Date");
 		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		String dateStr = dateFormat.format(date);
+
+		
+//		// Initialize variables for Date Picker Dialog
+//		year = date.substring(0, 4);
+//		month = date.substring(5, 7);
+//		day = date.substring(8, 10);
+
 		// Initialize variables for Date Picker Dialog
-		year = date.substring(0, 4);
-		month = date.substring(5, 7);
-		day = date.substring(8, 10);
+		year = dateStr.substring(0, 4);
+		month = dateStr.substring(5, 7);
+		day = dateStr.substring(8, 10);
 		
-		// Initialize variables for longitude and latitude
-		currentLongitude = bundle.getDouble("CurrentLongitude");
-		currentLatitude = bundle.getDouble("CurrentLatitude");
-		findsLongitude = bundle.getDouble("FindsLongitude");
-		findsLatitude = bundle.getDouble("FindsLatitude");
+//		// Initialize variables for longitude and latitude
+//		currentLongitude = bundle.getDouble("CurrentLongitude");
+//		currentLatitude = bundle.getDouble("CurrentLatitude");
+		
+//		findsLongitude = bundle.getDouble("FindsLongitude");
+//		findsLatitude = bundle.getDouble("FindsLatitude");
+
+		findsLongitude = mDbEntries.getDouble(Find.LONGITUDE);
+		findsLatitude = mDbEntries.getDouble(Find.LATITUDE);
+		
+		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		
+		Location netLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		Location gpsLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		Location loc = null;
+		
+		if (gpsLocation != null) {
+			loc = gpsLocation;
+		} else {
+			loc = netLocation;
+		}
+		if (loc != null) {
+			currentLongitude = loc.getLongitude();
+			currentLatitude = loc.getLatitude();
+		}
 		
 		showDatePickerDialog();	
 	}
@@ -360,18 +429,19 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager> {
 			    	if (item == 0) {
 			    		// Use Current Address
 			    		// Set the intent back to FindActivity
-				    	bundle.putString("Date", date);
-				    	bundle.putDouble("Longitude", currentLongitude);
-						bundle.putDouble("Latitude", currentLatitude);
+				    	bundle.putString(Find.TIME, date);
+				    	bundle.putDouble(Find.LONGITUDE, currentLongitude);
+						bundle.putDouble(Find.LATITUDE, currentLatitude);
+						bundle.putInt(Find.IS_ADHOC, REMINDER_SET);
 						newIntent.putExtras(bundle);
 				    	setResult(RESULT_OK, newIntent);
 				    	finish();
 			    	} else if (item == 1) {
 			    		// Use Current Address
 			    		// Set the intent back to FindActivity
-			    		bundle.putString("Date", date);
-				    	bundle.putDouble("Longitude", findsLongitude);
-						bundle.putDouble("Latitude", findsLatitude);
+			    		bundle.putString(Find.TIME, date);
+				    	bundle.putDouble(Find.LONGITUDE, findsLongitude);
+						bundle.putDouble(Find.LATITUDE, findsLatitude);
 						newIntent.putExtras(bundle);
 				    	setResult(RESULT_OK, newIntent);
 				    	finish();
@@ -439,8 +509,9 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager> {
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-			    	bundle.putDouble("Longitude", lng);
-					bundle.putDouble("Latitude", lat);
+			    	bundle.putDouble(Find.LONGITUDE, lng);
+					bundle.putDouble(Find.LATITUDE, lat);
+					bundle.putInt(Find.IS_ADHOC, REMINDER_SET);
 					newIntent.putExtras(bundle);
 			    	setResult(RESULT_OK, newIntent);
 			    	finish();
@@ -544,7 +615,7 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager> {
 			// Set the intent back to FindActivity
 			Bundle bundle = new Bundle();
 	    	Intent newIntent = new Intent();
-			bundle.putString("Date", date);
+			bundle.putString(Find.TIME, date);
 			Double lng = new Double(0);
 			Double lat = new Double(0);
 			// Parse the JSONObject to get the longitude and latitude
@@ -558,8 +629,9 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager> {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-	    	bundle.putDouble("Longitude", lng);
-			bundle.putDouble("Latitude", lat);
+	    	bundle.putDouble(Find.LONGITUDE, lng);
+			bundle.putDouble(Find.LATITUDE, lat);
+			bundle.putInt(Find.IS_ADHOC, REMINDER_SET);
 			newIntent.putExtras(bundle);
 	    	setResult(RESULT_OK, newIntent);
 	    	finish();
@@ -570,5 +642,111 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager> {
 			msg.obj = "SHOW ADDRESS CONFIRM DIALOG";
 			handler.sendMessage(msg);
 		}
+	}
+
+	/**
+	 * Required for all function plugins that require actions during ViewFinds.
+	 */
+	public void listFindCallback(Context context, Find find, View view) {
+		Log.i(TAG, "listFindCallback");	
+		
+		// Initialize the alarm clock icon here so
+		// it can be referenced in the entire function
+		// and be set for each list row item
+
+		if (find.getIs_adhoc() == REMINDER_SET || find.getIs_adhoc() == this.REMINDER_NOTIFIED) {
+			ImageView alarmIcon = new ImageView(context);
+			alarmIcon.setImageResource(R.drawable.reminder_alarm);
+			RelativeLayout rl = (RelativeLayout) view.findViewById(R.id.list_row_rl);
+			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(25, 25);
+			lp.addRule(RelativeLayout.BELOW, R.id.status);
+			lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+			lp.setMargins(0, 6, 0, 0);
+			rl.addView(alarmIcon, lp);
+			alarmIcon.setVisibility(ImageView.VISIBLE);		
+		}
+//		// Add Reminder alarm clock icon in every list row,
+//		// and set its visibility based on if a find has a
+//		// reminder attached or not
+//		alarmIcon.setImageResource(R.drawable.reminder_alarm);
+//		RelativeLayout rl = (RelativeLayout) v.findViewById(R.id.list_row_rl);
+//		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(25, 25);
+//		lp.addRule(RelativeLayout.BELOW, R.id.status);
+//		lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//		lp.setMargins(0, 6, 0, 0);
+//		rl.addView(alarmIcon, lp);
+
+		
+//		/* To-Do Begins */
+//		if (time.substring(11).equals("00:00:00")) {
+//			// When the time has not hour/minute/second value, it is set through SetReminder
+//			// class, the find has a reminder attached, the alarm clock icon must be visible
+//			tv.setText(getText(R.string.remindertimeLabel)+ " " + time.substring(0, 10));
+//			alarmIcon.setVisibility(ImageView.VISIBLE);
+//		} else {
+//			// Otherwise, the find has no reminder attached,
+//			// the alarm clock icon must be invisible
+//			tv.setText(getText(R.string.timeLabel) + " " + time);
+//			alarmIcon.setVisibility(ImageView.INVISIBLE);
+//		}
+//		/* To-Do Ends */
+	}
+
+	public void menuItemSelectedCallback(Context context, Find find, View view,
+			Intent intent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * Called from FindActivity.onActivityResult().  
+	 */
+	public void onActivityResultCallback(Context context, Find find, View view,Intent intent) {
+		Log.i(TAG, "onActivityResultCallbac");
+			// Intent is NOT null, meaning it includes reminder
+			// date and location information set by the user
+			if (intent != null) {
+				Bundle bundle = intent.getExtras();
+
+				// Get date, longitude, and latitude
+				String date = bundle.getString(Find.TIME);
+				Double longitude = bundle.getDouble(Find.LONGITUDE);
+				Double latitude = bundle.getDouble(Find.LATITUDE);
+				
+				TextView tv = (TextView) view.findViewById(R.id.isAdhocTextView);
+				
+				Integer is_adhoc = bundle.getInt(Find.IS_ADHOC);
+				Log.i(TAG, "is_adhoc = " + is_adhoc);
+				if (tv != null)
+					tv.setText("" + is_adhoc);
+
+				// Display user specified longitude and latitude
+				tv = (TextView) view.findViewById(R.id.longitudeValueTextView);
+				tv.setText(String.valueOf(longitude));
+				tv = (TextView) view.findViewById(R.id.latitudeValueTextView);
+				tv.setText(String.valueOf(latitude));
+
+				// Remove the old row that displays time and replace it
+				// with a new row that include an alarm clock icon to
+				// visually indicate this find has a reminder attached
+				ViewGroup parent = (ViewGroup) view.findViewById(
+						R.id.timeValueTextView).getParent();
+				parent.removeAllViews();
+				ImageView alarmIcon = new ImageView(context);
+				alarmIcon.setImageResource(R.drawable.reminder_alarm);
+				TableRow.LayoutParams lp1 = new TableRow.LayoutParams(
+						30, 30);
+				lp1.setMargins(0, 6, 80, 0);
+				parent.addView(alarmIcon, lp1);
+				TextView mCloneTimeTV = new TextView(context);
+				mCloneTimeTV.setId(R.id.timeValueTextView);
+				mCloneTimeTV.setText(date);
+				mCloneTimeTV.setTextSize(12);
+				TextView mTimeTV = (TextView)view.findViewById(R.id.timeValueTextView);
+				mTimeTV = mCloneTimeTV;
+				TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
+				lp2.setMargins(6, 6, 0, 0);
+				parent.addView(mTimeTV, lp2);
+			}
 	}
 }
