@@ -24,7 +24,12 @@ package org.hfoss.posit.android.functionplugin.camera;
 
 import java.io.ByteArrayOutputStream;
 
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.plugin.AddFindPluginCallback;
+import org.hfoss.posit.android.plugin.ListFindPluginCallback;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -39,7 +44,8 @@ import android.widget.ImageView;
  *
  */
 
-public class CameraActivity extends Activity {
+public class CameraActivity extends Activity 
+	implements AddFindPluginCallback, ListFindPluginCallback {
 
 	public static final String PREFERENCES_IMAGE = "Image";
 	static final int TAKE_CAMERA_REQUEST = 1000;
@@ -89,4 +95,29 @@ public class CameraActivity extends Activity {
 			break;
 		}
 	}
+
+	/**
+	 * Required for function plugins. Unused here.
+	 */
+	public void listFindCallback(Context context, Find find, View view) {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * Required for function plugins. Unused here.
+	 */
+	public void menuItemSelectedCallback(Context context, Find find, View view,
+			Intent intent) {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * Required for function plugins. Unused here.
+	 */
+	public void onActivityResultCallback(Context context, Find find, View view,
+			Intent intent) {
+		// TODO Auto-generated method stub
+		
+	}	
+	
 }

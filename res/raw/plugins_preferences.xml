@@ -99,13 +99,15 @@
 <!-- Function Plugins can co-exist. Make active those that you want accessible in the app. -->
 
 		<!--  Capture Media plugin attaches to FindActivity. Takes a picture. -->
-		<Plugin active="false" 
+		<Plugin active="true" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="Capture Media" 
 			menuIcon="ic_menu_camera" 
 			menuTitle="Capture Media"
 			menuActivity="org.hfoss.posit.android.functionplugin.camera.CameraActivity" 
+			add_find_callback = "org.hfoss.posit.android.functionplugin.camera.CameraActivity"
+			list_find_callback = "org.hfoss.posit.android.functionplugin.camera.CameraActivity"
 			activity_returns_result="true"
 			activity_result_action="1" />
 
@@ -169,7 +171,7 @@
 			menuActivity="org.hfoss.posit.android.functionplugin.sms.SmsActivity" />
 
 		<!--  TwitFind posts Finds on Twitter -->
-		<Plugin active="true" 
+		<Plugin active="false" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="twitFind"
