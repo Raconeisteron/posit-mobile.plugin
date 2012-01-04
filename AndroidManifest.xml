@@ -102,7 +102,7 @@
 		<activity
 			android:name=".functionplugin.log.LogFindsActivity" />
 		<activity
-			android:name="org.hfoss.posit.android.functionplugins.LoginActivity" />
+			android:name=".functionplugin.login.LoginActivity" />
 		<activity
 			android:name=".functionplugin.fileviewer.FilePickerActivity" />
 		<activity
@@ -194,10 +194,6 @@
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 		<activity android:name=".plugin.acdivoca.AcdiVocaUpdateFindActivity"
 
-			android:screenOrientation="portrait" android:launchMode="singleTop" />
-		<activity
-			android:name="org.hfoss.posit.android.api.activity.LoginActivity"
-			android:configChanges="orientation|keyboardHidden"
 			android:screenOrientation="portrait" android:launchMode="singleTop" />
 		<activity
 			android:name="org.hfoss.posit.android.api.activity.SearchFindsActivity"
