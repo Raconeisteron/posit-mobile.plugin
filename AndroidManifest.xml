@@ -104,9 +104,9 @@
 		<activity
 			android:name="org.hfoss.posit.android.functionplugins.LoginActivity" />
 		<activity
-			android:name="org.hfoss.posit.android.functionplugins.FilePickerActivity" />
+			android:name=".functionplugin.fileviewer.FilePickerActivity" />
 		<activity
-			android:name="org.hfoss.posit.android.functionplugins.FileViewActivity" />
+			android:name=".functionplugin.fileviewer.FileViewActivity" />
 		<activity
 			android:name=".functionplugin.twitter.TwitFindsActivity" />	
 		<activity 
