@@ -159,7 +159,7 @@
 			extensionPoint="listMenu"
 			name="viewfile"
 			menuIcon="ic_menu_view_32" menuTitle="View File"
-			menuActivity="org.hfoss.posit.android.functionplugins.FileViewActivity" />
+			menuActivity="org.hfoss.posit.android.functionplugin.fileviewer.FileViewActivity" />
 			
 		<!-- SMS Plugin sends and receives Finds as SMS messages. -->
 		<Plugin active="false"

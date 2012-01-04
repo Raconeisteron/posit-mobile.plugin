@@ -20,7 +20,7 @@
  * 
  */
 
-package org.hfoss.posit.android.functionplugins;
+package org.hfoss.posit.android.functionplugin.fileviewer;
 
 import java.io.File;
 import java.util.ArrayList;
