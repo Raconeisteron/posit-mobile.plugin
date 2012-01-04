@@ -1,3 +1,24 @@
+/*
+ * File: FindActivity.java
+ * 
+ * Copyright (C) 2009 The Humanitarian FOSS Project (http://www.hfoss.org)
+ * 
+ * This file is part of POSIT, Portable Open Source Information Tool.
+ *
+ * POSIT is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License (LGPL) as published 
+ * by the Free Software Foundation; either version 3.0 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU LGPL along with this program; 
+ * if not visit http://www.gnu.org/licenses/lgpl.html.
+ * 
+ */
 package org.hfoss.posit.android.api.activity;
 
 import java.text.ParseException;
@@ -10,7 +31,6 @@ import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.functionplugin.camera.Camera;
-//import org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.plugin.FindPlugin;
@@ -45,7 +65,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +78,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	private boolean mGeoTagEnabled;
 	private LocationManager mLocationManager = null;
-	private String mProvider = null;
 	protected Location mCurrentLocation = null;
 
 	// UI Elements
@@ -78,8 +96,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	private String img_str = null; // base64 string representation of photo
 
 	private ArrayList<FunctionPlugin> mAddFindMenuPlugins = null;
-	private int mContentViewId;
-	private View mView;
 
 	/**
 	 * This may be invoked by a FindActivity subclass, which may or may not have
@@ -90,18 +106,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		super.onCreate(savedInstanceState);
 
-		// Get the custom add find layout from the plugin settings, if there is
-		// one
-//		int resId 
-		mContentViewId = getResources().getIdentifier(
+		// Get the custom add find layout from the plugin settings, if there us one
+		int resId  = getResources().getIdentifier(
 				FindPluginManager.mFindPlugin.mAddFindLayout, "layout",
 				getPackageName());
-		setContentView(mContentViewId);
+		setContentView(resId);
 		
-		mView = findViewById(mContentViewId);
-		if (mView == null) 
-			Log.i(TAG,"mView null");
-
 		// Sets listeners for various UI elements
 		initializeListeners();
 
@@ -130,11 +140,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (mGeoTagEnabled) {
 			mLocationManager = (LocationManager) this
 					.getSystemService(Context.LOCATION_SERVICE);
-			// This won't work!!!
-			// Criteria criteria = new Criteria();
-			// criteria.setAccuracy(Criteria.ACCURACY_FINE);
-			// criteria.setPowerRequirement(Criteria.POWER_LOW);
-			// mProvider = mLocationManager.getBestProvider(criteria, true);
 		}
 
 		// Set the content of UI elements, either auto-generated or retrieved
@@ -311,7 +316,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (mGeoTagEnabled)
 			mLocationManager.removeUpdates(this);
 		mLocationManager = null;
-		mProvider = null;
 		mCurrentLocation = null;
 		super.finish();
 	}
@@ -391,56 +395,45 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		default:
 			for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 				if (item.getTitle().equals(plugin.getmMenuTitle())) {
-					
-					
-//					if (plugin.getmMenuTitle().equals("Set Reminder")) { // MUST
-//																			// use
-//																			// "equals",
-//																			// not
-//																			// "=="
-//						Bundle bundle = new Bundle();
-//						bundle.putString("Date", mTimeTV.getText().toString());
-//						if (mCurrentLocation == null) {
-//							bundle.putDouble("CurrentLongitude", 0);
-//							bundle.putDouble("CurrentLatitude", 0);
-//						} else {
-//							bundle.putDouble("CurrentLongitude",
-//									mCurrentLocation.getLongitude());
-//							bundle.putDouble("CurrentLatitude",
-//									mCurrentLocation.getLatitude());
-//						}
-//						bundle
-//								.putDouble("FindsLongitude", Double
-//										.parseDouble(mLongitudeTV.getText()
-//												.toString()));
-//						bundle.putDouble("FindsLatitude", Double
-//								.parseDouble(mLatitudeTV.getText().toString()));
-//						Intent intent = new Intent(this, plugin
-//								.getmMenuActivity());
-//						intent.putExtras(bundle);
-//						startActivityForResult(intent, plugin
-//								.getActivityResultAction());
-//					} 
-//					
-//					else { // all other function plug-ins
-						Intent intent = new Intent(this, plugin
-								.getmMenuActivity());
-						// Put Find information in Intent so that it may be
-						// utilized by the plugin.
-						// This is done by creating a find and then extracting
-						// the ContentValues object from it
-						// because I want to make sure that we have the same
-						// behaviour as retrieveContentFromView()
-						// without having to duplicate code.
+
+					Intent intent = new Intent(this, plugin.getmMenuActivity());
+
+					Log.i(TAG, "plugin=" + plugin);
+					Class callbackClass = null;
+					Object o;
+					try {
 						Find find = retrieveContentFromView();
-						Bundle bundle = find.getDbEntries();
-						intent.putExtra("DbEntries", bundle);
-						if (plugin.getActivityReturnsResult())
-							startActivityForResult(intent, plugin
-									.getActivityResultAction());
-						else
-							startActivity(intent);
-//					}
+						View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+						callbackClass = Class.forName(plugin.getAddFindCallbackClass());
+						o = (AddFindPluginCallback) callbackClass.newInstance();
+						((AddFindPluginCallback) o).menuItemSelectedCallback(
+								this.getApplication(),
+								find,
+								view,
+								intent);
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (InstantiationException e) {
+						e.printStackTrace();
+					}
+
+					// Put Find information in Intent so that it may be
+					// utilized by the plugin.
+					// This is done by creating a find and then extracting
+					// the ContentValues object from it
+					// because I want to make sure that we have the same
+					// behaviour as retrieveContentFromView()
+					// without having to duplicate code.
+					Find find = retrieveContentFromView();
+					Bundle bundle = find.getDbEntries();
+					intent.putExtra("DbEntries", bundle);
+					if (plugin.getActivityReturnsResult())
+						startActivityForResult(intent, plugin
+								.getActivityResultAction());
+					else
+						startActivity(intent);
 				}
 			}
 			break;
@@ -448,7 +441,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		return true;
 	}
 
-	/* To-Do Begins */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode,
 			Intent intent) {
@@ -472,63 +464,14 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 							view,
 							intent);
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-//				// This Activity Result is sent from SetReminder class
-//				if (plugin.getmMenuTitle().equals("Set Reminder")) {
-//
-//					// Intent is null, meaning it includes reminder
-//					// date and location information set by the user
-//					if (intent != null) {
-//						Bundle bundle = intent.getExtras();
-//
-//						// Get date, longitude, and latitude
-//						String date = bundle.getString(Find.TIME);
-//						Double longitude = bundle.getDouble(Find.LONGITUDE);
-//						Double latitude = bundle.getDouble(Find.LATITUDE);
-//						
-//						Integer is_adhoc = bundle.getInt(Find.IS_ADHOC);
-//						Log.i(TAG, "is_adhoc = " + is_adhoc);
-//						if (mAdhocTV != null)
-//							mAdhocTV.setText("" + is_adhoc);
-//
-//						// Display user specified longitude and latitude
-//						mLongitudeTV.setText(String.valueOf(longitude));
-//						mLatitudeTV.setText(String.valueOf(latitude));
-//
-//						// Remove the old row that displays time and replace it
-//						// with a new row that include an alarm clock icon to
-//						// visually indicate this find has a reminder attached
-//						ViewGroup parent = (ViewGroup) findViewById(
-//								R.id.timeValueTextView).getParent();
-//						parent.removeAllViews();
-//						ImageView alarmIcon = new ImageView(this);
-//						alarmIcon.setImageResource(R.drawable.reminder_alarm);
-//						TableRow.LayoutParams lp1 = new TableRow.LayoutParams(
-//								30, 30);
-//						lp1.setMargins(0, 6, 80, 0);
-//						parent.addView(alarmIcon, lp1);
-//						TextView mCloneTimeTV = new TextView(this);
-//						mCloneTimeTV.setId(R.id.timeValueTextView);
-//						mCloneTimeTV.setText(date);
-//						mCloneTimeTV.setTextSize(12);
-//						mTimeTV = mCloneTimeTV;
-//						TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
-//						lp2.setMargins(6, 6, 0, 0);
-//						parent.addView(mTimeTV, lp2);
-//					}
-//				} 
-				
-//				else 
-					if (plugin.getmMenuTitle().equals("Capture Media")) {
+
+				if (plugin.getmMenuTitle().equals("Capture Media")) {
 					if (intent != null) {
 						// do we get an image back?
 						if (intent.getStringExtra("Photo") != null) {
@@ -537,7 +480,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 							Bitmap bmp = BitmapFactory.decodeByteArray(c, 0,
 									c.length);
 							photo.setImageBitmap(bmp);// display the retrieved
-														// image
+							// image
 							photo.setVisibility(View.VISIBLE);
 						}
 					}
@@ -547,8 +490,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			}
 		}
 	}
-
-	/* To-Do Ends */
 
 	/**
 	 * Retrieves values from the View fields and stores them in a Find instance.
@@ -659,34 +600,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			SimpleDateFormat dateFormat = new SimpleDateFormat(
 					"yyyy/MM/dd HH:mm:ss");
 			String time = dateFormat.format(find.getTime());
-			
-//			/* To-Do Begins */
-//			// If the time has no hour/minute/seconds value,
-//			// this means that the time is set by SetReminder class
-//			if (time.substring(11).equals("00:00:00")) {
-//				// Therefore, remove the old row that displays time and replace
-//				// it with a new row that include an alarm clock icon to
-//				// visually
-//				// indicate this find has a reminder attached
-//				time = time.substring(0, 10);
-//				ViewGroup parent = (ViewGroup) findViewById(
-//						R.id.timeValueTextView).getParent();
-//				parent.removeAllViews();
-//				ImageView alarmIcon = new ImageView(this);
-//				alarmIcon.setImageResource(R.drawable.reminder_alarm);
-//				TableRow.LayoutParams lp1 = new TableRow.LayoutParams(30, 30);
-//				lp1.setMargins(0, 6, 80, 0);
-//				parent.addView(alarmIcon, lp1);
-//				TextView mCloneTimeTV = new TextView(this);
-//				mCloneTimeTV.setId(R.id.timeValueTextView);
-//				mCloneTimeTV.setText(time);
-//				mCloneTimeTV.setTextSize(12);
-//				mTimeTV = mCloneTimeTV;
-//				TableRow.LayoutParams lp2 = new TableRow.LayoutParams();
-//				lp2.setMargins(6, 6, 0, 0);
-//				parent.addView(mTimeTV, lp2);
-//			}
-//			/* To-Do Ends */
 			mTimeTV.setText(time);
 		}
 
