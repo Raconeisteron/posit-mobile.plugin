@@ -111,14 +111,14 @@
 			activity_returns_result="true"
 			activity_result_action="1" />
 
-		<!-- Map Plugin displays finds on a map  -->
-		<Plugin active="false" 
-			type="function" 
-			extensionPoint="mainMenu"
-			name="map" 
-			menuIcon="ic_menu_mapmode" 
-			menuTitle="Map Finds"
-			menuActivity="org.hfoss.posit.android.api.activity.MapFindsActivity" />
+<!-- 		Map Plugin displays finds on a map  -->
+<!-- 		<Plugin active="false"  -->
+<!-- 			type="function"  -->
+<!-- 			extensionPoint="mainMenu" -->
+<!-- 			name="map"  -->
+<!-- 			menuIcon="ic_menu_mapmode"  -->
+<!-- 			menuTitle="Map Finds" -->
+<!-- 			menuActivity="org.hfoss.posit.android.api.activity.MapFindsActivity" /> -->
 
        <!-- Two extra buttons in PositMain -->
        <Plugin active="false"
@@ -154,7 +154,7 @@
 			activity_result_action="0" />
 
 		<!--  ViewFile plugin reads and displays Csv, Txt, XML files from SdCard. -->
-		<Plugin active="false"
+		<Plugin active="true"
 			type="function"
 			extensionPoint="listMenu"
 			name="viewfile"
@@ -171,7 +171,7 @@
 			menuActivity="org.hfoss.posit.android.functionplugin.sms.SmsActivity" />
 
 		<!--  TwitFind posts Finds on Twitter -->
-		<Plugin active="false" 
+		<Plugin active="true" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="twitFind"
@@ -179,8 +179,6 @@
 			menuIcon="ic_twitter_48" menuTitle="Twit Find"
 			activity_returns_result="true"
 			activity_result_action="0" 
-			add_find_callback = "org.hfoss.posit.android.functionplugin.twitter.TwitFindsActivity"
-			list_find_callback = "org.hfoss.posit.android.functionplugin.twitter.TwitFindsActivity"
 			menuActivity="org.hfoss.posit.android.functionplugin.twitter.TwitFindsActivity" />
 			
 		<!--  Log plugin logs Find data to a log file on the SdCard. -->	
