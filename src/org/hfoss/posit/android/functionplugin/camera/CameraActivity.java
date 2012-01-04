@@ -24,7 +24,9 @@ package org.hfoss.posit.android.functionplugin.camera;
 
 import java.io.ByteArrayOutputStream;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.plugin.ListFindPluginCallback;
 
@@ -32,9 +34,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -47,9 +51,10 @@ import android.widget.ImageView;
 public class CameraActivity extends Activity 
 	implements AddFindPluginCallback, ListFindPluginCallback {
 
+	public static final String TAG="CameraActivity";
 	public static final String PREFERENCES_IMAGE = "Image";
 	static final int TAKE_CAMERA_REQUEST = 1000;
-	private String img_str = null; //stores base64 string of the image
+	private static String img_str = null; //stores base64 string of the image
 	
 	private ImageView photo;
 			
@@ -97,11 +102,19 @@ public class CameraActivity extends Activity
 	}
 
 	/**
-	 * Required for function plugins. Unused here.
+	 * Required for function plugins. Set the Finds thumbnail.
 	 */
 	public void listFindCallback(Context context, Find find, View view) {
-		// TODO Auto-generated method stub
-		
+		//Display the thumbnail picture beside the find
+		//or a default image if there isn't one
+		ImageView iv = (ImageView) view.findViewById(R.id.find_image);
+		Bitmap bmp = Camera.getPhotoAsBitmap(find.getGuid(), context);
+		if(bmp != null){
+		    iv.setImageBitmap(bmp);
+		}
+		else{
+		    iv.setImageResource(R.drawable.ic_menu_camera);
+		}		
 	}
 	/**
 	 * Required for function plugins. Unused here.
@@ -112,12 +125,68 @@ public class CameraActivity extends Activity
 		
 	}
 	/**
-	 * Required for function plugins. Unused here.
+	 * Display the image in FindActivity's view.
 	 */
-	public void onActivityResultCallback(Context context, Find find, View view,
-			Intent intent) {
-		// TODO Auto-generated method stub
-		
+	public void onActivityResultCallback(Context context, Find find, View view, Intent intent) {
+		Log.i(TAG, "onActivityResultCallback");
+		if (intent != null) {
+			// do we get an image back?
+			if (intent.getStringExtra("Photo") != null) {
+				ImageView photo = (ImageView) view.findViewById(R.id.photo);
+				String img_str = intent.getStringExtra("Photo");
+				byte[] c = Base64.decode(img_str, Base64.DEFAULT);
+				Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
+				photo.setImageBitmap(bmp);// display the retrieved image
+				photo.setVisibility(View.VISIBLE);
+			}
+		}
+	}
+
+	/**
+	 * If this Find has a camera image, display it. The photo ImageView is
+	 * an INVISIBLE view in the Basic interface
+	 */
+	public void displayFindInViewCallback(Context context, Find find, View view) {
+		Log.i(TAG, "displayFindInViewCallback");
+		Bitmap bmp = Camera.getPhotoAsBitmap(find.getGuid(), context);
+		ImageView photo = (ImageView) view.findViewById(R.id.photo);
+
+		if (bmp != null) {
+			// we have a picture to display
+			if (photo != null) {
+				photo.setImageBitmap(bmp);
+				photo.setVisibility(View.VISIBLE);
+			}
+		} else {
+			// we don't have a picture to display. Nothing should show up, but
+			// this is to make sure.
+			if (photo != null)
+				photo.setVisibility(View.INVISIBLE);
+		}		
+	}
+
+	/**
+	 * Called from FindActivity after a Find has been saved. Saves the
+	 * image to a file.
+	 */
+	public void afterSaveCallback(Context context, Find find, View view, boolean isSaved) {
+		// if the find is saved, we can save/update the picture to the phone
+		if (isSaved) {
+			// do we even have an image to save?
+			Log.i(TAG, "We have an image to save");
+			if (img_str != null) {
+				if (Camera.savePhoto(find.getGuid(), img_str, context)) {
+					Log.i(TAG, "Successfully saved photo to phone with guid: "
+							+ find.getGuid());
+				} else {
+					Log.i(TAG, "Failed to save photo to phone with guid: "
+							+ find.getGuid());
+				}
+			}
+		}
+	
 	}	
+	
+	
 	
 }
