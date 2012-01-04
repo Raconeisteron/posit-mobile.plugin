@@ -1,21 +1,18 @@
 package org.hfoss.posit.android.api.activity;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hfoss.posit.android.Constants;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.functionplugin.camera.Camera;
-import org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService;
+//import org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.plugin.FindPlugin;
 import org.hfoss.posit.android.plugin.FindPluginManager;
 import org.hfoss.posit.android.plugin.FunctionPlugin;
+import org.hfoss.posit.android.plugin.ListFindPluginCallback;
 import org.hfoss.posit.android.sync.SyncActivity;
 
 import android.app.AlertDialog;
@@ -25,10 +22,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -236,9 +231,6 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		boolean success = getHelper().deleteAll(projectId);
 		if (success) {
 			Toast.makeText(ListFindsActivity.this, R.string.deleted_from_database, Toast.LENGTH_SHORT).show();
-			/* To-Do Begins */	
-			this.startService(new Intent(this, ToDoReminderService.class));
-			/* To-Do Ends */
 		} else {
 			Toast.makeText(ListFindsActivity.this, R.string.delete_failed, Toast.LENGTH_SHORT).show();
 		}
@@ -259,11 +251,12 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	 */
 	protected class FindsListAdapter extends ArrayAdapter<Find> {
 		protected List<? extends Find> items;
+		Context context;
 
-		public FindsListAdapter(Context context, int textViewResourceId,
-				List list) {
+		public FindsListAdapter(Context context, int textViewResourceId, List list) {
 			super(context, textViewResourceId, list);
 			this.items = list;
+			this.context = context;
 		}
 
 		
@@ -277,13 +270,6 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
 			
-			/* To-Do Begins */
-			// Initialize the alarm clock icon here so
-			// it can be referenced in the entire function
-			// and be set for each list row item
-			ImageView alarmIcon = new ImageView(parent.getContext());
-			/* To-Do Ends */
-			
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -291,19 +277,6 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 						FindPluginManager.mFindPlugin.mListFindLayout, "layout",
 						getPackageName());
 				v = vi.inflate(resId, null);
-				
-				/* To-Do Begins */
-				// Add Reminder alarm clock icon in every list row,
-				// and set its visibility based on if a find has a
-				// reminder attached or not
-				alarmIcon.setImageResource(R.drawable.reminder_alarm);
-				RelativeLayout rl = (RelativeLayout) v.findViewById(R.id.list_row_rl);
-				RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(25, 25);
-				lp.addRule(RelativeLayout.BELOW, R.id.status);
-				lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-				lp.setMargins(0, 6, 0, 0);
-				rl.addView(alarmIcon, lp);
-				/* To-Do Ends */
 			}
 			Find find = items.get(position);
 			if (find != null) {
@@ -325,20 +298,10 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				tv.setText(Integer.toString(find.getId()));
 				tv = (TextView) v.findViewById(R.id.time);
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				
 				String time = dateFormat.format(find.getTime());
-				/* To-Do Begins */
-				if (time.substring(11).equals("00:00:00")) {
-					// When the time has not hour/minute/second value, it is set through SetReminder
-					// class, the find has a reminder attached, the alarm clock icon must be visible
-					tv.setText(getText(R.string.remindertimeLabel)+ " " + time.substring(0, 10));
-					alarmIcon.setVisibility(ImageView.VISIBLE);
-				} else {
-					// Otherwise, the find has no reminder attached,
-					// the alarm clock icon must be invisible
-					tv.setText(getText(R.string.timeLabel) + " " + time);
-					alarmIcon.setVisibility(ImageView.INVISIBLE);
-				}
-				/* To-Do Ends */
+    			tv.setText(getText(R.string.timeLabel) + " " + time);
+				
 				tv = (TextView) v.findViewById(R.id.status);
 				tv.setText(find.getStatusAsString());
 				tv = (TextView) v.findViewById(R.id.description_id);
@@ -349,6 +312,29 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 					tv.setText(description.substring(0,49)+" ...");
 				}
 
+				ArrayList<FunctionPlugin> plugins = FindPluginManager.getFunctionPlugins();
+				
+				// Call each plugin's callback method to update view
+				for (FunctionPlugin plugin: plugins) {
+					Log.i(TAG, "plugin=" + plugin);
+					Class callbackClass = null;
+					Object o;
+					try {
+						callbackClass = Class.forName(plugin.getListFindCallbackClass());
+						o = (ListFindPluginCallback) callbackClass.newInstance();
+						((ListFindPluginCallback) o).listFindCallback(context,find,v);
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InstantiationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+	
 				//Display the thumbnail picture beside the find
 				//or a default image if there isn't one
 				ImageView iv = (ImageView) v.findViewById(R.id.find_image);

@@ -160,25 +160,46 @@ public class ToDoReminderService extends Service  implements LocationListener  {
 		
 		dbManager = DbHelper.getDbManager(this);
 
-		reminderFinds.clear();
+		reminderFinds = refreshReminderList(reminderFinds);
 		
+//		reminderFinds.clear();
+//		
+//		// Find all finds that have reminders attached
+//		for (Find find : dbManager.getFindsByProjectId(projectID)) {
+//			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//			String time = dateFormat.format(find.getTime());
+//			if (time.substring(11).equals("00:00:00")){
+//				reminderFinds.add(find);
+//			}
+//		}
+		
+//		// If there is no finds with reminders, stop the service
+//		if (reminderFinds.size() <= 0) {
+//			Log.i(TAG,"Stopping service, no reminders");
+//			stopService();
+//			return START_STICKY;
+//		}
+
+		return START_STICKY;
+	}
+	
+	private ArrayList<Find> refreshReminderList(ArrayList<Find> reminderFinds) {
+		reminderFinds.clear();
+		reminderIDs.clear();
+
 		// Find all finds that have reminders attached
 		for (Find find : dbManager.getFindsByProjectId(projectID)) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-			String time = dateFormat.format(find.getTime());
-			if (time.substring(11).equals("00:00:00")){
+			int is_adhoc = find.getIs_adhoc();
+//			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//			String time = dateFormat.format(find.getTime());
+//			if (time.substring(11).equals("00:00:00")){
+			if (is_adhoc == SetReminder.REMINDER_SET) {
 				reminderFinds.add(find);
+				reminderIDs.add(find.getId());
 			}
 		}
 		
-		// If there is no finds with reminders, stop the service
-		if (reminderFinds.size() <= 0) {
-			Log.i(TAG,"Stopping service, no reminders");
-			stopService();
-			return START_STICKY;
-		}
-
-		return START_STICKY;
+		return reminderFinds;
 	}
 	
 	/**
@@ -210,9 +231,6 @@ public class ToDoReminderService extends Service  implements LocationListener  {
 	@Override
 	public void onDestroy() {
 		Log.i(TAG, "onDestroy()");
-		
-//		stopService();
-
 	}
 	
 	/*
@@ -231,6 +249,9 @@ public class ToDoReminderService extends Service  implements LocationListener  {
 			mCurrentLocation = location;
 			Log.i(TAG, "Got a new location: " + mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
 		}
+		
+		// Update the reminderList
+		reminderFinds = refreshReminderList(reminderFinds);
 		
 		// Get the longitude and latitude
 		double currLong = mCurrentLocation.getLongitude();
@@ -255,15 +276,19 @@ public class ToDoReminderService extends Service  implements LocationListener  {
 				double longDiff = Math.abs(currLong - findLong);
 				double latDiff = Math.abs(currLat - findLat);
 				
-				if (longDiff <= 0.003 && latDiff <= 0.003) {
+//				if (longDiff <= 0.003 && latDiff <= 0.003) {
+				if (longDiff <= 0.03 && latDiff <= 0.03) {
+					Log.i(TAG, "Trigger a notification");
 					
 					// Send the find's notification if it has not yet
 					// been sent, this is to ensure that the notification
 					// will only be sent once
-					if (!reminderIDs.contains(find.getId())) {
-						
-						// Add find's ID to the list
-						reminderIDs.add(find.getId());
+					//if (!reminderIDs.contains(find.getId())) {
+					if (reminderIDs.contains(find.getId())) {
+						Log.i(TAG, "Reminder IDs contains find");
+
+//						// Add find's ID to the list
+//						reminderIDs.add(find.getId());
 						
 						// Set notification icon, name, and time
 						int icon = android.R.drawable.stat_sys_warning;
@@ -278,12 +303,19 @@ public class ToDoReminderService extends Service  implements LocationListener  {
 						bundle.putInt(Find.ORM_ID, find.getId());
 						intent.putExtras(bundle);
 						
+						// Update the Find's status
+						find.setIs_adhoc(SetReminder.REMINDER_NOTIFIED);
+						dbManager.update(find);
+						
 						// Set pending intent and send the notification
 						PendingIntent contentIntent = PendingIntent.getActivity(this, find.getId(), intent, 0);
 						notification.setLatestEventInfo(this, "Reminder: " + find.getName(), find.getDescription(),
 								contentIntent);
 						mNotificationManager.notify(find.getId(), notification);
 						
+					} else {
+						Log.i(TAG, "Reminder IDs does NOT contain find");
+
 					}
 				}
 			}
