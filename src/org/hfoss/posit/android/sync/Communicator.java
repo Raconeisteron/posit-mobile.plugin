@@ -61,10 +61,10 @@ import org.hfoss.posit.android.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
 import org.hfoss.posit.android.api.database.DbHelper;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.functionplugin.camera.Camera;
 import org.hfoss.posit.android.R;
 //import org.hfoss.posit.android.functionplugin.tracker.TrackerActivity;
-import org.hfoss.posit.android.plugin.FindPluginManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -35,9 +35,9 @@ import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.FindHistory;
 import org.hfoss.posit.android.api.SyncHistory;
 import org.hfoss.posit.android.api.User;
+import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.functionplugin.tracker.Expedition;
 import org.hfoss.posit.android.functionplugin.tracker.Points;
-import org.hfoss.posit.android.plugin.FindPluginManager;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;

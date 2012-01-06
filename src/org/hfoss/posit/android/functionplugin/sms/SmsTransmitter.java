@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.service.SmsService;
-import org.hfoss.posit.android.plugin.FindPluginManager;
 
 import android.content.Context;
 import android.content.Intent;

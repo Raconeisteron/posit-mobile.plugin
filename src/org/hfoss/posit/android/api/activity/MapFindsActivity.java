@@ -27,8 +27,8 @@ import java.util.List;
 
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.api.plugin.csv.CsvListFindsActivity;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
 
 import android.content.Context;
 import android.content.Intent;

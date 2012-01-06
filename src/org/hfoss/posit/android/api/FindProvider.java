@@ -22,7 +22,7 @@
 
 package org.hfoss.posit.android.api;
 
-import org.hfoss.posit.android.plugin.FindPluginManager;
+import org.hfoss.posit.android.api.plugin.FindPluginManager;
 
 import android.content.Context;
 

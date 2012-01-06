@@ -29,10 +29,10 @@ import org.hfoss.posit.android.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.api.activity.SettingsActivity;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.api.plugin.FindActivityProvider;
+import org.hfoss.posit.android.api.plugin.FindPluginManager;
+import org.hfoss.posit.android.api.plugin.FunctionPlugin;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.FindActivityProvider;
-import org.hfoss.posit.android.plugin.FindPluginManager;
-import org.hfoss.posit.android.plugin.FunctionPlugin;
 //import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.sync.Communicator;
 

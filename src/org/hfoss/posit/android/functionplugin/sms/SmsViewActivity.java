@@ -24,9 +24,9 @@ package org.hfoss.posit.android.functionplugin.sms;
 
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.api.plugin.FindPlugin;
+import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.FindPlugin;
-import org.hfoss.posit.android.plugin.FindPluginManager;
 
 import android.app.NotificationManager;
 import android.content.Context;
