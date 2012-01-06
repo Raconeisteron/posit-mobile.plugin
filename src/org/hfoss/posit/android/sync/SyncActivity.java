@@ -13,6 +13,7 @@ import java.util.List;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.api.plugin.outsidein.OutsideInFind;
 import org.hfoss.posit.android.R;
 
 import android.accounts.Account;
@@ -23,7 +24,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.hfoss.posit.android.plugin.outsidein.OutsideInFind;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 

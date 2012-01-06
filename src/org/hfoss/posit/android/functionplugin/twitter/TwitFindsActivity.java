@@ -30,9 +30,9 @@ import java.util.Map.Entry;
 
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.plugin.AddFindPluginCallback;
-import org.hfoss.posit.android.plugin.FindActivityProvider;
-import org.hfoss.posit.android.plugin.ListFindPluginCallback;
+import org.hfoss.posit.android.api.plugin.AddFindPluginCallback;
+import org.hfoss.posit.android.api.plugin.FindActivityProvider;
+import org.hfoss.posit.android.api.plugin.ListFindPluginCallback;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;

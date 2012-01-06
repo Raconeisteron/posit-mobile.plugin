@@ -27,8 +27,8 @@ import java.io.ByteArrayOutputStream;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.ListFindsActivity;
-import org.hfoss.posit.android.plugin.AddFindPluginCallback;
-import org.hfoss.posit.android.plugin.ListFindPluginCallback;
+import org.hfoss.posit.android.api.plugin.AddFindPluginCallback;
+import org.hfoss.posit.android.api.plugin.ListFindPluginCallback;
 
 import android.app.Activity;
 import android.content.Context;

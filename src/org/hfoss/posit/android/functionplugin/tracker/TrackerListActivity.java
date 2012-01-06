@@ -28,8 +28,8 @@ import java.util.List;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbHelper;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.FindPluginManager;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 

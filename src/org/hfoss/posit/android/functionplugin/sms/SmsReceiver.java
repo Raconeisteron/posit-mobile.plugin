@@ -31,10 +31,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.plugin.FindPlugin;
+import org.hfoss.posit.android.api.plugin.FindPluginManager;
+import org.hfoss.posit.android.api.plugin.FunctionPlugin;
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.FindPlugin;
-import org.hfoss.posit.android.plugin.FindPluginManager;
-import org.hfoss.posit.android.plugin.FunctionPlugin;
 
 import android.app.Notification;
 import android.app.NotificationManager;
