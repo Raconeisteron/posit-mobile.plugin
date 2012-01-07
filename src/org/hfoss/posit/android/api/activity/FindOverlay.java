@@ -29,8 +29,8 @@ import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.FindActivity;
 import org.hfoss.posit.android.api.plugin.FindActivityProvider;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
-import org.hfoss.posit.android.api.plugin.csv.CsvFindActivity;
-import org.hfoss.posit.android.api.plugin.csv.CsvListFindsActivity;
+import org.hfoss.posit.android.plugin.csv.CsvFindActivity;
+import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
 
 import android.content.Context;
 import android.content.Intent;

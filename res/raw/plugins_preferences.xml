@@ -2,7 +2,7 @@
 <!-- FindPlugins are mutually exclusive. Only 1 of the following can be active. -->
 	<FindPlugins>
 	    <!-- BasicFind is the original POSIT: name, desc, lat, long,  -->
-		<Plugin active="true" type="find" name="BasicFind"
+		<Plugin active="false" type="find" name="BasicFind"
 			package="org.hfoss.posit.android.api" 
 			find_class="org.hfoss.posit.android.api.Find"
 			find_factory="org.hfoss.posit.android.api.FindFactory"
@@ -40,7 +40,7 @@
 			main_icon="posit_museum" />
 
 		<!--  SecondHelpings is a plugin for a nonprofit in SC -->
-		<Plugin active="false" type="find" name="SecondHelpings"
+		<Plugin active="true" type="find" name="SecondHelpings"
 			package="org.hfoss.posit.android.plugin.sh"
 			find_class="org.hfoss.posit.android.plugin.sh.ShFind"
 			find_factory="org.hfoss.posit.android.api.FindFactory"

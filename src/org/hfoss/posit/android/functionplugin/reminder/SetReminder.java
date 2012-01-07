@@ -708,8 +708,10 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager>
 
 			Integer is_adhoc = bundle.getInt(Find.IS_ADHOC);
 			Log.i(TAG, "is_adhoc = " + is_adhoc);
-			if (tv != null)
+			if (tv != null) {
+				Log.i(TAG, "Setting isAdhocTextView to " + is_adhoc);
 				tv.setText("" + is_adhoc);
+			}
 
 			// Display user specified longitude and latitude
 			tv = (TextView) view.findViewById(R.id.longitudeValueTextView);

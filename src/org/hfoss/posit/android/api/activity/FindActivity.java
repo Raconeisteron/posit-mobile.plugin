@@ -34,7 +34,7 @@ import org.hfoss.posit.android.api.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
-import org.hfoss.posit.android.api.plugin.csv.CsvListFindsActivity;
+import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
 import org.hfoss.posit.android.R;
 
 import android.app.AlertDialog;

@@ -23,8 +23,8 @@
 package org.hfoss.posit.android.api;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.api.plugin.acdivoca.AcdiVocaUser;
-import org.hfoss.posit.android.api.plugin.acdivoca.AcdiVocaUser.UserType;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
+import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import android.content.Context;
 import android.content.SharedPreferences;
