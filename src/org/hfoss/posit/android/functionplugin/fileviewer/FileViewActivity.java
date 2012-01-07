@@ -29,7 +29,7 @@ import java.io.IOException;
 
 
 import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.api.plugin.csv.CsvListFindsActivity;
+import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
 import org.hfoss.posit.android.R;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;

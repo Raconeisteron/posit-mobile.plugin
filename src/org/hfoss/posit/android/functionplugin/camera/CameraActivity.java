@@ -173,8 +173,8 @@ public class CameraActivity extends Activity
 		// if the find is saved, we can save/update the picture to the phone
 		if (isSaved) {
 			// do we even have an image to save?
-			Log.i(TAG, "We have an image to save");
 			if (img_str != null) {
+				Log.i(TAG, "There is an image to save.");
 				if (Camera.savePhoto(find.getGuid(), img_str, context)) {
 					Log.i(TAG, "Successfully saved photo to phone with guid: "
 							+ find.getGuid());
