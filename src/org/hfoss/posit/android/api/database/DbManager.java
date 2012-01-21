@@ -658,7 +658,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	public int update(Find find) {
 		int rows = 0;
 		try {
-			find.setAction(FindHistory.ACTION_UPDATE);
+			Log.i(TAG, "Updating: " + find);
+			if (find.getStatus() == Constants.SUCCEEDED)
+				find.setAction(FindHistory.ACTION_UPDATE);
 			rows = getFindDao().update(find);
 			if (rows == 1) {
 				Log.i(TAG, "Updated find:  " + find.toString());

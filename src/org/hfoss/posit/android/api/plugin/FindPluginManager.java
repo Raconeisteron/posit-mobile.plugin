@@ -196,7 +196,7 @@ public class FindPluginManager {
 		FunctionPlugin plugin = null;
 		for (Plugin p : plugins) {
 			if (p instanceof FunctionPlugin) {
-				Log.i(TAG, "Function plugin " + p.toString());
+//				Log.i(TAG, "Function plugin " + p.toString());
 				if ( ((FunctionPlugin) p).mExtensionPoint.equals(extensionType))
 					plugin = (FunctionPlugin) p;
 			}
@@ -214,7 +214,7 @@ public class FindPluginManager {
 		if (plugins == null) return list;
 		for (Plugin plugin : plugins) {
 			if (plugin instanceof FunctionPlugin) {
-				Log.i(TAG, "Function plugin " + plugin.toString());
+//				Log.i(TAG, "Function plugin " + plugin.toString());
 				FunctionPlugin fPlugin = (FunctionPlugin) plugin;
 				if (fPlugin.mExtensionPoint.equals(extensionType))
 					list.add(fPlugin);
@@ -232,7 +232,7 @@ public class FindPluginManager {
 		if (plugins == null) return list;
 		for (Plugin plugin : plugins) {
 			if (plugin instanceof FunctionPlugin) {
-				Log.i(TAG, "Function plugin " + plugin.toString());
+//				Log.i(TAG, "Function plugin " + plugin.toString());
 				FunctionPlugin fPlugin = (FunctionPlugin) plugin;
 				list.add(fPlugin);
 			}
@@ -248,7 +248,7 @@ public class FindPluginManager {
 		ArrayList<Class<Service>> list = (ArrayList<Class<Service>>) new ArrayList<Class<Service>>();
 		for (Plugin plugin : plugins) {
 			if (plugin instanceof FunctionPlugin) {
-				Log.i(TAG, "Function plugin " + plugin.toString());
+//				Log.i(TAG, "Function plugin " + plugin.toString());
 				FunctionPlugin fPlugin = (FunctionPlugin) plugin;
 				if (fPlugin.getmServices().size() > 0) {
 					list.addAll(fPlugin.getmServices());
