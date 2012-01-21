@@ -64,6 +64,11 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
+/**
+ *  This class retrieves an existing Find or creates a new one and displays a 
+ *  form allowing the user to modify the find.
+ *
+ */
 public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		implements OnClickListener, OnItemClickListener, LocationListener {
 
