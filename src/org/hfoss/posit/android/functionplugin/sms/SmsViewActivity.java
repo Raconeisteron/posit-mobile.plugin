@@ -43,6 +43,10 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
+/**
+ * Plugin to view and edit a Find received from a SMS message
+ *
+ */
 public class SmsViewActivity extends OrmLiteBaseActivity<DbManager> {
 
 	private static final String TAG = "SmsViewActivity";
