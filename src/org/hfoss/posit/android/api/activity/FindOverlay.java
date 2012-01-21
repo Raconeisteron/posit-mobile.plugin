@@ -40,6 +40,10 @@ import android.util.Log;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
 
+/**
+ * Object for creating and adding overlays on the map, making them
+ * tappable with clickable icons.
+ */
 public class FindOverlay extends ItemizedOverlay {
 	private static final String TAG = "ItemizedOverlay";
 
