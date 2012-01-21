@@ -162,7 +162,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				MenuItem item = menu.add(plugin.getmMenuTitle());
 				int id = getResources().getIdentifier(
 						plugin.getmMenuIcon(), "drawable", "org.hfoss.posit.android");
-				Log.i(TAG, "icon =  " + plugin.getmMenuIcon() + " id =" + id);
+//				Log.i(TAG, "icon =  " + plugin.getmMenuIcon() + " id =" + id);
 				item.setIcon(id);
 				//item.setIcon(android.R.drawable.ic_menu_mapmode);				
 			}
@@ -336,7 +336,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				
 				// Call each plugin's callback method to update view
 				for (FunctionPlugin plugin: plugins) {
-					Log.i(TAG, "plugin=" + plugin);
+//					Log.i(TAG, "Call back for plugin=" + plugin);
 					Class<ListFindPluginCallback> callbackClass = null;
 					Object o;
 					try {

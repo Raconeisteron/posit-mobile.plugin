@@ -85,6 +85,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	private TextView mLongTV = null;
 	private TextView mLongitudeTV = null;
 	private TextView mAdhocTV = null;
+	
+	private Find mFind = null; // For action=update or bundled Finds
 
 
 	private ArrayList<FunctionPlugin> mAddFindMenuPlugins = null;
@@ -143,16 +145,18 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) { 
 				int id = extras.getInt(Find.ORM_ID);
 				Log.i(TAG, "ORM_id = " + id);
-				Find find = getHelper().getFindById(id);
-				displayContentInView(find);
+//				Find find = getHelper().getFindById(id);
+				mFind = getHelper().getFindById(id);
+				Log.i(TAG, "Updating: " + mFind);
+				displayContentInView(mFind);
 			} else 
 				
-			// Bundled Find
+			// Bundled Find (from SMS)
 			if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
 				// Pull a Bundle corresponding to a Find from the Intent and put
 				// that in the view
 				Bundle findBundle = extras.getBundle("findbundle");
-				Find find;
+				//Find find;
 				try {
 					FindPlugin plugin = FindPluginManager.mFindPlugin;
 					if (plugin == null) {
@@ -162,7 +166,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 						finish();
 						return;
 					}
-					find = plugin.getmFindClass().newInstance();
+					mFind = plugin.getmFindClass().newInstance();
 				} catch (IllegalAccessException e) {
 					Toast.makeText(this, "A fatal error occurred while trying to start FindActivity", 
 							Toast.LENGTH_LONG).show();
@@ -174,8 +178,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 					finish();
 					return;
 				}
-				find.updateObject(findBundle);
-				displayContentInView(find);
+				mFind.updateObject(findBundle);
+				displayContentInView(mFind);
 			} else 
 				
 			// CSV Find	
@@ -504,13 +508,18 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		// manager and make an instance of it
 		Class<Find> findClass = FindPluginManager.mFindPlugin.getmFindClass();
 		Find find = null;
-
-		try {
-			find = findClass.newInstance();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
+		
+		if (getIntent().getAction().equals(Intent.ACTION_EDIT) ||
+				getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
+			find = mFind;
+		} else {
+			try {
+				find = findClass.newInstance();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			}
 		}
 
 		// Set GUID
