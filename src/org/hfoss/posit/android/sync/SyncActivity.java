@@ -27,6 +27,11 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
+/**
+ * This class is used to handle sync requests with the server.
+ * @author ericenns
+ *
+ */
 public class SyncActivity extends OrmLiteBaseActivity<DbManager> {
 
 	public static final String TAG = "SyncActivity";
