@@ -37,6 +37,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+/**
+ * Retrieve phone number and SMS message and transmit the contents of
+ * the Find. 
+ * 
+ */
 public class SmsActivity extends Activity {
 
 	private static final String TAG = "SmsActivity";
