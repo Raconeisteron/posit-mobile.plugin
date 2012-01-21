@@ -61,6 +61,12 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 
+/**
+ * This activity shows a list of all the finds and allows interaction with find currently
+ * stored on the phone.
+ * 
+ *
+ */
 public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 
 	private static final String TAG = "ListFindsActivity";
