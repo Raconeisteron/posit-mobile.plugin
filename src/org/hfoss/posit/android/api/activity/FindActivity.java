@@ -318,6 +318,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			mLocationManager.removeUpdates(this);
 		mLocationManager = null;
 		mCurrentLocation = null;
+		doFinishCallbacks();
 		super.finish();
 	}
 
@@ -945,6 +946,30 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			return provider2 == null;
 		}
 		return provider1.equals(provider2);
+	}
+	
+	/**
+	 * Performs a finish callback on all function plugins
+	 */
+	private void doFinishCallbacks() {
+		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
+			Class<AddFindPluginCallback> callbackClass = null;
+			Object o;
+			try {
+				String className = plugin.getAddFindCallbackClass();
+				if (className != null) {
+					callbackClass = (Class<AddFindPluginCallback>) Class.forName(className);
+					o = (AddFindPluginCallback) callbackClass.newInstance();
+					((AddFindPluginCallback) o).finishCallback();
+				}
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

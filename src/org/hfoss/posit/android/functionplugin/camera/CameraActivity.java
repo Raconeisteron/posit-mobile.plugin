@@ -187,6 +187,13 @@ public class CameraActivity extends Activity
 	
 	}	
 	
+	/**
+	 * Called from FindActivity once a FindActivity has been finished.
+	 */
+	public void finishCallback() {
+		img_str = null;
+	}
+	
 	
 	
 }
