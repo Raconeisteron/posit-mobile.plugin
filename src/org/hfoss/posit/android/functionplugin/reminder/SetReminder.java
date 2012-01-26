@@ -752,4 +752,8 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager>
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void finishCallback() {
+		// TODO Auto-generated method stub
+	}
 }

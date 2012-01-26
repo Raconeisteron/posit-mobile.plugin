@@ -39,4 +39,5 @@ public interface AddFindPluginCallback {
 	public void onActivityResultCallback(Context context, Find find, View view, Intent intent);
 	public void displayFindInViewCallback(Context context, Find find, View view);
 	public void afterSaveCallback(Context context, Find find, View view, boolean isSaved);
+	public void finishCallback();
 }
