@@ -24,10 +24,10 @@
 				
 			<ListPreference 
 				android:key="@string/LocaleKey"
-				android:title="@string/Locale" 
+				android:title="@string/LocaleTitle" 
 				android:persistent="true"
 				android:defaultValue="en" 
-				android:summary="@string/Locale"
+				android:summary="@string/LocaleSummary"
 				android:entries="@array/locales" 
 				android:entryValues="@array/locale_values"
 				android:negativeButtonText="@string/CancelLabel" />
