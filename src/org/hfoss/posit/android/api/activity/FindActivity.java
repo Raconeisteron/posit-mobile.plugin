@@ -777,6 +777,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			rows = getHelper().insert(find);
 		else if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 			find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
+			find.setStatus(Find.IS_NOT_SYNCED);
 			rows = getHelper().update(find);
 		} else if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
 			// Check if a Find with the same GUID already exists and update it if so
