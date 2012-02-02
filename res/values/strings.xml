@@ -341,7 +341,8 @@
     <string name="geotaggingSummary">Geotag all finds</string>
     <string name="geotaggingKey">geotagKey</string>	
     <string name="LocaleKey">locale</string>
-    <string name="Locale">Locale</string>
+    <string name="LocaleTitle">Locale</string>
+    <string name="LocaleSummary">English</string>
     <string name="CancelLabel">Cancel</string>
     
     <!-- Authentication -->

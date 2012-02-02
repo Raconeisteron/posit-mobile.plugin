@@ -37,6 +37,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -497,7 +498,15 @@ public class SettingsActivity extends PreferenceActivity implements
 			Log.i(TAG, "Preferences= " + sp.getAll().toString());
 			PreferenceManager manager = this.getPreferenceManager();
 			Preference p = manager.findPreference(key);
+			
 			Log.i(TAG, "p = " + p);
+			
+			
+			//Have all list preferences show their choice in the summary section.
+			if (p instanceof ListPreference) {
+		        ListPreference listPref = (ListPreference) p;
+		        p.setSummary(listPref.getEntry());
+		    }
 			
 			if (p!= null && key.equals(getString(R.string.serverPref))) {
 				String server = sp.getString(key, "");
