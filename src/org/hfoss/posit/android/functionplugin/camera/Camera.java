@@ -28,6 +28,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
+
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.database.DbHelper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -145,5 +149,23 @@ public class Camera {
 		else{
 			return null;
 		}
+	}
+	
+	/**
+	 * Returns whether or not the find's image is out of sync
+	 * @param find
+	 * Find containing photo to be checked
+	 * @param context
+	 * Activity context
+	 * @return True if photo is synced, false if not
+	 */
+	public static boolean isPhotoSynced(Find find, Context context){
+	    String filename_fullpath = "/data/data/" + context.getPackageName() + "/files/" + find.getGuid();
+	    File file = new File(filename_fullpath);
+	    Date imageLastModified = new Date(file.lastModified());
+	    Date findLastSynced = DbHelper.getDbManager(context).getTimeOfLastSync();
+	    boolean synced = imageLastModified.before(findLastSynced);
+		
+		return synced;
 	}
 }
