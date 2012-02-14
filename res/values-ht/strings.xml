@@ -175,8 +175,8 @@
 <!--     ACDI/VOCA Settings and Preferences -->
     <string name="acdivocaprefs">Preferans ACDI/VOCA</string>
     <string name="SMS_phone">Cible SMS Phone</string>
-    <string name="locale">Lokal</string>
-    <string name="localePref">lokal</string>
+    <string name="locale">Locale</string>
+    <string name="localePref">locale</string>
     
 <!--     Alert Dialogs -->
  	<string name="acdivoca_cancel">Anile</string>
