@@ -40,8 +40,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -67,10 +69,8 @@ public class SmsReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (!smsPluginOn()) {
-			Log
-					.i(TAG,
-							"Received text message, but SMS plugin is disabled. Unregistering receiver.");
-			context.unregisterReceiver(this);
+			Log.i(TAG, "Received text message, but SMS plugin is disabled.");
+			
 			return;
 		}
 
