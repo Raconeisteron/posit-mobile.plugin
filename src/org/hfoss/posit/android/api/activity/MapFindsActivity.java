@@ -259,6 +259,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 	 */
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		GeoPoint location = null;
 		switch (item.getItemId()) {
 		case R.id.my_location_mapfind_menu_item:
 			if (myLocationOverlay.isMyLocationEnabled()) {
@@ -267,8 +268,10 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 				item.setTitle(R.string.my_location_on);
 			} else {
 				myLocationOverlay.enableMyLocation();
-				myLocationOverlay.enableCompass();	
-				mapController.setCenter(myLocationOverlay.getMyLocation());
+				myLocationOverlay.enableCompass();
+				location = myLocationOverlay.getMyLocation();
+				if(location != null)
+					mapController.setCenter(location);
 				item.setTitle(R.string.my_location_off);
 			}
 			break;
