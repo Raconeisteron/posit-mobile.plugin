@@ -31,7 +31,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -226,8 +225,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         final Account account = new Account(mUsername, SyncAdapter.ACCOUNT_TYPE);
         if (mRequestNewAccount) {
             mAccountManager.addAccountExplicitly(account, mPassword, null);
-            // Set contacts sync for this account.
-            ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+            // Enabled automatic syncing once account is created
+            ContentResolver.setSyncAutomatically(account, getResources().getString(R.string.contentAuthority), true);
         } else {
             mAccountManager.setPassword(account, mPassword);
         }
