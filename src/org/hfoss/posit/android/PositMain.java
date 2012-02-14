@@ -35,7 +35,10 @@ import org.hfoss.posit.android.api.plugin.FunctionPlugin;
 import org.hfoss.posit.android.R;
 //import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.sync.Communicator;
+import org.hfoss.posit.android.sync.SyncAdapter;
+import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -126,6 +129,9 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
+		
+		// Check if an account exists
+		resolveAccount();
 
 		// Login Extension Point
 		// Run login plugin, if necessary
@@ -154,12 +160,27 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		}
 	}
 	
+	/*
+	 * If there's no account configured, start account setup.
+	 */
+	private void resolveAccount() {
+		AccountManager accountManager = AccountManager.get(this);
+		final int numAccount = (accountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE)).length;
+		
+		if (numAccount == 0) {
+			Intent i = new Intent(this, AuthenticatorActivity.class);
+			this.startActivity(i);
+		}	
+	}
+
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "Resuming");
 		LocaleManager.setDefaultLocale(this); // Locale Manager should be in the API
+		//enable when server preference is tied to account
+		//resolveAccount();
 		startPOSIT();
 	}
 
