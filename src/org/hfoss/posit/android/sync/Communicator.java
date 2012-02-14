@@ -883,10 +883,11 @@ public class Communicator {
 			return false;
 		}
 
-		// Otherwise send the Find's image
-		String fullPicStr = Camera.getPhotoAsString(find.getGuid(), context);
-		if(fullPicStr !=null){
+		//Check if the image is out of sync and needs to be sent
+		if(Camera.isPhotoSynced(find, context) == false){
 			//We have an image to send!
+			//Get the image string
+			String fullPicStr = Camera.getPhotoAsString(find.getGuid(), context);
 			//Get the thumbnail version of it too
 			String thumbPicStr = Camera.getPhotoThumbAsString(find.getGuid(), context);
 			//fill in the data needed to send to the photo table
