@@ -24,7 +24,6 @@ package org.hfoss.posit.android.api.activity;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.LocaleManager;
@@ -41,9 +40,9 @@ import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -515,6 +514,10 @@ public class SettingsActivity extends PreferenceActivity implements
 			Log.i(TAG, "p = " + p);
 			
 			updatePrefSummary(findPreference(key));	
+			
+			if (p!= null && key.equals(getString(R.string.localeKey))) {
+				LocaleManager.setDefaultLocale(this);
+			}
 			
 			if (p!= null && key.equals(getString(R.string.serverPref))) {
 				String server = sp.getString(key, "");
