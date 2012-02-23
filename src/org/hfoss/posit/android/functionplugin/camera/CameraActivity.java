@@ -190,7 +190,7 @@ public class CameraActivity extends Activity
 	/**
 	 * Called from FindActivity once a FindActivity has been finished.
 	 */
-	public void finishCallback() {
+	public void finishCallback(Context context, Find find, View view) {
 		img_str = null;
 	}
 	
