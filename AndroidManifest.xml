@@ -47,7 +47,8 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".AboutActivity"
-			android:screenOrientation="portrait" />
+			android:screenOrientation="portrait"
+            android:theme="@style/Theme.Sherlock" />
 
 		<provider android:name=".api.database.FindContentProvider"
 			android:authorities="org.hfoss.posit" android:enabled="true">
