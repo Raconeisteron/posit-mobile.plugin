@@ -27,6 +27,7 @@ import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.User;
 import org.hfoss.posit.android.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.api.activity.MapFindsActivity;
+import org.hfoss.posit.android.api.activity.OrmLiteBaseFragmentActivity;
 import org.hfoss.posit.android.api.activity.SettingsActivity;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.api.plugin.FindActivityProvider;
@@ -56,9 +57,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -70,7 +71,7 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 /**
  * Implements the main activity and the main screen for the POSIT application.
  */
-public class PositMain extends OrmLiteBaseActivity<DbManager> implements android.view.View.OnClickListener {
+public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements android.view.View.OnClickListener {
 
 	private static final String TAG = "PositMain";
 
@@ -372,7 +373,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
+		MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.positmain_menu, menu);	
 		return true;
 	}
@@ -387,7 +388,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 
 		// Re-inflate to force localization.
 		menu.clear();
-		MenuInflater inflater = getMenuInflater();
+		MenuInflater inflater = getSupportMenuInflater();
 		if (mMainMenuPlugins.size() > 0) {
 			for (FunctionPlugin plugin: mMainMenuPlugins) {
 				MenuItem item = menu.add(plugin.getmMenuTitle());
