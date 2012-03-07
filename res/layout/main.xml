@@ -9,6 +9,8 @@
 	<ImageView
 		android:id="@+id/Logo"
 		android:layout_width="wrap_content"
+		android:maxWidth="320dp"
+		android:adjustViewBounds="true"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:layout_centerHorizontal="true"
