@@ -36,7 +36,7 @@
 		<uses-library android:name="com.google.android.maps" />
 
 		<activity android:name=".PositMain" android:configChanges="orientation|keyboardHidden"
-			android:screenOrientation="portrait" android:label="@string/app_name"
+			android:label="@string/app_name"
 			android:launchMode="singleTop"
             android:theme="@style/Theme.Sherlock" >
 			<intent-filter>
@@ -48,7 +48,6 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".AboutActivity"
-			android:screenOrientation="portrait"
             android:theme="@style/Theme.Sherlock" />
 
 		<provider android:name=".api.database.FindContentProvider"
@@ -60,15 +59,15 @@
 		<activity
 			android:name="org.hfoss.posit.android.api.activity.ListFindsActivity"
 			android:configChanges="orientation|keyboardHidden"
-			android:screenOrientation="portrait" android:launchMode="singleTop"
+			android:launchMode="singleTop"
             android:theme="@style/Theme.Sherlock" />
 		<activity
 			android:name="org.hfoss.posit.android.api.activity.FindActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
 			android:name="org.hfoss.posit.android.api.activity.MapFindsActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.Sherlock" />
 		<activity
@@ -128,61 +127,60 @@
 		<!-- Activities for Find Plugin CsvFind plugin -->
 		<activity
 			android:name="org.hfoss.posit.android.plugin.csv.CsvFindActivity"
-			android:screenOrientation="portrait"
 			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
 			android:name="org.hfoss.posit.android.plugin.csv.CsvListFindsActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.Sherlock" />
 
 		<!-- Activities for Outside In plugin -->
 		<activity
 			android:name="org.hfoss.posit.android.plugin.outsidein.OutsideInFindActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
 			android:name="org.hfoss.posit.android.plugin.outsidein.OutsideInListFindsActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.Sherlock" />
 
 		<activity
 			android:name="org.hfoss.posit.android.plugin.outsidein.OutsideInAboutActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<!-- Activities for CLP plugin -->
 		<activity
 			android:name="org.hfoss.posit.android.plugin.clp.ClpFindActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
 			android:name="org.hfoss.posit.android.plugin.clp.ClpListFindsActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.Sherlock" />
 
 		<activity
 			android:name="org.hfoss.posit.android.plugin.clp.ClpAboutActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden" />
 
 		<!-- Activities for SecondHelpings plugin -->
 		<activity
 			android:name="org.hfoss.posit.android.plugin.sh.ShFindActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden" />
 		<activity
 			android:name="org.hfoss.posit.android.plugin.sh.ShListFindsActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.Sherlock" />
 
 		<activity
 			android:name="org.hfoss.posit.android.plugin.sh.ShAboutActivity"
-			android:launchMode="singleTop" android:screenOrientation="portrait"
+			android:launchMode="singleTop"
 			android:configChanges="orientation|keyboardHidden" />
 
 
