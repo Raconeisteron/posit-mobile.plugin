@@ -27,7 +27,9 @@ import java.util.List;
 
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.api.fragment.ListFindsFragment;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
+import org.hfoss.posit.android.plugin.csv.CsvListFindsFragment;
 import org.hfoss.posit.android.R;
 
 import android.content.Context;
@@ -95,11 +97,11 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 		Intent intent = getIntent();
 		if (intent != null) {
 			String action = intent.getAction();
-			if (action != null && action.equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
-				finds = CsvListFindsActivity.getFinds();
-			} else if (action != null && action.equals(ListFindsActivity.ACTION_LIST_FINDS)) {
-				finds = ListFindsActivity.getFinds();
-			} 
+			if (action != null && action.equals(CsvListFindsFragment.ACTION_CSV_FINDS)) {
+				finds = CsvListFindsFragment.getFinds();
+			} else if (action != null && action.equals(ListFindsFragment.ACTION_LIST_FINDS)) {
+				finds = ListFindsFragment.getFinds();
+			}
 		} else {
 			finds = this.getHelper().getFindsByProjectId(pid);
 		}
@@ -198,7 +200,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 			Intent intent = getIntent();
 			if (intent != null) {
 				String action = intent.getAction();
-				if (action != null && action.equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+				if (action != null && action.equals(CsvListFindsFragment.ACTION_CSV_FINDS)) {
 					id = Integer.parseInt(find.getGuid());
 				}
 			}
