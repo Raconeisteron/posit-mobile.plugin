@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
+import org.hfoss.posit.android.plugin.csv.CsvListFindsFragment;
 import org.hfoss.posit.android.R;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
@@ -52,7 +53,7 @@ public class FileViewActivity extends OrmLiteBaseListActivity<DbManager> {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.list_finds);
+		setContentView(R.layout.list_files);
 
 		// Create /sdcard/HOME_DIRECTORY if it doesn't exist already
 		File dir = new File(Environment.getExternalStorageDirectory() + "/"
@@ -85,7 +86,7 @@ public class FileViewActivity extends OrmLiteBaseListActivity<DbManager> {
 				if (filename.endsWith(".csv")) {
 					Intent intent = new Intent();
 					intent.setClass(this, CsvListFindsActivity.class);
-					intent.putExtra(CsvListFindsActivity.FILENAME_TAG, filename);
+					intent.putExtra(CsvListFindsFragment.FILENAME_TAG, filename);
 					this.startActivity(intent);
 					
 				// If this is a txt file, just display it with line breaks.	

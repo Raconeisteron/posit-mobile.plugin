@@ -29,9 +29,9 @@ public class CsvFindActivity extends FindActivity {
 		Log.i(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);	
 		
-		if (getIntent().getAction().equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
-			int id = getIntent().getIntExtra(CsvListFindsActivity.ACTION_CSV_FINDS, 0);
-			displayContentInView(CsvListFindsActivity.getFind(id));
+		if (getIntent().getAction().equals(CsvListFindsFragment.ACTION_CSV_FINDS)) {
+			int id = getIntent().getIntExtra(CsvListFindsFragment.ACTION_CSV_FINDS, 0);
+			displayContentInView(CsvListFindsFragment.getFind(id));
 		}
 	}
 

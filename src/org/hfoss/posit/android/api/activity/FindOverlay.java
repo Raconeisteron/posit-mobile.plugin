@@ -31,6 +31,7 @@ import org.hfoss.posit.android.api.plugin.FindActivityProvider;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.plugin.csv.CsvFindActivity;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
+import org.hfoss.posit.android.plugin.csv.CsvListFindsFragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -97,8 +98,7 @@ public class FindOverlay extends ItemizedOverlay {
 		Intent intent = new Intent();
 		int id = Integer.parseInt(mOverlays.get(pIndex).getTitle());
 		Log.i(TAG, "id= " + id);
-		
-		if (action != null && action.equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+		if (action != null && action.equals(CsvListFindsFragment.ACTION_CSV_FINDS)) {
 			intent.setAction(action);
 			intent.putExtra(action, id); // Pass the RowID to FindActivity
 			intent.setClass(mContext, CsvFindActivity.class);

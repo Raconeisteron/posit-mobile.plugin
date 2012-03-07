@@ -35,6 +35,7 @@ import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
+import org.hfoss.posit.android.plugin.csv.CsvListFindsFragment;
 import org.hfoss.posit.android.R;
 
 import android.app.AlertDialog;
@@ -186,9 +187,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				mFind.updateObject(findBundle);
 				displayContentInView(mFind);
 			} else 
-				
 			// CSV Find	
-			if (getIntent().getAction().equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
+			if (getIntent().getAction().equals(CsvListFindsFragment.ACTION_CSV_FINDS)) {
 				
 			}
 		// New Find
