@@ -149,7 +149,8 @@
 		<activity
 			android:name="org.hfoss.posit.android.plugin.outsidein.OutsideInAboutActivity"
 			android:launchMode="singleTop"
-			android:configChanges="orientation|keyboardHidden" />
+			android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.Sherlock" />
 
 		<!-- Activities for CLP plugin -->
 		<activity
@@ -165,7 +166,8 @@
 		<activity
 			android:name="org.hfoss.posit.android.plugin.clp.ClpAboutActivity"
 			android:launchMode="singleTop"
-			android:configChanges="orientation|keyboardHidden" />
+			android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.Sherlock" />
 
 		<!-- Activities for SecondHelpings plugin -->
 		<activity
@@ -181,7 +183,8 @@
 		<activity
 			android:name="org.hfoss.posit.android.plugin.sh.ShAboutActivity"
 			android:launchMode="singleTop"
-			android:configChanges="orientation|keyboardHidden" />
+			android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.Sherlock" />
 
 
 		<!-- Activities pertaining to AcdiVocaFind plugin -->
