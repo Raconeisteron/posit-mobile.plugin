@@ -65,16 +65,50 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 		
 		setHasOptionsMenu(true);
 		
+		View findFrame = getActivity().findViewById(R.id.find);
+		mIsDualPane = findFrame != null && findFrame.getVisibility() == View.VISIBLE;
+		
 		if (savedInstanceState != null) {
 			mCurrCheckPosition = savedInstanceState.getInt("currChoice", 0);
 		}
 		
 		if (mIsDualPane) {
 			getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-			//display selected find
+			displayFind(mCurrCheckPosition, Intent.ACTION_INSERT, null, null);
 		}
 	}
 	
+	protected void displayFind(int index, String action, Bundle extras, FindFragment findFragment) {
+		mCurrCheckPosition = index;
+		
+		if (mIsDualPane) {
+			getListView().setItemChecked(mCurrCheckPosition, true);
+			
+			if(extras == null) {
+				extras = new Bundle();
+			}
+			extras.putString("ACTION", action);
+			
+			if (findFragment == null) {
+				findFragment = new FindFragment();
+			}
+				
+			findFragment.setArguments(extras);
+			
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.replace(R.id.find, findFragment);
+			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			ft.commit();
+		} else {
+			Intent intent = new Intent(getActivity(),
+					FindPluginManager.mFindPlugin.getmFindActivityClass());
+			int ormId = extras.getInt(Find.ORM_ID);
+			intent.putExtra(Find.ORM_ID, ormId);
+			intent.setAction(action);
+			startActivity(intent);
+		}
+	}
+
 	/* Called when the activity is ready to start interacting with the user. It
 	 * is at the top of the Activity stack.
 	 * 
@@ -129,13 +163,11 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Intent intent = new Intent(parent.getContext(),
-						FindPluginManager.mFindPlugin.getmFindActivityClass());
 				TextView tv = (TextView) view.findViewById(R.id.id);
 				int ormId = Integer.parseInt((String) tv.getText());
-				intent.putExtra(Find.ORM_ID, ormId);
-				intent.setAction(Intent.ACTION_EDIT);
-				startActivity(intent);
+				Bundle extras = new Bundle();
+				extras.putInt(Find.ORM_ID, ormId);
+				displayFind(position, Intent.ACTION_EDIT, extras, null);
 			}
 		});
 	}

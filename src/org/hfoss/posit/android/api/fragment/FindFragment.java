@@ -159,6 +159,7 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 			}
 		// New Find
 		} else {  
+			Log.i("TAG", "new find");
 			// Set real GUID
 			if (mGuidRealTV != null)
 				mGuidRealTV.setText(UUID.randomUUID().toString());
@@ -646,10 +647,13 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 			mCurrentLocation = location;
 			Log.i(TAG, "Got a new location: " + mCurrentLocation.getLatitude()
 					+ "," + mCurrentLocation.getLongitude());
-			mLongitudeTV.setText(String.valueOf(mCurrentLocation
-					.getLongitude()));
-			mLatitudeTV.setText(String.valueOf(mCurrentLocation
-					.getLatitude()));
+			if (mLatitudeTV.getText().equals("Getting latitude...") || mLongitudeTV.getText().equals("Getting longitude...")) {
+				mLongitudeTV.setText(String.valueOf(mCurrentLocation
+						.getLongitude()));
+				mLatitudeTV.setText(String.valueOf(mCurrentLocation
+						.getLatitude()));
+				
+			}
 		}
 	}
 
