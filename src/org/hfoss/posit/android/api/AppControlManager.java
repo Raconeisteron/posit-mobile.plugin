@@ -23,8 +23,8 @@
 package org.hfoss.posit.android.api;
 
 import org.hfoss.posit.android.R;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
-import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
+//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
+//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -49,7 +49,7 @@ public class AppControlManager {
 	private static AppControlManager sInstance = null;
 
 	private static int sLoggedInUserTypeOrdinal;
-	private static UserType sLoggedInUserType;
+	//private static UserType sLoggedInUserType;
 	
 	public static AppControlManager getInstance(){
 		assert(sInstance != null);
@@ -67,12 +67,12 @@ public class AppControlManager {
 	/**
 	 * Returns the type of the currently logged in user
 	 */
-	public static UserType getUserType() {
-		if (sLoggedInUserTypeOrdinal == UserType.ADMIN.ordinal())
-			return UserType.ADMIN;
-		else
-			return UserType.USER;
-	}
+//	public static UserType getUserType() {
+//		if (sLoggedInUserTypeOrdinal == UserType.ADMIN.ordinal())
+//			return UserType.ADMIN;
+//		else
+//			return UserType.USER;
+//	}
 	
 	/**
 	 * Returns the user type as an ordinal (int) values
@@ -82,11 +82,11 @@ public class AppControlManager {
 	}
 	
 	
-	public static boolean isAdminUser() {
-		return sLoggedInUserTypeOrdinal == UserType.ADMIN.ordinal();
-	}
-	
-	public static boolean isRegularUser() {
-		return sLoggedInUserTypeOrdinal == UserType.USER.ordinal();
-	}
+//	public static boolean isAdminUser() {
+//		return sLoggedInUserTypeOrdinal == UserType.ADMIN.ordinal();
+//	}
+//	
+//	public static boolean isRegularUser() {
+//		return sLoggedInUserTypeOrdinal == UserType.USER.ordinal();
+//	}
 }

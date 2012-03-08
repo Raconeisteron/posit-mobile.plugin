@@ -22,27 +22,18 @@
 package org.hfoss.posit.android.plugin.clp;
 
 import org.hfoss.posit.android.api.activity.FindActivity;
-import org.hfoss.posit.android.R;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
 
+import android.os.Bundle;
 
 /**
  * FindActivity subclass for Clp plugin.
  * 
  */
 public class ClpFindActivity extends FindActivity {
-
-	private static final String TAG = "ClpFindActivity";
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "onCreate()");
+		find = new ClpFindFragment();
 		super.onCreate(savedInstanceState);
-		
-		// Change prompt
-		TextView tv = (TextView)findViewById(R.id.nameTextView);
-		tv.setText(this.getString(R.string.namePrompt));
 	}
 }

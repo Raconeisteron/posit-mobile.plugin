@@ -64,7 +64,8 @@
 		<activity
 			android:name="org.hfoss.posit.android.api.activity.FindActivity"
 			android:launchMode="singleTop"
-			android:configChanges="orientation|keyboardHidden" />
+			android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.Sherlock" />
 		<activity
 			android:name="org.hfoss.posit.android.api.activity.MapFindsActivity"
 			android:launchMode="singleTop"
@@ -128,7 +129,8 @@
 		<activity
 			android:name="org.hfoss.posit.android.plugin.csv.CsvFindActivity"
 			android:launchMode="singleTop"
-			android:configChanges="orientation|keyboardHidden" />
+			android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.Sherlock" />
 		<activity
 			android:name="org.hfoss.posit.android.plugin.csv.CsvListFindsActivity"
 			android:launchMode="singleTop"
@@ -139,7 +141,8 @@
 		<activity
 			android:name="org.hfoss.posit.android.plugin.outsidein.OutsideInFindActivity"
 			android:launchMode="singleTop"
-			android:configChanges="orientation|keyboardHidden" />
+			android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.Sherlock" />
 		<activity
 			android:name="org.hfoss.posit.android.plugin.outsidein.OutsideInListFindsActivity"
 			android:launchMode="singleTop"
@@ -156,7 +159,8 @@
 		<activity
 			android:name="org.hfoss.posit.android.plugin.clp.ClpFindActivity"
 			android:launchMode="singleTop"
-			android:configChanges="orientation|keyboardHidden" />
+			android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.Sherlock" />
 		<activity
 			android:name="org.hfoss.posit.android.plugin.clp.ClpListFindsActivity"
 			android:launchMode="singleTop"
@@ -173,7 +177,8 @@
 		<activity
 			android:name="org.hfoss.posit.android.plugin.sh.ShFindActivity"
 			android:launchMode="singleTop"
-			android:configChanges="orientation|keyboardHidden" />
+			android:configChanges="orientation|keyboardHidden"
+            android:theme="@style/Theme.Sherlock" />
 		<activity
 			android:name="org.hfoss.posit.android.plugin.sh.ShListFindsActivity"
 			android:launchMode="singleTop"
