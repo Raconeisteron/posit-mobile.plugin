@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.api.fragment.FindFragment;
 import org.hfoss.posit.android.api.fragment.ListFindsFragment;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.functionplugin.camera.Camera;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,11 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 public class ShListFindsFragment extends ListFindsFragment {
+	
+	@Override
+	protected void displayFind(int index, String action, Bundle extras, FindFragment findFragment) {
+		super.displayFind(index, action, extras, new ShFindFragment());
+	}
 	
 	/**
 	 * Sets up a custom list adapter specific to ShFinds. 

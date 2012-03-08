@@ -11,6 +11,7 @@ import java.util.List;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.MapFindsActivity;
+import org.hfoss.posit.android.api.fragment.FindFragment;
 import org.hfoss.posit.android.api.fragment.ListFindsFragment;
 import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
@@ -78,6 +79,11 @@ public class CsvListFindsFragment extends ListFindsFragment {
 					+ DEFAULT_DIRECTORY + "/" + DEFAULT_FILE);
 			finds = readFindsFromFile(file);
 		}
+	}
+	
+	@Override
+	protected void displayFind(int index, String action, Bundle extras, FindFragment findFragment) {
+		super.displayFind(index, action, extras, new CsvFindFragment());
 	}
 	
 	@Override
