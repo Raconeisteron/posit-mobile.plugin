@@ -49,7 +49,7 @@ public class AppControlManager {
 	private static AppControlManager sInstance = null;
 
 	private static int sLoggedInUserTypeOrdinal;
-	//private static UserType sLoggedInUserType;
+//	private static UserType sLoggedInUserType;
 	
 	public static AppControlManager getInstance(){
 		assert(sInstance != null);
