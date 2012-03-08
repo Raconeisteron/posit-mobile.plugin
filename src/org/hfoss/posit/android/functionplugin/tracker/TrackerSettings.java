@@ -23,10 +23,9 @@ package org.hfoss.posit.android.functionplugin.tracker;
 
 import org.hfoss.posit.android.R;
 
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -41,7 +40,7 @@ import android.util.Log;
  * @author rmorelli
  * @see http://code.google.com/p/mytracks/
  */
-public class TrackerSettings extends PreferenceActivity {
+public class TrackerSettings extends SherlockPreferenceActivity {
 	
 	public static final String TAG = "PositTracker";
 	

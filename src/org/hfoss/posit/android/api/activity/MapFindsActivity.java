@@ -40,14 +40,16 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.MenuInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
+
+import com.actionbarsherlock.ActionBarSherlock;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -80,6 +82,8 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 	private Button search_last_Btn;
 	
 	private int mSearchIndex = 0;
+	
+	ActionBarSherlock actionBarSherlock = ActionBarSherlock.wrap(this);
 	
 
 	/* (non-Javadoc)
@@ -249,7 +253,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.map_finds_menu, menu);
 		return true;
 	} // onCreateOptionsMenu()

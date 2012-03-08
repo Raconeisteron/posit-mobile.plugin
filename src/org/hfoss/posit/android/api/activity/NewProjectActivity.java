@@ -25,7 +25,8 @@ package org.hfoss.posit.android.api.activity;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.sync.Communicator;
 
-import android.app.Activity;
+import com.actionbarsherlock.app.SherlockActivity;
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -41,7 +42,7 @@ import android.widget.Toast;
  * @author rmorelli
  *
  */
-public class NewProjectActivity extends Activity implements OnClickListener{
+public class NewProjectActivity extends SherlockActivity implements OnClickListener{
 
 	private Button mCreateProject;
 	private static final String TAG = "NewProjectActivity";
