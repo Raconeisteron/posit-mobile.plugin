@@ -40,7 +40,6 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 	private static final String TAG = "ListFindsFragment";
 	protected ArrayList<FunctionPlugin> mListMenuPlugins = null;
 
-	private static final int CONFIRM_DELETE_DIALOG = 0;
 	public static final String ACTION_LIST_FINDS = "list_finds";
 
 	private static List<? extends Find> finds;
@@ -189,7 +188,7 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 
 		case R.id.delete_finds_menu_item:
 			Log.i(TAG, "Delete all finds menu item"); 
-			showDialog(CONFIRM_DELETE_DIALOG);
+			showDialog(DeleteFindsDialogFragment.CONFIRM_DELETE_ALL_FINDS_DIALOG);
 			break;
 			
 		default:
@@ -222,31 +221,9 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 	    ft.addToBackStack(null);
 
 	    // Create and show the dialog.
-	    ListFindsDialogFragment newFragment = ListFindsDialogFragment.newInstance(num);
+	    DeleteFindsDialogFragment newFragment = DeleteFindsDialogFragment.newInstance(num);
 	    newFragment.show(ft, "dialog");
 	}
-//	@Override
-//	protected Dialog onCreateDialog(int id) {
-//		switch (id) {
-//		case CONFIRM_DELETE_DIALOG:
-//			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon)
-//					.setTitle(R.string.confirm_delete)
-//					.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog, int whichButton) {
-//							// User clicked OK so do some stuff
-//							if (deleteAllFind()) {
-//								finish();
-//							}
-//						}
-//					}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
-//						public void onClick(DialogInterface dialog, int whichButton) {
-//							// User clicked cancel so do nothing
-//						}
-//					}).create();
-//		default:
-//			return null;
-//		}
-//	}
 
 	/**
 	 * Returns a list of Finds.
