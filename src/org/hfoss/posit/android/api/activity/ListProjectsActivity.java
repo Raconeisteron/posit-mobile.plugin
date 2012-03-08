@@ -31,11 +31,12 @@ import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
 
+import com.actionbarsherlock.app.SherlockListActivity;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -60,7 +61,7 @@ import android.widget.Toast;
  * 
  *
  */
-public class ListProjectsActivity extends ListActivity implements OnClickListener{
+public class ListProjectsActivity extends SherlockListActivity implements OnClickListener{
 
 	private static final String TAG = "ShowProjectsActivity";
 	private static final int CONFIRM_PROJECT_CHANGE = 0;

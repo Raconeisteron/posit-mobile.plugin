@@ -32,6 +32,8 @@ import org.hfoss.posit.android.sync.SyncAdapter;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,7 +43,6 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -66,7 +67,7 @@ import android.widget.Toast;
  * android:summary="Click me and see!" />
  * 
  */
-public class SettingsActivity extends PreferenceActivity implements
+public class SettingsActivity extends SherlockPreferenceActivity implements
 		OnPreferenceClickListener, OnSharedPreferenceChangeListener {
 	private static final String TAG = "API Settings";
 	public static final String SETTINGS_ACTION = "settings_action";

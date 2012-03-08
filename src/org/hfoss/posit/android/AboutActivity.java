@@ -23,8 +23,9 @@ package org.hfoss.posit.android;
 
 import org.hfoss.posit.android.R;
 
+import com.actionbarsherlock.app.SherlockActivity;
+
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 
@@ -32,7 +33,7 @@ import android.util.Log;
  * Displays basic information about POSIT, including name,
  *  developer (HFOSS), and the names of development team members.
  */
-public class AboutActivity extends FragmentActivity {
+public class AboutActivity extends SherlockActivity {
 	private static final String TAG = "AboutActivity";
 	 
 	/**

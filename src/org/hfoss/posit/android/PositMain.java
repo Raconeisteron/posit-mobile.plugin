@@ -33,7 +33,6 @@ import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.api.plugin.FindActivityProvider;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
-import org.hfoss.posit.android.R;
 //import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
@@ -48,25 +47,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
+
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 /**
  * Implements the main activity and the main screen for the POSIT application.
@@ -85,7 +78,7 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 	private ArrayList<FunctionPlugin> mMainButtonPlugins = null;
 	
 	// A list of services for Posit Main
-	private ArrayList<Class<Service>> mServices = null;	
+	private ArrayList<Class<Service>> mServices = null;
 
 	/**
 	 * Handles the app's initialization.

@@ -2,14 +2,14 @@ package org.hfoss.posit.android.api.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 
-public class OrmLiteFragment<H extends OrmLiteSqliteOpenHelper> extends Fragment {
+public class OrmLiteFragment<H extends OrmLiteSqliteOpenHelper> extends SherlockFragment {
 public static String TAG= "OrmLiteFragment";
 	
 	private volatile H helper;
