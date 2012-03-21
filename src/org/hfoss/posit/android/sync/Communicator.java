@@ -1055,7 +1055,7 @@ public class Communicator {
 	 * @param pairs, a list of attribute/value pairs
 	 * @return the response from the URL
 	 */
-	private static String doHTTPPost(String Uri, List<NameValuePair> pairs) {
+	public static String doHTTPPost(String Uri, List<NameValuePair> pairs) {
 		BasicHttpParams mHttpParams = new BasicHttpParams();
 
 		// Set the timeout in milliseconds until a connection is established.
@@ -1126,7 +1126,7 @@ public class Communicator {
 	 * @param sendMap, the hashMap of data to send to the server as POST data
 	 * @return the response from the URL
 	 */	
-	private static String doHTTPPost(String Uri, HashMap<String, String> sendMap) {
+	public static String doHTTPPost(String Uri, HashMap<String, String> sendMap) {
 		return doHTTPPost(Uri, getNameValuePairs(sendMap));
 	}
 
