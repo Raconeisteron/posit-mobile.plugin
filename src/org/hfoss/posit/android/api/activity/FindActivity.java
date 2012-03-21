@@ -314,7 +314,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	@Override
 	public void finish() {
 		Log.i(TAG, "onFinish()");
-		if (mGeoTagEnabled)
+		if (mGeoTagEnabled && mLocationManager != null)
 			mLocationManager.removeUpdates(this);
 		mLocationManager = null;
 		mCurrentLocation = null;
