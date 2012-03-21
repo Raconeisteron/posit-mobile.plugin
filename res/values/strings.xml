@@ -347,4 +347,7 @@
     
     <!-- Authentication -->
     <string name="todoprefs">Geo-Aware Reminder Preferences</string>
+    <string name="pluginManagerPref">pluginManagerKey</string>
+    <string name="pluginManagerTitle">Plugin Manager</string>
+    <string name="pluginManagerSummary">Toggle active plugins</string>
 </resources>

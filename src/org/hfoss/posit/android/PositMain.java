@@ -22,6 +22,7 @@
 package org.hfoss.posit.android;
 
 import java.util.ArrayList;
+import java.util.EventObject;
 
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.User;
@@ -29,6 +30,7 @@ import org.hfoss.posit.android.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.api.activity.SettingsActivity;
 import org.hfoss.posit.android.api.database.DbManager;
+import org.hfoss.posit.android.api.plugin.ActiveFuncPluginChangeEventListener;
 import org.hfoss.posit.android.api.plugin.FindActivityProvider;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
@@ -70,7 +72,7 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 /**
  * Implements the main activity and the main screen for the POSIT application.
  */
-public class PositMain extends OrmLiteBaseActivity<DbManager> implements android.view.View.OnClickListener {
+public class PositMain extends OrmLiteBaseActivity<DbManager> implements android.view.View.OnClickListener, ActiveFuncPluginChangeEventListener {
 
 	private static final String TAG = "PositMain";
 
@@ -94,12 +96,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "Creating");
 
-		// Import all active plug-ins and attach this activity's plugins
-		Log.i(TAG, "Import active plugins");
-		FindPluginManager.initInstance(this);
-		mMainMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_MENU_EXTENSION);
-		Log.i(TAG, "# main menu plugins = " + mMainMenuPlugins.size());
-		mMainLoginPlugin = FindPluginManager.getFunctionPlugin(FindPluginManager.MAIN_LOGIN_EXTENSION);	
+		FindPluginManager pluginManagerInstance = FindPluginManager.initInstance(this);
+		pluginManagerInstance.addActiveFuncPluginChangeEventListener(this);
 
 		// NOTE: This is AcdiVoca stuff and should be put in a plugin
 		// AcdiVocaSmsManager.initInstance(this);
@@ -129,6 +127,8 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			Log.e(TAG, e.getMessage());
 			e.printStackTrace();
 		}
+		
+		updateReferencesToActivePlugins();
 		
 		// Check if an account exists
 		resolveAccount();
@@ -546,5 +546,45 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	public void finish() {
 		Log.i(TAG, "finish()");
 		super.finish();
+	}
+
+	public void handleActiveFuncPluginChangeEvent(FunctionPlugin plugin, boolean enabled) {
+		updateReferencesToActivePlugins();
+		
+		//TODO: decide what to do when someone enables/disables a login plugin.
+		
+		if (enabled)
+		{
+			//Enabled services for enabled plugin
+			ArrayList<Class<Service>> newServices = plugin.getmServices();
+			for (Class<Service> s : newServices) {
+				Log.i(TAG,"Starting service " + s.getSimpleName());
+				this.startService(new Intent(this, s));
+				
+			}
+			
+			mServices.addAll(newServices);
+		} 
+		else
+		{
+			//Disable services for disabled plugin
+			ArrayList<Class<Service>> exsistingServices = plugin.getmServices();
+			for (Class<Service> s : exsistingServices) {
+				Log.i(TAG,"Stopping service " + s.getSimpleName());
+				this.stopService(new Intent(this, s));
+			}
+		}
+	}
+	
+	/**
+	 * Gets the active plugins form FindPluginManager and updates this calss's references to the necessary plugins.
+	 */
+	private void updateReferencesToActivePlugins()
+	{
+		// Import all active plug-ins and attach this activity's plugins
+		Log.i(TAG, "Import active plugins");
+		mMainMenuPlugins = FindPluginManager.getFunctionPlugins(FindPluginManager.MAIN_MENU_EXTENSION);
+		Log.i(TAG, "# main menu plugins = " + mMainMenuPlugins.size());
+		mMainLoginPlugin = FindPluginManager.getFunctionPlugin(FindPluginManager.MAIN_LOGIN_EXTENSION);	
 	}
 }
