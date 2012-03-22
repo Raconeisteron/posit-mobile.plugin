@@ -645,15 +645,16 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 	public void onLocationChanged(Location location) {
 		if (isBetterLocation(location, mCurrentLocation)) {
 			mCurrentLocation = location;
-			Log.i(TAG, "Got a new location: " + mCurrentLocation.getLatitude()
-					+ "," + mCurrentLocation.getLongitude());
-			if (mLatitudeTV.getText().equals("Getting latitude...") || mLongitudeTV.getText().equals("Getting longitude...")) {
+			// if we are creating a new find update the location as we get updates
+			if (getAction().equals(Intent.ACTION_INSERT)) {
 				mLongitudeTV.setText(String.valueOf(mCurrentLocation
 						.getLongitude()));
 				mLatitudeTV.setText(String.valueOf(mCurrentLocation
 						.getLatitude()));
 				
 			}
+			Log.i(TAG, "Got a new location: " + mCurrentLocation.getLatitude()
+					+ "," + mCurrentLocation.getLongitude());
 		}
 	}
 
