@@ -29,28 +29,34 @@
 		<ImageView android:src="@drawable/hfoss_logo" android:id="@+id/Logo"
 			android:layout_height="match_parent" android:layout_width="wrap_content"></ImageView>
 
-		<!-- <TextView android:id="@+id/developmentTeamLabel" android:layout_width="wrap_content" 
-			android:layout_height="wrap_content" android:textSize="15sp" android:textColor="#ffffff" 
-			android:text="@string/devTeamLabel" android:layout_marginBottom="3dp" /> 
-			<TextView android:id="@+id/developmentTeamText" android:layout_width="wrap_content" 
-			android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#ffffff" 
-			android:text="@string/devTeamText1" android:layout_centerHorizontal="true" 
-			/> <TextView android:id="@+id/developmentTeamText" android:layout_width="wrap_content" 
-			android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#ffffff" 
-			android:text="@string/devTeamText2" android:layout_centerHorizontal="true" 
-			/> <TextView android:id="@+id/developmentTeamText" android:layout_width="wrap_content" 
-			android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#ffffff" 
-			android:text="@string/devTeamText3" android:layout_centerHorizontal="true" 
-			/> <TextView android:id="@+id/developmentTeamText" android:layout_width="wrap_content" 
-			android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#ffffff" 
-			android:text="@string/devTeamText4" android:layout_centerHorizontal="true" 
-			/> <TextView android:id="@+id/developmentTeamText" android:layout_width="wrap_content" 
-			android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#ffffff" 
-			android:text="@string/devTeamText5" android:layout_centerHorizontal="true" 
-			/> <TextView android:id="@+id/developmentTeamText" android:layout_width="wrap_content" 
-			android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#ffffff" 
-			android:text="@string/devTeamText6" android:layout_centerHorizontal="true" 
-			/> -->
-		<TextView android:autoLink="web" android:layout_marginBottom="3dp" android:text="@string/httpLink" android:textColor="#ffffff" android:id="@+id/developmentTeamLabel5" android:layout_height="wrap_content" android:layout_width="wrap_content" android:textSize="15sp"></TextView>
+		<TextView android:autoLink="web" 
+		    android:layout_marginBottom="3dp" 
+		    android:text="@string/httpLink" 
+		    android:textColor="#ffffff" 
+		    android:id="@+id/developmentTeamLabel5" 
+		    android:layout_height="wrap_content" 
+		    android:layout_width="wrap_content" 
+		    android:textSize="15sp">
+		</TextView>
 	</LinearLayout>
+	
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent" android:layout_height="match_parent">
+
+		<TextView 
+		    android:id="@+id/currentServer"
+		    android:autoLink="web"
+		    android:text="@string/defaultServer"
+		    android:textColor="#ffffff" 
+		    android:layout_height="wrap_content" 
+		    android:layout_width="wrap_content" 
+		    android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true" 		
+			android:layout_marginBottom="10dp" 			    
+		    android:textSize="15sp">
+		</TextView>
+	    
+	    
+	</RelativeLayout>
+	
 </LinearLayout>
