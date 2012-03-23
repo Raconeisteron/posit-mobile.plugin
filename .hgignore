@@ -4,3 +4,7 @@ syntax: regexp
 ^bin$
 ^.+swp$
 ^.+swo$
+
+syntax: regexp
+^lint\.xml$
+^\.classpath
