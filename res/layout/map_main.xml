@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/mainlayout" android:orientation="vertical"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<com.google.android.maps.MapView
+		android:id="@+id/mapView" android:layout_width="fill_parent"
+		android:layout_height="fill_parent" 
+		android:clickable="true"
+		android:apiKey="0bvEMJ9m96_er-z_dr1wcZjsucPYBoUZMjI-RQw" />
+	<LinearLayout android:id="@+id/zoomView"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:layout_alignBottom="@id/mapView"
+		android:layout_centerHorizontal="true" />
+</RelativeLayout>
+
+<!-- Release:  0bvEMJ9m96_fNUGsMNJA7nKEiyhQIgdq1Htv59w  -->
+<!-- 0jDofiyQNYc4RdmdN3SzLHPlIVb6uawsWRrsGiA -->
+<!-- Ralph: 0bvEMJ9m96_er-z_dr1wcZjsucPYBoUZMjI-RQw  -->
+<!-- Rachel?  0q4G7UpfXNuyFry0fxzeDke-e0bwdZAXs3ZLn2Q -->
+<!-- Release 0bvEMJ9m96_fNUGsMNJA7nKEiyhQIgdq1Htv59w -->
