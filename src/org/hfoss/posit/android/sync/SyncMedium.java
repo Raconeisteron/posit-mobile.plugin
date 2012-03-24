@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbHelper;
@@ -34,7 +35,7 @@ public abstract class SyncMedium {
 		for( String guid : findGuids ){
 			String rawFind = retrieveRawFind(guid );
 			Find newFind = convertRawToFind( rawFind );
-			addFind( newFind );
+			storeFind( newFind );
 		}
 	}
 	
@@ -48,12 +49,16 @@ public abstract class SyncMedium {
 		postSendTasks();
 	}
 	
-	protected abstract List<String> getFindsNeedingSync();
-	protected abstract String retrieveRawFind( String guid );
-	protected abstract boolean sendFind( Find find );
-	protected abstract boolean postSendTasks();
+	public abstract List<String> getFindsNeedingSync();
+	public abstract String retrieveRawFind( String guid );
+	public abstract boolean sendFind( Find find );
+	public abstract boolean postSendTasks();
 	
 	public Find convertRawToFind( String rawFind ){
+		return convertRawToFindWithBundle( rawFind );
+	}
+	
+	public static Find convertRawToFindWithBundle( String rawFind ){
 		Find newFind 		= createTypedFind();
 		Bundle bundle 		= newFind.getDbEntries();
 		List<String> keys 	= getBundleKeys( bundle );
@@ -71,7 +76,7 @@ public abstract class SyncMedium {
 		return newFind;
 	}
 
-	public String convertFindToRaw( Find find ){
+	public static String convertFindToRaw( Find find ){
 		return convertBundleToRaw( find.getDbEntries() );
 	}
 
@@ -96,7 +101,7 @@ public abstract class SyncMedium {
 	 *             if one of the values could not be encoded.
 	 * 
 	 */
-	public String convertBundleToRaw( Bundle dbEntries )
+	public static String convertBundleToRaw( Bundle dbEntries )
 			throws IllegalArgumentException {
 		List<String> keys = new ArrayList<String>(dbEntries.keySet());
 		StringBuilder builder = new StringBuilder();
@@ -118,7 +123,7 @@ public abstract class SyncMedium {
 		return text;
 	}
 	
-	private List<String> parseValuesFromRaw( String rawFind ){
+	private static List<String> parseValuesFromRaw( String rawFind ){
 		List<String> values = new ArrayList<String>();
 		StringBuilder current = new StringBuilder();
 		
@@ -141,7 +146,7 @@ public abstract class SyncMedium {
 		return values;
 	}
 	
-	private Find createTypedFind(){
+	private static Find createTypedFind(){
 		Find find;
 		
 		try {
@@ -162,13 +167,13 @@ public abstract class SyncMedium {
 		return find;
 	}
 	
-	private List<String> getBundleKeys( Bundle bundle ){
+	private static List<String> getBundleKeys( Bundle bundle ){
 		List<String> keys = new ArrayList<String>(bundle.keySet());
 		Collections.sort(keys);
 		return keys;
 	}
 	
-	private boolean validateNewDataSize( List<String> keys, List<String> values ){
+	private static boolean validateNewDataSize( List<String> keys, List<String> values ){
 		boolean valid = true;
 		if (values.size() != keys.size()) {
 			Log.e(TAG,
@@ -180,7 +185,7 @@ public abstract class SyncMedium {
 		return valid;
 	}
 	
-	private boolean fillBundleValues( Bundle bundle, List<String> keys, List<String> values, Find newFind ){
+	private static boolean fillBundleValues( Bundle bundle, List<String> keys, List<String> values, Find newFind ){
 		boolean success = true;
 		
 		for (int i = 0; i < values.size(); i++) {
@@ -210,7 +215,7 @@ public abstract class SyncMedium {
 		return success;
 	}
 
-	private Class<Object> getEntryType( Find newFind, String key ){
+	private static Class<Object> getEntryType( Find newFind, String key ){
 		Class<Object> type = null;
 		try {
 			type = newFind.getType(key);
@@ -223,11 +228,10 @@ public abstract class SyncMedium {
 		return type;
 	}
 
-	public void addFind( Find newFind ){
+	public void storeFind( Find newFind ){
 		Find find = DbHelper.getDbManager(m_context).getFindByGuid(newFind.getGuid());
 		if (find != null) {
 			Log.i("SyncMedium", "Updating existing find: " + find.getId());
-			//TODO:Update find with newFind Do you even need to change this???
 			DbHelper.getDbManager(m_context).updateWithoutHistory(newFind);				
 		} else {
 			Log.i("SyncMedium", "Inserting new find: " + newFind.getId());
@@ -235,6 +239,42 @@ public abstract class SyncMedium {
 			
 			DbHelper.getDbManager(m_context).insertWithoutHistory(newFind);
 		}
+	}
+	
+	public List<String> convertGuidStringToList( String guids ){
+		StringTokenizer tokenizer = new StringTokenizer( guids, "," );
+		List<String> guidList = new ArrayList<String>();
+		
+		while( tokenizer.hasMoreTokens() ){
+			guidList.add( tokenizer.nextToken() );
+		}
+		
+		return guidList;
+	}
+	
+	public String getChangedFindGuidsString(){
+		List<String> changedGuids = getChangedFindGuids();
+		StringBuilder builder = new StringBuilder();
+		
+		for( String guid : changedGuids ){
+			builder.append( guid );
+			builder.append(",");
+		}
+		
+		builder.deleteCharAt(builder.length()-1);
+		
+		return builder.toString();
+	}
+	
+	public List<String> getChangedFindGuids(){
+		List<Find> changedFinds = getChangedFinds();
+		List<String> changedGuids = new ArrayList<String>();
+		
+		for( Find find : changedFinds ){
+			changedGuids.add( find.getGuid() );
+		}
+		
+		return changedGuids;
 	}
 	
 	public List<Find> getChangedFinds(){
