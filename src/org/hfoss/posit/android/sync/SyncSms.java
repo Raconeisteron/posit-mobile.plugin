@@ -2,15 +2,25 @@ package org.hfoss.posit.android.sync;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.service.SmsService;
 import org.hfoss.posit.android.functionplugin.sms.ObjectCoder;
+import org.hfoss.posit.android.functionplugin.sms.SmsTransmitter;
+import org.hfoss.posit.android.functionplugin.sms.SmsViewActivity;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.SmsMessage;
 import android.util.Log;
 
 /**
@@ -90,23 +100,131 @@ public class SyncSms extends SyncMedium {
 	 * This isn't used because SMS sends individual messages internally
 	 * using the SmsService
 	 */
-	protected boolean sendFind(Find find){ return false; }
+	public boolean sendFind(Find find){ return false; }
+	public boolean postSendTasks() { return true; }
 
-	@Override
-	protected List<String> getFindsNeedingSync() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, String> getMessages( Intent intent ){
+		Bundle bundle = intent.getExtras();
+		Map<String, String> msgTexts = new LinkedHashMap<String, String>();
+
+		Log.i(TAG, "Intent action = " + intent.getAction());
+		
+		if (bundle != null){
+			Object[] pdus = (Object[]) bundle.get("pdus");
+	
+			for (Object pdu : pdus) {
+				SmsMessage 	message 			= SmsMessage.createFromPdu((byte[]) pdu);
+				String 		incomingMsg 		= message.getMessageBody();
+				String 		originatingNumber 	= message.getOriginatingAddress();
+	
+				logMessageData( message );
+	
+				// If there are other messages from this sender, concatenate them
+				String text = msgTexts.get(originatingNumber);
+				if (text != null) {
+					msgTexts.put(originatingNumber, text + incomingMsg);
+				} else {
+					msgTexts.put(originatingNumber, incomingMsg);
+				}
+			}
+		}
+		
+		return msgTexts;
 	}
 
-	@Override
-	protected String retrieveRawFind(String guid) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	private void logMessageData( SmsMessage message ){
+		String incomingMsg 			= message.getMessageBody();
+		String originatingNumber 	= message.getOriginatingAddress();
+		
+		Log.i(TAG, "FROM: " + originatingNumber);
+		Log.i(TAG, "MESSAGE: " + incomingMsg);
+		
+		int[] msgLen = SmsMessage.calculateLength(message.getMessageBody(), true);
+		Log.i(TAG, "" + msgLen[0] + " " + msgLen[1] + " " + msgLen[2] + " " + msgLen[3]);
+		
+		msgLen = SmsMessage.calculateLength(message.getMessageBody(), false);
+		Log.i(TAG, "" + msgLen[0] + " " + msgLen[1] + " " + msgLen[2] + " " + msgLen[3]);
 
-	@Override
-	protected boolean postSendTasks() {
-		// TODO Auto-generated method stub
-		return false;
+		// Log.i(TAG, "Protocol = " + message.getProtocolIdentifier());
+		Log.i(TAG, "LENGTH: " + incomingMsg.length());
 	}
+	
+	public void processMessages( Map<String, String> msgTexts, int notificationId ){
+		for (Entry<String, String> entry : msgTexts.entrySet()) {
+			Log.i(TAG, "Processing message: " + entry.getValue());
+			
+			if( isEntryPrefixValid(entry) ){
+				Find find = convertRawToFind(entry.getValue().substring(2));
+				if (find == null) {
+					Log.e(TAG, "SMS message could not be parsed as a Find");
+				} else {
+					Log.i(TAG, "SMS message parsed as a Find successfully!");
+					
+					// So now we need to notify the user
+					String ns = Context.NOTIFICATION_SERVICE;
+					NotificationManager notificationMgr = (NotificationManager) m_context
+							.getSystemService(ns);
+					
+					Notification notification = buildNotification( entry, find, notificationId );
+					
+					notificationMgr.notify(notificationId++, notification);
+				}
+			}
+		}
+	}
+	
+	private boolean isEntryPrefixValid( Entry<String, String> entry ){
+		boolean valid = false;
+		
+		if (entry.getValue().substring(0, 2).equals(FIND_PREFIX)) {
+			Log.i(TAG, "Prefix of message matches Find prefix. Attempting to parse.");
+			valid = true;
+		} else {
+			Log.i(TAG, "Prefix of message does not match Find prefix. Ignoring.");
+			valid = false;
+		}
+		
+		return valid;
+	}
+	
+	private Notification buildNotification( Entry<String, String> entry, Find find, int notificationId ){
+		Notification notification = initNotification();
+		Intent notificationIntent = buildNotificationIntent( entry, find, notificationId );
+		PendingIntent contentIntent = PendingIntent.getActivity(
+				m_context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		CharSequence contentTitle = "SMS received";
+		CharSequence contentText = "from " + entry.getKey();
+		
+		notification.contentIntent = contentIntent;
+		notification.setLatestEventInfo(m_context, contentTitle,
+				contentText, contentIntent);
+		
+		return notification;
+	}
+	
+	private Notification initNotification(){
+		int 		 icon 		= R.drawable.notification_icon;
+		CharSequence tickerText = "SMS Find received!";
+		long 		 when 		= System.currentTimeMillis();
+		
+		return new Notification(icon, tickerText, when);
+	}
+	
+	private Intent buildNotificationIntent( Entry<String, String> entry, Find find, int notificationId ){
+		Context appContext = m_context.getApplicationContext();
+
+		Intent notificationIntent = new Intent(appContext,
+				SmsViewActivity.class);
+		notificationIntent.putExtra("findbundle", find.getDbEntries());
+		notificationIntent.putExtra("sender", entry.getKey());
+		notificationIntent.putExtra("notificationid", notificationId);
+		
+		return notificationIntent;
+	}
+	
+	public List<String> getFindsNeedingSync() { return null; }
+
+	public String retrieveRawFind(String guid) { return null; }
+
 }

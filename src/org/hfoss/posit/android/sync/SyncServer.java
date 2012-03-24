@@ -73,7 +73,7 @@ public class SyncServer extends SyncMedium{
 		m_imei = telephonyManager.getDeviceId();
 	}
 	
-	protected List<String> getFindsNeedingSync(){
+	public List<String> getFindsNeedingSync(){
 		String serverFindsIds = getServerFindsNeedingSync();
 		List<String> finds = new ArrayList<String>();
 		StringTokenizer st = new StringTokenizer(serverFindsIds, ",");
@@ -101,7 +101,7 @@ public class SyncServer extends SyncMedium{
 		return response;
 	}
 	
-	protected String retrieveRawFind( String guid ){
+	public String retrieveRawFind( String guid ){
 		String url = m_server + "/api/getFind?guid=" + guid + "&authKey=" + m_authKey;
 		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 		pairs.add(new BasicNameValuePair("guid", guid));
@@ -114,7 +114,7 @@ public class SyncServer extends SyncMedium{
 		return responseString;
 	}
 
-	protected boolean sendFind( Find find ){
+	public boolean sendFind( Find find ){
 		boolean success = false;
 		String url = createActionBasedUrl( find );
 		List<NameValuePair> pairs = getNameValuePairs(find);
@@ -263,7 +263,7 @@ public class SyncServer extends SyncMedium{
 		return sendMap;
 	}
 	
-	protected boolean postSendTasks(){
+	public boolean postSendTasks(){
 		boolean success = true;
 		
 		success &= recordSyncOnServer();
