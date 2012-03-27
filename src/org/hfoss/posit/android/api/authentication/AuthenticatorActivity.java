@@ -31,6 +31,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -85,7 +86,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     /** for posting authentication attempts back to UI thread */
     private final Handler mHandler = new Handler();
 
-    private TextView mMessage;
+    private TextView mMessage, mPrompt;
 
     private String mPassword;
 
@@ -119,6 +120,14 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         getWindow().setFeatureDrawableResource(Window.FEATURE_LEFT_ICON,
             android.R.drawable.ic_dialog_alert);
         mMessage = (TextView) findViewById(R.id.message);
+        
+        // Prompt for new users
+		String server = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.serverPref), "");
+        if (server == null)
+        	server = getString(R.string.defaultServer);
+        mPrompt = (TextView) findViewById(R.id.prompt);
+		mPrompt.setText(mPrompt.getText() + "\n\t" + server);
+
         mUsernameEdit = (EditText) findViewById(R.id.username_edit);
         mPasswordEdit = (EditText) findViewById(R.id.password_edit);
         mUsernameEdit.setText(mUsername);

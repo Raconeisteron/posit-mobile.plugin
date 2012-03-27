@@ -6,4 +6,6 @@ syntax: regexp
 ^.+swo$
 
 syntax: regexp
+^lint\.xml$
 ^project\.properties$
+^\.classpath

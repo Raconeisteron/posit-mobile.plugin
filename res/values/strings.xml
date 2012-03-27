@@ -321,9 +321,12 @@
 	<string name="accountType">org.hfoss.posit.account</string>
 	<string name="contentAuthority">org.hfoss.posit</string>
 	
+	<string name="authPrompt">To use POSIT you must have an account on
+	    the server. To create a new account browse
+	    to the current server: </string>
 	<string name="missingUsername">Please type a username.</string>
 	<string name="missingPassword">Please type a password.</string>
-	<string name="authFailed">Please enter a valid username and password.</string>
+	<string name="authFailed">Authentication Failed: Invalid username or password.</string>
 	<string name="username">Username</string>
 	<string name="password">Password</string>
 	<string name="okay">Okay</string>
@@ -347,4 +350,7 @@
     
     <!-- Authentication -->
     <string name="todoprefs">Geo-Aware Reminder Preferences</string>
+    <string name="pluginManagerPref">pluginManagerKey</string>
+    <string name="pluginManagerTitle">Plugin Manager</string>
+    <string name="pluginManagerSummary">Toggle active plugins</string>
 </resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/plugin_status_row"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal" >
+
+    <CheckBox android:text=""
+       android:id="@+id/plugin_status_enabled"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:checked="false"
+       >
+           
+    </CheckBox>
+
+	<TextView android:text=""
+       android:id="@+id/plugin_status_name"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       >
+	    
+	</TextView>
+        
+
+</LinearLayout>
