@@ -59,6 +59,11 @@
 		<PreferenceScreen android:title="POSIT Preferences">
 		</PreferenceScreen>
 -->
+			<Preference 
+			    android:key="@string/pluginManagerPref" 
+			    activity_class="org.hfoss.posit.android.api.plugin.FuncPluginManagerActivity"
+			    android:title="@string/pluginManagerTitle" 
+			    android:summary="@string/pluginManagerSummary"/>
 	</PreferenceCategory>
   
 </PreferenceScreen>

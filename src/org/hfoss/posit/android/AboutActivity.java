@@ -26,7 +26,9 @@ import org.hfoss.posit.android.R;
 import com.actionbarsherlock.app.SherlockActivity;
 
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.TextView;
 
 
 /**
@@ -43,6 +45,12 @@ public class AboutActivity extends SherlockActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
 		setContentView(R.layout.about_copyright);
+        // Prompt for new users
+		String server = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.serverPref), "");
+        if (server == null)
+        	server = getString(R.string.defaultServer);
+        TextView serverTView = (TextView) findViewById(R.id.currentServer);
+        serverTView.setText("Synced with:\n" + server);
 	}
 
 	@Override

@@ -22,26 +22,27 @@
 
 package org.hfoss.posit.android.api.plugin;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.hfoss.posit.android.R;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -69,18 +70,26 @@ public class FindPluginManager {
 	
 	public static final String IS_PLUGIN = "isPlugin"; // used in subclasses to
 														// indicate
+	
+	public static final String FUNC_PLUGIN_PREFS = "funcPluginPrefs";
+	
 	// that in onCreate() we are in a plugin.. not sure
 
 	// Mostly for Function Plugins
 	private static ArrayList<Plugin> plugins = null; // new ArrayList<Plugin>();
+	
+	private int pluginsPreferencesId;
 	
 	// Our one and only (sometimes) Find Plugin
 	public static FindPlugin mFindPlugin = null;
 	private Activity mMainActivity = null;
 
 
+	private List<ActiveFuncPluginChangeEventListener> ActiveFuncPluginChangeEventListenerList = 
+			new ArrayList<ActiveFuncPluginChangeEventListener>();
+	
 	private FindPluginManager(Activity activity) {
-		mMainActivity = activity;
+		this.mMainActivity = activity;
 	}
 
 	public static FindPluginManager initInstance(Activity activity) {
@@ -101,85 +110,104 @@ public class FindPluginManager {
 	 * @param plugins_xml
 	 */
 	public void initFromResource(Context context, int plugins_xml){	
-		plugins = new ArrayList<Plugin>();
+		this.pluginsPreferencesId = plugins_xml;
+		
+		plugins = new ArrayList<Plugin>();	
+		
+		try{
+			HashSet<String> FunctionPluginNames = new HashSet<String>();
+			
+			SharedPreferences funcPluginPrefs = context.getSharedPreferences(FUNC_PLUGIN_PREFS, 
+					Context.MODE_WORLD_READABLE | Context.MODE_WORLD_WRITEABLE);
+			SharedPreferences.Editor funcPluginPrefsEditor = funcPluginPrefs.edit();
+			
+			
+			NodeList plugin_nodes = GetNodeListFromPluginsPreferences();
+			if (plugin_nodes == null)
+			{
+				return;
+			}
+			for(int k = 0; k < plugin_nodes.getLength(); ++k){
+				
+				String curPluginName = plugin_nodes.item(k).getAttributes().getNamedItem("name").getTextContent();
+				boolean curPluginIsActive = plugin_nodes.item(k).getAttributes().getNamedItem("active").getTextContent().compareTo("true") == 0;
+				String curPluginType = plugin_nodes.item(k).getAttributes().getNamedItem("type").getTextContent();
+				
+				Plugin p = null;
+				if (curPluginType.equals("find") ) {
+					if (curPluginIsActive)  {
+						p = new FindPlugin(this.mMainActivity, plugin_nodes.item(k));
+						mFindPlugin = (FindPlugin) p;
+						plugins.add(mFindPlugin);	
+					}
+				} else if (curPluginType.equals("function") ) {
+					FunctionPluginNames.add(curPluginName);
+					
+					//Add the current function plugin to the database if it is not already there.
+					if (funcPluginPrefs.contains(curPluginName) == false)
+					{
+						funcPluginPrefsEditor.putBoolean(curPluginName, curPluginIsActive);
+						funcPluginPrefsEditor.commit();
+					}
+					
+					if (curPluginIsActive)  {
+						p = new FunctionPlugin(this.mMainActivity, plugin_nodes.item(k));
+						plugins.add(p);
+						Log.i(TAG, "Plugin " + p.toString());
+					}
+				}
+				else {
+					// Do sth for other types in the future			
+				}
+				
+			}
+			
+			//Remove from the DB any function plugins that were not found in plugins_preferences.xml
+			Map<String, ?> funcPluginPrefsMap = funcPluginPrefs.getAll();
+			for(String funcPluginNameInPrefs : funcPluginPrefsMap.keySet()){
+				if (FunctionPluginNames.contains(funcPluginNameInPrefs) == false)
+				{
+					funcPluginPrefsEditor.remove(funcPluginNameInPrefs);
+					funcPluginPrefsEditor.commit();
+				}
+			}
+			
+			Log.i(TAG, "# of plugins = " + plugins.size());			
+		} catch (Exception e) {
+			HandlePluginPreferencesXmlError(e);
+		}
+	}
+
+	private NodeList GetNodeListFromPluginsPreferences()
+	{
 		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try{
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			InputStream istream = context.getResources().openRawResource(plugins_xml);
+			InputStream istream = this.mMainActivity.getResources().openRawResource(pluginsPreferencesId);
 			Document document = builder.parse(istream);
 			XPath xpath = XPathFactory.newInstance().newXPath();
-			NodeList plugin_nodes = (NodeList)xpath.evaluate("PluginsPreferences/FindPlugins/Plugin", document, XPathConstants.NODESET);
-			for(int k = 0; k < plugin_nodes.getLength(); ++k){
-
-				if (plugin_nodes.item(k).getAttributes().getNamedItem("active").getTextContent().compareTo("true") == 0)  {
-					Plugin p = null;
-					if (plugin_nodes.item(k).getAttributes().getNamedItem("type").getTextContent().equals("find") ) {
-						p = new FindPlugin(mMainActivity, plugin_nodes.item(k));
-						mFindPlugin = (FindPlugin) p;
-						plugins.add(mFindPlugin);	
-					} else if (plugin_nodes.item(k).getAttributes().getNamedItem("type").getTextContent().equals("function") ) {
-						p = new FunctionPlugin(mMainActivity, plugin_nodes.item(k));
-						plugins.add(p);
-					}
-					else {
-						// Do sth for other types in the future			
-					}
-					Log.i(TAG, "Plugin " + p.toString());
-				}
-			}
-			Log.i(TAG, "# of plugins = " + plugins.size());
-		} catch (ParserConfigurationException e) {
-			Log.e(TAG, "Failed to load plugin");
-			Log.e(TAG, "reason: " + e);
-			Log.e(TAG, "stack trace: ");
-			e.printStackTrace();
-			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
-					Toast.LENGTH_LONG).show();
-			mMainActivity.finish();			
-		} catch (SAXException e) {
-			Log.e(TAG, "Failed to load plugin");
-			Log.e(TAG, "reason: " + e);
-			Log.e(TAG, "stack trace: ");
-			e.printStackTrace();
-			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
-					Toast.LENGTH_LONG).show();
-			mMainActivity.finish();				
-		} catch (IOException e) {
-			Log.e(TAG, "Failed to load plugin");
-			Log.e(TAG, "reason: " + e);
-			Log.e(TAG, "stack trace: ");
-			e.printStackTrace();
-			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
-					Toast.LENGTH_LONG).show();
-			mMainActivity.finish();				
-		} catch (XPathExpressionException e) {
-			Log.e(TAG, "Failed to load plugin");
-			Log.e(TAG, "reason: " + e);
-			Log.e(TAG, "stack trace: ");
-			e.printStackTrace();
-			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
-					Toast.LENGTH_LONG).show();
-			mMainActivity.finish();				
-		} catch (DOMException e) {
-			Log.e(TAG, "Failed to load plugin");
-			Log.e(TAG, "reason: " + e);
-			Log.e(TAG, "stack trace: ");
-			e.printStackTrace();
-			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
-					Toast.LENGTH_LONG).show();
-			mMainActivity.finish();				
-		} catch (ClassNotFoundException e) {
-			Log.e(TAG, "Failed to load plugin");
-			Log.e(TAG, "reason: " + e);
-			Log.e(TAG, "stack trace: ");
-			e.printStackTrace();
-			Toast.makeText(mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
-					Toast.LENGTH_LONG).show();
-			mMainActivity.finish();				
+			
+			return (NodeList)xpath.evaluate("PluginsPreferences/FindPlugins/Plugin", document, XPathConstants.NODESET);
+	
+		} catch (Exception e) {
+			HandlePluginPreferencesXmlError(e);
 		}
+		
+		return null;
 	}
-
+	
+	private void HandlePluginPreferencesXmlError(Exception e)
+	{
+		Log.e(TAG, "Failed to load plugin");
+		Log.e(TAG, "reason: " + e);
+		Log.e(TAG, "stack trace: ");
+		e.printStackTrace();
+		Toast.makeText(this.mMainActivity, "POSIT failed to load plugin. Please fix this in plugins_preferences.xml.",
+				Toast.LENGTH_LONG).show();
+		this.mMainActivity.finish();
+	}
+	
 	/**
 	 * Returns all plugins
 	 * @return
@@ -257,5 +285,92 @@ public class FindPluginManager {
 		}
 		return list;
 	}
+	
+	public synchronized void addActiveFuncPluginChangeEventListener(
+			ActiveFuncPluginChangeEventListener listener)  
+	{
+		this.ActiveFuncPluginChangeEventListenerList.add(listener);
+	}
+	
+	private synchronized void TriggerActiveFuncPluginChangeEvent(FunctionPlugin plugin, boolean enabled) {
+		for (ActiveFuncPluginChangeEventListener listener : this.ActiveFuncPluginChangeEventListenerList)
+		{
+			listener.handleActiveFuncPluginChangeEvent(plugin, enabled);
+		}
+	}
+	
+	public void UpdateFuncPluginEnabledState(String pluginName, boolean enabled)
+	{		
+		SharedPreferences funcPluginPrefs = this.mMainActivity.getSharedPreferences(FindPluginManager.FUNC_PLUGIN_PREFS, 
+				Context.MODE_WORLD_READABLE | Context.MODE_WORLD_WRITEABLE);
+		SharedPreferences.Editor funcPluginPrefsEditor = funcPluginPrefs.edit();
+		
+		funcPluginPrefsEditor.putBoolean(pluginName, enabled);
+		funcPluginPrefsEditor.commit();
+		
+		boolean pluginAlreadyExists = false;
+		int existingPluginIndex = -1;
+		
+		for (int i = 0; i < plugins.size(); i++) {
+			Plugin curPlugin = plugins.get(i);
+			if (curPlugin instanceof FunctionPlugin) {
+				if(curPlugin.getName().equals(pluginName))
+				{
+					pluginAlreadyExists = true;
+					existingPluginIndex = i;
+					break;
+				}
+				
+			}
+		}
+		
+		//Remove existing plugin if necessary
+		if (pluginAlreadyExists == true && enabled == false)
+		{
+			FunctionPlugin plugin = (FunctionPlugin)plugins.get(existingPluginIndex);
+			plugins.remove(existingPluginIndex);
+			TriggerActiveFuncPluginChangeEvent(plugin, enabled);
+		}
+		
+		//Add new plugin if necessary
+		if (pluginAlreadyExists == false && enabled == true)
+		{
+			Node staticPluginInfo = GetStaticPluginInfoFromPluginName(pluginName);
+			if (staticPluginInfo == null)
+			{
+				return;
+			}
+			
+			FunctionPlugin plugin = null;
+			try {
+				plugin = new FunctionPlugin(this.mMainActivity, staticPluginInfo);
+			} catch (Exception e) {
+				HandlePluginPreferencesXmlError(e);
+			}
 
+			plugins.add(plugin);	
+			TriggerActiveFuncPluginChangeEvent(plugin, enabled);
+		}
+	}
+
+	private Node GetStaticPluginInfoFromPluginName(String pluginName)
+	{
+		NodeList plugin_nodes = GetNodeListFromPluginsPreferences();
+		if (plugin_nodes == null)
+		{
+			return null;
+		}
+		
+		for(int k = 0; k < plugin_nodes.getLength(); ++k){
+			
+			String curPluginName = plugin_nodes.item(k).getAttributes().getNamedItem("name").getTextContent();
+			
+			if (pluginName.equals(curPluginName))
+			{
+				return plugin_nodes.item(k);
+			}
+		}
+		
+		return null;
+	}
 }

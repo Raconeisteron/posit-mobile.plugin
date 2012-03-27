@@ -90,9 +90,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			authToken = mAccountManager.blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
 			Log.i(TAG, "auth token: " + authToken);
 
+			SyncServer syncServer = new SyncServer( mContext );
+			syncServer.sync( authToken );
+			
+/*			
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 			int projectId = prefs.getInt(mContext.getString(R.string.projectPref), 0);
-			
 			
 			// Get finds changed/created on phone
 			finds = DbHelper.getDbManager(mContext).getChangedFinds(projectId);
@@ -119,6 +122,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			Log.i(TAG, "Sync recorded: " + success);
 			
 			DbHelper.releaseDbManager();
+			/**/
 //			
 //			boolean success = false;
 //			//mdbh = new PositDbHelper(mContext);
