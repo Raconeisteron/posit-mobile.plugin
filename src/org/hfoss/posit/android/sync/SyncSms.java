@@ -1,7 +1,6 @@
 package org.hfoss.posit.android.sync;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +9,6 @@ import java.util.Map.Entry;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.service.SmsService;
-import org.hfoss.posit.android.functionplugin.sms.ObjectCoder;
-import org.hfoss.posit.android.functionplugin.sms.SmsTransmitter;
 import org.hfoss.posit.android.functionplugin.sms.SmsViewActivity;
 
 import android.app.Notification;
