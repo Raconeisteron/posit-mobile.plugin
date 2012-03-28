@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -25,6 +26,7 @@ import org.json.JSONObject;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -60,6 +62,7 @@ public class SyncServer extends SyncMedium{
 	private void initSettings(){
 		initPreferences();
 		initTelephony();
+		initAuthKey();
 	}
 	
 	private void initPreferences(){
@@ -71,6 +74,67 @@ public class SyncServer extends SyncMedium{
 	private void initTelephony(){
 		TelephonyManager telephonyManager = (TelephonyManager) m_context.getSystemService(Context.TELEPHONY_SERVICE);
 		m_imei = telephonyManager.getDeviceId();
+	}
+	
+	private void initAuthKey(){
+		m_authKey = Communicator.getAuthKey( m_context );
+	}
+	
+	public List<HashMap<String,Object>> getProjects(){
+		ArrayList<HashMap<String, Object>> list = null;
+
+		String url = m_server + "/api/listMyProjects?authKey=" + m_authKey;
+
+		String responseString = Communicator.doHTTPGET(url);
+		Log.i(TAG, responseString);
+
+		if (!responseString.contains("Error")) {
+			try {
+				list = (ArrayList<HashMap<String, Object>>) (new ResponseParser(responseString).parseList());
+			} catch (JSONException e) {
+				Log.i(TAG, "getProjects JSON exception " + e.getMessage());
+				list = null;
+			}
+		}
+		
+		return list;
+	}
+	
+	public List<String> getProjectStrings(List<HashMap<String,Object>> projects) {
+		List<HashMap<String,Object>> projectList = new ArrayList<HashMap<String,Object>>();
+		Iterator<HashMap<String, Object>> it 	 = projectList.iterator();
+		ArrayList<String> projList 				 = new ArrayList<String>();
+		
+		while( it.hasNext() ) {
+			HashMap<String,Object> next = it.next();
+			projList.add((String)(next.get("name")));
+		}
+		return projList;
+	}
+	
+	public boolean setProject( HashMap<String,Object> newProject ){
+		String projectId 		= (String) newProject.get("id");
+		String projectName 		= (String) newProject.get("name");
+		String projectPref  	= m_context.getString(R.string.projectPref);
+		String projectNamePref 	= m_context.getString(R.string.projectNamePref);
+		int id  				= Integer.parseInt(projectId);
+		boolean success 		= true;
+
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(m_context);
+		int currentProjectId = sp.getInt(projectPref,0);
+		
+		if (id == currentProjectId){
+			success = false;
+		}
+		else {
+			Editor editor = sp.edit();
+
+			editor.putInt(projectPref, id);
+			editor.putString(projectNamePref, projectName);
+			editor.commit();
+		}
+		
+		return success;
 	}
 	
 	public List<String> getFindsNeedingSync(){
