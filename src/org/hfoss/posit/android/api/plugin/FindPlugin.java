@@ -26,6 +26,7 @@ import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.FindActivity;
 import org.hfoss.posit.android.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.api.activity.SettingsActivity;
+import org.hfoss.posit.android.api.fragment.FindFragment;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
@@ -49,6 +50,7 @@ public class FindPlugin extends Plugin {
 		
 	protected Class<Find> mFindClass;
 	protected Class<FindActivity> mFindActivityClass = null;
+	protected Class<FindFragment> mFindFragmentClass = null;
 	protected Class<ListFindsActivity> mListFindsActivityClass = null;
 	protected Class<Activity> mExtraActivityClass = null;
 	protected Class<Activity> mExtraActivityClass2 = null;
@@ -65,6 +67,7 @@ public class FindPlugin extends Plugin {
 		String db_manager_name = node.getAttributes().getNamedItem("find_data_manager").getTextContent();
 		String findclass_name = node.getAttributes().getNamedItem("find_class").getTextContent();
 		String findactivity_name = node.getAttributes().getNamedItem("find_activity_class").getTextContent();
+		String findfragment_name = node.getAttributes().getNamedItem("find_fragment_class").getTextContent();
 		String listfindsactivity_name = node.getAttributes().getNamedItem("list_finds_activity_class").getTextContent();
 		String extra_activity_name = node.getAttributes().getNamedItem("extra_activity_class").getTextContent();
 		String extra_activity_name2 = node.getAttributes().getNamedItem("extra_activity_class2").getTextContent();
@@ -94,6 +97,7 @@ public class FindPlugin extends Plugin {
 
 		mFindClass = (Class<Find>)Class.forName(findclass_name);
 		mFindActivityClass = (Class<FindActivity>)Class.forName(findactivity_name);
+		mFindFragmentClass = (Class<FindFragment>)Class.forName(findfragment_name);
 		mListFindsActivityClass = (Class<ListFindsActivity>)Class.forName(listfindsactivity_name);
 		if (!login_activity_name.equals(""))
 			mLoginActivityClass = (Class<Activity>)Class.forName(login_activity_name); // Changed
@@ -177,6 +181,10 @@ public class FindPlugin extends Plugin {
 
 	public Class<FindActivity> getmFindActivityClass() {
 		return mFindActivityClass;
+	}
+	
+	public Class<FindFragment> getmFindFragmentClass() {
+		return mFindFragmentClass;
 	}
 
 	public void setmFindActivityClass(Class<FindActivity> mFindActivityClass) {
