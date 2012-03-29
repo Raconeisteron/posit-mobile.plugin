@@ -9,3 +9,5 @@ syntax: regexp
 ^lint\.xml$
 ^project\.properties$
 ^\.classpath
+syntax: regexp
+^project\.properties$
