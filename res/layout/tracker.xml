@@ -92,7 +92,7 @@
 
 				<Button android:id="@+id/idTrackerListButton"
 					android:layout_width="105dp" android:layout_height="50dp"
-					android:drawableLeft="@drawable/content_save" android:text="Save" />
+					android:drawableLeft="@drawable/collections_view_as_list" android:text="Save" />
 
 			</LinearLayout>
 		</TableRow>
