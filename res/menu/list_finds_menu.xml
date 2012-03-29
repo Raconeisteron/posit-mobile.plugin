@@ -1,4 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:icon="@drawable/content_new"
+        android:title="Add Find"
+        android:id="@+id/add_find_menu_item"
+        android:showAsAction="ifRoom"></item>
 	<item 
 		android:icon="@drawable/navigation_refresh" 
 		android:title="@string/sync"

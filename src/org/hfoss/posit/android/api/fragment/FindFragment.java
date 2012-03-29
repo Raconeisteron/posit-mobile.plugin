@@ -332,7 +332,8 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 	 */
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
+		super.onCreateOptionsMenu(menu, inflater);
+		
 		inflater.inflate(R.menu.add_finds_menu, menu);
 
 		if (getAction().equals(Intent.ACTION_INSERT)) {
@@ -360,6 +361,9 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		Log.i(TAG, "onOptionsItemSelected()");
+		
 		switch (item.getItemId()) {
 		case R.id.save_find_menu_item:
 			if (saveFind()) {

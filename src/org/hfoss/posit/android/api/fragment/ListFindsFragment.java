@@ -1,5 +1,6 @@
 package org.hfoss.posit.android.api.fragment;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
 
 public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 	private static final String TAG = "ListFindsFragment";
@@ -75,6 +77,40 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 		if (mIsDualPane) {
 			getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 			displayFind(mCurrCheckPosition, Intent.ACTION_INSERT, null, null);
+		}
+	}
+	
+	private void addFind() {
+		if (mIsDualPane) {
+			FindFragment findFragment = null;
+			try {
+				findFragment = (FindPluginManager.mFindPlugin.getmFindFragmentClass()).newInstance();
+			} catch (java.lang.InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (findFragment==null) {
+				Toast.makeText(getActivity(), "can't create find fragment", Toast.LENGTH_LONG).show();
+				return;
+			}
+			
+			Bundle extras = new Bundle();
+			extras.putString("ACTION", Intent.ACTION_INSERT);
+			
+			findFragment.setArguments(extras);
+			
+			FragmentTransaction ft = getFragmentManager().beginTransaction();
+			ft.replace(R.id.find, findFragment);
+			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+			ft.commit();
+		} else {
+			Intent intent = new Intent(getActivity(),
+			FindPluginManager.mFindPlugin.getmFindActivityClass());
+			intent.setAction(Intent.ACTION_INSERT);
+			startActivity(intent);
 		}
 	}
 	
@@ -179,6 +215,8 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 	 */
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		
 		if (mListMenuPlugins.size() > 0) {
 			for (FunctionPlugin plugin: mListMenuPlugins) {
 				MenuItem item = menu.add(plugin.getmMenuTitle());
@@ -202,13 +240,21 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.i(TAG, "onMenuitemSelected()");
+		Boolean result = false;
+		super.onOptionsItemSelected(item);
+		Log.i(TAG, "onOptionsItemSelected()");
 
 		Intent intent;
 		switch (item.getItemId()) {
+		case R.id.add_find_menu_item:
+			Log.i(TAG, "Add find menu item");
+			addFind();
+			result = true;
+			break;
 		case R.id.sync_finds_menu_item:
 			Log.i(TAG, "Sync finds menu item");
 			startActivityForResult(new Intent(getActivity(), SyncActivity.class), 0);
+			result = true;
 			break;
 		case R.id.map_finds_menu_item:
 			Log.i(TAG, "Map finds menu item");
@@ -216,23 +262,28 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 			intent.setAction(ACTION_LIST_FINDS);
 			intent.setClass(getActivity(), MapFindsActivity.class);			
 			startActivity(intent);
+			result = true;
 			break;
 
 		case R.id.delete_finds_menu_item:
 			Log.i(TAG, "Delete all finds menu item"); 
 			showDialog(DeleteFindsDialogFragment.CONFIRM_DELETE_ALL_FINDS_DIALOG);
+			result = true;
 			break;
 			
 		default:
 			if (mListMenuPlugins.size() > 0){
 				for (FunctionPlugin plugin: mListMenuPlugins) {
 					if (item.getTitle().equals(plugin.getmMenuTitle()))
+					{
 						startActivity(new Intent(getActivity(), plugin.getmMenuActivity()));
+						result = true;
+					}
 				}
 			}
 			break;
 		}
-		return true;
+		return result;
 	}
 	
 	public static void syncCallback() {

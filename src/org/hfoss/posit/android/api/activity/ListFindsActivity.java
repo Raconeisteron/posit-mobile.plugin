@@ -25,6 +25,8 @@ import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.api.fragment.ListFindsFragment;
 
+import com.actionbarsherlock.view.MenuItem;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
@@ -56,5 +58,9 @@ public class ListFindsActivity extends OrmLiteBaseFragmentActivity<DbManager> {
 		ft.replace(R.id.finds, finds);
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.commit();
+	}
+	
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		return super.onMenuItemSelected(featureId, item);
 	}
 }
