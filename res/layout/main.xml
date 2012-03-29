@@ -8,12 +8,10 @@
 	<ImageView
 		android:id="@+id/Logo"
 		android:layout_width="wrap_content"
-		android:maxWidth="320dp"
 		android:adjustViewBounds="true"
-		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true"
-		android:layout_centerHorizontal="true"
-		android:src="@drawable/posit"/>
+		android:layout_height="0px"
+		android:src="@drawable/posit"
+		android:layout_weight="1"/>
 		
-	<include android:layout_width="fill_parent" layout="@layout/main_notabs_buttons"/>
+	<include android:layout_width="fill_parent" android:layout_height="0px" android:layout_weight="3" layout="@layout/main_notabs_buttons"/>
 </LinearLayout>
