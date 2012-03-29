@@ -151,7 +151,7 @@
 			    android:layout_width="fill_parent"
 			    android:layout_height="wrap_content"
 			    android:layout_marginTop="15dp"
-			    android:drawableLeft="@drawable/save_32"
+			    android:drawableLeft="@drawable/content_save"
 			    android:text="@string/save" >
 			</Button>
 		</TableRow>

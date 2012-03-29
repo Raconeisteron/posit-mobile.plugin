@@ -103,7 +103,7 @@
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="Capture Media" 
-			menuIcon="ic_menu_camera" 
+			menuIcon="device_access_camera" 
 			menuTitle="Capture Media"
 			menuActivity="org.hfoss.posit.android.functionplugin.camera.CameraActivity" 
 			add_find_callback = "org.hfoss.posit.android.functionplugin.camera.CameraActivity"

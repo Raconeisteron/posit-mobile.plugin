@@ -114,7 +114,7 @@
 	    
 	    <TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
 	        <Button
-	        	android:id="@+id/saveButton" android:drawableLeft="@drawable/save_32"
+	        	android:id="@+id/saveButton" android:drawableLeft="@drawable/content_save"
 	        	android:layout_width="wrap_content" android:layout_height="wrap_content" 
 	        	android:layout_marginLeft="115dp" android:layout_marginRight="115dp"
 	        	android:text="@string/save" android:layout_marginTop="10dp">

@@ -142,7 +142,7 @@ public class LoginActivity extends OrmLiteBaseActivity<DbManager> implements OnC
 		switch (id) {
 		case INVALID_LOGIN:
 			return new AlertDialog.Builder(this).setIcon(
-					R.drawable.alert_dialog_icon).setTitle(R.string.password_alert_message)
+					R.drawable.alerts_and_states_warning).setTitle(R.string.password_alert_message)
 					.setPositiveButton(R.string.alert_dialog_ok,
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,

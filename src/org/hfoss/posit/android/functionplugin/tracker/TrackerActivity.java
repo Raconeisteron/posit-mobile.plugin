@@ -528,11 +528,11 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 			s = " Running ";
 			mTrackerButton.setText("Stop");
 			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
-					getResources().getDrawable(R.drawable.stop_icon),null,null,null); 
+					getResources().getDrawable(R.drawable.av_stop),null,null,null); 
 		} else {
 			mTrackerButton.setText("Start");
 			mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
-					getResources().getDrawable(R.drawable.play_icon),null,null,null);  
+					getResources().getDrawable(R.drawable.av_play),null,null,null);  
 		}
 
 
@@ -795,7 +795,7 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 
 		mTrackerButton.setText("Stop");
 		mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
-				getResources().getDrawable(R.drawable.stop_icon),null,null,null); 
+				getResources().getDrawable(R.drawable.av_stop),null,null,null); 
 		updateViewTrackingMode();
 	}
 
@@ -817,7 +817,7 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 		Toast.makeText(this, "Tracking is stopped.", Toast.LENGTH_LONG).show();
 		mTrackerButton.setText("Start");
 		mTrackerButton.setCompoundDrawablesWithIntrinsicBounds(
-				getResources().getDrawable(R.drawable.play_icon),null,null,null);  		
+				getResources().getDrawable(R.drawable.av_play),null,null,null);  		
 	}
 
 		@Override
