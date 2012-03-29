@@ -2,7 +2,7 @@
 	<item 
 		android:id="@+id/save_find_menu_item" 
 		android:title="@string/save" 
-		android:icon="@android:drawable/ic_menu_save"></item>
+		android:icon="@drawable/content_save"></item>
 <!-- 	<item  -->
 <!-- 		android:id="@+id/discard_changes_menu_item"  -->
 <!-- 		android:title="@string/discard_changes"  -->
@@ -14,10 +14,10 @@
 	<item 
 		android:id="@+id/delete_find_menu_item"
 		android:title="@string/delete"
-		android:icon="@android:drawable/ic_menu_delete" ></item>
+		android:icon="@drawable/content_discard" ></item>
 	<item 
 		android:id="@+id/sync_finds_menu_item"
 		android:visible="false"
-		android:icon="@drawable/ic_menu_refresh" 
+		android:icon="@drawable/navigation_refresh" 
 		android:title="@string/sync"></item>
 </menu>

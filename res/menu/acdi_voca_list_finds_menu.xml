@@ -1,11 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item
-		android:icon="@drawable/ic_menu_list"
+		android:icon="@drawable/collections_view_as_list"
 		android:title="@string/list_messages"
 		android:id="@+id/list_messages" >
 	</item>
 	<item 
-		android:icon="@drawable/ic_menu_refresh" 
+		android:icon="@drawable/navigation_refresh" 
 		android:title="@string/sync_messages"
 		android:enabled="false"
 		android:id="@+id/sync_messages" >

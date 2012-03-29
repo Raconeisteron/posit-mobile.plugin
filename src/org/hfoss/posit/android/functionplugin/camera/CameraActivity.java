@@ -113,7 +113,7 @@ public class CameraActivity extends Activity
 		    iv.setImageBitmap(bmp);
 		}
 		else{
-		    iv.setImageResource(R.drawable.ic_menu_camera);
+		    iv.setImageResource(R.drawable.device_access_camera);
 		}		
 	}
 	/**

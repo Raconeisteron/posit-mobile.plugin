@@ -476,7 +476,7 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_EXIT:
-			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon).setTitle(R.string.exit)
+			return new AlertDialog.Builder(this).setIcon(R.drawable.alerts_and_states_warning).setTitle(R.string.exit)
 					.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// User clicked OK so do some stuff

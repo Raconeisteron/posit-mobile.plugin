@@ -52,7 +52,7 @@ public class DeleteFindsDialogFragment extends OrmLiteDialogFragment<DbManager> 
 		
 		switch (mNum) {
 		case CONFIRM_DELETE_ALL_FINDS_DIALOG:
-			return new AlertDialog.Builder(getActivity()).setIcon(R.drawable.alert_dialog_icon)
+			return new AlertDialog.Builder(getActivity()).setIcon(R.drawable.alerts_and_states_warning)
 			.setTitle(R.string.confirm_delete)
 			.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
@@ -68,7 +68,7 @@ public class DeleteFindsDialogFragment extends OrmLiteDialogFragment<DbManager> 
 			}).create();
 		case CONFIRM_DELETE_FIND_DIALOG:
 			return new AlertDialog.Builder(getActivity()).setIcon(
-				R.drawable.alert_dialog_icon).setTitle(
+				R.drawable.alerts_and_states_warning).setTitle(
 				R.string.alert_dialog_2).setPositiveButton(
 				R.string.alert_dialog_ok,
 				new DialogInterface.OnClickListener() {

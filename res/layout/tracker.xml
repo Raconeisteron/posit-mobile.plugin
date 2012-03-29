@@ -84,15 +84,15 @@
 
 				<Button android:id="@+id/idTrackerButton"
 					android:layout_width="105dp" android:layout_height="50dp"
-					android:drawableLeft="@drawable/play_icon" android:text="Start" />
+					android:drawableLeft="@drawable/av_play" android:text="Start" />
 
 				<Button android:id="@+id/idTrackerSettingsButton"
 					android:layout_width="105dp" android:layout_height="50dp"
-					android:drawableLeft="@drawable/settings_32" android:text="Settings" />
+					android:drawableLeft="@drawable/action_settings" android:text="Settings" />
 
 				<Button android:id="@+id/idTrackerListButton"
 					android:layout_width="105dp" android:layout_height="50dp"
-					android:drawableLeft="@drawable/save_32" android:text="Save" />
+					android:drawableLeft="@drawable/content_save" android:text="Save" />
 
 			</LinearLayout>
 		</TableRow>

@@ -1,13 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item 
 		android:id="@+id/settings_menu_item" 
-		android:icon="@android:drawable/ic_menu_preferences"
+		android:icon="@drawable/action_settings"
 		android:title="@string/settings">
 	</item>
 	<item 
 		android:id="@+id/admin_list_beneficiaries" 
 		android:title="@string/list_beneficiary_label"
-		android:icon="@drawable/ic_menu_list">
+		android:icon="@drawable/collections_view_as_list">
 	</item>	
 	<item 
 		android:id="@+id/load_beneficiary_data" 

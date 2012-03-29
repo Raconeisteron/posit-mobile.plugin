@@ -3,11 +3,11 @@
   
   	<item android:id="@+id/my_location_mapfind_menu_item" 
 		android:title="@string/my_location_off"
-		android:icon="@android:drawable/ic_menu_mylocation" /> 
+		android:icon="@drawable/device_access_location_found" /> 
 		
 	<item android:id="@+id/search_finds_mapfind_menu_item" 
 		android:title="@string/search_finds"
-		android:icon="@android:drawable/ic_menu_search" /> 
+		android:icon="@drawable/action_search" /> 
 		
 	<!-- item android:id="@+id/toggle_tracks_mapfind_menu_item"
 		android:title="@string/toggle_tracks"
@@ -15,6 +15,6 @@
 		
 	<item android:id="@+id/center_finds_mapfind_menu_item"
 		android:title="@string/center_finds"
-		android:icon="@android:drawable/ic_menu_mapmode" /> 
+		android:icon="@drawable/location_map" /> 
 		
 </menu> 
