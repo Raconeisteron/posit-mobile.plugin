@@ -166,26 +166,6 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 			Log.i(TAG,"Starting service " + s.getSimpleName());
 			this.startService(new Intent(this, s));
 		}
-		
-		//Add spinner to actionbar
-		Context context = getSupportActionBar().getThemedContext();
-		SyncServer service = new SyncServer(this);
-		projectsHash = service.getProjects();
-		
-		int selectedProj = mSharedPrefs.getInt(this.getString(R.string.projectPref),0);
-		int selectedIndex = 0;
-		
-		for (int i=0; i<projectsHash.size(); i++) {
-			if (Integer.parseInt((String) projectsHash.get(i).get("id")) == selectedProj) {
-				selectedIndex = i;
-			}
-		}
-		
-        projectsList = new ProjectsListAdapter(context, R.layout.sherlock_spinner_item, projectsHash);
-        projectsList.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
-        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        getSupportActionBar().setListNavigationCallbacks(projectsList, this);
-        getSupportActionBar().setSelectedNavigationItem(selectedIndex);
 	}
 
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -254,6 +234,27 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 		//enable when server preference is tied to account
 		//resolveAccount();
 		startPOSIT();
+		
+		//Add spinner to actionbar
+		Context context = getSupportActionBar().getThemedContext();
+		SyncServer service = new SyncServer(this);
+		projectsHash = service.getProjects();
+		if (projectsHash != null) {
+			int selectedProj = mSharedPrefs.getInt(this.getString(R.string.projectPref),0);
+			int selectedIndex = 0;
+			
+			for (int i=0; i<projectsHash.size(); i++) {
+				if (Integer.parseInt((String) projectsHash.get(i).get("id")) == selectedProj) {
+					selectedIndex = i;
+				}
+			}
+			
+	        projectsList = new ProjectsListAdapter(context, R.layout.sherlock_spinner_item, projectsHash);
+	        projectsList.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
+	        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+	        getSupportActionBar().setListNavigationCallbacks(projectsList, this);
+	        getSupportActionBar().setSelectedNavigationItem(selectedIndex);
+		}
 	}
 
 	/**
