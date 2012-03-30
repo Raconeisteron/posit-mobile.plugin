@@ -23,7 +23,10 @@ package org.hfoss.posit.android;
 
 import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.HashMap;
+import java.util.List;
 
+import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.User;
 import org.hfoss.posit.android.api.activity.ListProjectsActivity;
@@ -33,11 +36,13 @@ import org.hfoss.posit.android.api.activity.SettingsActivity;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.api.plugin.ActiveFuncPluginChangeEventListener;
 import org.hfoss.posit.android.api.plugin.FindActivityProvider;
+import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
 //import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
+import org.hfoss.posit.android.sync.SyncServer;
 import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
 
 import android.accounts.AccountManager;
@@ -45,6 +50,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,19 +60,25 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
  * Implements the main activity and the main screen for the POSIT application.
  */
-public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements android.view.View.OnClickListener, ActiveFuncPluginChangeEventListener {
+public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements android.view.View.OnClickListener, ActiveFuncPluginChangeEventListener, OnNavigationListener {
 
 	private static final String TAG = "PositMain";
 
@@ -74,6 +86,8 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 	private SharedPreferences mSharedPrefs;
 	private Editor mSpEditor;	
 	private ArrayList<FunctionPlugin> mMainMenuPlugins = null;
+	private ArrayAdapter<HashMap<String,Object>> projectsList = null;
+	private List<HashMap<String,Object>> projectsHash = null;
 	private FunctionPlugin mMainLoginPlugin = null;
 	
 	// A list of function plugins for this activity
@@ -152,7 +166,71 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 			Log.i(TAG,"Starting service " + s.getSimpleName());
 			this.startService(new Intent(this, s));
 		}
+		
+		//Add spinner to actionbar
+		Context context = getSupportActionBar().getThemedContext();
+		SyncServer service = new SyncServer(this);
+		projectsHash = service.getProjects();
+		
+		int selectedProj = mSharedPrefs.getInt(this.getString(R.string.projectPref),0);
+		int selectedIndex = 0;
+		
+		for (int i=0; i<projectsHash.size(); i++) {
+			if (Integer.parseInt((String) projectsHash.get(i).get("id")) == selectedProj) {
+				selectedIndex = i;
+			}
+		}
+		
+        projectsList = new ProjectsListAdapter(context, R.layout.sherlock_spinner_item, projectsHash);
+        projectsList.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
+        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        getSupportActionBar().setListNavigationCallbacks(projectsList, this);
+        getSupportActionBar().setSelectedNavigationItem(selectedIndex);
 	}
+
+    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+    	boolean found = false;
+    	String projectName = (String) projectsHash.get(itemPosition).get("name");
+    	
+    	if (found) {
+            SyncServer service = new SyncServer(this);
+            if (service.setProject(projectsHash.get(itemPosition))) {
+            	Toast.makeText(this, "Project changed to " + projectName, Toast.LENGTH_LONG).show();
+            }
+    	}
+        return true;
+    }
+    
+    public class ProjectsListAdapter extends ArrayAdapter<HashMap<String,Object>> {
+		protected List<HashMap<String, Object>> items;
+		Context context;
+		
+		public ProjectsListAdapter(Context context, int textViewResourceId,
+				List<HashMap<String, Object>> list) {
+			super(context, textViewResourceId, list);
+			this.items = list;
+			this.context = context;
+		}
+		
+    	@Override
+    	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+    		return getCustomView(position, convertView, parent);
+    	}
+		
+    	@Override
+    	public View getView(int position, View convertView, ViewGroup parent) {
+    		return getCustomView(position, convertView, parent);
+    	}
+		
+    	public View getCustomView(int position, View convertView, ViewGroup parent) {
+    		LayoutInflater inflater=getLayoutInflater();
+    		View row=inflater.inflate(R.layout.sherlock_spinner_dropdown_item, parent, false);
+    		TextView label=(TextView)row.getRootView();
+    		label.setText((String) items.get(position).get("name"));
+
+    		return row;
+    	}
+    }
 	
 	/*
 	 * If there's no account configured, start account setup.
