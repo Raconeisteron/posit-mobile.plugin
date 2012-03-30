@@ -169,15 +169,12 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 	}
 
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-    	boolean found = false;
     	String projectName = (String) projectsHash.get(itemPosition).get("name");
     	
-    	if (found) {
-            SyncServer service = new SyncServer(this);
-            if (service.setProject(projectsHash.get(itemPosition))) {
-            	Toast.makeText(this, "Project changed to " + projectName, Toast.LENGTH_LONG).show();
-            }
-    	}
+        SyncServer service = new SyncServer(this);
+        if (service.setProject(projectsHash.get(itemPosition))) {
+        	Toast.makeText(this, "Project changed to " + projectName, Toast.LENGTH_LONG).show();
+        }
         return true;
     }
     
