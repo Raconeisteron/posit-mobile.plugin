@@ -101,8 +101,7 @@ public class SyncServer extends SyncMedium{
 	}
 	
 	public List<String> getProjectStrings(List<HashMap<String,Object>> projects) {
-		List<HashMap<String,Object>> projectList = new ArrayList<HashMap<String,Object>>();
-		Iterator<HashMap<String, Object>> it 	 = projectList.iterator();
+		Iterator<HashMap<String, Object>> it 	 = projects.iterator();
 		ArrayList<String> projList 				 = new ArrayList<String>();
 		
 		while( it.hasNext() ) {
