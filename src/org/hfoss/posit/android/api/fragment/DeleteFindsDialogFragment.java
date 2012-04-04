@@ -37,12 +37,23 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.widget.Toast;
 
+/**
+ * A dialog used to confirm deletion of all finds or a single find.
+ *
+ */
 public class DeleteFindsDialogFragment extends OrmLiteDialogFragment<DbManager> {
 	protected int mNum;
 
 	public static final int CONFIRM_DELETE_ALL_FINDS_DIALOG = 0;
 	public static final int CONFIRM_DELETE_FIND_DIALOG = 1;
 	
+	/**
+	 * Returns a dialog which asks the user to confirm delete of a find
+	 * or multiple finds.
+	 * 
+	 * @param num	the type of DeleteFindsDialogFragment to display
+	 * @return		a instance of DeleteFindsDialogFragment
+	 */
 	public static DeleteFindsDialogFragment newInstance(int num) {
 		DeleteFindsDialogFragment f = new DeleteFindsDialogFragment();
 		
@@ -54,6 +65,14 @@ public class DeleteFindsDialogFragment extends OrmLiteDialogFragment<DbManager> 
 		return f;
 	}
 	
+	/**
+	 * Returns a dialog which asks the user to confirm delete of a find
+	 * or multiple finds.
+	 * 
+	 * @param num	the type of DeleteFindsDialogFragment to display
+	 * @param findID	the id of the find which is to be deleted
+	 * @return		a instance of DeleteFindsDialogFragment
+	 */
 	public static DeleteFindsDialogFragment newInstance(int num, int findID) {
 		DeleteFindsDialogFragment f = new DeleteFindsDialogFragment();
 		
@@ -66,6 +85,12 @@ public class DeleteFindsDialogFragment extends OrmLiteDialogFragment<DbManager> 
 		return f;
 	}
 	
+	/**
+	 * Returns the view associated with the dialog
+	 * 
+	 * @param savedInstanceState	a bundle which could contain prior data
+	 * @return		an alert dialog which is used to confirm deletion
+	 */
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -113,6 +138,11 @@ public class DeleteFindsDialogFragment extends OrmLiteDialogFragment<DbManager> 
 		}
 	}
 
+	/**
+	 * Deletes a find which the user was prompted to do so.
+	 * 
+	 * @return	a boolean indicated that the find was deleted
+	 */
 	protected boolean deleteFind() {
 		int rows = 0;
 		String guid = null;
@@ -156,6 +186,12 @@ public class DeleteFindsDialogFragment extends OrmLiteDialogFragment<DbManager> 
 
 	}
 	
+	/**
+	 * Deletes all the finds within the project which the user has
+	 * confirmed.
+	 * 
+	 * @return	a boolean indicating a successful deletion
+	 */
 	protected boolean deleteAllFind() {
 		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());

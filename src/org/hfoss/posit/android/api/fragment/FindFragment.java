@@ -62,6 +62,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
+/**
+ * A fragment which is used to display a find or used to create a find.
+ *
+ */
 public class FindFragment extends OrmLiteFragment<DbManager>
 		implements OnClickListener, OnItemClickListener, LocationListener{
 
@@ -92,7 +96,6 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 	 * This may be invoked by a FindActivity subclass, which may or may not have
 	 * latitude and longitude fields.
 	 */
-	//@SuppressWarnings("static-access")
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 
@@ -248,10 +251,18 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 		}
 	}
 
+	/**
+	 * Function which imitates Activity.getIntent().getAction()
+	 * 
+	 * @return the action for the fragment
+	 */
 	protected String getAction() {
 		return getArguments().getString("ACTION");
 	}
 
+	/**
+	 * Creates the view which is displayed in the fragment
+	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Get the custom add find layout from the plugin settings, if there us one
@@ -311,7 +322,6 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 	/**
 	 * Remove Updates whenever the activity is finished.
 	 */
-	//This don't work
 	@Override
 	public void onDestroyView() {
 		Log.i(TAG, "onFinish()");
@@ -448,6 +458,9 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 		return true;
 	}
 
+	/**
+	 * Called to remove any data when the Activity which contains the fragment is ended.
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -712,6 +725,11 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 	    newFragment.show(ft, "dialog");
 	}
 
+	/**
+	 * Save the find which is displayed in the fragment
+	 * 
+	 * @return	success of saving the find
+	 */
 	@SuppressWarnings("unchecked")
 	protected boolean saveFind() {
 		Log.i(TAG, "saveFind()");
@@ -804,7 +822,7 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 		return guid.length() != 0;
 	}
 
-	/*
+	/**
 	 * Determines whether one Location reading is better than the current
 	 * Location fix
 	 * 
@@ -861,7 +879,9 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 		return false;
 	}
 
-	/* Checks whether two providers are the same */
+	/**
+	 *  Checks whether two providers are the same
+	 */
 	private boolean isSameProvider(String provider1, String provider2) {
 		if (provider1 == null) {
 			return provider2 == null;
