@@ -72,7 +72,7 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 	private boolean mIsDualPane;
 	private int mCurrCheckPosition;
 	
-	/*
+	/**
 	 * Called when the Activity starts.
 	 * 
 	 * @param savedInstanceState
@@ -101,6 +101,10 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 		}
 	}
 	
+	/**
+	 * Starts FindActivty or replaces second side in pane with FindFragment
+	 * for find creation.
+	 */
 	private void addFind() {
 		if (mIsDualPane) {
 			FindFragment findFragment = null;
@@ -135,6 +139,13 @@ public class ListFindsFragment extends OrmLiteListFragment<DbManager> {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param index
+	 * @param action
+	 * @param extras
+	 * @param findFragment
+	 */
 	protected void displayFind(int index, String action, Bundle extras, FindFragment findFragment) {
 		mCurrCheckPosition = index;
 		

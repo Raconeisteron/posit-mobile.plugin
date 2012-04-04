@@ -102,11 +102,17 @@ public class CsvListFindsFragment extends ListFindsFragment {
 		}
 	}
 	
+	/**
+	 * Displays the find which the user selects
+	 */
 	@Override
 	protected void displayFind(int index, String action, Bundle extras, FindFragment findFragment) {
 		super.displayFind(index, action, extras, new CsvFindFragment());
 	}
 	
+	/**
+	 * Display the finds or show error message
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
