@@ -2,7 +2,11 @@
 <!-- FindPlugins are mutually exclusive. Only 1 of the following can be active. -->
 	<FindPlugins>
 	    <!-- BasicFind is the original POSIT: name, desc, lat, long,  -->
-		<Plugin active="true" type="find" name="BasicFind"
+		<Plugin type="find" name="Basic Find" user_can_select="true"
+			default_find_plugin="true" 
+			description="The basic find is a general purpose find. It will store information about 
+a find's name, description, time recorded, latitude, and longitude. A basic find can also have a 
+picture associated with it."
 			package="org.hfoss.posit.android.api" 
 			find_class="org.hfoss.posit.android.api.Find"
 			find_factory="org.hfoss.posit.android.api.FindFactory"
@@ -22,7 +26,9 @@
 			main_icon="posit" />
 
 		<!--  A CsvFind is uneditable. Used to download and display Csv data. -->
-		<Plugin active="false" type="find" name="CsvFind"
+		<Plugin type="find" name="Csv Find" user_can_select="true"
+			default_find_plugin="false"
+			description=""
 			package="org.hfoss.posit.android.plugin"
 			find_class="org.hfoss.posit.android.plugin.csv.CsvFind"
 			find_factory="org.hfoss.posit.android.api.FindFactory"
@@ -42,7 +48,9 @@
 			main_icon="posit_museum" />
 
 		<!--  SecondHelpings is a plugin for a nonprofit in SC -->
-		<Plugin active="false" type="find" name="SecondHelpings"
+		<Plugin type="find" name="Second Helpings Find" user_can_select="true"
+			default_find_plugin="false"
+			description=""
 			package="org.hfoss.posit.android.plugin.sh"
 			find_class="org.hfoss.posit.android.plugin.sh.ShFind"
 			find_factory="org.hfoss.posit.android.api.FindFactory"
@@ -62,7 +70,9 @@
 			main_icon="secondhelpings_logo" />
 
 		<!-- Proof-of-concept prototype for CL&P -->
-		<Plugin active="false" type="find" name="ClpFind"
+		<Plugin type="find" name="Clp Find" user_can_select="false"
+			default_find_plugin="false"
+			description=""
 			package="org.hfoss.posit.android.plugin.clp"
 			find_class="org.hfoss.posit.android.plugin.clp.ClpFind"
 			find_factory="org.hfoss.posit.android.api.FindFactory"
@@ -82,7 +92,9 @@
 			main_icon="clp_logo" />
 
 		<!--  Proof-of-concept prototype for nonprofit in Portland, OR -->
-		<Plugin active="false" type="find" name="OutsideInFind"
+		<Plugin type="find" name="Outside In Find" user_can_select="false"
+			default_find_plugin="false"
+			description=""
 			package="org.hfoss.posit.android.plugin.outsidein"
 			find_class="org.hfoss.posit.android.plugin.outsidein.OutsideInFind"
 			find_factory="org.hfoss.posit.android.api.FindFactory"
@@ -104,11 +116,15 @@
 <!-- Function Plugins can co-exist. Make active those that you want accessible in the app. -->
 
 		<!--  Capture Media plugin attaches to FindActivity. Takes a picture. -->
-		<Plugin active="true" 
+		<Plugin active_by_default="true" 
 			type="function" 
 			extensionPoint="addFindMenu"
 			name="Capture Media" 
-			menuIcon="device_access_camera" 
+			user_can_select="true"
+			description="The Capture Media plugin allows you to use your device's camera to take a 
+picture for a find. While editing or creating a find you can access this functionality by bringing 
+up the menu and selecting 'Capture Media'."
+			menuIcon="ic_menu_camera" 
 			menuTitle="Capture Media"
 			menuActivity="org.hfoss.posit.android.functionplugin.camera.CameraActivity" 
 			add_find_callback = "org.hfoss.posit.android.functionplugin.camera.CameraActivity"
@@ -126,29 +142,35 @@
 <!-- 			menuActivity="org.hfoss.posit.android.api.activity.MapFindsActivity" /> -->
 
        <!-- Two extra buttons in PositMain -->
-       <Plugin active="false"
+       <Plugin active_by_default="false"
             type="function"
             extensionPoint="mainButton"
             name="extraButton"
+            user_can_select="false"
+            description=""
             menuIcon="ic_menu_add_text" menuTitle="Extra Button"
             menuActivity="org.hfoss.posit.android.api.activity.FindActivity"
             activity_returns_result="false"
             activity_result_action="0" />
 
-       <Plugin active="false"
+       <Plugin active_by_default="false"
             type="function"
             extensionPoint="mainButton"
             name="extraButton2"
+            user_can_select="false"
+            description=""
             menuIcon="ic_menu_view" menuTitle="Extra Button 2"
             menuActivity="org.hfoss.posit.android.plugin.outsidein.OutsideInListFindsActivity"
             activity_returns_result="false"
             activity_result_action="0" />
        
         <!-- Set Reminder plugin alerts user with location-aware reminders. -->
-		<Plugin active="false" 
+		<Plugin active_by_default="false" 
 			type="function" 
 			extensionPoint="addFindMenu"
-			name="setReminder" 
+			name="Set Reminder" 
+			user_can_select="true"
+			description=""
 			menuIcon="ic_menu_list" menuTitle="Set Reminder"
 			preferences_xml="todo_preferences" 
 			add_find_callback = "org.hfoss.posit.android.functionplugin.reminder.SetReminder"
@@ -159,27 +181,33 @@
 			activity_result_action="0" />
 
 		<!--  ViewFile plugin reads and displays Csv, Txt, XML files from SdCard. -->
-		<Plugin active="true"
+		<Plugin active_by_default="true"
 			type="function"
 			extensionPoint="listMenu"
-			name="viewfile"
+			name="View File"
+			description=""
+			user_can_select="true"
 			menuIcon="ic_menu_view_32" menuTitle="View File"
 			menuActivity="org.hfoss.posit.android.functionplugin.fileviewer.FileViewActivity" />
 			
 		<!-- SMS Plugin sends and receives Finds as SMS messages. -->
-		<Plugin active="false"
+		<Plugin active_by_default="false"
 			type="function"
 			extensionPoint="addFindMenu"
-			name="sendsms"
+			name="Send SMS"
+			description=""
+			user_can_select="true"
 			menuIcon="ic_menu_send" menuTitle="Send SMS"
 			preferences_xml="sms_preferences"
 			menuActivity="org.hfoss.posit.android.functionplugin.sms.SmsActivity" />
 
-		<!--  TwitFind posts Finds on Twitter -->
-		<Plugin active="false" 
+		<!--  Twitter Poster posts Finds on Twitter -->
+		<Plugin active_by_default="false" 
 			type="function" 
 			extensionPoint="addFindMenu"
-			name="twitFind"
+			name="Twitter Poster"
+			user_can_select="true"
+			description=""
 			preferences_xml="twitter_preferences" 
 			menuIcon="ic_twitter_48" menuTitle="Twit Find"
 			activity_returns_result="true"
@@ -187,29 +215,35 @@
 			menuActivity="org.hfoss.posit.android.functionplugin.twitter.TwitFindsActivity" />
 			
 		<!--  Log plugin logs Find data to a log file on the SdCard. -->	
-		<Plugin active="true" 
+		<Plugin active_by_default="true" 
 			type="function" 
 			extensionPoint="listMenu"
-			name="log" 
+			name="Log" 
+			user_can_select="true"
+			description=""
 			menuIcon="menu_log_med_grey" menuTitle="Log Finds"
 			menuActivity="org.hfoss.posit.android.functionplugin.log.LogFindsActivity" />
 
 		<!--  Login plugin provides support for apps that share a phone among users. -->
-		<Plugin active="false" 
+		<Plugin active_by_default="false" 
 			type="function" 
 			extensionPoint="mainLogin"
-			name="login"
+			name="Login"
+			user_can_select="true"
+			description=""
 			activity="org.hfoss.posit.android.functionplugin.login.LoginActivity" 
 			activity_returns_result="true"
 			activity_result_action="0"
 			/>
 			
 		<!--  Tracker plugin tracks the phone's expeditions and syncs to server. -->		
-		<Plugin active="true" 
+		<Plugin active_by_default="true" 
  			 type="function" 
  			 extensionPoint="mainMenu"
  			 preferences_xml="tracker_preferences" 			 
- 			 name="tracker" 
+ 			 name="Tracker" 
+ 			 user_can_select="true"
+ 			 description=""
 			 menuIcon="radar" 
 			 menuTitle="Tracker Activity"
 			 menuActivity="org.hfoss.posit.android.functionplugin.tracker.TrackerActivity" />			
