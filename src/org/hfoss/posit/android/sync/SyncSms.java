@@ -59,12 +59,11 @@ public class SyncSms extends SyncMedium {
 	
 	private ArrayList<String> mMessages;
 	private ArrayList<String> mPhoneNumbers;
-	private Context mContext;
 	
 	public SyncSms(Context context) {
 		mMessages = new ArrayList<String>();
 		mPhoneNumbers = new ArrayList<String>();
-		mContext = context;
+		m_context = context;
 	}
 
 	/**
@@ -93,7 +92,7 @@ public class SyncSms extends SyncMedium {
 		String text = convertBundleToRaw( bundle );
 		StringBuilder builder = new StringBuilder( text );
 		builder.insert(0, FIND_PREFIX);
-		addMessage( text, phoneNumber );
+		addMessage( builder.toString(), phoneNumber );
 	}
 
 	/**
@@ -114,11 +113,11 @@ public class SyncSms extends SyncMedium {
 	 * 
 	 */
 	public void sendFinds() {
-		Intent smsService = new Intent(mContext, SmsService.class);
+		Intent smsService = new Intent(m_context, SmsService.class);
 		smsService.putExtra("messages", mMessages);
 		smsService.putExtra("phonenumbers", mPhoneNumbers);
 		smsService.setAction(Intent.ACTION_SEND);
-		mContext.startService(smsService);
+		m_context.startService(smsService);
 	}
 	
 	/**
