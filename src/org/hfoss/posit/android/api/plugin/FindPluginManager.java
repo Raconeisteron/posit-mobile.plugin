@@ -55,7 +55,7 @@ import android.widget.Toast;
  */
 public class FindPluginManager {
 	private static FindPluginManager sInstance = null;
-
+	
 	private static final String TAG = "FindPluginManager";
 
 	public static final String MAIN_MENU_EXTENSION = "mainMenu";
@@ -82,6 +82,8 @@ public class FindPluginManager {
 	
 	// Our one and only (sometimes) Find Plugin
 	public static FindPlugin mFindPlugin = null;
+	public static List<String> mFindPluginNames = null;
+	public static String mDefaultFindPluginName = "";
 	private Activity mMainActivity = null;
 
 
@@ -113,6 +115,7 @@ public class FindPluginManager {
 		this.pluginsPreferencesId = plugins_xml;
 		
 		plugins = new ArrayList<Plugin>();	
+		mFindPluginNames = new ArrayList<String>();
 		
 		try{
 			HashSet<String> FunctionPluginNames = new HashSet<String>();
@@ -130,21 +133,36 @@ public class FindPluginManager {
 			for(int k = 0; k < plugin_nodes.getLength(); ++k){
 				
 				String curPluginName = plugin_nodes.item(k).getAttributes().getNamedItem("name").getTextContent();
-				boolean curPluginIsActive = plugin_nodes.item(k).getAttributes().getNamedItem("active").getTextContent().compareTo("true") == 0;
 				String curPluginType = plugin_nodes.item(k).getAttributes().getNamedItem("type").getTextContent();
+				boolean curPluginIsSelectableByUser = plugin_nodes.item(k).getAttributes().getNamedItem("user_can_select").getTextContent().compareTo("true") == 0;
 				
 				Plugin p = null;
 				if (curPluginType.equals("find") ) {
-					if (curPluginIsActive)  {
+					boolean curPluginIsDefault = plugin_nodes.item(k).getAttributes().getNamedItem("default_find_plugin").getTextContent().compareTo("true") == 0;
+					
+					if(curPluginIsSelectableByUser)
+					{
+						mFindPluginNames.add(curPluginName);
+					}
+					
+					if (curPluginIsDefault)  {
+						//Ensure that there is not more then one default find plugin
+						assert(mDefaultFindPluginName.equals(""));
+						mDefaultFindPluginName = curPluginName;
+						
 						p = new FindPlugin(this.mMainActivity, plugin_nodes.item(k));
 						mFindPlugin = (FindPlugin) p;
 						plugins.add(mFindPlugin);	
 					}
 				} else if (curPluginType.equals("function") ) {
+					boolean curPluginIsActive = plugin_nodes.item(k).getAttributes().getNamedItem("active_by_default").getTextContent().compareTo("true") == 0;
+
 					FunctionPluginNames.add(curPluginName);
 					
-					//Add the current function plugin to the database if it is not already there.
-					if (funcPluginPrefs.contains(curPluginName) == false)
+					//Add the current function plugin to the shared preferences 
+					//if it is not already there and the user is allowed to select it.
+					if (funcPluginPrefs.contains(curPluginName) == false && 
+						curPluginIsSelectableByUser == true)
 					{
 						funcPluginPrefsEditor.putBoolean(curPluginName, curPluginIsActive);
 						funcPluginPrefsEditor.commit();
@@ -161,6 +179,8 @@ public class FindPluginManager {
 				}
 				
 			}
+			//Ensure that there is at least one default find plugin
+			assert(mDefaultFindPluginName.equals("") == false);
 			
 			//Remove from the DB any function plugins that were not found in plugins_preferences.xml
 			Map<String, ?> funcPluginPrefsMap = funcPluginPrefs.getAll();
@@ -178,6 +198,10 @@ public class FindPluginManager {
 		}
 	}
 
+	/**
+	 * Returns the NodeList object for the plugins_preferences.xml file.
+	 * 
+	 */
 	private NodeList GetNodeListFromPluginsPreferences()
 	{
 		
@@ -197,6 +221,11 @@ public class FindPluginManager {
 		return null;
 	}
 	
+	/**
+	 * Print the appropriate stack trace when an exception is thrown as a result of parsing 
+	 * plugins_preferences.xml
+	 * @param e The exception that was thrown
+	 */
 	private void HandlePluginPreferencesXmlError(Exception e)
 	{
 		Log.e(TAG, "Failed to load plugin");
@@ -286,12 +315,23 @@ public class FindPluginManager {
 		return list;
 	}
 	
+	/**
+	 * A class that implements ActiveFuncPluginChangeEventListener should call this to be notified 
+	 * when a function is enabled/disabled.
+	 * @param listener	the instance of the class implementing ActiveFuncPluginChangeEventListener.
+	 */
 	public synchronized void addActiveFuncPluginChangeEventListener(
 			ActiveFuncPluginChangeEventListener listener)  
 	{
 		this.ActiveFuncPluginChangeEventListenerList.add(listener);
 	}
 	
+	/**
+	 * Notify any classes that have registered through addActiveFuncPluginChangeEventListener()
+	 * that a function plugin has been enabled/disabled
+	 * @param plugin	the plugin that has been enabled/disabled
+	 * @param enabled	specifies whether plugin has been enabled or disabled
+	 */
 	private synchronized void TriggerActiveFuncPluginChangeEvent(FunctionPlugin plugin, boolean enabled) {
 		for (ActiveFuncPluginChangeEventListener listener : this.ActiveFuncPluginChangeEventListenerList)
 		{
@@ -299,6 +339,12 @@ public class FindPluginManager {
 		}
 	}
 	
+	/**
+	 * This will cause the enabled status of a function plugin to be set to the value of the 
+	 * <code>enabled</code> parameter
+	 * @param pluginName	The name of the plugin to enable/disable
+	 * @param enabled		Specifies wheather the plugin should be enabled or disabled
+	 */
 	public void UpdateFuncPluginEnabledState(String pluginName, boolean enabled)
 	{		
 		SharedPreferences funcPluginPrefs = this.mMainActivity.getSharedPreferences(FindPluginManager.FUNC_PLUGIN_PREFS, 
@@ -353,7 +399,10 @@ public class FindPluginManager {
 		}
 	}
 
-	private Node GetStaticPluginInfoFromPluginName(String pluginName)
+	/**
+	 * Returns the node in plugin_preferences.xml that refers to the plugin specified by pluginName
+	 */
+	public Node GetStaticPluginInfoFromPluginName(String pluginName)
 	{
 		NodeList plugin_nodes = GetNodeListFromPluginsPreferences();
 		if (plugin_nodes == null)

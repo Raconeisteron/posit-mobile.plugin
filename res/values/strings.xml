@@ -353,4 +353,5 @@
     <string name="pluginManagerPref">pluginManagerKey</string>
     <string name="pluginManagerTitle">Plugin Manager</string>
     <string name="pluginManagerSummary">Toggle active plugins</string>
+    <string name="projectFindTypeLabel">Type of Find:</string>
 </resources>
