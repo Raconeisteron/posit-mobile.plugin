@@ -24,6 +24,7 @@ package org.hfoss.posit.android.functionplugin.sms;
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
+import org.hfoss.posit.android.sync.SyncSms;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -71,18 +72,18 @@ public class SmsActivity extends Activity {
 		mDbEntries = getIntent().getParcelableExtra("DbEntries");
 		// Get message text and set listener
 		try {
-			SmsTransmitter trans = new SmsTransmitter(this);
-			String contents = trans.addFind(mDbEntries, mEditPhoneNum
-					.getText().toString());
+			SyncSms syncSms = new SyncSms( this );
+			String contents = SyncSms.convertBundleToRaw( mDbEntries );
+			syncSms.addFind( mDbEntries, mEditPhoneNum.getText().toString() );
 			mContents.setText(contents);
 			// Get # of messages that need to be sent and display
 			int[] length = SmsMessage.calculateLength(contents, false);
 			mNumMessagesView.setText(String.valueOf(length[0]));
 			mSendButton.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					SmsTransmitter transmitter = new SmsTransmitter(v.getContext());
-					transmitter.addFind(mDbEntries, mEditPhoneNum.getText().toString());
-					transmitter.sendAll();
+					SyncSms sync = new SyncSms( v.getContext() );
+					sync.addFind( mDbEntries, mEditPhoneNum.getText().toString() );
+					sync.sendFinds();
 					finish();
 				}
 			});
