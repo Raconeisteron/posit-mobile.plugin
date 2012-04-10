@@ -27,6 +27,10 @@
 	<uses-permission android:name="android.permission.READ_SYNC_STATS" />
 	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
 	<uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+	
+	<!-- Bluetooth plugin permissions -->
+	<uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
 
 	<!-- Careful with these. They let the app delete conversation threads. -->
@@ -252,7 +256,10 @@
 		<service android:name=".functionplugin.reminder.ToDoReminderService"></service>
 		<activity android:name=".functionplugin.reminder.NotifyReminder" android:theme="@android:style/Theme.Translucent"></activity>
 		<activity android:name=".functionplugin.camera.CameraActivity" android:screenOrientation="portrait"></activity>
-		<activity android:name=".api.plugin.FuncPluginManagerActivity"></activity>
-
+        <activity android:name=".api.plugin.FuncPluginManagerActivity"></activity>
+		
+		<!-- Activities for the Bluetooth plugin -->
+		<activity android:name="org.hfoss.posit.android.functionplugin.bluetooth.BluetoothSyncActivity" />
+		<activity android:name=".functionplugin.bluetooth.BluetoothDeviceListActivity" />
 	</application>
 </manifest>
