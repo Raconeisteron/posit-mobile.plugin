@@ -1,0 +1,29 @@
+<resources>
+    <string name="bt_toast_not_available">Bluetooth is not available</string>
+    <string name="bt_no_devices_paired">Bluetooth is not available</string>
+    
+    <!--  BluetoothSyncActivity -->
+    <string name="bt_send">Send Selected</string>
+    <string name="bt_select_all">Select All</string>
+    <string name="bt_select_none">Select None</string>
+    <string name="bt_not_connected">You are not connected to a device</string>
+    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
+    <string name="bt_title_connecting">connecting...</string>
+    <string name="bt_title_connected_to">connected: </string>
+    <string name="bt_title_not_connected">not connected</string>
+    <string name="bt_successful_send">Find successfully sent.</string>
+    <string name="bt_unsuccessful_send">Something happened! The find was not sent.</string>
+    <string name="bt_successful_recv">A find has been successfully received.</string>
+    <string name="bt_unsuccessful_recv">There was a problem receiving a find.</string>
+    <string name="bt_synching">Synching with connected device.</string>
+    <string name="bt_synching_complete">Synching completed.</string>
+
+    <!--  BluetoothDeviceListActivity -->
+    <string name="bt_scanning">scanning for devices...</string>
+    <string name="bt_select_device">select a device to connect</string>
+    <string name="bt_none_paired">No devices have been paired</string>
+    <string name="bt_none_found">No devices found</string>
+    <string name="bt_title_paired_devices">Paired Devices</string>
+    <string name="bt_title_other_devices">Other Available Devices</string>
+    <string name="bt_button_scan">Scan for devices</string>
+</resources>

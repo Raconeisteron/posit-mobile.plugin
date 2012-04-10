@@ -243,6 +243,17 @@ up the menu and selecting 'Capture Media'."
 			 menuTitle="Tracker Activity"
 			 menuActivity="org.hfoss.posit.android.functionplugin.tracker.TrackerActivity" />			
 
+		<!-- Bluetooth plugin syncs finds via bluetooth -->
+        <Plugin 
+            active_by_default="true"
+            type="function"
+            extensionPoint="listMenu"
+ 			user_can_select="true"
+ 			description=""
+            name="bluetooth"
+            menuIcon="ic_menu_bluetooth"
+            menuTitle="Bluetooth Sync"
+            menuActivity="org.hfoss.posit.android.functionplugin.bluetooth.BluetoothSyncActivity" />
 
 		<!-- <Plugin active="true" name="AcdiVocaFind" -->
 		<!-- package="org.hfoss.posit.android.plugin.acdivoca" -->
