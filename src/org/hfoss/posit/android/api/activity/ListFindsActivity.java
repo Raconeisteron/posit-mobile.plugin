@@ -126,10 +126,47 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		
 		int resId = getResources().getIdentifier(
 				FindPlugin.mListFindLayout, "layout", getPackageName());
+		
+		// Begin Clustering Code		
+		int slaveid;
+		int masterid = 0;
+		List<Integer> slaveids = new ArrayList<Integer>();
+		
+		Bundle extras = getIntent().getExtras();
+
+		if (extras != null) {
+			
+			if (getIntent().getAction().equals(Intent.ACTION_VIEW)) { 			
+				masterid = extras.getInt("MasterID");
+				Log.i(TAG, "masterid: " + masterid);
+				if (masterid != 0) { //IDs are never set as 0
+					
+					//create a List of all the slave ids in the tapped cluster
+					for (int i=0; i < extras.getInt("SlavesSize"); i++) {
+						slaveid = extras.getInt("SlaveID" + i);
+						slaveids.add(slaveid);
+					}
+					finds.clear();
+					//since finds is List<? extends Find>, it must be populated as below
+					finds = listFindsinCluster(masterid, slaveids);
+				}
+			}			
+		}
+		//End Clustering Code
 
 		FindsListAdapter adapter = new FindsListAdapter(this, resId, finds);
-
 		return adapter;
+	}
+
+	private List<? extends Find> listFindsinCluster(int masterid,
+			List<Integer> slaveids) {
+		ArrayList<Find> finds = new ArrayList<Find>();
+		
+		for (int i=0; i < slaveids.size(); i++) {
+			finds.add(getHelper().getFindById(slaveids.get(i)));
+		}
+		finds.add(getHelper().getFindById(masterid));
+		return finds;
 	}
 
 	/**

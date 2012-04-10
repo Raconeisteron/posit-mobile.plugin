@@ -16,3 +16,4 @@
 		
 	<include android:layout_width="fill_parent" layout="@layout/main_notabs_buttons"/>
 </LinearLayout>
+

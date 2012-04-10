@@ -19,7 +19,6 @@
  * if not visit http://www.gnu.org/licenses/lgpl.html.
  * 
  */
-
 package org.hfoss.posit.android.api.activity;
 
 
@@ -48,10 +47,8 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
-import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
 
 /**
  *  This class retrieves Finds from the Db or from a Csv List and
@@ -63,14 +60,14 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 
 	private static final String TAG = "MapFindsActivity";
 	
-	private static List<? extends Find> finds = null;
+	public static List<? extends Find> finds = null;
+	private FindOverlay mPoints;
+	private int pid;
 
-	private MapView mMapView;
+	private MapViewExtended mMapView;
 	private MapController mapController;
 	private MyLocationOverlay myLocationOverlay;
 	private List<Overlay> mapOverlays;
-	private Drawable drawable;
-	private boolean zoomFirst = true;
 	private LinearLayout searchLayout;
 	private Button search_first_Btn;
 	private Button search_next_Btn;
@@ -79,7 +76,6 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 	
 	private int mSearchIndex = 0;
 	
-
 	/* (non-Javadoc)
 	 * @see com.google.android.maps.MapActivity#onCreate(android.os.Bundle)
 	 */
@@ -89,7 +85,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 		setContentView(R.layout.map_finds);
 		
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-		int pid = sp.getInt(getString(R.string.projectPref), 0);
+		pid = sp.getInt(getString(R.string.projectPref), 0);
 		
 		// Check if this is a CSV Finds case
 		Intent intent = getIntent();
@@ -104,7 +100,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 			finds = this.getHelper().getFindsByProjectId(pid);
 		}
 		
-		mMapView = (MapView) findViewById(R.id.mapView);
+		mMapView = (MapViewExtended) findViewById(R.id.mapView);
 		mMapView.setBuiltInZoomControls(true);
 		
 		// Create a mylocation overlay, add it and refresh it
@@ -169,10 +165,10 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 			return;
 		}
 
-		mapOverlays = mMapView.getOverlays();
+		mapOverlays = mMapView.getOverlays();		
 		mapOverlays.add(mapLayoutItems(finds));	
-		mapController = mMapView.getController();
-		
+		mapController = mMapView.getController();	
+	
 		centerFinds();
 	}
 
@@ -181,36 +177,17 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 	 * @param finds, a List of Finds
 	 * @return
 	 */
-	private  FindOverlay mapLayoutItems(List<? extends Find> finds) {
-		int latitude = 0;
-		int longitude = 0;
-		int id = 0;
-
-		drawable = this.getResources().getDrawable(R.drawable.bubble);
-		FindOverlay mPoints = new FindOverlay(drawable, this, true, this.getIntent().getAction());
-
-		for(Find find  : finds) {
-			latitude = (int) (find.getLatitude()*1E6);
-			longitude = (int) (find.getLongitude()*1E6);
-//			Log.i(TAG, "(" + latitude + "," + longitude + ") ");
-
-			id = find.getId();
-			Intent intent = getIntent();
-			if (intent != null) {
-				String action = intent.getAction();
-				if (action != null && action.equals(CsvListFindsActivity.ACTION_CSV_FINDS)) {
-					id = Integer.parseInt(find.getGuid());
-				}
-			}
+	public  FindOverlay mapLayoutItems(List<? extends Find> finds) {
 		
-			String description = find.getGuid() + "\n" + find.getName() + "\n" + find.getDescription(); 
-
-			Log.i(TAG, "(" + latitude + "," + longitude + ") " + description);
-			
-			mPoints.addOverlay(new OverlayItem(new GeoPoint(latitude,longitude),String.valueOf(id),description));
-		}
+		Drawable drawable = this.getResources().getDrawable(R.drawable.bubble);	
+		mPoints = new FindOverlay(drawable, this, true, this.getIntent().getAction());	
+		
+		mPoints = mMapView.placeOverlays(finds, mPoints);
+		
 		return mPoints;
 	}
+
+	
 
 	/**
 	 * Only works on phones with a keyboard. Should we keep?
@@ -361,6 +338,7 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 		int latitude;
 		int longitude;
 		
+		Log.i(TAG, "finds.size = " + finds.size());
 		if (finds.size() <= 0) {
 			// No finds at all
 			mapController.setZoom(1);
@@ -373,8 +351,8 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 			for (Find find : finds) {
 				latitude = (int) (find.getLatitude()*1E6);
 				longitude = (int) (find.getLongitude()*1E6);
-//				Log.i(TAG, "lat=" + latitude + " min=" + minLat + " max=" + maxLat);
-//				Log.i(TAG, "long=" + longitude + " min=" + minLong + " max=" + maxLong);
+				Log.i(TAG, "lat=" + latitude + " min=" + minLat + " max=" + maxLat);
+				Log.i(TAG, "long=" + longitude + " min=" + minLong + " max=" + maxLong);
 				
 				// Find min and max for all latitudes and longitudes
 				if (latitude != 0 && longitude != 0) {
@@ -390,4 +368,13 @@ public class MapFindsActivity extends OrmLiteBaseMapActivity<DbManager>  {
 		}
 		
 	} // centerFinds
+	
+	/**
+	 * Return the list of Finds finds
+	 * @return finds
+	 */
+	public List<Find> getFinds() {
+		return (List<Find>) finds;
+	}
 }
+
