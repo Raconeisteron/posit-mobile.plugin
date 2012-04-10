@@ -35,6 +35,7 @@ import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
+import org.hfoss.posit.android.test.Tests;
 import org.hfoss.posit.android.R;
 
 import android.app.AlertDialog;
@@ -92,6 +93,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	private TextView mAdhocTV = null;
 	
 	private Find mFind = null; // For action=update or bundled Finds
+	private int projectId = 0;
 
 
 	private ArrayList<FunctionPlugin> mAddFindMenuPlugins = null;
@@ -582,7 +584,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		// Set Project ID
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
+		projectId = prefs.getInt(getString(R.string.projectPref), 0);
 		find.setProject_id(projectId);
 
 		// Mark the find unsynced
@@ -831,6 +833,11 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				e.printStackTrace();
 			}
 		}
+		
+		//The following two lines of code are for testing clustering
+		Tests demo = new Tests(this, projectId);
+		demo.generateFinds(50);
+		
 		return rows > 0;
 	}
 
@@ -982,6 +989,14 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Return the List of FunctionPlugins mAddFindMenuPlugins
+	 * @return mAddFindMenuPlugins
+	 */
+	public ArrayList<FunctionPlugin> getmAddFindMenuPlugins() {
+		return mAddFindMenuPlugins;
 	}
 
 }
