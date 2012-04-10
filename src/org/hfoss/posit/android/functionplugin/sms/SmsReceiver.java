@@ -47,7 +47,7 @@ public class SmsReceiver extends BroadcastReceiver {
 		List<FunctionPlugin> plugins = FindPluginManager
 				.getFunctionPlugins(FindPluginManager.ADD_FIND_MENU_EXTENSION);
 		for (FunctionPlugin plugin : plugins)
-			if (plugin.getName().equals("sendsms"))
+			if (plugin.getName().equals("Send SMS"))
 				return true;
 		return false;
 	}
