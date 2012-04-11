@@ -919,8 +919,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 		
 		//The following two lines of code are for testing clustering
-		Tests demo = new Tests(this, projectId);
-		demo.generateFinds(50);
+//		Tests demo = new Tests(this, projectId);
+//		demo.generateFinds(50);
 		
 		return rows > 0;
 	}
