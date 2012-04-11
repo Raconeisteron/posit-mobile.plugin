@@ -126,6 +126,21 @@ up the menu and selecting 'Capture Media'."
 			list_find_callback = "org.hfoss.posit.android.functionplugin.camera.CameraActivity"
 			activity_returns_result="true"
 			activity_result_action="1" />
+			
+			<Plugin active_by_default="true" 
+			type="function" 
+			extensionPoint="addFindMenu"
+			name="Scan Barcode" 
+			user_can_select="true"
+			description="The Scan Barcode plugin allows you to scan a barcode consisting of a
+			Find created on a POSIT device into your own POSIT storage."
+			menuIcon="admin3" 
+			menuTitle="Scan Barcode"
+			menuActivity="org.hfoss.posit.android.functionplugin.barcode.CodeCaptureActivity" 
+			add_find_callback = "org.hfoss.posit.android.functionplugin.barcode.CodeCaptureActivity"
+			list_find_callback = "org.hfoss.posit.android.functionplugin.barcode.CodeCaptureActivity"
+			activity_returns_result="true"
+			activity_result_action="1" />
 
 <!-- 		Map Plugin displays finds on a map  -->
 <!-- 		<Plugin active="false"  -->

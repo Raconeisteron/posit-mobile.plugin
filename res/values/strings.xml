@@ -326,9 +326,18 @@
     <string name="CancelLabel">Cancel</string>
     
     <!-- Authentication -->
+    <string name="viewBarcode">View Barcode</string>
     <string name="todoprefs">Geo-Aware Reminder Preferences</string>
     <string name="pluginManagerPref">pluginManagerKey</string>
     <string name="pluginManagerTitle">Plugin Manager</string>
     <string name="pluginManagerSummary">Toggle active plugins</string>
     <string name="projectFindTypeLabel">Type of Find:</string>
+    
+  <string name="msg_default_contents">Contents</string>
+  <string name="msg_default_format">Format</string>
+  <string name="msg_default_meta">Metadata</string>
+  <string name="msg_default_mms_subject">Hi</string>
+  <string name="msg_default_status">Place a barcode inside the viewfinder rectangle to scan it.</string>
+  <string name="msg_default_time">Time</string>
+  <string name="msg_default_type">Type</string>
 </resources>
