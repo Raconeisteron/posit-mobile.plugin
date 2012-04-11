@@ -21,6 +21,7 @@
  */
 package org.hfoss.posit.android.api.activity;
 
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +35,9 @@ import org.hfoss.posit.android.api.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
+import org.hfoss.posit.android.functionplugin.barcode.BitMapView;
+import org.hfoss.posit.android.functionplugin.barcode.QrCodeEncoder;
+import org.hfoss.posit.android.functionplugin.camera.Camera;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
 import org.hfoss.posit.android.test.Tests;
 import org.hfoss.posit.android.R;
@@ -44,11 +48,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -75,6 +81,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	private static final String TAG = "FindActivity";
 	private static final int CONFIRM_DELETE_DIALOG = 0;
+	
+	private static final int WHITE = 0xFFFFFFFF;
+	private static final int BLACK = 0xFF000000;
 
 	private boolean mGeoTagEnabled;
 	private LocationManager mLocationManager = null;
@@ -148,6 +157,38 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		Bundle extras = getIntent().getExtras();
 
 		if (extras != null) {
+			
+			//Find stored in bar-code format. The intent action is "BARCODE"
+	        if(getIntent().getAction().equals("BARCODE")){
+					
+	            	String result = getIntent().getStringExtra("message");
+	        		String[] findValues = result.split("\\*");
+	        		
+	        		String guid = findValues[1];
+	        		
+	        		SimpleDateFormat dateFormat = new SimpleDateFormat(
+	        				"yyyy/MM/dd HH:mm:ss");
+	        		
+	        		Date time = new Date();
+	        		
+	        		String name = findValues[3];
+	        		String description = findValues[4];
+	        		double latitude = Double.parseDouble(findValues[5]);
+	        		double longitude = Double.parseDouble(findValues[6]);
+	        		
+	        		Find decodedFind = new Find();
+	        		decodedFind.setGuid(guid);
+	        		decodedFind.setName(name);
+	        		decodedFind.setDescription(description);
+	        		decodedFind.setTime(time);
+	        		decodedFind.setLatitude(latitude);
+	        		decodedFind.setLongitude(longitude);
+	        		
+	        		mFind = decodedFind;
+	        		displayContentInView(mFind);
+				
+			}
+	           
 			// Existing Find
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) { 
 				int id = extras.getInt(Find.ORM_ID);
@@ -331,6 +372,20 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		Button saveButton = ((Button) findViewById(R.id.saveButton));
 		if (saveButton != null)
 			saveButton.setOnClickListener(this);
+		
+        Button barcodeButton = ((Button) findViewById(R.id.Button01));
+		
+		barcodeButton.setOnClickListener(new OnClickListener() {
+		    public void onClick(View v) {
+		      showBarcode();
+		    }
+		});
+		
+		if(getIntent().getAction().equals(Intent.ACTION_INSERT)){
+		  if(barcodeButton!=null){
+			barcodeButton.setVisibility(View.GONE);
+		  } 
+		}
 	}
 
 	/**
@@ -518,7 +573,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		Find find = null;
 		
 		if (getIntent().getAction().equals(Intent.ACTION_EDIT) ||
-				getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
+				getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT) ||
+				getIntent().getAction().equals("BARCODE")) {
 			find = mFind;
 		} else {
 			try {
@@ -759,6 +815,20 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			return null;
 		}
 	}
+	
+	/**
+	 * This method is called every time a user requests to view a Find barcode, it 
+	 * encodes the find and displays the bitmap
+	 */
+	protected boolean showBarcode() {
+		int id = getIntent().getExtras().getInt(Find.ORM_ID);
+		mFind = getHelper().getFindById(id);
+		String guid = mFind.getGuid();
+		
+		encodeFindAsBarcode(mFind);
+		
+		return true;
+	}
 
 	@SuppressWarnings("unchecked")
 	protected boolean saveFind() {
@@ -783,13 +853,22 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		}
 
 		// Either create a new Find or update the existing Find
-		if (getIntent().getAction().equals(Intent.ACTION_INSERT))
+		if (getIntent().getAction().equals(Intent.ACTION_INSERT)){
 			rows = getHelper().insert(find);
+			
+			encodeFindAsBarcode(find);
+		}
+		
 		else if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 			find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
 			find.setStatus(Find.IS_NOT_SYNCED);
 			rows = getHelper().update(find);
-		} else if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
+			
+			encodeFindAsBarcode(find);
+		} 
+		
+		else if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)
+		|| getIntent().getAction().equals("BARCODE")) {
 			// Check if a Find with the same GUID already exists and update it if so
 			Find sameguid = getHelper().getFindByGuid(find.getGuid());
 			if (sameguid == null) {
@@ -798,6 +877,11 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				find.setId(sameguid.getId());
 				rows = getHelper().update(find);
 			}
+			
+			encodeFindAsBarcode(find);
+			
+			Toast toast = Toast.makeText(FindActivity.this, "Scanned Find added", Toast.LENGTH_LONG);
+			toast.show();
 		} else
 			rows = 0; // Something wrong with intent
 		
@@ -840,6 +924,40 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		
 		return rows > 0;
 	}
+	
+	/**
+	 * This method receives the find from the showBarcode() method call,encodes its values
+	 * and displays the result in a bitmap
+	 * 
+	 * @param find the find to be encoded
+	 */
+	protected void encodeFindAsBarcode(Find find){
+		String guid = find.getGuid();
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"yyyy/MM/dd HH:mm:ss");
+		String time = dateFormat.format(find.getTime());
+		
+		String findName = find.getName();
+		String description = find.getDescription();
+		double latitude = find.getLatitude();
+		double longitude = find.getLongitude();
+		
+		String findValuesToEncode = "POSITcode*" + guid + "*" + time + "*" + findName
+				 + "*" + description + "*" + latitude + "*" + latitude;
+		
+		QrCodeEncoder doEncode = new QrCodeEncoder(findValuesToEncode);
+		Bitmap bitmap = doEncode.encodeAndSave();
+        setContentView(new BitMapView(this, bitmap));
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+		byte[] b = baos.toByteArray();
+		String img_str = Base64.encodeToString(b, Base64.DEFAULT);
+		
+		Camera.savePhoto(find.getGuid() + "_code", img_str, this);
+	}
+
 
 	protected void prepareForSave(Find find) {
 		// Stub : meant to be overridden in subclass
@@ -886,6 +1004,11 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 			// delete photo if it exists
 			if (FindActivity.this.deleteFile(guid)) {
+				Log.i(TAG, "Image with guid: " + guid + " deleted.");
+			}
+			
+			// delete barcode if it exists
+			if (FindActivity.this.deleteFile(guid + "_code")) {
 				Log.i(TAG, "Image with guid: " + guid + " deleted.");
 			}
 

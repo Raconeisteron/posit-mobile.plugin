@@ -4,6 +4,7 @@
 	package="org.hfoss.posit.android">
 	<uses-sdk android:minSdkVersion="8" />
 	<!-- <uses-permission android:name="android.permission.CAMERA"></uses-permission> -->
+	<uses-permission android:name="android.permission.CAMERA"/>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
@@ -82,7 +83,11 @@
 			android:configChanges="orientation|keyboardHidden" />
 
 			
-		<!--  Activities for Function Plugins -->	
+		<!--  Activities for Function Plugins -->
+		<activity android:name=".functionplugin.barcode.CodeCaptureActivity"></activity>
+		<activity android:name="org.hfoss.posit.android.functionplugin.barcode.DecoderActivity"></activity>
+		<activity android:name="org.hfoss.posit.android.functionplugin.barcode.IDecoderActivity"></activity>
+			
 		<activity
 			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerActivity" />			
 		<activity
