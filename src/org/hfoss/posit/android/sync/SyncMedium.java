@@ -350,6 +350,9 @@ public abstract class SyncMedium {
 		Find find = DbHelper.getDbManager(m_context).getFindByGuid(newFind.getGuid());
 		if (find != null) {
 			Log.i("SyncMedium", "Updating existing find: " + find.getId());
+			Log.i(TAG, "Find= " + find);
+			Log.i(TAG, "NewFind= "+ newFind);
+			newFind.setId(find.getId());
 			DbHelper.getDbManager(m_context).updateWithoutHistory(newFind);				
 		} else {
 			Log.i("SyncMedium", "Inserting new find: " + newFind.getId());
