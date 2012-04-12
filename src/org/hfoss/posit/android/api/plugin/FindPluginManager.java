@@ -157,16 +157,20 @@ public class FindPluginManager {
 				} else if (curPluginType.equals("function") ) {
 					boolean curPluginIsActive = plugin_nodes.item(k).getAttributes().getNamedItem("active_by_default").getTextContent().compareTo("true") == 0;
 
-					FunctionPluginNames.add(curPluginName);
-					
-					//Add the current function plugin to the shared preferences 
-					//if it is not already there and the user is allowed to select it.
-					if (funcPluginPrefs.contains(curPluginName) == false && 
-						curPluginIsSelectableByUser == true)
-					{
-						funcPluginPrefsEditor.putBoolean(curPluginName, curPluginIsActive);
-						funcPluginPrefsEditor.commit();
-					}
+					if (curPluginIsSelectableByUser == true)
+                    {
+                        FunctionPluginNames.add(curPluginName);
+
+                       
+                        //Add the current function plugin to the shared preferences
+                        //if it is not already there and the user is allowed to select it.
+                        if (funcPluginPrefs.contains(curPluginName) == false)
+                        {
+                            funcPluginPrefsEditor.putBoolean(curPluginName, curPluginIsActive);
+                            funcPluginPrefsEditor.commit();
+                        }
+                       
+                    }
 					
 					if (curPluginIsActive)  {
 						p = new FunctionPlugin(this.mMainActivity, plugin_nodes.item(k));
