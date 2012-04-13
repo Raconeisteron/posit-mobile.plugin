@@ -117,6 +117,10 @@ public class MapViewExtended extends MapView {
 	    getOverlays().clear();
 	    mapOverlays.clear(); 
 	    
+	    // finds can be null if called from Tracker
+	    if (finds == null)
+	    	return mPoints;
+	    
 	    for(Find find  : finds) {
 			latitude = (int) (find.getLatitude()*1E6);
 			longitude = (int) (find.getLongitude()*1E6);
