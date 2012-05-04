@@ -409,7 +409,9 @@ public class SyncServer extends SyncMedium{
 	private void transmitImage( Find find ){
 		if(Camera.isPhotoSynced(find, m_context) == false){
 			HashMap<String, String> sendMap = createImageMap( find );
-			Communicator.sendMedia(sendMap, m_context);
+			String url = m_server + "/api/attachPicture?authKey=" + m_authKey;
+			
+			Communicator.doHTTPPost(url, sendMap);
 	 	}
 	}
 	
