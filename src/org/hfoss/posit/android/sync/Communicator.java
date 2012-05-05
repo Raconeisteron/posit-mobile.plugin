@@ -108,103 +108,13 @@ public class Communicator {
 	public static final int CONNECTION_TIMEOUT = 3000; // millisecs
 	public static final int SOCKET_TIMEOUT = 5000;
 	public static final String RESULT_FAIL = "false";
-	private static String server;
-	private static String authKey;
-	private static String imei;
-	
-	private static int projectId;
 	
 	private static final String SERVER_PREF = "serverKey";
 	private static final String PROJECT_PREF = "projectKey";
 
 	private static String TAG = "Communicator";
-	private static String responseString;
 	private Context mContext;
-	private SharedPreferences applicationPreferences;
-	private HttpParams mHttpParams;
-	private static HttpClient mHttpClient;
-	private ThreadSafeClientConnManager mConnectionManager;
 	public static long mTotalTime = 0;
-	private static long mStart = 0;
-
-	
-//	public void setContext(Context _context) {
-//		mContext = _context;
-//		mTotalTime = 0;
-//		mStart = 0;
-//
-//		mHttpParams = new BasicHttpParams();
-//
-//		// Set the timeout in milliseconds until a connection is established.
-//		HttpConnectionParams.setConnectionTimeout(mHttpParams, CONNECTION_TIMEOUT);
-//		
-//		// Set the default socket timeout (SO_TIMEOUT) 
-//		// in milliseconds which is the timeout for waiting for data.
-//		HttpConnectionParams.setSoTimeout(mHttpParams, SOCKET_TIMEOUT);
-//
-//		SchemeRegistry registry = new SchemeRegistry();
-//		registry.register(new Scheme("http", new PlainSocketFactory(), 80));
-//		mConnectionManager = new ThreadSafeClientConnManager(mHttpParams,
-//				registry);
-//		mHttpClient = new DefaultHttpClient(mConnectionManager, mHttpParams);
-//
-//		PreferenceManager.setDefaultValues(mContext, R.xml.posit_preferences,
-//				false);
-//		applicationPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-//		setApplicationAttributes(
-//				getAuthKey(mContext),
-//				//applicationPreferences.getString("AUTHKEY", ""), 
-//				applicationPreferences.getString(SERVER_PREF, server), 
-//				applicationPreferences.getInt(PROJECT_PREF, projectId));
-//		TelephonyManager manager = (TelephonyManager) mContext
-//				.getSystemService(Context.TELEPHONY_SERVICE);
-//		imei = manager.getDeviceId();
-//
-//	}
-//	
-//	private void setApplicationAttributes(String aKey, String serverAddress,
-//			int projId) {
-//		authKey = aKey;
-//		server = serverAddress;
-//		projectId = projId;
-//	}
-
-	// /**
-	// * Attempts to get the auth token. Apparently this might have to perform a
-	// * network request, so you're supposed to use a thread.
-	// */
-	// public static Thread getAuthToken(final Context context) {
-	//
-	// final Runnable runnable = new Runnable() {
-	// public void run() {
-	// AccountManager mAccountManager = AccountManager.get(context);
-	//
-	// // TODO: again just picking the first account here.. how are you
-	// // supposed to handle this?
-	// Account[] accounts =
-	// mAccountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
-	//
-	// try {
-	// String authKey = mAccountManager
-	// .blockingGetAuthToken(accounts[0],
-	// SyncAdapter.AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
-	// Log.i(TAG, "AUTH TOKEN: " + authKey);
-	// } catch (OperationCanceledException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (AuthenticatorException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (IOException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// }
-	// }
-	// };
-	// // run on background thread.
-	// return performOnBackgroundThread(runnable);
-	// }
-
 	
 	public static boolean isServerReachable(Context context) {
 		SharedPreferences applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -488,29 +398,6 @@ public class Communicator {
 		return performOnBackgroundThread(runnable);
 	}
 
-	// /**
-	// * Attempts to get changed finds from the server.
-	// *
-	// * @param handler
-	// * The main UI thread's handler instance.
-	// * @param context
-	// * The caller Activity's context
-	// * @return Thread The thread on which the network mOperations are
-	// executed.
-	// */
-	// public static Thread attemptGetChangedFinds(final Handler handler, final
-	// Context context) {
-	//
-	// final Runnable runnable = new Runnable() {
-	// //ArrayList<Integer> finds;
-	// String finds;
-	// public void run() {
-	// finds = getServerFindsNeedingSync(handler, context);
-	// }
-	// };
-	// // run on background thread.
-	// return performOnBackgroundThread(runnable);
-	// }
 	/**
 	 * Executes the network requests on a separate thread.
 	 * 
@@ -531,35 +418,6 @@ public class Communicator {
 		t.start();
 		return t;
 	}
-
-	// /**
-	// * Sends the result of a getChangedFinds request from server back to the
-	// caller
-	// * main UI thread through its handler.
-	// *
-	// * @param projects
-	// * the list of projects gotten from server
-	// * @param result
-	// * The boolean holding authentication result
-	// * @param authToken
-	// * The auth token returned from the server for this account.
-	// * @param handler
-	// * The main UI thread's handler instance.
-	// * @param context
-	// * The caller Activity's context.
-	// */
-	// private static void sendFindsResult(final String finds, final Boolean
-	// result,
-	// final Handler handler, final Context context) {
-	// if (handler == null || context == null) {
-	// return;
-	// }
-	// handler.post(new Runnable() {
-	// public void run() {
-	// ((ListFindsActivity) context).onGetChangedFindsResult(finds);
-	// }
-	// });
-	// }
 
 	/**
 	 * Sends the result of a getProjects request from server back to the caller
@@ -862,19 +720,6 @@ public class Communicator {
 		return doHTTPPost(Uri, getNameValuePairs(sendMap));
 	}
 
-	// public boolean projectExists(String projectId, String server){
-	// String url =
-	// server+"/api/projectExists?authKey="+authKey+"&projectId="+projectId;
-	// Log.i(TAG, url);
-	// String response = doHTTPGET(url);
-	// Log.i(TAG, "projectExists response = " + response);
-	//
-	// if(response.equals("true"))
-	// return true;
-	// if(response.equals("false"))
-	// return false;
-	// return false;
-	// }
 	/**
 	 * A wrapper(does some cleanup too) for sending HTTP GET requests to the URI
 	 * 
@@ -1087,152 +932,4 @@ public class Communicator {
 		Log.i(TAG, "Communicator, registerExpeditionPoint, response: " + response);
 		return response;
 	}
-	
-	// /**
-	// * Get an image from the server using the guid as Key.
-	// *
-	// * @param guid
-	// * the Find's globally unique Id
-	// */
-	// public ArrayList<HashMap<String, String>> getRemoteFindImages(String
-	// guid) {
-	// ArrayList<HashMap<String, String>> imagesMap = null;
-	// // ArrayList<HashMap<String, String>> imagesMap = null;
-	// String imageUrl = server + "/api/getPicturesByFind?findId=" + guid
-	// + "&authKey=" + authKey;
-	// HashMap<String, String> sendMap = new HashMap<String, String>();
-	// Log.i(TAG, "getRemoteFindImages, sendMap=" + sendMap.toString());
-	// sendMap.put(PositDbHelper.FINDS_GUID, guid);
-	// addRemoteIdentificationInfo(sendMap);
-	// try {
-	// String imageResponseString = doHTTPPost(imageUrl, sendMap);
-	// Log.i(TAG, "getRemoteFindImages, response=" + imageResponseString);
-	//
-	// if (!imageResponseString.equals(RESULT_FAIL)) {
-	// JSONArray jsonArr = new JSONArray(imageResponseString);
-	// imagesMap = new ArrayList<HashMap<String, String>>();
-	// // imagesMap = new ArrayList<HashMap<String, String>>();
-	//
-	// for (int i = 0; i < jsonArr.length(); i++) {
-	// JSONObject jsonObj = jsonArr.getJSONObject(i);
-	// if (Utils.debug)
-	// Log.i(TAG, "JSON Image Response String: "
-	// + jsonObj.toString());
-	// // imagesMap.add((HashMap<String, String>) jsonArr.get(i));
-	// Iterator<String> iterKeys = jsonObj.keys();
-	// HashMap<String, String> map = new HashMap<String, String>();
-	// while (iterKeys.hasNext()) {
-	// String key = iterKeys.next();
-	// map.put(key, jsonObj.getString(key));
-	// }
-	// imagesMap.add(map);
-	// }
-	// }
-	// } catch (Exception e) {
-	// Log.i(TAG, e.getMessage());
-	// e.printStackTrace();
-	// }
-	// if (imagesMap != null && Utils.debug)
-	// Log
-	// .i(TAG, "getRemoteFindImages, imagesMap="
-	// + imagesMap.toString());
-	// else
-	// Log.i(TAG, "getRemoteFindImages, imagesMap= null");
-	// return imagesMap;
-	// }
-	//
-	// /**
-	// * Checks if a given image already exists on the server. Allows for
-	// quicker
-	// * syncing to the server, as this allows the application to bypass
-	// * converting from a bitmap to base64 to send to the server
-	// *
-	// * @param imageId
-	// * the id of the image to query
-	// * @return whether the image already exists on the server
-	// */
-	// public boolean imageExistsOnServer(int imageId) {
-	// HashMap<String, String> sendMap = new HashMap<String, String>();
-	// addRemoteIdentificationInfo(sendMap);
-	// String imageUrl = server + "/api/getPicture?id=" + imageId
-	// + "&authKey=" + authKey;
-	// String imageResponseString = doHTTPPost(imageUrl, sendMap);
-	// if (imageResponseString.equals(RESULT_FAIL))
-	// return false;
-	// else
-	// return true;
-	// }
-	//
-	// // public String registerExpeditionPoint(double lat, double lng, int
-	// expedition) {
-	// // String result = doHTTPGET(server + "/api/addExpeditionPoint?authKey="
-	// // + authKey + "&lat=" + lat + "&lng=" + lng + "&expedition="
-	// // + expedition);
-	// // return result;
-	// // }
-	//
-	//
-	// /**
-	// * Sends a GPS point and associated data to the Posit server. Called from
-	// * Tracker Activity or TrackerBackgroundService.
-	// */
-	// public String registerExpeditionPoint(double lat, double lng, double alt,
-	// int swath, int expedition, long time) {
-	// //long swath, int expedition) {
-	// // if (Utils.debug)
-	// // Log.i(TrackerActivity.TAG, "Communicator, registerExpeditionPoint " +
-	// lat + " " + lng + " " + time);
-	// HashMap<String, String> sendMap = new HashMap<String, String>();
-	// addRemoteIdentificationInfo(sendMap);
-	// String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="
-	// + authKey;
-	// sendMap.put(PositDbHelper.GPS_POINT_LATITUDE, "" + lat);
-	// sendMap.put(PositDbHelper.GPS_POINT_LONGITUDE, lng + "");
-	// sendMap.put(PositDbHelper.GPS_POINT_ALTITUDE, "" + alt);
-	// sendMap.put(PositDbHelper.GPS_POINT_SWATH, "" + swath);
-	// sendMap.put(PositDbHelper.EXPEDITION, expedition + "");
-	// sendMap.put(PositDbHelper.GPS_TIME, time + "");
-	// String response = doHTTPPost(addExpeditionUrl, sendMap);
-	// // if (Utils.debug) {
-	// // Log.i(TrackerActivity.TAG,
-	// "Communicator, registerExpeditionPoint, response: " +
-	// addExpeditionResponseString);
-	// // }
-	// return response;
-	// }
-	//
-	// /**
-	// * Registers a new expedition with the server.
-	// * @param projectId Posit's current project id.
-	// * @return Returns the expedition number received from the server or -1 if
-	// something
-	// * goes wrong.
-	// */
-	// public int registerExpeditionId(int projectId) {
-	// HashMap<String, String> sendMap = new HashMap<String, String>();
-	// addRemoteIdentificationInfo(sendMap);
-	// String addExpeditionUrl = server + "/api/addExpedition?authKey="
-	// + authKey;
-	// sendMap.put("projectId", "" + projectId);
-	// String response = doHTTPPost(addExpeditionUrl, sendMap);
-	// Log.d(TAG,"registerExpeditionId response = " + response);
-	// // if (Utils.debug) {
-	// // Log.i(TrackerActivity.TAG,
-	// "Communicator, registerExpeditionId, response: "
-	// // + addExpeditionResponseString);
-	// // }
-	// // The server should return an expedition number if everything goes ok.
-	// If
-	// // an error occurs, it will return an error message that cannot parse to
-	// an int
-	// // which will cause an exception here.
-	// try {
-	// Integer i = Integer.parseInt(response);
-	// return i;
-	// } catch (NumberFormatException e) {
-	// Log.e(TrackerActivity.TAG,
-	// "Communicator, registerExpeditionId, Invalid response received");
-	// return -1;
-	// }
-	// }
 }
