@@ -26,6 +26,7 @@ import java.util.List;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.FindOverlay;
+import org.hfoss.posit.android.functionplugin.tracker.TrackerOverlay;
 
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
@@ -46,32 +47,38 @@ public class MapViewExtended extends MapView {
 	
 	private static final String TAG = "mMapView";
 	
-	private Context c = this.getContext();
+	private Context mContext; // = this.getContext();
 	private Drawable emptyDrawable;	
 	private FindOverlay mPoints;
-	private List<Overlay> mapOverlays = getOverlays();
-	private MapFindsActivity mf = new MapFindsActivity();	
+	private TrackerOverlay mTrack;
+	private List<Overlay> mapOverlays; //  = getOverlays();
+	private MapFindsActivity mf;// = new MapFindsActivity();	
 	
 	private int oldZoomLevel = -1;	
 
 	public MapViewExtended(android.content.Context context, android.util.AttributeSet attrs) {
 		super(context, attrs);
-		emptyDrawable = c.getResources().getDrawable(R.drawable.bubble);
+		mContext = context;
+		emptyDrawable = mContext.getResources().getDrawable(R.drawable.bubble);
 		mPoints = new FindOverlay(emptyDrawable, getContext(), true, null);
+		Log.i(TAG, "context= " +context.getClass().getName().equalsIgnoreCase("TrackerActivity"));
 	}
 
 	public MapViewExtended(android.content.Context context,
 			               android.util.AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		emptyDrawable = c.getResources().getDrawable(R.drawable.bubble);
+		mContext = context;
+		emptyDrawable = mContext.getResources().getDrawable(R.drawable.bubble);
 		mPoints = new FindOverlay(emptyDrawable, getContext(), true, null);
+		Log.i(TAG, "context= " +context.getClass().getName().equalsIgnoreCase("TrackerActivity"));
 	}
-
 	public MapViewExtended(android.content.Context context, java.lang.String apiKey) {
 		super(context, apiKey);
-		emptyDrawable = c.getResources().getDrawable(R.drawable.bubble);
+		mContext = context;
+		emptyDrawable = mContext.getResources().getDrawable(R.drawable.bubble);
 		mPoints = new FindOverlay(emptyDrawable, getContext(), true, null);
-	}	
+		Log.i(TAG, "context= " +context.getClass().getName().equalsIgnoreCase("TrackerActivity"));
+	}
 	
 	/**
 	 * Update clusters upon pan
@@ -80,8 +87,9 @@ public class MapViewExtended extends MapView {
 		
 		if (ev.getAction()==MotionEvent.ACTION_UP) {
 			Log.i(TAG, "PANNED");
-			placeOverlays(mf.getFinds(), mPoints);
-			mapOverlays.add(mPoints);
+			Log.i(TAG, "PANNED mMapView context: " + mContext);
+			//placeOverlays(mf.getFinds(), mPoints);
+			//mapOverlays.add(mPoints);
 		}
 		return super.onTouchEvent(ev);
 	}
@@ -94,10 +102,10 @@ public class MapViewExtended extends MapView {
 		super.dispatchDraw(canvas);  
 		if (getZoomLevel() != oldZoomLevel) {
 			Log.i(TAG, "ZOOOMED");
-			Log.i(TAG, "mMapView context: " + c);
+			Log.i(TAG, "ZOOMED mMapView context: " + mContext);
 			Log.i(TAG, "mMapView mf: " + mf);
-			placeOverlays(mf.getFinds(), mPoints);
-			mapOverlays.add(mPoints);
+			//placeOverlays(mf.getFinds(), mPoints);
+			//mapOverlays.add(mPoints);
 			oldZoomLevel = getZoomLevel();
 		}        
 	}
