@@ -51,6 +51,8 @@ public class TrackerOverlay extends Overlay {
 	public TrackerOverlay(TrackerState state) {
 		mTrackerState = state;
 	}
+	
+	
 
 	@Override
 	public synchronized void draw(Canvas canvas, MapView mapView, boolean shadow) {

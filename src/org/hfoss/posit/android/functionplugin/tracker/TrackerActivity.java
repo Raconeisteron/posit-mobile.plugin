@@ -98,6 +98,7 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 
 	// View stuff
 	private MapView mapView;
+//	private MapViewExtended mapView;
 	private MyLocationOverlay myLocationOverlay;
 	private TrackerOverlay mTrackerOverlay;
 	private List<Overlay> mOverlays;
@@ -288,6 +289,7 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 		// Set up the UI -- now the map view and its current location overlay. 
 		// The points overlay is created in updateView, after the Tracker Service is started. 
 		mapView = (MapView) findViewById(R.id.mapView);
+//		mapView = (MapViewExtended) findViewById(R.id.mapView);
 		mapView.setSatellite(false);
 		mMapController = mapView.getController();
 		mapView.setBuiltInZoomControls(true);
@@ -681,7 +683,7 @@ public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager>
 //			} else {
 //				Log.d(TrackerActivity.TAG, "TrackerActivity.syncUnsyncedPoints Success! New Expedition Id = " + mExpId);
 //			}
-			Toast.makeText(this, "Expedition now registered as " +mExpId+ " with the server.", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "Expedition now registered as " +mExpId+ " with the server.", Toast.LENGTH_SHORT).show();
 			
 			// Now let the user sync the unsynced points with the Server
 			mTrack.mExpeditionNumber = mExpId;
