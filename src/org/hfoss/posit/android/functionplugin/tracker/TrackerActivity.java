@@ -947,8 +947,8 @@ GpsStatus.Listener {
 		// Click on the "tracker" notification.  Stop the tracker. Hit the back
 		// key. You will exit to Android.  Now try restarting Posit.  It 
 		// always starts directly in Tracker, rather than PositMain.  
-		PendingIntent contentIntent = PendingIntent.getActivity(this.getBaseContext(), 0,
-				new Intent(this, TrackerActivity.class), 0);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				new Intent(this, TrackerActivity.class), PendingIntent.FLAG_ONE_SHOT);
 
 
 		// Set the info for the views that show in the notification panel.
@@ -1070,8 +1070,10 @@ GpsStatus.Listener {
 				Log.w(TAG, "TrackerActivity, Failed to inform Tracker of shared preference change", e);
 			}
 		}
-		mTrackerState.updatePreference(sp, key);
-		updateViewTrackingMode();
+		if (mTrackerState != null) {
+			mTrackerState.updatePreference(sp, key);
+			updateViewTrackingMode();
+		}
 	}
 
 	/**
