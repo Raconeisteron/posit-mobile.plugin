@@ -123,7 +123,7 @@ public class MapViewExtended extends MapView {
 		
 		mPoints.removeAllOverlays();        
 	    getOverlays().clear();
-	    mapOverlays.clear(); 
+//	    mapOverlays.clear(); 
 	    
 	    // finds can be null if called from Tracker
 	    if (finds == null)
