@@ -58,6 +58,7 @@ public class TrackerState {
 
 	public int mSwath; 
 	public int mMinDistance; 
+	public String mProvider;   // The current provider
 
 	// Has the expedition been saved by TrackerActivity?
 	private boolean mSaved = false;
@@ -187,7 +188,7 @@ public class TrackerState {
 	 * @param points
 	 */
 	public void setPointsFromDbValues(List<Points> points) {
-		Iterator iterator = points.iterator();
+		Iterator<Points> iterator = points.iterator();
 		List<PointAndTime> ptList = new ArrayList<PointAndTime>();
 		while (iterator.hasNext()) {
 			Points p = (Points)iterator.next();
