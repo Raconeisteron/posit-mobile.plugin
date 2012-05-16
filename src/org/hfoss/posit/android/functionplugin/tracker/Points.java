@@ -24,22 +24,7 @@ package org.hfoss.posit.android.functionplugin.tracker;
  */
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.R;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
-
 import android.content.ContentValues;
-import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
-
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.support.ConnectionSource;
@@ -63,6 +48,8 @@ public class Points {
 	public static final String GPS_POINT_SWATH = "swath";
 	public static final String GPS_TIME = "time";
 	public static final String GPS_SYNCED = "synced";
+	public static final int GPS_IS_SYNCED = 1;
+	public static final int GPS_NOT_SYNCED = 0;
 
 
 	/**
@@ -121,7 +108,6 @@ public class Points {
 		try {
 			TableUtils.createTable(connectionSource, Points.class);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -133,6 +119,10 @@ public class Points {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	public void setExpeditionId(int id) {
+		expedition = id;
+	}
 
 	public int getSynced() {
 		return synced;
@@ -142,6 +132,18 @@ public class Points {
 		this.synced = synced;
 	}
 
+	public ContentValues toContentValues() {
+		ContentValues cv = new ContentValues();
+		cv.put(EXPEDITION, expedition);
+		cv.put(GPS_POINT_LATITUDE, latitude);
+		cv.put(GPS_POINT_LONGITUDE, longitude);
+		cv.put(GPS_POINT_ALTITUDE, altitude);
+		cv.put(GPS_POINT_SWATH, swath);
+		cv.put(GPS_TIME, time);
+		cv.put(EXPEDITION_GPS_POINT_ROW_ID, id);
+		return cv;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

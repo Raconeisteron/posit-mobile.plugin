@@ -21,7 +21,6 @@
  */
 package org.hfoss.posit.android.sync;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -34,11 +33,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -52,27 +49,18 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.hfoss.posit.android.Constants;
 import org.hfoss.posit.android.api.Find;
-import org.hfoss.posit.android.api.FindHistory;
 import org.hfoss.posit.android.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
-import org.hfoss.posit.android.api.database.DbHelper;
-import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.api.plugin.FindPluginManager;
-import org.hfoss.posit.android.functionplugin.camera.Camera;
-import org.hfoss.posit.android.R;
-//import org.hfoss.posit.android.functionplugin.tracker.TrackerActivity;
+import org.hfoss.posit.android.functionplugin.tracker.Points;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -96,13 +84,13 @@ public class Communicator {
 	private static final String ERROR_CODE = "errorCode";
 	private static final String COLUMN_IMEI = "imei";
 	//Start of addition columns for photo table
-	private static final String COLUMN_GUID = "guid"; 				//guid of the find
-	private static final String COLUMN_IDENTIFIER = "identifier"; 	//does not seem to be useful
-	private static final String COLUMN_PROJECT_ID = "project_id"; 	//project id of the find
-	private static final String COLUMN_TIMESTAMP = "timestamp"; 	//if this is not set, it uses the current timestamp
-	private static final String COLUMN_MIME_TYPE = "mime_type"; 	//data type, in this case, "image/jpeg"
-	private static final String COLUMN_DATA_FULL = "data_full"; 	//data for the image, takes Base64 string of image
-	private static final String COLUMN_DATA_THUMBNAIL = "data_thumbnail"; //data for the image, take Base 64 string of image
+//	private static final String COLUMN_GUID = "guid"; 				//guid of the find
+//	private static final String COLUMN_IDENTIFIER = "identifier"; 	//does not seem to be useful
+//	private static final String COLUMN_PROJECT_ID = "project_id"; 	//project id of the find
+//	private static final String COLUMN_TIMESTAMP = "timestamp"; 	//if this is not set, it uses the current timestamp
+//	private static final String COLUMN_MIME_TYPE = "mime_type"; 	//data type, in this case, "image/jpeg"
+//	private static final String COLUMN_DATA_FULL = "data_full"; 	//data for the image, takes Base64 string of image
+//	private static final String COLUMN_DATA_THUMBNAIL = "data_thumbnail"; //data for the image, take Base 64 string of image
 	//End of addition columns for photo table
 	public static final int THUMBNAIL_TARGET_SIZE = 320; //width and height of thumbnail data
 	public static final int CONNECTION_TIMEOUT = 3000; // millisecs
@@ -110,10 +98,10 @@ public class Communicator {
 	public static final String RESULT_FAIL = "false";
 	
 	private static final String SERVER_PREF = "serverKey";
-	private static final String PROJECT_PREF = "projectKey";
+//	private static final String PROJECT_PREF = "projectKey";
 
 	private static String TAG = "Communicator";
-	private Context mContext;
+//	private Context mContext;
 	public static long mTotalTime = 0;
 	
 	public static boolean isServerReachable(Context context) {
@@ -125,7 +113,7 @@ public class Communicator {
 		Log.i(TAG, "is reachable URL=" + url);
 
 		String responseString = null;
-		String responseCode = null;
+//		String responseCode = null;
 		try {
 			responseString = doHTTPGET(url);
 			Log.i(TAG, "isreachable response = " + responseString);
@@ -850,9 +838,7 @@ public class Communicator {
 	 * @return Returns the expedition number received from the server or -1 if something
 	 * goes wrong.
 	 */
-	public int registerExpeditionId(Context context, int projectId) {
-		mContext = context;
-		
+	public int registerExpeditionId(Context context, int projectId) {		
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = prefs.getString(SERVER_PREF, "");
 
@@ -860,7 +846,7 @@ public class Communicator {
 		String imei = telephonyManager.getDeviceId();
 		
 		HashMap<String, String> sendMap = new HashMap<String, String>();
-		addRemoteIdentificationInfo(sendMap);
+		addRemoteIdentificationInfo(context, sendMap);
 		String addExpeditionUrl = server + "/api/addExpedition?authKey="   + getAuthKey(context);
 		sendMap.put("projectId", "" + projectId);
 		Log.i(TAG, "URL=" + addExpeditionUrl + " projectId = " + projectId);
@@ -879,9 +865,9 @@ public class Communicator {
 		}
 	}
 	
-	private void addRemoteIdentificationInfo(HashMap<String, String> sendMap) {
+	private void addRemoteIdentificationInfo(Context context, HashMap<String, String> sendMap) {
 		// sendMap.put(COLUMN_APP_KEY, appKey);
-		sendMap.put(COLUMN_IMEI, getIMEI(mContext));
+		sendMap.put(COLUMN_IMEI, getIMEI(context));
 	}
 	
 	/**
@@ -911,21 +897,22 @@ public class Communicator {
 	public String registerExpeditionPoint(Context context, double lat, double lng, double alt,
 			int swath, int expedition, long time) {
 		
+		//mContext = context;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = prefs.getString(SERVER_PREF, "");
 
 			//long swath, int expedition) {
 		Log.i(TAG, "Communicator, registerExpeditionPoint " + lat + " " + lng + " " + time);
 		HashMap<String, String> sendMap = new HashMap<String, String>();
-		addRemoteIdentificationInfo(sendMap);
+		addRemoteIdentificationInfo(context, sendMap);
 		Log.i(TAG, "Sendmap= " + sendMap.toString());
 		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="  + this.getAuthKey(context);
-		sendMap.put(DbManager.GPS_POINT_LATITUDE, "" + lat);
-		sendMap.put(DbManager.GPS_POINT_LONGITUDE, lng + "");
-		sendMap.put(DbManager.GPS_POINT_ALTITUDE, "" + alt);
-		sendMap.put(DbManager.GPS_POINT_SWATH, "" + swath);
-		sendMap.put(DbManager.EXPEDITION, expedition + "");
-		sendMap.put(DbManager.GPS_TIME, time + "");
+		sendMap.put(Points.GPS_POINT_LATITUDE, "" + lat);
+		sendMap.put(Points.GPS_POINT_LONGITUDE, lng + "");
+		sendMap.put(Points.GPS_POINT_ALTITUDE, "" + alt);
+		sendMap.put(Points.GPS_POINT_SWATH, "" + swath);
+		sendMap.put(Points.EXPEDITION, expedition + "");
+		sendMap.put(Points.GPS_TIME, time + "");
 		Log.i(TAG, "Sendmap= " + sendMap.toString());
 		
 		String response = doHTTPPost(addExpeditionUrl, sendMap);

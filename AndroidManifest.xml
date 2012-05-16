@@ -89,11 +89,17 @@
 		<activity android:name="org.hfoss.posit.android.functionplugin.barcode.IDecoderActivity"></activity>
 			
 		<activity
-			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerActivity" />			
+			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerActivity" 
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"/>			
 		<activity
-			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerListActivity" />
+			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerListActivity" 
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"/>
 		<activity
-			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerSettings" />
+			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerSettings" 
+			android:screenOrientation="portrait"
+			android:configChanges="orientation|keyboardHidden"/>
 		<service android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerBackgroundService"/>
 
 

@@ -24,8 +24,6 @@ package org.hfoss.posit.android.functionplugin.tracker;
 import org.hfoss.posit.android.R;
 
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -56,11 +54,11 @@ public class TrackerSettings extends PreferenceActivity {
 	  public static final int MIN_LOCAL_EXP_ID = 10000;  // lowest random exp id number
 	  public static final int LOCAL_EXP_ID_RANGE = 10000; // range of random ids
 	  
-	  public static final int IDLE = 0;
-	  public static final int RUNNING = 1;
-	  public static final int PAUSED = 2;  // Currently unused
-	  public static final int VIEWING_MODE = 3;
-	  public static final int SYNCING_POINTS = 4;
+	  public static final int IDLE = 0;    
+	  public static final int RUNNING = 1;        // Bcgd service is tracking
+	  public static final int PAUSED = 2;         // Currently unused
+	  public static final int VIEWING_MODE = 3;   // Viewing an existing track
+	  public static final int SYNCING_POINTS = 4; // Syncing unsynced points
 
 	  // TODO:  Some of these should be moved into a String resource
 	  public static final String TRACKER_STATE_PREFERENCE = "TrackerState";

@@ -40,7 +40,6 @@ import org.hfoss.posit.android.functionplugin.tracker.Expedition;
 import org.hfoss.posit.android.functionplugin.tracker.Points;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaFind;
 
-import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.GenericRawResults;
@@ -94,27 +93,27 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	public static final String HISTORY_ID = "_id";
 	
 	public static final String EXPEDITION_GPS_POINTS_TABLE = "points";
-	public static String EXPEDITION = "expedition";
-	public static final String GPS_SYNCED = "synced";
-	public static String GPS_POINT_LATITUDE = "latitude";
-	public static String GPS_POINT_LONGITUDE = "longitude";
-	public static String GPS_POINT_ALTITUDE = "altitude";
-	public static final int POINT_IS_SYNCED = 1;
-	public static final int POINT_NOT_SYNCED = 0;
+//	public static String EXPEDITION = "expedition";
+//	public static final String GPS_SYNCED = "synced";
+//	public static String GPS_POINT_LATITUDE = "latitude";
+//	public static String GPS_POINT_LONGITUDE = "longitude";
+//	public static String GPS_POINT_ALTITUDE = "altitude";
+//	public static final int POINT_IS_SYNCED = 1;
+//	public static final int POINT_NOT_SYNCED = 0;
 	
-	public static final String EXPEDITION_POINTS = "expedition_points";
-	public static final String EXPEDITION_SYNCED = "expedition_synced";
-	public static final String EXPEDITION_REGISTERED = "expedition_registered";
-	public static final int EXPEDITION_NOT_REGISTERED = 0;	
-	public static final int EXPEDITION_IS_REGISTERED = 1;
+//	public static final String EXPEDITION_POINTS = "expedition_points";
+//	public static final String EXPEDITION_SYNCED = "expedition_synced";
+//	public static final String EXPEDITION_REGISTERED = "expedition_registered";
+//	public static final int EXPEDITION_NOT_REGISTERED = 0;	
+//	public static final int EXPEDITION_IS_REGISTERED = 1;
 	public static final int FIND_IS_SYNCED = 1;
 	public static final int FIND_NOT_SYNCED = 0;
-	public static final String EXPEDITION_PROJECT_ID = "project_id";
-	public static final String EXPEDITION_ROW_ID = "_id";
-	public static final String EXPEDITION_NUM = "expedition_number";
-	public static final String GPS_POINT_SWATH = "swath";
-	public static final String GPS_TIME = "time";
-	public static final String EXPEDITION_GPS_POINT_ROW_ID = "_id";
+//	public static final String EXPEDITION_PROJECT_ID = "project_id";
+//	public static final String EXPEDITION_ROW_ID = "_id";
+//	public static final String EXPEDITION_NUM = "expedition_number";
+//	public static final String GPS_POINT_SWATH = "swath";
+//	public static final String GPS_TIME = "time";
+//	public static final String EXPEDITION_GPS_POINT_ROW_ID = "_id";
 
 	/**
 	 * Constructor just saves and opens the Db.
@@ -295,6 +294,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	 */
 	public int addNewExpedition(ContentValues values) {
 		Expedition expedition = new Expedition(values);
+		Log.i(TAG, values.toString());
 		int rows = 0;
 		try {
 			rows = getExpeditionDao().create(expedition);
@@ -336,13 +336,12 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		int size = allPoints.size();
 		int rows = 0;
 		try {
-			Iterator iterator = allPoints.iterator();
+			Iterator<Points> iterator = allPoints.iterator();
 			while (iterator.hasNext()) {
 				rows += getPointsDao().delete( (Points)iterator.next());
 			}
 			//rows = getPointsDao().delete(allPoints);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Log.i(TAG, "rows = " + rows + " size= " + size);
@@ -380,9 +379,10 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			Where<Points, Integer> where = builder.where();
 			where.eq(Points.EXPEDITION, expeditionId);
 			where.and();
-			where.eq(Points.GPS_SYNCED, POINT_NOT_SYNCED);
+			where.eq(Points.GPS_SYNCED, Points.GPS_NOT_SYNCED);
 			PreparedQuery<Points> preparedQuery = builder.prepare();
 			list = getPointsDao().query(preparedQuery);
+			Log.i(TAG, "Unsynced points = " + list);
 		} catch (SQLException e) {
 			Log.e(TAG, "Database error getting finds: " + e.getMessage());
 		}
@@ -399,14 +399,17 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		Log.i(TAG, "Updating GPS Point, rowId = " + rowId);
 		int rows = 0;
 		Points point = getPointById(rowId);
+		Log.i(TAG, "Updating GPS point " + point);
 		try {
-			if (vals.containsKey(GPS_SYNCED))
-				point.setSynced(vals.getAsInteger(GPS_SYNCED));
+			if (vals.containsKey(Points.GPS_SYNCED))
+				point.setSynced(vals.getAsInteger(Points.GPS_SYNCED));
+			if (vals.containsKey(Points.EXPEDITION))
+				point.setExpeditionId(vals.getAsInteger(Points.EXPEDITION));
 			rows = getPointsDao().update(point);
 			if (rows == 1) {
-				Log.i(TAG, "Updated Expedition:  " + this.toString());
+				Log.i(TAG, "Updated GpsPoint:  for id " + rowId);
 			} else {
-				Log.e(TAG, "Db Error updating Expedition: " + this.toString());
+				Log.e(TAG, "Db Error updating GpsPoint for id: " + rowId);
 				rows = 0;
 			}
 		} catch (Exception e) {
@@ -441,19 +444,23 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	 * @return
 	 */
 	public int updateExpedition(int expNum, ContentValues values) {
-		Log.i(TAG, "Updating Expedition, expNum = " + expNum);
+		Log.i(TAG, "Updating Expedition, expNum = " + expNum + " vals=" + values );
 		int rows = 0;
 		Expedition expedition = getExpeditionByExpeditionNumber(expNum);
 		try {
-			if (values.containsKey(EXPEDITION_POINTS))
-					expedition.setPoints(values.getAsInteger(EXPEDITION_POINTS));
-			if (values.containsKey(EXPEDITION_SYNCED))
-				expedition.setIs_synced(values.getAsInteger(EXPEDITION_SYNCED));
+			if (values.containsKey(Expedition.EXPEDITION_POINTS))
+					expedition.setPoints(values.getAsInteger(Expedition.EXPEDITION_POINTS));
+			if (values.containsKey(Expedition.EXPEDITION_SYNCED))
+				expedition.setIs_synced(values.getAsInteger(Expedition.EXPEDITION_SYNCED));
+			if (values.containsKey(Expedition.EXPEDITION_REGISTERED))
+				expedition.setIs_registered(values.getAsInteger(Expedition.EXPEDITION_REGISTERED));
+			if (values.containsKey(Expedition.EXPEDITION_NUM))
+				expedition.setExpeditionNum(values.getAsInteger(Expedition.EXPEDITION_NUM));
 			rows = getExpeditionDao().update(expedition);
 			if (rows == 1) {
-				Log.i(TAG, "Updated Expedition :  " + this.toString());
+				Log.i(TAG, "Updated Expedition :  expNum= " + expNum);
 			} else {
-				Log.e(TAG, "Db Error updating Expedition: " + this.toString());
+				Log.e(TAG, "Db Error updating Expedition expNum= " + expNum);
 				rows = 0;
 			}
 		} catch (Exception e) {
@@ -518,7 +525,6 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		try {
 			list = getFindDao().queryForAll();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return list;
@@ -737,7 +743,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		List<Find> allFinds = getFindsByProjectId(projectID);
 		int size = allFinds.size();
 		try {
-			Iterator iterator = allFinds.iterator();
+			Iterator<Find> iterator = allFinds.iterator();
 			while (iterator.hasNext()) {
 				rows += getFindDao().delete((Find)iterator.next());
 			}

@@ -6,7 +6,7 @@
   android:layout_height="wrap_content">
   
   		<TextView android:id="@+id/trackerExpeditionLabel"
-			android:text="Exepedition # " 
+			android:text="Exp # " 
 			android:textSize="21dp" 
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" />
@@ -20,7 +20,7 @@
 			android:layout_alignParentTop="true" />
 			
 		<TextView android:id="@+id/projectLabel"
-			android:text="Project # "
+			android:text="Proj # "
 			android:layout_width="wrap_content"
 			android:layout_marginLeft="20dp"			
 			android:textSize="21dp" 

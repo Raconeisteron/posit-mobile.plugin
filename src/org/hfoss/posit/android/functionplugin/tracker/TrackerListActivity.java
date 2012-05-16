@@ -22,23 +22,14 @@
 
 package org.hfoss.posit.android.functionplugin.tracker;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-
-import org.hfoss.posit.android.api.Find;
-import org.hfoss.posit.android.api.database.DbHelper;
 import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.R;
-
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
-
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -48,11 +39,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
@@ -121,9 +109,10 @@ public class TrackerListActivity extends OrmLiteBaseListActivity<DbManager> impl
 					int position, long id) {
 				Intent result = new Intent();
 				int exp_id = Integer.parseInt( (String) ((TextView)view.findViewById(R.id.expedition_id)).getText());
-				result.putExtra(getHelper().EXPEDITION_ROW_ID, exp_id);
+				//result.putExtra(getHelper().EXPEDITION_ROW_ID, exp_id);
+				result.putExtra(Expedition.EXPEDITION_NUM, exp_id);
 				setResult(Activity.RESULT_OK, result);
-				Log.d(TAG, "TrackerListActivity, onListItemClick position= " + position + " id = " +  exp_id);
+				Log.d(TAG, "TrackerListActivity, onListItemClick position= " + position + " exp id = " +  exp_id);
 				finish();
 			}
 		});

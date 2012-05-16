@@ -24,22 +24,7 @@ package org.hfoss.posit.android.functionplugin.tracker;
  */
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.R;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
-//import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
-
 import android.content.ContentValues;
-import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
-
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.support.ConnectionSource;
@@ -61,7 +46,8 @@ public class Expedition {
 	public static final String EXPEDITION_REGISTERED = "expedition_registered";
 	public static final int EXPEDITION_NOT_REGISTERED = 0;
 	public static final int EXPEDITION_IS_REGISTERED = 1;
-
+	public static final int EXPEDITION_NOT_SYNCED = 0;
+	public static final int EXPEDITION_IS_SYNCED = 1;
 
 	/**
 	 * The fields annotated with @DatabaseField are persisted to the Db.
@@ -105,9 +91,12 @@ public class Expedition {
 		try {
 			TableUtils.createTable(connectionSource, Expedition.class);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void setExpeditionNum(int num) {
+		expedition_num = num;
 	}
 	
 	public int getPoints() {
@@ -125,11 +114,20 @@ public class Expedition {
 	public void setIs_synced(int is_synced) {
 		this.is_synced = is_synced;
 	}
+	
+	public int getIs_registered() {
+		return is_registered;
+	}
+	
+	public void setIs_registered(int is_registered) {
+		this.is_registered = is_registered;
+	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("id=").append(id);
+		sb.append(", ").append("exp num=").append(expedition_num);
 		sb.append(", ").append("project_id=").append(project_id);
 		sb.append(", ").append("points").append(points);
 		sb.append(", ").append("is_synced").append(is_synced);
