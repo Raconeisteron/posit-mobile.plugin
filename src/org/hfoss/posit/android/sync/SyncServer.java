@@ -149,6 +149,9 @@ public class SyncServer extends SyncMedium{
 			} catch (JSONException e) {
 				Log.i(TAG, "getProjects JSON exception " + e.getMessage());
 				list = null;
+			} catch (Exception e) {
+				Log.i(TAG, "getProjects Exception " + e.getMessage());
+				list = null;
 			}
 		}
 		

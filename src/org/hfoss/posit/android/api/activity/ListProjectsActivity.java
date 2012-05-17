@@ -43,6 +43,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -50,15 +51,16 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 /**
- * This activity shows a list of all the projects on the server that the phone is registered with,
- * and allows the user to pick one from the list.  When the user picks one, the phone automatically
- * syncs with the server to get all the finds from that project
+ * This activity shows a list of the projects on the server that the phone is registered with,
+ * and allows the user to pick one from the list.  
  * 
- *
+ * When the user picks one, the phone automatically
+ * syncs with the server to get all the finds from that project.
+ * 
+ * The Communicator object handles retrieval of the projects list in a background thread.
  */
 public class ListProjectsActivity extends ListActivity implements OnClickListener{
 
@@ -67,24 +69,37 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 	static final int NEW_PROJECT = 1;
 	private int mClickedPosition = 0;
 
-	private ArrayList<HashMap<String, Object>> projectList;
-	Handler handler = new Handler();
-	private RadioGroup mRadio;	
+	private ArrayList<HashMap<String, Object>> mProjectList;
+	
+	
+	/**
+	 * Handles messages and results received from the background thread.
+	 */
+	final Handler handler = new Handler() { 
+		@SuppressWarnings("unchecked")
+		public void handleMessage(Message msg) { 
+			if (msg.what == Communicator.SUCCESS) {
+				mProjectList = (ArrayList<HashMap<String, Object>>) msg.obj;
+				showProjects(mProjectList);
+			} else {
+				reportError((String) msg.obj);
+			}
+		} 
+	}; 
 
 	/**
-	 * Called when the activity is first started.  Shows a list of 
-	 * radio buttons, each representing
-	 * a different project on the server.
+	 * Called when the activity is first started.  Sets up the UI
+	 * and invokes attemptGetProjects, which queries the server.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.i(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_proj);
 		Button addProjectButton = (Button)findViewById(R.id.idAddProjButton);
 		addProjectButton.setOnClickListener(this);
 
-		Communicator.attemptGetProjects(handler, this);
-
+		Communicator.attemptGetProjects(handler, this);  // Done on background thread
 	}
 
 
@@ -93,11 +108,16 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 	 */
 	@Override
 	protected void onResume() {
+		Log.i(TAG, "onResume()");
 		super.onResume();
-	//	tryToRegister();
 	}
 
-	private void showProjects(List<HashMap<String,Object>> projects) {
+	/**
+	 * Displays the projects in the View using an array list adapter.
+	 * 
+	 * @param projects, a list of projects.
+	 */
+	private void showProjects(List<HashMap<String,Object>> projectList) {
 		if (projectList != null) {
 			Iterator<HashMap<String, Object>> it = projectList.iterator();
 			ArrayList<String> projList = new ArrayList<String>();
@@ -109,41 +129,28 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 			          android.R.layout.simple_list_item_1, projList));
 			
 		} else {
-			this.reportNetworkError("Null project list returned.\nMake sure your server is reachable.");
+			this.reportError("Null project list returned.\nMake sure your server is reachable.");
 		}
 	} 
 	
-	public void onShowProjectsResult(ArrayList<HashMap<String,Object>> projects, Boolean result) {
-		Log.i(TAG, "The result of showing projects was: " + result);
-		projectList = projects;
-		showProjects(projectList);
-	}
-	
-
-	
 	/**
 	 * Reports as much information as it can about the error.
-	 * @param str
+	 * @param str, the message to report
 	 */
-	private void reportNetworkError(String str) {
-		Log.i(TAG, "Registration Failed: " + str);
-		Toast.makeText(this, "Registration Failed: " + str, Toast.LENGTH_LONG).show();
+	private void reportError(String str) {
+		Log.i(TAG, "Error: " + str);
+		Toast.makeText(this, "Error: " + str, Toast.LENGTH_LONG).show();
 		finish();
 	}
-	
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == NEW_PROJECT) {
-			Communicator.attemptGetProjects(handler, this);
-		}
-	}
 
-	public void onListItemClick(ListView lv, View v, int position, long idFull){
+	/**
+	 * Invoked when the user selects a name off the projects list.
+	 */
+	public void onListItemClick(ListView lv, View v, int position, long idFull) {
 		mClickedPosition = position;
-		ArrayAdapter mAdapter = (ArrayAdapter) this.getListAdapter();
-		String projectId = (String) projectList.get(mClickedPosition).get("id");
+		String projectId = (String) mProjectList.get(mClickedPosition).get("id");
 		int id  = Integer.parseInt(projectId);
-		String projectName = (String) projectList.get(mClickedPosition).get("name");
+		String projectName = (String) mProjectList.get(mClickedPosition).get("name");
 		
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		int currentProjectId = sp.getInt(getString(R.string.projectPref),0);
@@ -162,11 +169,11 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 
 		showDialog(CONFIRM_PROJECT_CHANGE);
 	}
+	
 	/**
-	 * Called when the user clicks on a project in the list.  Sets the project id in the shared
-	 * preferences so it can be remembered when the application is closed
+	 * Called when the user clicks the "New Project" button.  Starts
+	 * the NewProject activity, which lets the user create a new project.
 	 * 
-	 * TODO: NewProjectActivity isn't re-added yet
 	 */
 	public void onClick(View v) {
 		Intent i = new Intent(this, NewProjectActivity.class);;
@@ -175,17 +182,24 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 		case R.id.idAddProjButton:
 			startActivityForResult(i,NEW_PROJECT);
 			break;
-
-			
 		}
-		
+	}
+	
+	/**
+	 * Invoked by NewProjectActivity after the user has created a "New Project". 
+	 */
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == NEW_PROJECT) {
+			Communicator.attemptGetProjects(handler, this);
+		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Confirms with the user that they have changed their project and automatically 
+	 * syncs with the server to get all the project Finds.
+	 * 
 	 * @see android.app.Activity#onCreateDialog(int)
-	 * Confirms with the user that they have changed their project and automatically syncs with the server
-	 * to get all the project finds
 	 */
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
@@ -193,7 +207,7 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 			return new AlertDialog.Builder(this)
 			.setIcon(R.drawable.icon)
 			.setTitle("You have changed your project to: " 
-					+ (String) projectList.get(mClickedPosition).get("name"))
+					+ (String) mProjectList.get(mClickedPosition).get("name"))
 					.setPositiveButton(R.string.alert_dialog_ok, 
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {

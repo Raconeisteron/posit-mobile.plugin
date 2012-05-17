@@ -64,6 +64,7 @@ import android.accounts.OperationCanceledException;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -78,6 +79,9 @@ import android.widget.Toast;
 
 //public class Communicator extends OrmLiteBaseActivity<TrackerDbManager> {
 public class Communicator {
+	public static final int SUCCESS = 1;
+	public static final int FAILURE = 0;
+	
 	private static final String MESSAGE = "message";
 	private static final String MESSAGE_CODE = "messageCode";
 	private static final String ERROR_MESSAGE = "errorMessage";
@@ -107,7 +111,9 @@ public class Communicator {
 	public static boolean isServerReachable(Context context) {
 		SharedPreferences applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = applicationPreferences.getString(SERVER_PREF, "");
-		String url = server + "/api/isreachable?authKey=" + getAuthKey(context);
+		String url = server + "/api/isreachable?authKey=" 
+//			+ attemptGetAuthKey(context);
+			+ getAuthKey(context);
 
 		HashMap<String, Object> responseMap = null;
 		Log.i(TAG, "is reachable URL=" + url);
@@ -161,13 +167,36 @@ public class Communicator {
 		Account[] accounts = am.getAccountsByType(accountType);
 		if (accounts.length != 0)
 			am.removeAccount(accounts[0], null, null);
-		String authkey = getAuthKey(context);
+		String authkey = getAuthKey(context);  // attemptGetAuthKey(context); 
 		return authkey == null;
 	}
+	
+	
+	/**
+	 * Attempts to get the auth key from the server.
+	 * 
+	 * @param context
+	 *            The caller Activity's context
+	 *            
+	 * @return Thread The thread on which network operations are executed.
+	 */
+//	public static String attemptGetAuthKey(final Context context) {
+//
+//		final Runnable runnable = new Runnable() {
+//			public void run() {
+//				getAuthKey(context);
+//			}
+//		};
+//		// run on background thread.
+//		return performOnBackgroundThread(runnable);
+//	}
+
 	
 	public static String getAuthKey(Context context) {
 		AccountManager accountManager = AccountManager.get(context);
 
+		
+		
 		// TODO: again just picking the first account here.. how are you
 		// supposed to handle this?
 		Account[] accounts = accountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
@@ -196,6 +225,29 @@ public class Communicator {
 	}
 
 	/**
+	 * Attempts to get the user's projects from the server.
+	 * 
+	 * Design:  Why can't this method just call doHttpGet and let it
+	 * run on a background thread??
+	 * 
+	 * @param handler
+	 *            The UI thread's handler instance.
+	 * @param context
+	 *            The caller Activity's context
+	 * @return Thread The thread on which the network mOperations are executed.
+	 */
+	public static void attemptGetProjects(final Handler handler, final Context context) {
+		Log.i(TAG, "attemptGetProjects()");
+		final Runnable runnable = new Runnable() {
+
+			public void run() {
+				getProjects(handler, context);
+			}
+		};
+		new Thread(runnable).run();    		// Run on background thread.
+	}
+	
+	/**
 	 * NOTE: Calls doHTTPGet
 	 * 
 	 * Get all open projects from the server. Eventually, the goal is to be able
@@ -205,36 +257,36 @@ public class Communicator {
 	 * @return a list of all the projects and their information, encoded as maps
 	 * @throws JSONException
 	 */
-	public static ArrayList<HashMap<String, Object>> getProjects(Handler handler, Context context) {
-
+	public static void getProjects(Handler handler, Context context) {
+		Log.i(TAG, "getProjects()");
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = prefs.getString(SERVER_PREF, "");
+		String authKey = getAuthKey(context);  // Set to null to test error handling
 
-		String authKey = getAuthKey(context);
+		//		if (authKey != null) {
 
-		if (authKey != null) {
+		String url = server + "/api/listMyProjects?authKey=" + authKey;
 
-			String url = server + "/api/listMyProjects?authKey=" + authKey;
+		ArrayList<HashMap<String, Object>> list;
+		String responseString = doHTTPGET(url);
+		Log.i(TAG, responseString);
 
-			ArrayList<HashMap<String, Object>> list;
-			String responseString = doHTTPGET(url);
-			Log.i(TAG, responseString);
+		//responseString = null;  // Test of error handling
 
-			if (responseString.contains("Error")) {
-				return null;
-			}
-			list = new ArrayList<HashMap<String, Object>>();
-			try {
-				list = (ArrayList<HashMap<String, Object>>) (new ResponseParser(responseString).parseList());
-			} catch (JSONException e) {
-				Log.i(TAG, "getProjects JSON exception " + e.getMessage());
-				return null;
-			}
-			sendProjectsResult(list, true, handler, context);
-			return list;
-		} else {
-			Log.e(TAG, "authKey is null.");
-			return null;
+		try {
+			list = (ArrayList<HashMap<String, Object>>) (new ResponseParser(responseString).parseList());
+			Message msg = handler.obtainMessage(SUCCESS, list);
+			handler.sendMessage(msg);
+		} catch (JSONException e) {
+			Log.i(TAG, "getProjects JSON exception " + e.getMessage());
+			Message msg = handler.obtainMessage(FAILURE, e.getMessage());
+			handler.sendMessage(msg);
+			return;
+		} catch (Exception e) {
+			Log.i(TAG, "getProjects Exception " + e.getMessage());
+			Message msg = handler.obtainMessage(FAILURE, "Exception " + e.getMessage());
+			handler.sendMessage(msg);
+			return;				
 		}
 	}
 
@@ -363,28 +415,7 @@ public class Communicator {
 		return performOnBackgroundThread(runnable);
 	}
 
-	/**
-	 * Attempts to get the user's projects from the server.
-	 * 
-	 * @param handler
-	 *            The main UI thread's handler instance.
-	 * @param context
-	 *            The caller Activity's context
-	 * @return Thread The thread on which the network mOperations are executed.
-	 */
-	public static Thread attemptGetProjects(final Handler handler, final Context context) {
-
-		final Runnable runnable = new Runnable() {
-			ArrayList<HashMap<String, Object>> projectList;
-
-			public void run() {
-				projectList = getProjects(handler, context);
-			}
-		};
-		// run on background thread.
-		return performOnBackgroundThread(runnable);
-	}
-
+	
 	/**
 	 * Executes the network requests on a separate thread.
 	 * 
@@ -404,33 +435,6 @@ public class Communicator {
 		};
 		t.start();
 		return t;
-	}
-
-	/**
-	 * Sends the result of a getProjects request from server back to the caller
-	 * main UI thread through its handler.
-	 * 
-	 * @param projects
-	 *            the list of projects gotten from server
-	 * @param result
-	 *            The boolean holding authentication result
-	 * @param authToken
-	 *            The auth token returned from the server for this account.
-	 * @param handler
-	 *            The main UI thread's handler instance.
-	 * @param context
-	 *            The caller Activity's context.
-	 */
-	private static void sendProjectsResult(final ArrayList<HashMap<String, Object>> projects, final Boolean result,
-			final Handler handler, final Context context) {
-		if (handler == null || context == null) {
-			return;
-		}
-		handler.post(new Runnable() {
-			public void run() {
-				((ListProjectsActivity) context).onShowProjectsResult(projects, result);
-			}
-		});
 	}
 
 	/**
@@ -708,10 +712,11 @@ public class Communicator {
 	}
 
 	/**
-	 * A wrapper(does some cleanup too) for sending HTTP GET requests to the URI
+	 * A wrapper(does some cleanup too) for sending HTTP GET requests to the URI.
+	 * If the get throws an exception, this returns a string containing "[Error]".
 	 * 
 	 * @param Uri
-	 * @return the request from the remote server
+	 * @return the request from the remote server or [Error] message.
 	 */
 	public static String doHTTPGET(String Uri) {
 		BasicHttpParams mHttpParams = new BasicHttpParams();
@@ -846,7 +851,9 @@ public class Communicator {
 		
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(context, sendMap);
-		String addExpeditionUrl = server + "/api/addExpedition?authKey="   + getAuthKey(context);
+		String addExpeditionUrl = server + "/api/addExpedition?authKey="   
+//			+ attemptGetAuthKey(context);
+			+ getAuthKey(context);
 		sendMap.put("projectId", "" + projectId);
 		Log.i(TAG, "URL=" + addExpeditionUrl + " projectId = " + projectId);
 		String response = doHTTPPost(addExpeditionUrl, sendMap);
@@ -905,7 +912,9 @@ public class Communicator {
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(context, sendMap);
 		Log.i(TAG, "Sendmap= " + sendMap.toString());
-		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="  + this.getAuthKey(context);
+		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="  
+//			+ attemptGetAuthKey(context);
+			+ getAuthKey(context);
 		sendMap.put(Points.GPS_POINT_LATITUDE, "" + lat);
 		sendMap.put(Points.GPS_POINT_LONGITUDE, lng + "");
 		sendMap.put(Points.GPS_POINT_ALTITUDE, "" + alt);

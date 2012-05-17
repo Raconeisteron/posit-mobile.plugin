@@ -50,12 +50,12 @@ public class ResponseParser {
 	 * object
 	 * 
 	 * @return
-	 * @throws JSONException
+	 * @throws Exception 
 	 */
-	public Object parse() throws JSONException {
+	public Object parse() throws Exception {
 		Log.i(TAG, "parse() response= " + response);
 		if (response.equals(null))
-			throw new NullPointerException("Pass a response first");
+			throw new NullPointerException("Response string is null");
 		if (response.charAt(0) == '[') {
 			return parseList();
 		} else if (response.charAt(0) == '{') {
@@ -70,28 +70,28 @@ public class ResponseParser {
 	 * use.
 	 * 
 	 * @return
-	 * @throws JSONException
+	 * @throws JSONException 
+	 * @throws Exception 
 	 */
 	public List<HashMap<String, Object>> parseList() throws JSONException {
 		Log.i(TAG, "parseList() response = " + response);
 
-		if (response.equals(null))
-			throw new NullPointerException("Pass a response first");
-		List<HashMap<String, Object>> findsList = new ArrayList<HashMap<String, Object>>();
+		//response = null;  // Set this to bogus value to test error handling
+//		if (response.equals(null))
+//			throw new Exception("Response string is null");
+		List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
 		JSONArray j = new JSONArray(response);
 		for (int i = 0; i < j.length(); i++) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
 			JSONObject json = j.getJSONObject(i);
-			findsList.add(jsonObjectToMap(json));
+			list.add(jsonObjectToMap(json));
 		}
-		return findsList;
+		return list;
 	}
 
 	public HashMap<String, Object> parseObject() throws JSONException {
 		Log.i(TAG, "parseObject() response = " + response);
-		HashMap<String, String> responseMessage = new HashMap<String, String>();
 		if (response.equals(null))
-			throw new NullPointerException("Pass a response first");
+			throw new NullPointerException("Response string is null");
 		JSONObject json = new JSONObject(response);
 		return jsonObjectToMap(json);
 
@@ -99,14 +99,15 @@ public class ResponseParser {
 
 	private HashMap<String, Object> jsonObjectToMap(JSONObject json)
 			throws JSONException {
-		Log.i(TAG, "jsonObjectToMap()");
 
 		HashMap<String, Object> map = new HashMap<String, Object>();
+		@SuppressWarnings("unchecked")
 		Iterator<String> iterKeys = json.keys();
 		while (iterKeys.hasNext()) {
 			String key = iterKeys.next();
 			map.put(key, json.get(key));
 		}
+//		Log.i(TAG, "jsonObjectToMap() " + map);
 		return map;
 	}
 }
