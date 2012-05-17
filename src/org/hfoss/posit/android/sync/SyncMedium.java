@@ -69,8 +69,10 @@ public abstract class SyncMedium {
 		
 		for( String guid : findGuids ){
 			String rawFind = retrieveRawFind(guid );
-			Find newFind = convertRawToFind( rawFind );
-			storeFind( newFind );
+			if (!rawFind.contains("Error")) {
+				Find newFind = convertRawToFind( rawFind );
+				storeFind( newFind );
+			}
 		}
 	}
 	
