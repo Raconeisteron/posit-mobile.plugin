@@ -343,13 +343,15 @@ public class Find implements FindInterface {
 	 * object. This should also work for subclasses of Find.
 	 * 
 	 * NOTE: This is a little ugly. Can it be simplified? The main complication
-	 * is that it seems like you have to handel the cases of the derived fields
+	 * is that it seems like you have to handle the cases of the derived fields
 	 * and the Find fields separately.
 	 * 
 	 * @param cv
 	 *            , the ContentValues (key=val, key2=val2, ...)
 	 */
 	public void updateObject(ContentValues cv) {
+		if (cv == null)
+			return;
 		Set<Entry<String, Object>> cvSet = cv.valueSet();
 		Iterator it = cvSet.iterator();
 

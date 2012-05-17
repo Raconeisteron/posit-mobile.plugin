@@ -267,8 +267,7 @@ public class Communicator {
 	}
 
 	/**
-	 * Registers the phone being used with the given server address, email,
-	 * password and imei.
+	 * Registers the phone being used with the given server address, email, password and imei.
 	 * 
 	 * @param email
 	 *            email/username

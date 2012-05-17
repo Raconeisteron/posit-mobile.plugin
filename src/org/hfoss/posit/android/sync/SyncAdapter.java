@@ -23,24 +23,11 @@ import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
 import org.apache.http.ParseException;
-import org.apache.http.auth.AuthenticationException;
-import org.hfoss.posit.android.api.Find;
-import org.hfoss.posit.android.api.FindHistory;
-import org.hfoss.posit.android.api.SyncHistory;
-import org.hfoss.posit.android.api.database.DbHelper;
-import org.hfoss.posit.android.R;
-import org.json.JSONException;
-
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 
 /**
  * SyncAdapter implementation for syncing sample SyncAdapter contacts to the
@@ -49,14 +36,9 @@ import java.util.List;
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 	private static final String TAG = "SyncAdapter";
-
 	private final AccountManager mAccountManager;
-
 	private final Context mContext;
 
-	private Communicator communicator;
-
-	private Date mLastUpdated;
 
 	/**
 	 * Account type string.
@@ -80,10 +62,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
 			SyncResult syncResult) {
 
-		List<Find> finds;
 		Log.i(TAG, "In onPerformSync()");
 		String authToken = null;
-		boolean success;
 		
 		try {
 			// use the account manager to request the credentials
@@ -92,100 +72,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 			SyncServer syncServer = new SyncServer( mContext );
 			syncServer.sync( authToken );
-			
-/*			
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-			int projectId = prefs.getInt(mContext.getString(R.string.projectPref), 0);
-			
-			// Get finds changed/created on phone
-			finds = DbHelper.getDbManager(mContext).getChangedFinds(projectId);
-			
-			// Get finds changed/created on server
-			String serverFindsIds = Communicator.getServerFindsNeedingSync(mContext, authToken);
-			
-			// Get each find from the server and store in the phone's database
-			if (!serverFindsIds.equals("")) {
-				success = Communicator.getFindsFromServer(mContext, authToken, serverFindsIds);
-				Log.i(TAG, "server find id's: " + serverFindsIds);
-			}
-
-			// Send each find to the server 
-			if (finds != null) {
-				Communicator.sendFindsToServer(finds, mContext, authToken);
-				// Record sync on the phone
-				DbHelper.getDbManager(mContext).recordSync(new SyncHistory("idkwhatthisissupposedtobe"));
-			}
-			
-			// Record the sync on the server
-			success = Communicator.recordSync(mContext, authToken);
-			
-			Log.i(TAG, "Sync recorded: " + success);
-			
-			DbHelper.releaseDbManager();
-			/**/
-//			
-//			boolean success = false;
-//			//mdbh = new PositDbHelper(mContext);
-//
-//			//Log.i(TAG, "server=" + server + " key=" + authKey + " pid="
-//			//		+ mProjectId + " imei=" + imei);
-//
-//			// Wait here to make sure there is a WIFI connection
-//			//waitHere();
-//			
-//			// Check that project exists
-//			if(!comm.projectExists(""+mProjectId, server))
-//				mHandler.sendEmptyMessage(PROJECTERROR);
-//			
-//			// Get finds from the server since last sync with this device
-//			// (NEEDED: should be made project specific)
-//
-			//String serverFindGuIds = Communicator.getServerFindsNeedingSync(mContext, authToken);
-//
-//			// Get finds from the client
-//
-//			String phoneFindGuIds = mdbh.getDeltaFindsIds(mProjectId);
-//			Log.i(TAG, "phoneFindsNeedingSync = " + phoneFindGuIds);
-//
-//			// Send finds to the server
-//
-//			success = sendFindsToServer(phoneFindGuIds);
-//
-//			// Get finds from the server and store in the DB
-//
-//			success = getFindsFromServer(serverFindGuIds);
-//
-//			// Record the synchronization in the client's sync_history table
-//
-//			ContentValues values = new ContentValues();
-//			values.put(PositDbHelper.SYNC_COLUMN_SERVER, server);
-//
-//			success = mdbh.recordSync(values);
-//			if (!success) {
-//				Log.i(TAG, "Error recording sync stamp");
-//				mHandler.sendEmptyMessage(SYNCERROR);
-//			}
-//
-//			// Record the synchronization in the server's sync_history table
-//
-//			String url = server + "/api/recordSync?authKey=" + authKey + "&imei="
-//					+ imei;
-//			Log.i(TAG, "recordSyncDone URL=" + url);
-//			String responseString = "";
-//
-//			try {
-//				responseString = comm.doHTTPGET(url);
-//			} catch (Exception e) {
-//				Log.i(TAG, e.getMessage());
-//				e.printStackTrace();
-//				mHandler.sendEmptyMessage(NETWORKERROR);
-//			}
-//			Log.i(TAG, "HTTPGet recordSync response = " + responseString);
-//
-//			mHandler.sendEmptyMessage(DONE);
-//			return;
 		
-			
 		} catch (final AuthenticatorException e) {
 			syncResult.stats.numParseExceptions++;
 			Log.e(TAG, "AuthenticatorException", e);
