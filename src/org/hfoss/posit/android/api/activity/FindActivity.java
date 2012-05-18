@@ -845,11 +845,15 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		// A name is not always required in derived classes
 		String name = find.getName();
-		if (name != null && name.equals("")) {
-			// if (find.getName().equals("")){
-			Toast.makeText(this, "You must provide a name for this Find.",
+		String description = find.getDescription();
+		// Make sure name isn't full of just white spaces
+		if (name.trim().length() == 0) {
+			// Make sure description isn't full of just white spaces
+			if(description.trim().length() == 0){
+				Toast.makeText(this, "You must provide a name or description for this Find.",
 					Toast.LENGTH_LONG).show();
-			return false;
+				return false;
+			}
 		}
 
 		// Either create a new Find or update the existing Find
