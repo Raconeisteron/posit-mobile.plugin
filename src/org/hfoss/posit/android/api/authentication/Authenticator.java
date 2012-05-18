@@ -16,6 +16,9 @@
 
 package org.hfoss.posit.android.api.authentication;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
 
@@ -26,6 +29,8 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -132,6 +137,21 @@ class Authenticator extends AbstractAccountAuthenticator {
         return result;
     }
 
+    
+	/**
+	 * Handles messages and results received from the background thread.
+	 */
+	final Handler handler = new Handler() { 
+		@SuppressWarnings("unchecked")
+		public void handleMessage(Message msg) { 
+			if (msg.what == Communicator.SUCCESS) {
+				Log.i(TAG, "login success");
+			} else {
+				Log.i(TAG, "login failure");
+			}
+		} 
+	}; 
+    
     /**
      * Validates user's password on the server
      * @return the authKey from the server
@@ -140,7 +160,7 @@ class Authenticator extends AbstractAccountAuthenticator {
     	TelephonyManager telephonyManager = (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
     	String imei = telephonyManager.getDeviceId();
         return Communicator
-            .loginUser(username, password, imei, null, mContext);
+            .loginUser(username, password, imei, handler, mContext);
     }
 
     @Override

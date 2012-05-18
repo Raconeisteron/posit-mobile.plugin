@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.net.Authenticator;
 import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,10 +60,12 @@ import org.json.JSONException;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -70,17 +73,90 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
+
+/**
+ * Helper class to enable us to run the blockingGetAuthToken() method on
+ * a separate thread.
+ * 
+ * According to the documentation, blockingGetAuthToken() is synchronous,
+ * so we should be able to use it without complications like a background
+ * process.  It can block, however.
+ * 
+ * The way to use this class is as follows:
+ * 
+ * 		AuthKeyGetter getter = new AuthKeyGetter(context); // Create an instance
+ *		Thread thread = new Thread (getter);               // Create a new thread
+ *		thread.run();                                      // Run the thread
+ *		String authKey = getter.getAuthKey();              // Get the authkey
+ * 
+ * NOTE: This probably requires some refinement to respond if it does block.
+ *  
+ * @author rmorelli
+ *
+ */
+class AuthKeyGetter implements Runnable {
+	public static final String TAG = "AuthKeyGetter";
+	private Context context;
+	
+	public AuthKeyGetter (Context context) {
+		Log.i(TAG, "AuthKeyGetter constructor, context = " + context);
+		this.context = context;
+	}
+
+	String authKey = null;
+
+	/**
+	 * Return the auth key. Call this after calling run.
+	 * @return
+	 */
+	public String getAuthKey () {
+		return authKey;
+	}
+
+	/**
+	 * This method can run in a separate thread.
+	 */
+	public void run() {
+		final AccountManager accountManager = AccountManager.get(context);
+		Account[] accounts = accountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
+
+		if (accounts.length == 0)
+			return;
+		try {
+			authKey = accountManager
+			.blockingGetAuthToken(accounts[0], SyncAdapter.AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
+		} catch (OperationCanceledException e) {
+			Log.e(TAG, "getAuthKey(), cancelled during request: " + e.getMessage());
+			e.printStackTrace();
+		} catch (AuthenticatorException e) {
+			Log.e(TAG, "getAuthKey(), authentication exception: " + e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			Log.e(TAG, "getAuthKey() IOException" + e.getMessage());
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			Log.e(TAG, "getAuthKey() IllegalStateException" + e.getMessage());
+			e.printStackTrace();			
+		}
+	}
+}
+
+
 /**
  * The communication module for POSIT. Handles most calls to the server to get
  * information regarding projects and finds.
  * 
- * 
  */
-
-//public class Communicator extends OrmLiteBaseActivity<TrackerDbManager> {
 public class Communicator {
 	public static final int SUCCESS = 1;
 	public static final int FAILURE = 0;
+	
+	// Constants needed for managing authKey
+	public static final int AUTH_AUTHENTICATE = 0;
+	public static final int AUTH_GET_PROJECTS = 1;
+	public static final int AUTH_REG_EXPEDITION = 2;
+	public static final int AUTH_REG_GPS_POINT = 3;
+	
 	
 	private static final String MESSAGE = "message";
 	private static final String MESSAGE_CODE = "messageCode";
@@ -108,42 +184,66 @@ public class Communicator {
 //	private Context mContext;
 	public static long mTotalTime = 0;
 	
+	private static String mAuthKey = null;
+	
+
+	/**
+	 * Static method to retrieve the authkey, which is necessary for
+	 * basically all server operations.  This method launches a 
+	 * separate thread to retrieve the authkey.
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static String getAuthKey(Context context){
+		Log.i(TAG, "getAuthKey, context = " + context);
+		AuthKeyGetter getter = new AuthKeyGetter(context);
+		Thread thread = new Thread (getter);
+		thread.run();
+		String authKey = getter.getAuthKey();
+		Log.i(TAG, "authKey = " + authKey);
+		return authKey;
+	}
+	
+	/**
+	 * Checks to see if Posit server is reachable.  NOTE that this does not require an authkey.
+	 * 
+	 * @param context
+	 * @return  true if the server responds and false otherwise
+	 */
 	public static boolean isServerReachable(Context context) {
 		SharedPreferences applicationPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = applicationPreferences.getString(SERVER_PREF, "");
-		String url = server + "/api/isreachable?authKey=" 
-//			+ attemptGetAuthKey(context);
-			+ getAuthKey(context);
+				
+		String url = server + "/api/isreachable";
 
 		HashMap<String, Object> responseMap = null;
 		Log.i(TAG, "is reachable URL=" + url);
 
+		// Try to reach the server and parse the response
 		String responseString = null;
-//		String responseCode = null;
 		try {
 			responseString = doHTTPGET(url);
 			Log.i(TAG, "isreachable response = " + responseString);
 			if (responseString.contains("[Error] ")) {
-				Log.e(TAG, responseString);
 				return false;
 			} else {
 				ResponseParser parser = new ResponseParser(responseString);
 				responseMap = parser.parseObject();
-				//responseCode = (String) responseMap.get(MESSAGE_CODE);
 			}
 		} catch (Exception e) {
 			Log.i(TAG, "longinUser catch clause response = " + responseString);
 			Toast.makeText(context, e.getMessage() + "", Toast.LENGTH_LONG).show();
-			//sendAuthenticationResult(authKey, false, handler, context);
 			return false;
 		}
+		
+		// Return true or false based on whether the response contains an error code
 		try {
 			if (responseMap.containsKey(ERROR_CODE)) {
 				return false;
-			} else if (responseMap.containsKey(MESSAGE_CODE)) {
-				if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
-					return true;
-				}
+			} else if (responseMap.containsKey(MESSAGE_CODE)  
+					&& responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
+				return true;
 			} else {
 				return false;
 			}
@@ -151,7 +251,6 @@ public class Communicator {
 			Log.e(TAG, "loginUser " + e.getMessage() + " ");
 			return false;
 		}
-		return false;
 	}
 	
 	/**
@@ -167,86 +266,74 @@ public class Communicator {
 		Account[] accounts = am.getAccountsByType(accountType);
 		if (accounts.length != 0)
 			am.removeAccount(accounts[0], null, null);
-		String authkey = getAuthKey(context);  // attemptGetAuthKey(context); 
+				
+		String authkey = getAuthKey(context);  
 		return authkey == null;
 	}
 	
+//	/**
+//	 * Attempts to get the user's projects from the server, which requires the authKey.
+//	 * 
+//	 * Design:  Why can't this method just call doHttpGet and let it
+//	 * run on a background thread??
+//	 * 
+//	 * @param handler
+//	 *            The UI thread's handler instance.
+//	 * @param context
+//	 *            The caller Activity's context
+//	 * @return Thread The thread on which the network mOperations are executed.
+//	 */
+//	public static void asyncGetProjects(final Handler handler, final Context context) {
+//		Log.i(TAG, "attemptGetProjects()");
+//		new AsyncGetAuthKeyTask(context, handler, AUTH_GET_PROJECTS).execute((Void[]) null);
+//	}	
 	
 	/**
-	 * Attempts to get the auth key from the server.
+	 * Attempts to authenticate the user credentials on the server.
 	 * 
-	 * @param context
-	 *            The caller Activity's context
-	 *            
-	 * @return Thread The thread on which network operations are executed.
-	 */
-//	public static String attemptGetAuthKey(final Context context) {
-//
-//		final Runnable runnable = new Runnable() {
-//			public void run() {
-//				getAuthKey(context);
-//			}
-//		};
-//		// run on background thread.
-//		return performOnBackgroundThread(runnable);
-//	}
-
-	
-	public static String getAuthKey(Context context) {
-		AccountManager accountManager = AccountManager.get(context);
-
-		
-		
-		// TODO: again just picking the first account here.. how are you
-		// supposed to handle this?
-		Account[] accounts = accountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE);
-
-		if (accounts.length == 0)
-			return null;
-
-		String authKey = null;
-		try {
-			authKey = accountManager
-					.blockingGetAuthToken(accounts[0], SyncAdapter.AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
-		} catch (OperationCanceledException e) {
-			Log.e(TAG, "getAuthKey(), cancelled during request: " + e.getMessage());
-			e.printStackTrace();
-		} catch (AuthenticatorException e) {
-			Log.e(TAG, "getAuthKey(), authentication exception: " + e.getMessage());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e(TAG, "getAuthKey() IOException" + e.getMessage());
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			Log.e(TAG, "getAuthKey() IllegalStateException" + e.getMessage());
-			e.printStackTrace();			
-		}
-		return authKey;
-	}
-
-	/**
-	 * Attempts to get the user's projects from the server.
-	 * 
-	 * Design:  Why can't this method just call doHttpGet and let it
-	 * run on a background thread??
-	 * 
+	 * @param email
+	 *            The user's username
+	 * @param password
+	 *            The user's password to be authenticated
+	 * @param imei
+	 *            the phone's IMEI
 	 * @param handler
-	 *            The UI thread's handler instance.
+	 *            The main UI thread's handler instance.
 	 * @param context
 	 *            The caller Activity's context
 	 * @return Thread The thread on which the network mOperations are executed.
 	 */
-	public static void attemptGetProjects(final Handler handler, final Context context) {
-		Log.i(TAG, "attemptGetProjects()");
-		final Runnable runnable = new Runnable() {
+	public static void attemptAuth(final String email, final String password, final String imei,
+			final Handler handler, final Context context) {
+		Log.i(TAG, "Attempt Auth");
 
+		final Runnable runnable = new Runnable() {
 			public void run() {
-				getProjects(handler, context);
+				loginUser(email, password, imei, handler, context);
 			}
 		};
-		new Thread(runnable).run();    		// Run on background thread.
+		new Thread(runnable).run();  		// run on background thread.
 	}
 	
+//	public static void asyncGetAuthKeyFinished(Context context, Handler handler, int process, String result) {
+//		Log.i(TAG, "onGetAuthKeyResult = " + result);
+//		String authKey = null;
+//		if (result.contains("Error") == false)
+//			authKey = result;
+//		
+//		switch (process) {
+//		case AUTH_GET_PROJECTS:
+//			getProjects(handler, context, authKey);
+//			break;
+//		case AUTH_AUTHENTICATE:
+//			
+//			break;
+//			
+//
+//		}
+//
+//	}
+//	
 	/**
 	 * NOTE: Calls doHTTPGet
 	 * 
@@ -257,17 +344,17 @@ public class Communicator {
 	 * @return a list of all the projects and their information, encoded as maps
 	 * @throws JSONException
 	 */
-	public static void getProjects(Handler handler, Context context) {
+//	public static void getProjects(Handler handler, Context context, String authKey) {
+	public static ArrayList<HashMap<String, Object>> getProjects(Context context) {
 		Log.i(TAG, "getProjects()");
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = prefs.getString(SERVER_PREF, "");
+		
 		String authKey = getAuthKey(context);  // Set to null to test error handling
-
-		//		if (authKey != null) {
 
 		String url = server + "/api/listMyProjects?authKey=" + authKey;
 
-		ArrayList<HashMap<String, Object>> list;
+		ArrayList<HashMap<String, Object>> list = null;
 		String responseString = doHTTPGET(url);
 		Log.i(TAG, responseString);
 
@@ -275,19 +362,20 @@ public class Communicator {
 
 		try {
 			list = (ArrayList<HashMap<String, Object>>) (new ResponseParser(responseString).parseList());
-			Message msg = handler.obtainMessage(SUCCESS, list);
-			handler.sendMessage(msg);
+//			Message msg = handler.obtainMessage(SUCCESS, list);
+//			handler.sendMessage(msg);
 		} catch (JSONException e) {
 			Log.i(TAG, "getProjects JSON exception " + e.getMessage());
-			Message msg = handler.obtainMessage(FAILURE, e.getMessage());
-			handler.sendMessage(msg);
-			return;
+//			Message msg = handler.obtainMessage(FAILURE, e.getMessage());
+//			handler.sendMessage(msg);
+//			return;
 		} catch (Exception e) {
 			Log.i(TAG, "getProjects Exception " + e.getMessage());
-			Message msg = handler.obtainMessage(FAILURE, "Exception " + e.getMessage());
-			handler.sendMessage(msg);
-			return;				
+//			Message msg = handler.obtainMessage(FAILURE, "Exception " + e.getMessage());
+//			handler.sendMessage(msg);
+//			return;				
 		}
+		return list;
 	}
 
 	/**
@@ -351,7 +439,7 @@ public class Communicator {
 		String authKey = null;
 		try {
 			responseString = doHTTPPost(url, sendList);
-			Log.i(TAG, "longinUser response = " + responseString);
+			Log.i(TAG, "loginUser response = " + responseString);
 			if (responseString.contains("[Error] ")) {
 				Log.e(TAG, responseString);
 				return null;
@@ -359,111 +447,71 @@ public class Communicator {
 				ResponseParser parser = new ResponseParser(responseString);
 				responseMap = parser.parseObject();
 				authKey = (String) responseMap.get(MESSAGE);
+				Log.i(TAG, "authKey = " + authKey);
 			}
 		} catch (Exception e) {
-			Log.i(TAG, "longinUser catch clause response = " + responseString);
+			Log.i(TAG, "loginUser catch clause response = " + responseString);
+			e.printStackTrace();
 			Toast.makeText(context, e.getMessage() + "", Toast.LENGTH_LONG).show();
-			sendAuthenticationResult(authKey, false, handler, context);
+			Message msg = handler.obtainMessage(FAILURE, e.getMessage());
+			handler.sendMessage(msg);
+			//			sendAuthenticationResult(authKey, false, handler, context);
 			return null;
 		}
 		try {
 			if (responseMap.containsKey(ERROR_CODE)) {
-				sendAuthenticationResult(authKey, false, handler, context);
+				Message msg = handler.obtainMessage(FAILURE, responseMap.toString());
+				handler.sendMessage(msg);			
 				return null;
 			} else if (responseMap.containsKey(MESSAGE_CODE)) {
 				if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
-					sendAuthenticationResult(authKey, true, handler, context);
+					Log.i(TAG, "message code = ok ");
+					if (handler == null) {
+						Log.i(TAG, "handler is null ");
+					}
+					Message msg = handler.obtainMessage(SUCCESS, authKey);
+					handler.sendMessage(msg);							
+					Log.i(TAG, "message code = ok ");
 					return authKey;
 				}
 			} else {
-				sendAuthenticationResult(authKey, false, handler, context);
+				Log.i(TAG, "Authentication error");
+				Message msg = handler.obtainMessage(FAILURE, "Authentication error");
+				handler.sendMessage(msg);							
 				return null;
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "loginUser " + e.getMessage() + " ");
-			sendAuthenticationResult(authKey, false, handler, context);
+			Log.e(TAG, "loginUser exception " + e.getMessage() + " ");
+			e.printStackTrace();
+			Message msg = handler.obtainMessage(FAILURE, e.getMessage());
+			handler.sendMessage(msg);							
 			return null;
 		}
-		sendAuthenticationResult(authKey, false, handler, context);
+		Message msg = handler.obtainMessage(FAILURE, "Authentication error");
+		handler.sendMessage(msg);							
 		return null;
 	}
-
-	/**
-	 * Attempts to authenticate the user credentials on the server.
-	 * 
-	 * @param email
-	 *            The user's username
-	 * @param password
-	 *            The user's password to be authenticated
-	 * @param imei
-	 *            the phone's IMEI
-	 * @param handler
-	 *            The main UI thread's handler instance.
-	 * @param context
-	 *            The caller Activity's context
-	 * @return Thread The thread on which the network mOperations are executed.
-	 */
-	public static Thread attemptAuth(final String email, final String password, final String imei,
-			final Handler handler, final Context context) {
-
-		final Runnable runnable = new Runnable() {
-			public void run() {
-				loginUser(email, password, imei, handler, context);
-			}
-		};
-		// run on background thread.
-		return performOnBackgroundThread(runnable);
-	}
-
 	
-	/**
-	 * Executes the network requests on a separate thread.
-	 * 
-	 * @param runnable
-	 *            The runnable instance containing network mOperations to be
-	 *            executed.
-	 */
-	public static Thread performOnBackgroundThread(final Runnable runnable) {
-		final Thread t = new Thread() {
-			@Override
-			public void run() {
-				try {
-					runnable.run();
-				} finally {
-				}
-			}
-		};
-		t.start();
-		return t;
-	}
-
-	/**
-	 * Sends the authentication response from server back to the caller main UI
-	 * thread through its handler.
-	 * 
-	 * @param authKey
-	 *            the auth key obtained from the server
-	 * @param result
-	 *            The boolean holding authentication result
-	 * @param authToken
-	 *            The auth token returned from the server for this account.
-	 * @param handler
-	 *            The main UI thread's handler instance.
-	 * @param context
-	 *            The caller Activity's context.
-	 */
-	private static void sendAuthenticationResult(final String authKey, final Boolean result, final Handler handler,
-			final Context context) {
-		if (handler == null || context == null) {
-			return;
-		}
-		handler.post(new Runnable() {
-			public void run() {
-				((AuthenticatorActivity) context).onAuthenticationResult(result, authKey);
-			}
-		});
-	}
-
+//	/**
+//	 * Executes the network requests on a separate thread.
+//	 * 
+//	 * @param runnable
+//	 *            The runnable instance containing network mOperations to be
+//	 *            executed.
+//	 */
+//	public static Thread performOnBackgroundThread(final Runnable runnable) {
+//		final Thread t = new Thread() {
+//			@Override
+//			public void run() {
+//				try {
+//					runnable.run();
+//				} finally {
+//				}
+//			}
+//		};
+//		t.start();
+//		return t;
+//	}
 	
 	public String createProject(Context context, String server, String projectName,
 			String projectDescription, String authKey) {
@@ -507,127 +555,7 @@ public class Communicator {
 		}
 	}
 	
-	
-	//
-	// public String registerUser(String server, String firstname,
-	// String lastname, String email, String password, String check,
-	// String imei) {
-	// String url = server + "/api/registerUser";
-	// Log.i(TAG, "registerUser URL=" + url + "&imei=" + imei);
-	// HashMap<String, String> sendMap = new HashMap<String, String>();
-	// sendMap.put("email", email);
-	// sendMap.put("password1", password);
-	// sendMap.put("password2", check);
-	// sendMap.put("firstname", firstname);
-	// sendMap.put("lastname", lastname);
-	// try {
-	// responseString = doHTTPPost(url, sendMap);
-	// Log.i(TAG, "registerUser Httpost responseString = "
-	// + responseString);
-	// if (responseString.contains("[ERROR]")) {
-	// Toast.makeText(mContext,
-	// Constants.AUTHN_FAILED + ":" + responseString,
-	// Toast.LENGTH_LONG).show();
-	// return Constants.AUTHN_FAILED + ":" + responseString;
-	// }
-	// ResponseParser parser = new ResponseParser(responseString);
-	// HashMap<String, Object> responseMap = parser.parseObject();
-	// if (responseMap.containsKey(ERROR_CODE))
-	// return responseMap.get(ERROR_CODE) + ":"
-	// + responseMap.get(ERROR_MESSAGE);
-	// else if (responseMap.containsKey(MESSAGE_CODE)) {
-	// if (responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
-	// return Constants.AUTHN_OK + ":" + responseMap.get(MESSAGE);
-	// }
-	// } else {
-	// return Constants.AUTHN_FAILED + ":"
-	// + "Malformed message from the server.";
-	// }
-	// } catch (Exception e) {
-	// Log.e(TAG, "registerUser " + e.getMessage() + " ");
-	// return Constants.AUTHN_FAILED + ":" + e.getMessage();
-	// }
-	// return null;
-	// }
 
-
-	//
-	// /**
-	// * Converts a uri to a base64 encoded String for transmission to server.
-	// *
-	// * @param uri
-	// * @return
-	// */
-	// private String convertUriToBase64(Uri uri) {
-	// ByteArrayOutputStream imageByteStream = new ByteArrayOutputStream();
-	// byte[] imageByteArray = null;
-	// Bitmap bitmap = null;
-	//
-	// try {
-	// bitmap = android.provider.MediaStore.Images.Media.getBitmap(
-	// mContext.getContentResolver(), uri);
-	// } catch (FileNotFoundException e) {
-	// e.printStackTrace();
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// if (bitmap == null) {
-	// Log.d(TAG, "No bitmap");
-	// }
-	// // Compress bmp to jpg, write to the byte output stream
-	// bitmap.compress(Bitmap.CompressFormat.JPEG, 80, imageByteStream);
-	// // Turn the byte stream into a byte array
-	// imageByteArray = imageByteStream.toByteArray();
-	// char[] base64 = Base64Coder.encode(imageByteArray);
-	// String base64String = new String(base64);
-	// return base64String;
-	// }
-	//
-	// /**
-	// * cleanup the item key,value pairs so that we can send the data.
-	// *
-	// * @param sendMap
-	// */
-	// private void cleanupOnSend(HashMap<String, String> sendMap) {
-	// addRemoteIdentificationInfo(sendMap);
-	// }
-	//
-	// /**
-	// * Add the standard values to our request. We might as well use this as
-	// * initializer for our requests.
-	// *
-	// * @param sendMap
-	// */
-	// private void addRemoteIdentificationInfo(HashMap<String, String> sendMap)
-	// {
-	// // sendMap.put(COLUMN_APP_KEY, appKey);
-	// sendMap.put(COLUMN_IMEI, Utils.getIMEI(mContext));
-	// }
-	//
-	// /**
-	// * cleanup the item key,value pairs so that we can receive and save to the
-	// * internal database
-	// *
-	// * @param rMap
-	// */
-	// public static void cleanupOnReceive(HashMap<String, Object> rMap) {
-	// rMap.put(PositDbHelper.FINDS_SYNCED, PositDbHelper.FIND_IS_SYNCED);
-	// rMap.put(PositDbHelper.FINDS_GUID, rMap.get("guid"));
-	// // rMap.put(PositDbHelper.FINDS_GUID, rMap.get("guid"));
-	//
-	// rMap.put(PositDbHelper.FINDS_PROJECT_ID, projectId);
-	// if (rMap.containsKey("add_time")) {
-	// rMap.put(PositDbHelper.FINDS_TIME, rMap.get("add_time"));
-	// rMap.remove("add_time");
-	// }
-	// if (rMap.containsKey("images")) {
-	// if (Utils.debug)
-	// Log.d(TAG, "contains image key");
-	// rMap.put(PositDbHelper.PHOTOS_IMAGE_URI, rMap.get("images"));
-	// rMap.remove("images");
-	// }
-	// }
 
 	/**
 	 * Sends a HttpPost request to the given URL. Any JSON
@@ -851,9 +779,11 @@ public class Communicator {
 		
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(context, sendMap);
-		String addExpeditionUrl = server + "/api/addExpedition?authKey="   
-//			+ attemptGetAuthKey(context);
-			+ getAuthKey(context);
+		
+		String authkey = getAuthKey(context); 
+		
+		String addExpeditionUrl = server + "/api/addExpedition?authKey="  + authkey;
+
 		sendMap.put("projectId", "" + projectId);
 		Log.i(TAG, "URL=" + addExpeditionUrl + " projectId = " + projectId);
 		String response = doHTTPPost(addExpeditionUrl, sendMap);
@@ -903,18 +833,18 @@ public class Communicator {
 	public String registerExpeditionPoint(Context context, double lat, double lng, double alt,
 			int swath, int expedition, long time) {
 		
-		//mContext = context;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String server = prefs.getString(SERVER_PREF, "");
 
-			//long swath, int expedition) {
 		Log.i(TAG, "Communicator, registerExpeditionPoint " + lat + " " + lng + " " + time);
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		addRemoteIdentificationInfo(context, sendMap);
 		Log.i(TAG, "Sendmap= " + sendMap.toString());
-		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey="  
-//			+ attemptGetAuthKey(context);
-			+ getAuthKey(context);
+		
+		String authKey = getAuthKey(context);
+		
+		String addExpeditionUrl = server + "/api/addExpeditionPoint?authKey=" + authKey;
+
 		sendMap.put(Points.GPS_POINT_LATITUDE, "" + lat);
 		sendMap.put(Points.GPS_POINT_LONGITUDE, lng + "");
 		sendMap.put(Points.GPS_POINT_ALTITUDE, "" + alt);

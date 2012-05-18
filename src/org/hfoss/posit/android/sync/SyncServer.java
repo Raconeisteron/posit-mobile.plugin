@@ -84,8 +84,8 @@ public class SyncServer extends SyncMedium{
 	private static final String COLUMN_DATA_FULL = "data_full"; 	//data for the image, takes Base64 string of image
 	private static final String COLUMN_DATA_THUMBNAIL = "data_thumbnail"; //data for the image, take Base 64 string of image
 	
-	private String m_server;
-	private String m_imei;
+	private String mServer;
+	private String mImei;
 	
 	/**
 	 * Constructor that accepts the Context and initializes all the necessary
@@ -93,7 +93,7 @@ public class SyncServer extends SyncMedium{
 	 * @param context - Context to be used for all sync purposes
 	 */
 	public SyncServer(Context context){
-		m_context = context;
+		mContext = context;
 		initSettings();
 	}
 	
@@ -110,24 +110,24 @@ public class SyncServer extends SyncMedium{
 	 * Initializes the server string and project ID
 	 */
 	private void initPreferences(){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(m_context);
-		m_server = prefs.getString(SERVER_PREF, "");
-		m_projectId = prefs.getInt(PROJECT_PREF, 0);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+		mServer = prefs.getString(SERVER_PREF, "");
+		mProjectId = prefs.getInt(PROJECT_PREF, 0);
 	}
 	
 	/**
 	 * Initializes the imei id
 	 */
 	private void initTelephony(){
-		TelephonyManager telephonyManager = (TelephonyManager) m_context.getSystemService(Context.TELEPHONY_SERVICE);
-		m_imei = telephonyManager.getDeviceId();
+		TelephonyManager telephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+		mImei = telephonyManager.getDeviceId();
 	}
 	
 	/**
 	 * Initializes the authorization key
 	 */
 	private void initAuthKey(){
-		m_authKey = Communicator.getAuthKey( m_context );
+		mAuthKey = Communicator.getAuthKey( mContext );
 	}
 	
 	/**
@@ -138,7 +138,7 @@ public class SyncServer extends SyncMedium{
 	public List<HashMap<String,Object>> getProjects(){
 		ArrayList<HashMap<String, Object>> list = null;
 
-		String url = m_server + "/api/listMyProjects?authKey=" + m_authKey;
+		String url = mServer + "/api/listMyProjects?authKey=" + mAuthKey;
 
 		String responseString = Communicator.doHTTPGET(url);
 		Log.i(TAG, responseString);
@@ -183,12 +183,12 @@ public class SyncServer extends SyncMedium{
 	public boolean setProject( HashMap<String,Object> newProject ){
 		String projectId 		= (String) newProject.get("id");
 		String projectName 		= (String) newProject.get("name");
-		String projectPref  	= m_context.getString(R.string.projectPref);
-		String projectNamePref 	= m_context.getString(R.string.projectNamePref);
+		String projectPref  	= mContext.getString(R.string.projectPref);
+		String projectNamePref 	= mContext.getString(R.string.projectNamePref);
 		int id  				= Integer.parseInt(projectId);
 		boolean success 		= true;
 
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(m_context);
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
 		int currentProjectId = sp.getInt(projectPref,0);
 		
 		if (id == currentProjectId){
@@ -228,7 +228,7 @@ public class SyncServer extends SyncMedium{
 	private String getServerFindsNeedingSync() {
 		String response = "";
 		
-		String url = m_server + "/api/getDeltaFindsIds?authKey=" + m_authKey + "&imei=" + m_imei + "&projectId=" + m_projectId;
+		String url = mServer + "/api/getDeltaFindsIds?authKey=" + mAuthKey + "&imei=" + mImei + "&projectId=" + mProjectId;
 		Log.i(TAG, "getDeltaFindsIds URL=" + url);
 
 		try {
@@ -247,10 +247,10 @@ public class SyncServer extends SyncMedium{
 	 * @return Find data in the form of a string
 	 */
 	public String retrieveRawFind( String guid ){
-		String url = m_server + "/api/getFind?guid=" + guid + "&authKey=" + m_authKey;
+		String url = mServer + "/api/getFind?guid=" + guid + "&authKey=" + mAuthKey;
 		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 		pairs.add(new BasicNameValuePair("guid", guid));
-		pairs.add(new BasicNameValuePair("imei", m_imei));
+		pairs.add(new BasicNameValuePair("imei", mImei));
 
 		String responseString = Communicator.doHTTPPost(url, pairs);
 
@@ -269,18 +269,18 @@ public class SyncServer extends SyncMedium{
 		String url = createActionBasedUrl( find );
 		List<NameValuePair> pairs = getNameValuePairs(find);
 		
-		BasicNameValuePair pair = new BasicNameValuePair("imei", m_imei);
+		BasicNameValuePair pair = new BasicNameValuePair("imei", mImei);
 		pairs.add(pair);
 		
 		success = transmitFind( find, url, pairs );
 		
 		if( success ){
 			Log.i(TAG, "transmitFind synced find id: " + find.getId());
-			DbHelper.getDbManager(m_context).updateStatus(find, Constants.SUCCEEDED);
+			DbHelper.getDbManager(mContext).updateStatus(find, Constants.SUCCEEDED);
 		}
 		else{
 			Log.i(TAG, "transmitFind failed to sync find id: " + find.getId());
-			DbHelper.getDbManager(m_context).updateStatus(find, Constants.FAILED);
+			DbHelper.getDbManager(mContext).updateStatus(find, Constants.FAILED);
 		}
 		
 		transmitImage( find );
@@ -299,10 +299,10 @@ public class SyncServer extends SyncMedium{
 		String action = find.getAction();
 		
 		if( action.equals( FindHistory.ACTION_CREATE ) ){
-			url = m_server + "/api/createFind?authKey=" + m_authKey;
+			url = mServer + "/api/createFind?authKey=" + mAuthKey;
 		}
 		else if( action.equals( FindHistory.ACTION_UPDATE ) ){
-			url = m_server + "/api/updateFind?authKey=" + m_authKey;
+			url = mServer + "/api/updateFind?authKey=" + mAuthKey;
 		}
 		else{
 			Log.e(TAG, "Find object does not contain an appropriate action: " + find);
@@ -393,12 +393,12 @@ public class SyncServer extends SyncMedium{
 		try {
 			String responseString = Communicator.doHTTPPost(url, pairs);
 			success = responseString.indexOf("True") != -1;
-			DbHelper.getDbManager(m_context).updateStatus(find, Constants.TRANSACTING);
-			DbHelper.getDbManager(m_context).updateSyncOperation(find, Constants.POSTING);
+			DbHelper.getDbManager(mContext).updateStatus(find, Constants.TRANSACTING);
+			DbHelper.getDbManager(mContext).updateSyncOperation(find, Constants.POSTING);
 		} catch (Exception e) {
 			Log.i(TAG, e.getMessage());
-			Toast.makeText(m_context, e.getMessage(), Toast.LENGTH_LONG).show();
-			DbHelper.getDbManager(m_context).updateStatus(find, Constants.FAILED);
+			Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
+			DbHelper.getDbManager(mContext).updateStatus(find, Constants.FAILED);
 			success = false;
 		}
 		
@@ -410,9 +410,9 @@ public class SyncServer extends SyncMedium{
 	 * @param find - Find containing the image to be transmitted
 	 */
 	private void transmitImage( Find find ){
-		if(Camera.isPhotoSynced(find, m_context) == false){
+		if(Camera.isPhotoSynced(find, mContext) == false){
 			HashMap<String, String> sendMap = createImageMap( find );
-			String url = m_server + "/api/attachPicture?authKey=" + m_authKey;
+			String url = mServer + "/api/attachPicture?authKey=" + mAuthKey;
 			
 			Communicator.doHTTPPost(url, sendMap);
 	 	}
@@ -426,14 +426,14 @@ public class SyncServer extends SyncMedium{
 	private HashMap<String, String> createImageMap( Find find ){
 		HashMap<String, String> sendMap = new HashMap<String, String>();
 		
-		sendMap.put(COLUMN_IMEI, m_imei);
+		sendMap.put(COLUMN_IMEI, mImei);
 		sendMap.put(COLUMN_GUID, find.getGuid());
 		sendMap.put(COLUMN_IDENTIFIER,Integer.toString(find.getId()));
 		sendMap.put(COLUMN_PROJECT_ID,Integer.toString(find.getProject_id()));
 		sendMap.put(COLUMN_MIME_TYPE, "image/jpeg");
 		
-		String fullPicStr = Camera.getPhotoAsString(find.getGuid(), m_context);
-		String thumbPicStr = Camera.getPhotoThumbAsString(find.getGuid(), m_context);
+		String fullPicStr = Camera.getPhotoAsString(find.getGuid(), mContext);
+		String thumbPicStr = Camera.getPhotoThumbAsString(find.getGuid(), mContext);
 		
 		sendMap.put(COLUMN_DATA_FULL, fullPicStr);
 		sendMap.put(COLUMN_DATA_THUMBNAIL, thumbPicStr);
@@ -459,7 +459,7 @@ public class SyncServer extends SyncMedium{
 	 * @return whether or not the recording was successful
 	 */
 	private boolean recordSyncOnServer() {
-		String url = m_server + "/api/recordSync?authKey=" + m_authKey + "&imei=" + m_imei + "&projectId=" + m_projectId;
+		String url = mServer + "/api/recordSync?authKey=" + mAuthKey + "&imei=" + mImei + "&projectId=" + mProjectId;
 		Log.i(TAG, "recordSync URL=" + url);
 		String responseString = "";
 
@@ -480,7 +480,7 @@ public class SyncServer extends SyncMedium{
 	 */
 	private boolean recordSyncOnDevice(){
 		int success = 0;
-		success = DbHelper.getDbManager(m_context).recordSync(new SyncHistory("idkwhatthisissupposedtobe"));
+		success = DbHelper.getDbManager(mContext).recordSync(new SyncHistory("idkwhatthisissupposedtobe"));
 		return success != 0;
 	}
 	
@@ -672,7 +672,11 @@ public class SyncServer extends SyncMedium{
 	private boolean getImageOnServer(String imageId) throws FileNotFoundException, IOException {
 		//TODO: Communicator.getAuthKey(m_context) might be returning m_authKey
 		//		There are other cases where this happens to, they could be cleaned up
-		String imageUrl = m_server + "/api/getPicture?id=" + imageId + "&authKey=" + Communicator.getAuthKey(m_context);
+		
+		String imageUrl = mServer + "/api/getPicture?id=" + imageId + "&authKey=" + 
+			Communicator.getAuthKey(mContext);
+
+		
 		HashMap<String, String> sendMap = createSendMap();
 		String imageResponseString 		= Communicator.doHTTPPost(imageUrl, sendMap);
 
@@ -685,7 +689,7 @@ public class SyncServer extends SyncMedium{
 	 */
 	private HashMap<String, String> createSendMap(){
 		HashMap<String, String> sendMap = new HashMap<String, String>();
-		sendMap.put(COLUMN_IMEI, Communicator.getIMEI(m_context));
+		sendMap.put(COLUMN_IMEI, Communicator.getIMEI(mContext));
 		return sendMap;
 	}
 	
@@ -708,7 +712,7 @@ public class SyncServer extends SyncMedium{
 				String guid = jobj.getString(Find.GUID);
 				String imgData = jobj.getString("data_full");
 				
-				Camera.savePhoto(guid, imgData, m_context);
+				Camera.savePhoto(guid, imgData, mContext);
 			} catch (JSONException e) {
 				Log.i(TAG, "Unable to save image data.");
 				e.printStackTrace();

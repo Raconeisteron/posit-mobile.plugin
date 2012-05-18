@@ -63,7 +63,7 @@ public class SyncSms extends SyncMedium {
 	public SyncSms(Context context) {
 		mMessages = new ArrayList<String>();
 		mPhoneNumbers = new ArrayList<String>();
-		m_context = context;
+		mContext = context;
 	}
 
 	/**
@@ -113,11 +113,11 @@ public class SyncSms extends SyncMedium {
 	 * 
 	 */
 	public void sendFinds() {
-		Intent smsService = new Intent(m_context, SmsService.class);
+		Intent smsService = new Intent(mContext, SmsService.class);
 		smsService.putExtra("messages", mMessages);
 		smsService.putExtra("phonenumbers", mPhoneNumbers);
 		smsService.setAction(Intent.ACTION_SEND);
-		m_context.startService(smsService);
+		mContext.startService(smsService);
 	}
 	
 	/**
@@ -205,7 +205,7 @@ public class SyncSms extends SyncMedium {
 					
 					// So now we need to notify the user
 					String ns = Context.NOTIFICATION_SERVICE;
-					NotificationManager notificationMgr = (NotificationManager) m_context
+					NotificationManager notificationMgr = (NotificationManager) mContext
 							.getSystemService(ns);
 					
 					Notification notification = buildNotification( entry, find, notificationId );
@@ -247,13 +247,13 @@ public class SyncSms extends SyncMedium {
 		Notification notification = initNotification();
 		Intent notificationIntent = buildNotificationIntent( entry, find, notificationId );
 		PendingIntent contentIntent = PendingIntent.getActivity(
-				m_context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+				mContext, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
 		CharSequence contentTitle = "SMS received";
 		CharSequence contentText = "from " + entry.getKey();
 		
 		notification.contentIntent = contentIntent;
-		notification.setLatestEventInfo(m_context, contentTitle,
+		notification.setLatestEventInfo(mContext, contentTitle,
 				contentText, contentIntent);
 		
 		return notification;
@@ -279,7 +279,7 @@ public class SyncSms extends SyncMedium {
 	 * @return Intent filled with passed in data
 	 */
 	private Intent buildNotificationIntent( Entry<String, String> entry, Find find, int notificationId ){
-		Context appContext = m_context.getApplicationContext();
+		Context appContext = mContext.getApplicationContext();
 
 		Intent notificationIntent = new Intent(appContext,
 				SmsViewActivity.class);

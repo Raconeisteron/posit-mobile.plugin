@@ -72,24 +72,24 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 	private ArrayList<HashMap<String, Object>> mProjectList;
 	
 	
-	/**
-	 * Handles messages and results received from the background thread.
-	 */
-	final Handler handler = new Handler() { 
-		@SuppressWarnings("unchecked")
-		public void handleMessage(Message msg) { 
-			if (msg.what == Communicator.SUCCESS) {
-				mProjectList = (ArrayList<HashMap<String, Object>>) msg.obj;
-				showProjects(mProjectList);
-			} else {
-				reportError((String) msg.obj);
-			}
-		} 
-	}; 
+//	/**
+//	 * Handles messages and results received from the background thread.
+//	 */
+//	final Handler handler = new Handler() { 
+//		@SuppressWarnings("unchecked")
+//		public void handleMessage(Message msg) { 
+//			if (msg.what == Communicator.SUCCESS) {
+//				mProjectList = (ArrayList<HashMap<String, Object>>) msg.obj;
+//				showProjects(mProjectList);
+//			} else {
+//				reportError((String) msg.obj);
+//			}
+//		} 
+//	}; 
 
 	/**
 	 * Called when the activity is first started.  Sets up the UI
-	 * and invokes attemptGetProjects, which queries the server.
+	 * and invokes asyncGetProjects, which queries the server.
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +99,13 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 		Button addProjectButton = (Button)findViewById(R.id.idAddProjButton);
 		addProjectButton.setOnClickListener(this);
 
-		Communicator.attemptGetProjects(handler, this);  // Done on background thread
+		mProjectList = (ArrayList<HashMap<String, Object>>) Communicator.getProjects(this);
+		if (mProjectList != null)
+			showProjects(mProjectList);
+		else
+			reportError("Error attempting to fetch projects.");
+		
+//		Communicator.asyncGetProjects(handler, this);  // Done on async thread
 	}
 
 
@@ -191,7 +197,11 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == NEW_PROJECT) {
-			Communicator.attemptGetProjects(handler, this);
+			mProjectList = (ArrayList<HashMap<String, Object>>) Communicator.getProjects(this);
+			if (mProjectList != null)
+				showProjects(mProjectList);
+			else
+				reportError("Error attempting to fetch projects.");
 		}
 	}
 

@@ -51,12 +51,12 @@ import android.util.Log;
 public abstract class SyncMedium {
 	private static final String TAG = "SyncMedium";
 	
-	protected Context m_context;
-	protected int m_projectId;
-	protected String m_authKey;
+	protected Context mContext;
+	protected int mProjectId;
+	protected String mAuthKey;
 	
 	public void sync( String authToken ) {
-		m_authKey = authToken;
+		mAuthKey = authToken;
 		getFinds();
 		sendFinds();
 	}
@@ -349,18 +349,18 @@ public abstract class SyncMedium {
 	 * @param newFind - find to be inserted into device's storage
 	 */
 	public void storeFind( Find newFind ){
-		Find find = DbHelper.getDbManager(m_context).getFindByGuid(newFind.getGuid());
+		Find find = DbHelper.getDbManager(mContext).getFindByGuid(newFind.getGuid());
 		if (find != null) {
 			Log.i("SyncMedium", "Updating existing find: " + find.getId());
 			Log.i(TAG, "Find= " + find);
 			Log.i(TAG, "NewFind= "+ newFind);
 			newFind.setId(find.getId());
-			DbHelper.getDbManager(m_context).updateWithoutHistory(newFind);				
+			DbHelper.getDbManager(mContext).updateWithoutHistory(newFind);				
 		} else {
 			Log.i("SyncMedium", "Inserting new find: " + newFind.getId());
 			Log.i("SyncMedium", "Adding a new find " + newFind);
 			
-			DbHelper.getDbManager(m_context).insertWithoutHistory(newFind);
+			DbHelper.getDbManager(mContext).insertWithoutHistory(newFind);
 		}
 	}
 	
@@ -419,6 +419,6 @@ public abstract class SyncMedium {
 	 * @return List containing all changed finds
 	 */
 	public List<Find> getChangedFinds(){
-		return DbHelper.getDbManager(m_context).getChangedFinds(m_projectId);
+		return DbHelper.getDbManager(mContext).getChangedFinds(mProjectId);
 	}
 }
