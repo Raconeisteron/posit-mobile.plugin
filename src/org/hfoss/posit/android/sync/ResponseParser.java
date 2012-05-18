@@ -107,7 +107,7 @@ public class ResponseParser {
 			String key = iterKeys.next();
 			map.put(key, json.get(key));
 		}
-//		Log.i(TAG, "jsonObjectToMap() " + map);
+		Log.i(TAG, "jsonObjectToMap() " + map);
 		return map;
 	}
 }

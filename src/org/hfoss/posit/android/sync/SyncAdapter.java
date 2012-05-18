@@ -18,6 +18,7 @@ package org.hfoss.posit.android.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
@@ -56,8 +57,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		mAccountManager = AccountManager.get(context);
 	}
 	
-	
-
+	/**
+	 * This is called automatically. It can be called by starting SyncActivity
+	 */
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
 			SyncResult syncResult) {
@@ -67,6 +69,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		
 		try {
 			// use the account manager to request the credentials
+			Log.i(TAG, "Trying to retrieve authToken");
 			authToken = mAccountManager.blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
 			Log.i(TAG, "auth token: " + authToken);
 

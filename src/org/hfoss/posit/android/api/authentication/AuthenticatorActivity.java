@@ -17,7 +17,6 @@
 
 package org.hfoss.posit.android.api.authentication;
 
-
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -27,10 +26,12 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -82,10 +83,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
      * doesn't cause the user's password to be changed on the device.
      */
     private Boolean mConfirmCredentials = false;
-
-    /** for posting authentication attempts back to UI thread */
-    private final Handler mHandler = new Handler();
-
+    
     private TextView mMessage, mPrompt;
 
     private String mPassword;
@@ -98,13 +96,41 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private String mUsername;
 
     private EditText mUsernameEdit;
+    
+	/**
+	 * Handles messages and results received from the background thread.
+	 */
+    final Handler mHandler = new Handler() { 
+    	public void handleMessage(Message msg) { 
+    		hideProgress();
+    		if (msg.what == Communicator.SUCCESS) {
+    			String authKey = (String) msg.obj;
+    			if (!mConfirmCredentials) {
+    				finishLogin(authKey);
+    			} else {
+    				finishConfirmCredentials(true);
+    			}
+    		} else {
+    			Log.e(TAG, "onAuthenticationResult: failed to authenticate");
+				mMessage.setTextColor(Color.RED);
+    			if (mRequestNewAccount) {
+    				// "Please enter a valid username/password.
+    				mMessage.setText(getString(R.string.authFailed));
+    			} else {
+    				// "Please enter a valid password." (Used when the
+    				// account is already in the database but the password
+    				// doesn't work.)
+    				mMessage.setText(getString(R.string.authFailed));
+    			}
+    		}
+    	} 
+    }; 
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void onCreate(Bundle icicle) {
-
         Log.i(TAG, "onCreate(" + icicle + ")");
         super.onCreate(icicle);
         mAccountManager = AccountManager.get(this);
@@ -131,7 +157,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         mUsernameEdit = (EditText) findViewById(R.id.username_edit);
         mPasswordEdit = (EditText) findViewById(R.id.password_edit);
         mUsernameEdit.setText(mUsername);
-        mMessage.setText(getMessage());
+        mMessage.setText(getErrorMessage());
         
         // Checks for connectivity over wifi or mobile.  TODO: Other network types? They are listed in ConnectivityManager.
         ConnectivityManager connectivityManager = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -151,7 +177,6 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         	Toast.makeText(this, "Sorry, server is not reachable.", Toast.LENGTH_LONG).show();
         	finish();        	
         }
-        
     }
 
     /*
@@ -182,26 +207,25 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
      * @param view The Submit button for which this method is invoked
      */
     public void handleLogin(View view) {
-        if (mRequestNewAccount) {
-            mUsername = mUsernameEdit.getText().toString();
-        }
-        mPassword = mPasswordEdit.getText().toString();
-      
-        // Get the imei for our server..
-        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        String imei = telephonyManager.getDeviceId();
-        if (TextUtils.isEmpty(mUsername) || TextUtils.isEmpty(mPassword)) {
-            mMessage.setText(getMessage());
-        } else {
-            showProgress();
-            // Start authenticating...
-            mAuthThread =
-                Communicator.attemptAuth(mUsername, mPassword, imei, mHandler, this);
-        }
+    	if (mRequestNewAccount) {
+    		mUsername = mUsernameEdit.getText().toString();
+    	}
+    	mPassword = mPasswordEdit.getText().toString();
+
+    	// Get the imei for our server..
+    	TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+    	String imei = telephonyManager.getDeviceId();
+    	if (TextUtils.isEmpty(mUsername) || TextUtils.isEmpty(mPassword)) {
+    		mMessage.setTextColor(Color.RED);
+    		mMessage.setText(getErrorMessage());
+    	} else {
+    		showProgress();
+    		Communicator.attemptAuth(mUsername, mPassword, imei, mHandler, this);
+    	}
     }
 
     /**
-     * Called when response is received from the server for confirm credentials
+     * Called from Handler when response is received from the server for confirm credentials
      * request. See onAuthenticationResult(). Sets the
      * AccountAuthenticatorResult which is sent back to the caller.
      * 
@@ -219,7 +243,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     /**
-     * Called when response is received from the server for authentication
+     * Called from Handler when response is received from the server for authentication
      * request. See onAuthenticationResult(). Sets the
      * AccountAuthenticatorResult which is sent back to the caller. Also sets
      * the authToken in AccountManager for this account.
@@ -229,8 +253,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
      * @param the confirmCredentials result.
      */
     private void finishLogin(String authKey) {
-
-        Log.i(TAG, "finishLogin()");
+        Log.i(TAG, "finishLogin(), authKey = " + authKey);
         final Account account = new Account(mUsername, SyncAdapter.ACCOUNT_TYPE);
         if (mRequestNewAccount) {
             mAccountManager.addAccountExplicitly(account, mPassword, null);
@@ -240,7 +263,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
             mAccountManager.setPassword(account, mPassword);
         }
         final Intent intent = new Intent();
+        
         mAuthtoken = authKey;
+        
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE,SyncAdapter.ACCOUNT_TYPE);
         if (mAuthtokenType != null && mAuthtokenType.equals(SyncAdapter.AUTHTOKEN_TYPE)) {
@@ -248,6 +273,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         }
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
+        
         Toast.makeText(this, "Authentication successful.  You can now use POSIT.", Toast.LENGTH_LONG).show();
         finish();
     }
@@ -260,37 +286,9 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     }
 
     /**
-     * Called when the authentication process completes (see attemptLogin()).
-     */
-    public void onAuthenticationResult(boolean result, String authKey) {
-
-        Log.i(TAG, "onAuthenticationResult(" + result + ")");
-        // Hide the progress dialog
-        hideProgress();
-        if (result) {
-            if (!mConfirmCredentials) {
-                finishLogin(authKey);
-            } else {
-                finishConfirmCredentials(true);
-            }
-        } else {
-            Log.e(TAG, "onAuthenticationResult: failed to authenticate");
-            if (mRequestNewAccount) {
-                // "Please enter a valid username/password.
-                mMessage.setText(getString(R.string.authFailed));
-            } else {
-                // "Please enter a valid password." (Used when the
-                // account is already in the database but the password
-                // doesn't work.)
-                mMessage.setText(getString(R.string.authFailed));
-            }
-        }
-    }
-
-    /**
      * Returns the message to be displayed at the top of the login dialog box.
      */
-    private CharSequence getMessage() {
+    private CharSequence getErrorMessage() {
         if (TextUtils.isEmpty(mUsername)) {
             // If no username, then we ask the user to log in using an
             // appropriate service.
@@ -310,4 +308,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private void showProgress() {
         showDialog(0);
     }
+    
+	/**
+	 * Reports as much information as it can about the error.
+	 * @param str, the message to report
+	 */
+	private void reportError(String str) {
+		Log.i(TAG, "Error: " + str);
+		Toast.makeText(this, "Error: " + str, Toast.LENGTH_LONG).show();
+		finish();
+	}
+    
 }

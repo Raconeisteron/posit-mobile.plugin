@@ -314,6 +314,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
 		
 		String authKey = Communicator.getAuthKey(this);
+		
 		if (authKey == null) {
 			Toast.makeText(this, "You must go to Android > Settings > Accounts & Sync to " +
 					" set up an account before you use POSIT.", Toast.LENGTH_LONG).show();
