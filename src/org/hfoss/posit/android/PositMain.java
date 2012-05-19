@@ -161,9 +161,10 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	}
 	
 	/*
-	 * If there's no account configured, start account setup.
+	 * If there's no org.hfoss.posit.account configured, start account setup.
 	 */
 	private void resolveAccount() {
+		Log.i(TAG, "Resolving Posit Account");
 		AccountManager accountManager = AccountManager.get(this);
 		final int numAccount = (accountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE)).length;
 		

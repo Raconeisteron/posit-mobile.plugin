@@ -104,14 +104,16 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     	public void handleMessage(Message msg) { 
     		hideProgress();
     		if (msg.what == Communicator.SUCCESS) {
-    			String authKey = (String) msg.obj;
+        		Log.i(TAG, "Received result: Authenticated user,  authkey = " + msg.obj);
+        		String authKey = (String) msg.obj;
+        		Communicator.setAuthKey(authKey);    // Save the key for this session
     			if (!mConfirmCredentials) {
     				finishLogin(authKey);
     			} else {
     				finishConfirmCredentials(true);
     			}
     		} else {
-    			Log.e(TAG, "onAuthenticationResult: failed to authenticate");
+    			Log.e(TAG, "Received result: failed to authenticate");
 				mMessage.setTextColor(Color.RED);
     			if (mRequestNewAccount) {
     				// "Please enter a valid username/password.
@@ -134,12 +136,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         Log.i(TAG, "onCreate(" + icicle + ")");
         super.onCreate(icicle);
         mAccountManager = AccountManager.get(this);
+        
+        // Where is this intent created?
         Log.i(TAG, "loading data from Intent");
         final Intent intent = getIntent();
         mUsername = intent.getStringExtra(PARAM_USERNAME);
         mAuthtokenType = intent.getStringExtra(PARAM_AUTHTOKEN_TYPE);
         mRequestNewAccount = mUsername == null;
         mConfirmCredentials = intent.getBooleanExtra(PARAM_CONFIRM_CREDENTIALS, false);
+        
         Log.i(TAG, "    request new: " + mRequestNewAccount);
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
         setContentView(R.layout.login_activity);
@@ -207,6 +212,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
      * @param view The Submit button for which this method is invoked
      */
     public void handleLogin(View view) {
+    	Log.i(TAG, "User presented credentials");
     	if (mRequestNewAccount) {
     		mUsername = mUsernameEdit.getText().toString();
     	}
@@ -244,9 +250,14 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     /**
      * Called from Handler when response is received from the server for authentication
-     * request. See onAuthenticationResult(). Sets the
-     * AccountAuthenticatorResult which is sent back to the caller. Also sets
-     * the authToken in AccountManager for this account.
+     * request. See onAuthenticationResult(). 
+     * 
+     * When the user has successfully been authenticated, we create an Account object 
+     * for the user’s credentials. An account has an account name, such as the username 
+     * or email address, and an account type, which is defined in the xml file next. 
+     * 
+     * Sets the AccountAuthenticatorResult which 
+     * is sent back to the caller. Also sets the authToken in AccountManager for this account.
      * 
      * @param authToken the auth token from the server.
      * 
@@ -255,6 +266,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     private void finishLogin(String authKey) {
         Log.i(TAG, "finishLogin(), authKey = " + authKey);
         final Account account = new Account(mUsername, SyncAdapter.ACCOUNT_TYPE);
+        
         if (mRequestNewAccount) {
             mAccountManager.addAccountExplicitly(account, mPassword, null);
             // Enabled automatic syncing once account is created
