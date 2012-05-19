@@ -28,14 +28,29 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 /**
- * Service to handle Account authentication. It instantiates the authenticator
- * and returns its IBinder.
+ * The authenticator service is expected to return Authenticator, a subclass of 
+ * AbstractAccountAuthenticator, from the onBind method — if you don’t, 
+ * Android will crash and reboot when you try to add a new account to the 
+ * system. 
+ * 
+ * @see http://www.c99.org/2010/01/23/writing-an-android-sync-provider-part-1/
+ * 
  */
 public class AuthenticationService extends Service {
 
 	private static final String TAG = "AuthenticationService";
 
 	private Authenticator mAuthenticator;
+	
+	@Override
+	public IBinder onBind(Intent intent) {
+		if (Log.isLoggable(TAG, Log.VERBOSE)) {
+			Log.v(TAG,
+					"getBinder()...  returning the AccountAuthenticator binder for intent "
+							+ intent);
+		}
+		return mAuthenticator.getIBinder();
+	}
 
 	@Override
 	public void onCreate() {
@@ -60,15 +75,5 @@ public class AuthenticationService extends Service {
 		if (Log.isLoggable(TAG, Log.VERBOSE)) {
 			Log.v(TAG, "SampleSyncAdapter Authentication Service stopped.");
 		}
-	}
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		if (Log.isLoggable(TAG, Log.VERBOSE)) {
-			Log.v(TAG,
-					"getBinder()...  returning the AccountAuthenticator binder for intent "
-							+ intent);
-		}
-		return mAuthenticator.getIBinder();
 	}
 }

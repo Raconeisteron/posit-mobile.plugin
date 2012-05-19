@@ -37,6 +37,16 @@ import android.util.Log;
 /**
  * This class is an implementation of AbstractAccountAuthenticator for
  * authenticating accounts in the com.example.android.samplesync domain.
+ * 
+ * The only method we really need to implement is addAccount, which 
+ * returns an Intent that the system will use to display the login dialog 
+ * to the user. 
+ * 
+ * This implementation below will launch our app’s main launcher activity 
+ * with an action of “fm.last.android.sync.LOGIN” and an extra containing the 
+ * AccountAuthenticatorResponse object we use to pass data back to 
+ * the system after the user has logged in.
+
  */
 class Authenticator extends AbstractAccountAuthenticator {
 
@@ -50,14 +60,24 @@ class Authenticator extends AbstractAccountAuthenticator {
         mContext = context;
     }
 
+    /**
+     *  The user has requested to add a new account to the system.  
+     *  We return an intent that will launch our login screen if the 
+     *  user has not logged in yet. Ootherwise our activity will just 
+     *  pass the user's credentials on to the account manager.
+     */
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType,
         String authTokenType, String[] requiredFeatures, Bundle options) {
 
+    	Log.i(TAG, "addAccount()");
+        final Bundle bundle = new Bundle();
+
+        //  The login activity to launch
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-        final Bundle bundle = new Bundle();
+   
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
     }
@@ -65,6 +85,7 @@ class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account,
         Bundle options) {
+    	Log.i(TAG, "confirmCredentials()");
 
         if (options != null && options.containsKey(AccountManager.KEY_PASSWORD)) {
             final String password = options.getString(AccountManager.KEY_PASSWORD);
@@ -122,6 +143,8 @@ class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public String getAuthTokenLabel(String authTokenType) {
+    	Log.i(TAG, "getAuthTokenLabel)");
+
         if (SyncAdapter.AUTHTOKEN_TYPE.equals(authTokenType)) {
             return "I dont know what this is supposed to return";
         }
@@ -145,9 +168,9 @@ class Authenticator extends AbstractAccountAuthenticator {
 		@SuppressWarnings("unchecked")
 		public void handleMessage(Message msg) { 
 			if (msg.what == Communicator.SUCCESS) {
-				Log.i(TAG, "login success");
+				Log.i(TAG, "Handler: login success");
 			} else {
-				Log.i(TAG, "login failure");
+				Log.i(TAG, "Handler: login failure");
 			}
 		} 
 	}; 
@@ -157,6 +180,7 @@ class Authenticator extends AbstractAccountAuthenticator {
      * @return the authKey from the server
      */
     private String onlineConfirmPassword(String username, String password) {
+    	Log.i(TAG, "onlineConfirmPassword()");
     	TelephonyManager telephonyManager = (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
     	String imei = telephonyManager.getDeviceId();
         return Communicator
@@ -166,6 +190,7 @@ class Authenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account,
         String authTokenType, Bundle loginOptions) {
+    	Log.i(TAG, "updateCredentials()");
 
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_USERNAME, account.name);

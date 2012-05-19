@@ -112,7 +112,7 @@ class AuthKeyGetter implements Runnable {
 	public String getAuthKey () {
 		return authKey;
 	}
-
+	
 	/**
 	 * This method can run in a separate thread.
 	 */
@@ -184,7 +184,7 @@ public class Communicator {
 //	private Context mContext;
 	public static long mTotalTime = 0;
 	
-	private static String mAuthKey = null;
+	private static String sAuthKey = null;
 	
 
 	/**
@@ -196,13 +196,23 @@ public class Communicator {
 	 * @return
 	 */
 	public static String getAuthKey(Context context){
-		Log.i(TAG, "getAuthKey, context = " + context);
+		if (sAuthKey != null) {
+			Log.i(TAG, "getAuthKey(), Returning cached authkey = " + sAuthKey);
+			return sAuthKey;
+		}
+		
+		Log.i(TAG, "getAuthKey, retrieving authkey from AccountManager");
 		AuthKeyGetter getter = new AuthKeyGetter(context);
 		Thread thread = new Thread (getter);
 		thread.run();
 		String authKey = getter.getAuthKey();
 		Log.i(TAG, "authKey = " + authKey);
+		setAuthKey(authKey);
 		return authKey;
+	}
+	
+	public static void setAuthKey(String authkey) {
+		sAuthKey = authkey;
 	}
 	
 	/**
@@ -269,24 +279,7 @@ public class Communicator {
 				
 		String authkey = getAuthKey(context);  
 		return authkey == null;
-	}
-	
-//	/**
-//	 * Attempts to get the user's projects from the server, which requires the authKey.
-//	 * 
-//	 * Design:  Why can't this method just call doHttpGet and let it
-//	 * run on a background thread??
-//	 * 
-//	 * @param handler
-//	 *            The UI thread's handler instance.
-//	 * @param context
-//	 *            The caller Activity's context
-//	 * @return Thread The thread on which the network mOperations are executed.
-//	 */
-//	public static void asyncGetProjects(final Handler handler, final Context context) {
-//		Log.i(TAG, "attemptGetProjects()");
-//		new AsyncGetAuthKeyTask(context, handler, AUTH_GET_PROJECTS).execute((Void[]) null);
-//	}	
+	}		
 	
 	/**
 	 * Attempts to authenticate the user credentials on the server.
@@ -315,25 +308,6 @@ public class Communicator {
 		new Thread(runnable).run();  		// run on background thread.
 	}
 	
-//	public static void asyncGetAuthKeyFinished(Context context, Handler handler, int process, String result) {
-//		Log.i(TAG, "onGetAuthKeyResult = " + result);
-//		String authKey = null;
-//		if (result.contains("Error") == false)
-//			authKey = result;
-//		
-//		switch (process) {
-//		case AUTH_GET_PROJECTS:
-//			getProjects(handler, context, authKey);
-//			break;
-//		case AUTH_AUTHENTICATE:
-//			
-//			break;
-//			
-//
-//		}
-//
-//	}
-//	
 	/**
 	 * NOTE: Calls doHTTPGet
 	 * 
@@ -344,7 +318,6 @@ public class Communicator {
 	 * @return a list of all the projects and their information, encoded as maps
 	 * @throws JSONException
 	 */
-//	public static void getProjects(Handler handler, Context context, String authKey) {
 	public static ArrayList<HashMap<String, Object>> getProjects(Context context) {
 		Log.i(TAG, "getProjects()");
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
