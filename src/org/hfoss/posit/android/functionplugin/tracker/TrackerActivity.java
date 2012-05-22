@@ -42,7 +42,9 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.Location;
 import android.location.GpsStatus;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -69,7 +71,7 @@ import com.google.android.maps.Overlay;
  */
 public class TrackerActivity extends OrmLiteBaseMapActivity<DbManager> 
 implements ServiceUpdateUIListener, View.OnClickListener, OnSharedPreferenceChangeListener,
-GpsStatus.Listener { 
+GpsStatus.Listener, LocationListener { 
 
 	public static final String TAG = "PositTracker";
 
@@ -193,10 +195,13 @@ GpsStatus.Listener {
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume()");
+		Log.i(TAG, "onResume(), projectID = " + mTrackerState.mProjId);
 
 		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);  		
 		mLocationManager.addGpsStatusListener(this);
+		
+		if (getExecutionState() == TrackerSettings.IDLE)
+			mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
 		if (myLocationOverlay != null) {
 			myLocationOverlay.enableMyLocation();
@@ -395,6 +400,7 @@ GpsStatus.Listener {
 			mTrackerState.mPoints = expedition.getPoints();
 			mTrackerState.isRegistered = (expedition.is_registered == 1);
 			mTrackerState.mSynced = expedition.getIs_synced();   // Seems a misnomer
+			mTrackerState.mProjId = expedition.project_id;
 
 			Log.d(TrackerActivity.TAG, "TrackerActivity.displayExisting mExpId " 
 					+ expedition.expedition_num 
@@ -594,6 +600,7 @@ GpsStatus.Listener {
 				startTrackerService();
 				mListButton.setClickable(false);
 				mListButton.setEnabled(false);
+				mLocationManager.removeUpdates(this);
 			} else  { /* RUNNING */            // Stop the tracker
 				stopTrackerService();
 				mListButton.setClickable(true);
@@ -1011,6 +1018,7 @@ GpsStatus.Listener {
 		myLocationOverlay.disableMyLocation();
 		myLocationOverlay.disableCompass();
 		mLocationManager.removeGpsStatusListener(this);
+		mLocationManager.removeUpdates(this);
 		Log.i(TAG,"TrackerActivity, Paused in state: " + getExecutionState());
 	}
 
@@ -1096,10 +1104,32 @@ GpsStatus.Listener {
 		}
 		else if (event == GpsStatus.GPS_EVENT_STARTED) {
 			Log.i(TAG, "Gps Started");
+//			this.mGpsHasFix = true;
+//			this.mTrackerStartStopButton.setEnabled(true);
 		}
 		else if (event == GpsStatus.GPS_EVENT_STOPPED) {
 			Log.i(TAG, "Gps Stopped");
-			this.mGpsHasFix = false;
 		}
+	}
+
+	public void onLocationChanged(Location location) {	
+		Log.i(TAG, "location changed, accuracy = " + location.getAccuracy() + " meters");
+	}
+
+	public void onProviderDisabled(String provider) {
+		Log.i(TAG, "onProviderDisabled()");
+		this.mTrackerStartStopButton.setEnabled(false);
+		
+	}
+
+	public void onProviderEnabled(String provider) {
+		Log.i(TAG, "onProviderEnsabled()");
+	}
+
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		Log.i(TAG, "onProviderDisabled()");
+		if (status == LocationProvider.OUT_OF_SERVICE ||
+				status == LocationProvider.TEMPORARILY_UNAVAILABLE)
+			this.mTrackerStartStopButton.setEnabled(false);
 	}
 }
