@@ -297,6 +297,7 @@
 	<!-- Authentication -->
 	<string name="accountType">org.hfoss.posit.account</string>
 	<string name="contentAuthority">org.hfoss.posit</string>
+	<string name="authKey">authkey</string>  <!--  authkey shared preference -->
 	
 	<string name="authPrompt">To use POSIT you must have an account on
 	    the server. To create a new account browse
