@@ -52,6 +52,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
 import org.hfoss.posit.android.Constants;
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
@@ -196,10 +197,17 @@ public class Communicator {
 	 * @return
 	 */
 	public static String getAuthKey(Context context){
-		if (sAuthKey != null) {
-			Log.i(TAG, "getAuthKey(), Returning cached authkey = " + sAuthKey);
-			return sAuthKey;
-		}
+    	SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+    	String authkey = sp.getString(context.getString(R.string.authKey), "");
+		if (authkey != "") {
+			Log.i(TAG, "getAuthKey(), Returning saved authkey = " + authkey);
+			return authkey;
+		} 
+		
+//		if (sAuthKey != null) {
+//			Log.i(TAG, "getAuthKey(), Returning cached authkey = " + sAuthKey);
+//			return sAuthKey;
+//		}
 		
 		Log.i(TAG, "getAuthKey, retrieving authkey from AccountManager");
 		AuthKeyGetter getter = new AuthKeyGetter(context);
@@ -242,7 +250,7 @@ public class Communicator {
 				responseMap = parser.parseObject();
 			}
 		} catch (Exception e) {
-			Log.i(TAG, "longinUser catch clause response = " + responseString);
+			Log.i(TAG, "isServerReachable catch clause response = " + responseString);
 			Toast.makeText(context, e.getMessage() + "", Toast.LENGTH_LONG).show();
 			return false;
 		}
@@ -258,7 +266,7 @@ public class Communicator {
 				return false;
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "loginUser " + e.getMessage() + " ");
+			Log.e(TAG, "isServerReachable " + e.getMessage() + " ");
 			return false;
 		}
 	}

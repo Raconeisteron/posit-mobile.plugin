@@ -66,27 +66,38 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 		Log.i(TAG, "In onPerformSync()");
 		String authToken = null;
-		
-		try {
-			// use the account manager to request the credentials
-			Log.i(TAG, "Trying to retrieve authToken");
-			authToken = mAccountManager.blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
-			Log.i(TAG, "auth token: " + authToken);
 
-			SyncServer syncServer = new SyncServer( mContext );
-			syncServer.sync( authToken );
+		authToken = Communicator.getAuthKey(mContext);
+		SyncServer syncServer = new SyncServer( mContext );
+		syncServer.sync( authToken );
 		
-		} catch (final AuthenticatorException e) {
-			syncResult.stats.numParseExceptions++;
-			Log.e(TAG, "AuthenticatorException", e);
-		} catch (final OperationCanceledException e) {
-			Log.e(TAG, "OperationCanceledExcetpion", e);
-		} catch (final IOException e) {
-			Log.e(TAG, "IOException", e);
-			syncResult.stats.numIoExceptions++;
-		} catch (final ParseException e) {
-			syncResult.stats.numParseExceptions++;
-			Log.e(TAG, "ParseException", e);
-		}
+		// NOTE:  The code below is moved into Communicator.getAuthKey(). It is
+		// not necessary to call blockingGetAuthToken() each time the authkey
+		// is needed.
+//
+//		try {
+//			
+//			authToken = Communicator.getAuthKey(mContext);
+//			
+//			// use the account manager to request the credentials
+//			Log.i(TAG, "Trying to retrieve authToken");
+//			authToken = mAccountManager.blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
+//			Log.i(TAG, "auth token: " + authToken);
+//
+//			SyncServer syncServer = new SyncServer( mContext );
+//			syncServer.sync( authToken );
+//		
+//		} catch (final AuthenticatorException e) {
+//			syncResult.stats.numParseExceptions++;
+//			Log.e(TAG, "AuthenticatorException", e);
+//		} catch (final OperationCanceledException e) {
+//			Log.e(TAG, "OperationCanceledExcetpion", e);
+//		} catch (final IOException e) {
+//			Log.e(TAG, "IOException", e);
+//			syncResult.stats.numIoExceptions++;
+//		} catch (final ParseException e) {
+//			syncResult.stats.numParseExceptions++;
+//			Log.e(TAG, "ParseException", e);
+//		}
 	}
 }

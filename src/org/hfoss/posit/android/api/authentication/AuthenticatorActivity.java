@@ -26,6 +26,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -97,6 +99,14 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
     private EditText mUsernameEdit;
     
+    public void setAuthKeyPreference(String authKey) {
+    	Log.i(TAG, "Saving authkey " + authKey + " as a shared preference");
+    	SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+    	Editor ed = sp.edit();
+		ed.putString(getString(R.string.authKey), authKey);
+		ed.commit();
+    }
+    
 	/**
 	 * Handles messages and results received from the background thread.
 	 */
@@ -106,7 +116,10 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
     		if (msg.what == Communicator.SUCCESS) {
         		Log.i(TAG, "Received result: Authenticated user,  authkey = " + msg.obj);
         		String authKey = (String) msg.obj;
-        		Communicator.setAuthKey(authKey);    // Save the key for this session
+        		
+        		setAuthKeyPreference(authKey);
+        		//Communicator.setAuthKey(authKey);    // Save the key for this session
+        		
     			if (!mConfirmCredentials) {
     				finishLogin(authKey);
     			} else {
