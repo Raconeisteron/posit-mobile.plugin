@@ -57,14 +57,21 @@ public final class CameraConfigurationManager {
         Display display = manager.getDefaultDisplay();
         int width = display.getWidth();
         int height = display.getHeight();
+        
+        // This assumption seems wrong -- it's not only landscape
         // We're landscape-only, and have apparently seen issues with display thinking it's portrait
         // when waking from sleep. If it's not landscape, assume it's mistaken and reverse them:
         if (width < height) {
-            Log.i(TAG, "Display reports portrait orientation; assuming this is incorrect");
+            Log.i(TAG, "width=" + width + " height="+height + " Display reports portrait orientation; assuming this is incorrect");
             int temp = width;
             width = height;
             height = temp;
+            
+            // HACK:  Orient the camera in the normal mode -- it's being set somewhere for horizontal
+            // orientation
+            camera.setDisplayOrientation(90);
         }
+        
         screenResolution = new Point(width, height);
         Log.i(TAG, "Screen resolution: " + screenResolution);
         cameraResolution = findBestPreviewSizeValue(parameters, screenResolution, false);

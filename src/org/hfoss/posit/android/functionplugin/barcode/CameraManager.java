@@ -17,6 +17,7 @@
 package org.hfoss.posit.android.functionplugin.barcode;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -39,11 +40,6 @@ import org.hfoss.posit.android.functionplugin.barcode.Preferences;
 public final class CameraManager {
 
     private static final String TAG = CameraManager.class.getSimpleName();
-
-    private static final int MIN_FRAME_WIDTH = 240;
-    private static final int MIN_FRAME_HEIGHT = 240;
-    private static final int MAX_FRAME_WIDTH = 600;
-    private static final int MAX_FRAME_HEIGHT = 400;
 
     private final CameraConfigurationManager configManager;
     private Camera camera;
@@ -169,7 +165,7 @@ public final class CameraManager {
             camera.autoFocus(autoFocusCallback);
         }
     }
-
+    
     /**
      * Calculates the framing rect which the UI should draw to show the user where to place the
      * barcode. This target helps with alignment as well as forces the user to hold the device
@@ -177,27 +173,29 @@ public final class CameraManager {
      * 
      * @return The rectangle to draw on screen in window coordinates.
      */
-    public Rect getFramingRect() {
+    public Rect getFramingRect(Canvas canvas) {
+    	Log.i(TAG, "getFramingRect()");
+    	
         if (framingRect == null) {
-            if (camera == null) { return null; }
+            if (camera == null) { 
+            	return null; 
+            }
+            
             Point screenResolution = configManager.getScreenResolution();
-            int width = screenResolution.x * 3 / 4;
-            if (width < MIN_FRAME_WIDTH) {
-                width = MIN_FRAME_WIDTH;
-            } else if (width > MAX_FRAME_WIDTH) {
-                width = MAX_FRAME_WIDTH;
-            }
-            int height = screenResolution.y * 3 / 4;
-            if (height < MIN_FRAME_HEIGHT) {
-                height = MIN_FRAME_HEIGHT;
-            } else if (height > MAX_FRAME_HEIGHT) {
-                height = MAX_FRAME_HEIGHT;
-            }
-            int leftOffset = (screenResolution.x - width) / 2;
-            int topOffset = (screenResolution.y - height) / 2;
-            framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
+            
+            // Calculate height, width and margins for either horizontal (optimal) or vertical orientation
+            int frame_width = Math.min(screenResolution.x, canvas.getWidth()) * 3/4;
+            int frame_height = Math.min(screenResolution.y, canvas.getHeight()) * 3/4;
+            int margin_x = Math.min(screenResolution.x, canvas.getWidth()) * 1/8;
+            int margin_y = Math.min(screenResolution.y, canvas.getHeight()) * 1/8;
+         
+            // Left, top point -- Centers the rectangle horizontally but not vertically
+            int left = 0 + margin_x;
+            int top = 0 + margin_y;
+            framingRect = new Rect(left, top, left + frame_width, top + frame_height-margin_y);
             Log.d(TAG, "Calculated framing rect: " + framingRect);
         }
+        Log.d(TAG, "Returning framing rect: " + framingRect);
         return framingRect;
     }
 
@@ -207,7 +205,7 @@ public final class CameraManager {
      */
     public Rect getFramingRectInPreview() {
         if (framingRectInPreview == null) {
-            Rect framingRect = getFramingRect();
+            Rect framingRect = getFramingRect(null);  // Canvas = null
             if (framingRect == null) { return null; }
             Rect rect = new Rect(framingRect);
             Point cameraResolution = configManager.getCameraResolution();
