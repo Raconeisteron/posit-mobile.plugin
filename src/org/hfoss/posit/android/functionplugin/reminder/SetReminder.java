@@ -753,6 +753,12 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager>
 		
 	}
 	
+	
+	public void onClickCallback(Context context, Find find, View view) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public void finishCallback(Context context, Find find, View view) {
 		// TODO Auto-generated method stub
 	}

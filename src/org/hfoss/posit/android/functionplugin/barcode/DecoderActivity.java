@@ -270,4 +270,11 @@ public class DecoderActivity extends Activity implements IDecoderActivity, Surfa
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void onClickCallback(Context context, Find find, View view) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 }

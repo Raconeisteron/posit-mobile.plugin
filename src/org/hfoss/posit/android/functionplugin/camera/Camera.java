@@ -48,6 +48,14 @@ public class Camera {
 	public static final String TAG = "Camera";
 	static final int THUMBNAIL_TARGET_SIZE = 320; //width and height of thumbnail data
 		
+	
+	/**
+	 * Returns the full path for a Find's photo.
+	 */
+	public static String getPhotoPath(Context context, String guid) {
+	    return "/data/data/" + context.getPackageName() + "/files/" + guid;
+	}
+	
 	/**
 	 * Saves the Base64 string of the phonto to internal memory 
 	 * @param guid
@@ -93,6 +101,44 @@ public class Camera {
 		else{
 			return null;
 		}
+	}
+	
+	/**
+	 * Returns a bitmap give its full path name.
+	 * @param context
+	 * @param path
+	 * @return
+	 */
+	public static Bitmap getBitmapFromPath(Context context, String path) {
+		Log.i(TAG, "getBitmapFromPath " + path);
+	    FileInputStream fis;
+	    String content = "";
+	    File file = new File(path);
+	    if (file.exists()){
+		    try {
+		    	fis = new FileInputStream(file);    	
+		    	byte[] input = new byte[fis.available()];
+		    	while (fis.read(input) != -1) {}
+		    	content += new String(input);
+		    	fis.close();
+				if(content != null){
+					//decode the Base64 string to bitmap
+					byte[] c = Base64.decode(content, Base64.DEFAULT);
+				    Bitmap bmp = BitmapFactory.decodeByteArray(c, 0, c.length);
+				    Log.i(TAG, "Returning bitmap");
+				    return bmp;
+				}
+				else{
+					return null;
+				}
+		    } catch (FileNotFoundException e) {
+		    	e.printStackTrace();
+		    } catch (IOException e) {
+		    	e.printStackTrace(); 
+		    }
+	    }
+	    return null;
+		
 	}
 	
 	/**
