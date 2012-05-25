@@ -38,6 +38,7 @@ import org.hfoss.posit.android.api.plugin.FunctionPlugin;
 import org.hfoss.posit.android.functionplugin.barcode.BitMapView;
 import org.hfoss.posit.android.functionplugin.barcode.QrCodeEncoder;
 import org.hfoss.posit.android.functionplugin.camera.Camera;
+import org.hfoss.posit.android.functionplugin.camera.FullScreenImageViewer;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
 import org.hfoss.posit.android.test.Tests;
 import org.hfoss.posit.android.R;
@@ -52,6 +53,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Base64;
@@ -116,6 +118,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+		Log.i(TAG, "onCreate()");
 
 		// Get the custom add find layout from the plugin settings, if there us one
 		int resId  = getResources().getIdentifier(
@@ -310,7 +313,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+		Log.i(TAG, "onResume()");
+
 		LocaleManager.setDefaultLocale(this); // Locale Manager should
 		
 		if (mGeoTagEnabled) { 
@@ -395,13 +399,56 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * @see android.view.View.OnClickListener#onClick(android.view.View)
 	 */
 	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.saveButton:
+		Log.i(TAG, "onClick()");
+		if (v.getId() == R.id.saveButton) {
 			if (saveFind()) {
 				finish();
 			}
-			break;
+			return;
+		}  else if (v.getId() == R.id.photo) {
+			if (mFind == null) 
+				return;
+			String path = Camera.getPhotoPath(this, mFind.getGuid());
+			Log.i(TAG, "Path = " + path);
+			
+			Uri.Builder builder = new Uri.Builder();
+			builder.path(path);
+			Uri uri = builder.build();
+			
+			Intent intent = new Intent(this,FullScreenImageViewer.class);
+			intent.setData(uri);
+			startActivity(intent); 			
+			return;
 		}
+		// All other clicks
+		
+		/**
+		 * For each plugin, call its onClickCallback.
+		 */
+		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
+			Log.i(TAG, "plugin=" + plugin);
+			Class<AddFindPluginCallback> callbackClass = null;
+			Object o;
+			try {
+				View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+				String className = plugin.getAddFindCallbackClass();
+				if (className != null) {
+					callbackClass = (Class<AddFindPluginCallback>) Class.forName(className);
+					o = (AddFindPluginCallback) callbackClass.newInstance();
+					((AddFindPluginCallback) o).onClickCallback(
+							this.getApplication(),
+							mFind,
+							view);
+				}
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	/**
