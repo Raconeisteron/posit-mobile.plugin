@@ -616,8 +616,13 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 		
 		// If the Find already exists just update it
 		Find existingFind = this.getFindByGuid(find.getGuid());
-		if (existingFind != null) 
+		if (existingFind != null) {
+			Log.i(TAG, "Trying to insert, but Find already exists: " + existingFind);
+			find.setId(existingFind.getId());
+			find.setStatus(Find.IS_NOT_SYNCED);
+			find.setAction(FindHistory.ACTION_UPDATE);
 			return update(find);
+		}
 		
 		// This is truly a new Find
 		try {
@@ -865,7 +870,8 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			for (String[] result : results) {
 				int findId = Integer.parseInt(result[0]);
 				Find find = getFindDao().queryForId(findId);
-				finds.add(find);
+				if (find != null)
+					finds.add(find);
 			}
 
 			Log.i(TAG, "Changed finds: " + finds);
