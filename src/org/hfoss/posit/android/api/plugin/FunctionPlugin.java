@@ -45,6 +45,8 @@ public class FunctionPlugin extends Plugin {
 	protected Class<Activity> mMenuActivity;
 	protected String mMenuIcon;
 	protected String mMenuTitle;
+	protected String mMenuIcon2;
+	protected String mMenuTitle2;
 	protected Boolean activityReturnsResult = false;
 	protected int activityResultAction = 0;
 	
@@ -82,6 +84,12 @@ public class FunctionPlugin extends Plugin {
 			}
 			if (aNode.getNodeName().equals("menuTitle")) {
 				mMenuTitle = aNode.getTextContent();
+			}
+			if (aNode.getNodeName().equals("menuIcon2")) {
+				mMenuIcon2 = aNode.getTextContent();
+			}
+			if (aNode.getNodeName().equals("menuTitle2")) {
+				mMenuTitle2 = aNode.getTextContent();
 			}
 			if (aNode.getNodeName().equals("activity_returns_result")) {
 				activityReturnsResult = Boolean.valueOf(aNode.getTextContent());
@@ -145,12 +153,38 @@ public class FunctionPlugin extends Plugin {
 		this.mMenuIcon = mMenuIcon;
 	}
 
+	public String getmMenuIcon2() {
+		return mMenuIcon2;
+	}
+
+	public void setmMenuIcon2(String mMenuIcon) {
+		this.mMenuIcon2 = mMenuIcon;
+	}
+
+	
 	public String getmMenuTitle() {
 		return mMenuTitle;
 	}
 
 	public void setmMenuTitle(String mMenuTitle) {
 		this.mMenuTitle = mMenuTitle;
+	}
+	
+	public String getmMenuTitle2() {
+		return mMenuTitle2;
+	}
+
+	public void setmMenuTitle2(String mMenuTitle) {
+		this.mMenuTitle2 = mMenuTitle;
+	}
+	
+	/**
+	 * Does this plugin contain the menu item with the given title
+	 * @param menuTitle
+	 * @return
+	 */
+	public boolean hasMenuItem(String menuTitle) {
+		return menuTitle.equals(mMenuTitle) || menuTitle.equals(mMenuTitle2);
 	}
 	
 	public int getActivityResultAction() {
