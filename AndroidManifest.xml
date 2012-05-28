@@ -85,9 +85,7 @@
 
 			
 		<!--  Activities for Function Plugins -->
-		<activity android:name=".functionplugin.barcode.CodeCaptureActivity"></activity>
-		<activity android:name="org.hfoss.posit.android.functionplugin.barcode.DecoderActivity"></activity>
-		<activity android:name="org.hfoss.posit.android.functionplugin.barcode.IDecoderActivity"></activity>
+		<activity android:name=".functionplugin.zxing.BarcodeActivity"></activity>
 			
 		<activity
 			android:name="org.hfoss.posit.android.functionplugin.tracker.TrackerActivity" 

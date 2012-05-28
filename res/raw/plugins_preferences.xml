@@ -125,20 +125,21 @@ picture associated with it."
 			list_find_callback = "org.hfoss.posit.android.functionplugin.camera.CameraActivity"
 			activity_returns_result="true"
 			activity_result_action="1" />
-			
-			<Plugin active_by_default="true" 
+						
+		<Plugin active_by_default="true" 
 			type="function" 
 			extensionPoint="addFindMenu"
-			name="Scan Barcode" 
+			name="ZXing QRcode Scanner" 
 			user_can_select="true"
-			description="Lets you to read/write Find data through a QRcode."
-			menuIcon="admin3" 
-			menuTitle="Scan Barcode"
-			menuActivity="org.hfoss.posit.android.functionplugin.barcode.CodeCaptureActivity" 
-			add_find_callback = "org.hfoss.posit.android.functionplugin.barcode.CodeCaptureActivity"
-			list_find_callback = "org.hfoss.posit.android.functionplugin.barcode.CodeCaptureActivity"
+			description="Lets you input and output Find data through a QRcode."
+			menuIcon="" 
+			menuTitle="Scan QRcode"
+			menuIcon2=""
+			menuTitle2="Display QRcode"
+			menuActivity="org.hfoss.posit.android.functionplugin.zxing.BarcodeActivity" 
+			add_find_callback = "org.hfoss.posit.android.functionplugin.zxing.BarcodeActivity"
 			activity_returns_result="true"
-			activity_result_action="1" />
+			activity_result_action="0" />							
 
 <!-- 		Map Plugin displays finds on a map  -->
 <!-- 		<Plugin active="false"  -->
