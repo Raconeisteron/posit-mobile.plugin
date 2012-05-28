@@ -83,6 +83,7 @@ public abstract class SyncMedium {
 		List<Find> changedFinds = getChangedFinds();
 
 		for( Find find : changedFinds ){
+			Log.i(TAG, "Find = " + find);
 			sendFind( find );
 		}
 		

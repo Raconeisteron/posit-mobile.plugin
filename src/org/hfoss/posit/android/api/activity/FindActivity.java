@@ -21,7 +21,6 @@
  */
 package org.hfoss.posit.android.api.activity;
 
-import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,12 +34,9 @@ import org.hfoss.posit.android.api.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
-import org.hfoss.posit.android.functionplugin.barcode.BitMapView;
-import org.hfoss.posit.android.functionplugin.barcode.QrCodeEncoder;
 import org.hfoss.posit.android.functionplugin.camera.Camera;
 import org.hfoss.posit.android.functionplugin.camera.FullScreenImageViewer;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
-import org.hfoss.posit.android.test.Tests;
 import org.hfoss.posit.android.R;
 
 import android.app.AlertDialog;
@@ -49,14 +45,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,6 +65,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 /**
@@ -83,9 +78,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 	private static final String TAG = "FindActivity";
 	private static final int CONFIRM_DELETE_DIALOG = 0;
-	
-	private static final int WHITE = 0xFFFFFFFF;
-	private static final int BLACK = 0xFF000000;
 
 	private boolean mGeoTagEnabled;
 	private LocationManager mLocationManager = null;
@@ -161,36 +153,36 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		if (extras != null) {
 			
-			//Find stored in bar-code format. The intent action is "BARCODE"
-	        if(getIntent().getAction().equals("BARCODE")){
-					
-	            	String result = getIntent().getStringExtra("message");
-	        		String[] findValues = result.split("\\*");
-	        		
-	        		String guid = findValues[1];
-	        		
-	        		SimpleDateFormat dateFormat = new SimpleDateFormat(
-	        				"yyyy/MM/dd HH:mm:ss");
-	        		
-	        		Date time = new Date();
-	        		
-	        		String name = findValues[3];
-	        		String description = findValues[4];
-	        		double latitude = Double.parseDouble(findValues[5]);
-	        		double longitude = Double.parseDouble(findValues[6]);
-	        		
-	        		Find decodedFind = new Find();
-	        		decodedFind.setGuid(guid);
-	        		decodedFind.setName(name);
-	        		decodedFind.setDescription(description);
-	        		decodedFind.setTime(time);
-	        		decodedFind.setLatitude(latitude);
-	        		decodedFind.setLongitude(longitude);
-	        		
-	        		mFind = decodedFind;
-	        		displayContentInView(mFind);
-				
-			}
+//			//Find stored in bar-code format. The intent action is "BARCODE"
+//	        if(getIntent().getAction().equals("BARCODE")){
+//					
+//	            	String result = getIntent().getStringExtra("message");
+//	        		String[] findValues = result.split("\\*");
+//	        		
+//	        		String guid = findValues[1];
+//	        		
+//	        		SimpleDateFormat dateFormat = new SimpleDateFormat(
+//	        				"yyyy/MM/dd HH:mm:ss");
+//	        		
+//	        		Date time = new Date();
+//	        		
+//	        		String name = findValues[3];
+//	        		String description = findValues[4];
+//	        		double latitude = Double.parseDouble(findValues[5]);
+//	        		double longitude = Double.parseDouble(findValues[6]);
+//	        		
+//	        		Find decodedFind = new Find();
+//	        		decodedFind.setGuid(guid);
+//	        		decodedFind.setName(name);
+//	        		decodedFind.setDescription(description);
+//	        		decodedFind.setTime(time);
+//	        		decodedFind.setLatitude(latitude);
+//	        		decodedFind.setLongitude(longitude);
+//	        		
+//	        		mFind = decodedFind;
+//	        		displayContentInView(mFind);
+//				
+//			}
 	           
 			// Existing Find
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) { 
@@ -376,20 +368,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		Button saveButton = ((Button) findViewById(R.id.saveButton));
 		if (saveButton != null)
 			saveButton.setOnClickListener(this);
-		
-        Button barcodeButton = ((Button) findViewById(R.id.Button01));
-		
-		barcodeButton.setOnClickListener(new OnClickListener() {
-		    public void onClick(View v) {
-		      showBarcode();
-		    }
-		});
-		
-		if(getIntent().getAction().equals(Intent.ACTION_INSERT)){
-		  if(barcodeButton!=null){
-			barcodeButton.setVisibility(View.GONE);
-		  } 
-		}
 	}
 
 	/**
@@ -405,7 +383,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 				finish();
 			}
 			return;
-		}  else if (v.getId() == R.id.photo) {
+		}  
+		// NOTE: This should be refactored as a True plugin
+		else if (v.getId() == R.id.photo) {
 			if (mFind == null) 
 				return;
 			String path = Camera.getPhotoPath(this, mFind.getGuid());
@@ -420,6 +400,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			startActivity(intent); 			
 			return;
 		}
+		
 		// All other clicks
 		
 		/**
@@ -463,11 +444,13 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT)) {
 			menu.removeItem(R.id.delete_find_menu_item);
 		}
-
+  
 		// Add menu options based on function plug-ins
 		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 				// For all other function plug-ins
 				MenuItem item = menu.add(plugin.getmMenuTitle());
+				if (plugin.getmMenuTitle2() != null)
+					menu.add(plugin.getmMenuTitle2());
 				int resId = getResources().getIdentifier(plugin.getmMenuIcon(),
 						"drawable", getPackageName());
 				item.setIcon(resId);
@@ -501,9 +484,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 
 		default:
 			for (FunctionPlugin plugin : mAddFindMenuPlugins) {
-				if (item.getTitle().equals(plugin.getmMenuTitle())) {
-
+				if (plugin.hasMenuItem((String)item.getTitle())) {
 					Intent intent = new Intent(this, plugin.getmMenuActivity());
+					if (item.getTitle().equals(plugin.getmMenuTitle())) 
+						intent.setAction(plugin.getmMenuTitle());
+					else if (item.getTitle().equals(plugin.getmMenuTitle2()))
+						intent.setAction(plugin.getmMenuTitle2());
 
 					Log.i(TAG, "plugin=" + plugin);
 					Class<AddFindPluginCallback> callbackClass = null;
@@ -514,9 +500,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 						String className = plugin.getAddFindCallbackClass();
 						if (className != null) {
 							callbackClass = (Class<AddFindPluginCallback>) Class.forName(className);
-							o = (AddFindPluginCallback) callbackClass.newInstance();
+//							Intent i = new Intent(this, callbackClass);
+//							startActivity(i);
+
+							o = (AddFindPluginCallback) callbackClass.newInstance();							
 							((AddFindPluginCallback) o).menuItemSelectedCallback(
-									this.getApplication(),
+									this,
 									find,
 									view,
 									intent);
@@ -536,6 +525,8 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 					// because I want to make sure that we have the same
 					// behaviour as retrieveContentFromView()
 					// without having to duplicate code.
+					
+					
 					Find find = retrieveContentFromView();
 					Bundle bundle = find.getDbEntries();
 					intent.putExtra("DbEntries", bundle);
@@ -828,57 +819,14 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 							// User clicked cancel so do nothing
 						}
 					}).create();
-
-			// case CONFIRM_EXIT:
-			// Log.i(TAG, "CONFIRM_EXIT dialog");
-			// return new AlertDialog.Builder(this)
-			// .setIcon(R.drawable.alert_dialog_icon)
-			// .setTitle(R.string.check_saving)
-			// .setPositiveButton(R.string.save, new
-			// DialogInterface.OnClickListener() {
-			// public void onClick(DialogInterface dialog, int whichButton) {
-			// Log.i(TAG, "CONFIRM_EXIT setOK onClick");
-			// // User clicked OK so do some stuff
-			// ContentValues contentValues = retrieveContentFromView();
-			// doSave(contentValues);
-			// }
-			// })
-			// .setNeutralButton(R.string.closing, new
-			// DialogInterface.OnClickListener() {
-			// public void onClick(DialogInterface dialog, int whichButton) {
-			// Log.i(TAG, "CONFIRM_EXIT setNeutral onClick");
-			// finish();
-			// }
-			// })
-			// .setNegativeButton(R.string.alert_dialog_cancel, new
-			// DialogInterface.OnClickListener() {
-			// public void onClick(DialogInterface dialog, int whichButton) {
-			// Log.i(TAG, "CONFIRM_EXIT setCancel onClick");
-			// /* User clicked Cancel so do nothing */
-			// }
-			// })
-			// .create();
 		default:
 			return null;
 		}
 	}
-	
-	/**
-	 * This method is called every time a user requests to view a Find barcode, it 
-	 * encodes the find and displays the bitmap
-	 */
-	protected boolean showBarcode() {
-		int id = getIntent().getExtras().getInt(Find.ORM_ID);
-		mFind = getHelper().getFindById(id);
-		String guid = mFind.getGuid();
-		
-		encodeFindAsBarcode(mFind);
-		
-		return true;
-	}
 
 	@SuppressWarnings("unchecked")
 	protected boolean saveFind() {
+		Log.i(TAG, "Saving find, ACTION= " + getIntent().getAction());
 		int rows = 0;
 		Find find = retrieveContentFromView();
 		prepareForSave(find);
@@ -903,36 +851,33 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			}
 		}
 
-		// Either create a new Find or update the existing Find
+		// Create a new Find
+		// NOTE that FindActivity can have ACTION_INSERT, but if the user
+		// chooses to input a new Find through Barcode Reader and then 
+		// scans a Find with the same guid as an existing Find, you don't
+		// want to insert a New Find.
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT)){
-			rows = getHelper().insert(find);
-			
-			encodeFindAsBarcode(find);
+			find.setStatus(Find.IS_NOT_SYNCED);
+			rows = getHelper().insert(find);			
 		}
 		
+		// Update an existing Find
 		else if (getIntent().getAction().equals(Intent.ACTION_EDIT)) {
 			find.setId(getIntent().getExtras().getInt(Find.ORM_ID));
 			find.setStatus(Find.IS_NOT_SYNCED);
-			rows = getHelper().update(find);
-			
-			encodeFindAsBarcode(find);
+			rows = getHelper().update(find);			
 		} 
 		
-		else if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)
-		|| getIntent().getAction().equals("BARCODE")) {
-			// Check if a Find with the same GUID already exists and update it if so
+		// NOTE: Perhaps this can be avoided b/c insert now checks for existence
+		//  of Find and calls update (See DbManager).
+		else if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
 			Find sameguid = getHelper().getFindByGuid(find.getGuid());
 			if (sameguid == null) {
 				rows = getHelper().insert(find);
 			} else {
 				find.setId(sameguid.getId());
 				rows = getHelper().update(find);
-			}
-			
-			encodeFindAsBarcode(find);
-			
-			Toast toast = Toast.makeText(FindActivity.this, "Scanned Find added", Toast.LENGTH_LONG);
-			toast.show();
+			}					
 		} else
 			rows = 0; // Something wrong with intent
 		
@@ -976,39 +921,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		return rows > 0;
 	}
 	
-	/**
-	 * This method receives the find from the showBarcode() method call,encodes its values
-	 * and displays the result in a bitmap
-	 * 
-	 * @param find the find to be encoded
-	 */
-	protected void encodeFindAsBarcode(Find find){
-		String guid = find.getGuid();
-		
-		SimpleDateFormat dateFormat = new SimpleDateFormat(
-				"yyyy/MM/dd HH:mm:ss");
-		String time = dateFormat.format(find.getTime());
-		
-		String findName = find.getName();
-		String description = find.getDescription();
-		double latitude = find.getLatitude();
-		double longitude = find.getLongitude();
-		
-		String findValuesToEncode = "POSITcode*" + guid + "*" + time + "*" + findName
-				 + "*" + description + "*" + latitude + "*" + latitude;
-		
-		QrCodeEncoder doEncode = new QrCodeEncoder(findValuesToEncode);
-		Bitmap bitmap = doEncode.encodeAndSave();
-        setContentView(new BitMapView(this, bitmap));
-        
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-		byte[] b = baos.toByteArray();
-		String img_str = Base64.encodeToString(b, Base64.DEFAULT);
-		
-		Camera.savePhoto(find.getGuid() + "_code", img_str, this);
-	}
-
 
 	protected void prepareForSave(Find find) {
 		// Stub : meant to be overridden in subclass
@@ -1142,7 +1054,9 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * Performs a finish callback on all function plugins
 	 */
 	private void doFinishCallbacks() {
+		Log.i(TAG, "doFinishCallbacks");
 		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
+			Log.i(TAG, "plugin=" + plugin);
 			Class<AddFindPluginCallback> callbackClass = null;
 			Object o;
 			try {
