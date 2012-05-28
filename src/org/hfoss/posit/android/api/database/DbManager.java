@@ -613,6 +613,13 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 
 	public int insert(Find find) {
 		int rows = 0;
+		
+		// If the Find already exists just update it
+		Find existingFind = this.getFindByGuid(find.getGuid());
+		if (existingFind != null) 
+			return update(find);
+		
+		// This is truly a new Find
 		try {
 			find.setAction(FindHistory.ACTION_CREATE);
 			rows = getFindDao().create(find);
