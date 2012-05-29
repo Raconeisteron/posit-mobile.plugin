@@ -63,12 +63,19 @@ public class CameraActivity extends Activity
 	implements AddFindPluginCallback, ListFindPluginCallback {
 
 	public static final String TAG="CameraActivity";
+	public static final String PHOTO_MENU = "Take Photo"; // Should match plugin preference
+	
 	public static final String PREFERENCES_IMAGE = "Image";
 	static final int TAKE_CAMERA_REQUEST = 1000;
 	private static String img_str = null; //stores base64 string of the image
 	
 	private ImageView photo;
-	private Uri mImageUri;
+//	private Uri mImageUri;
+	
+	private static Intent mIntent;
+	private static Context mContext;
+	private static Find mFind;
+	private static View mView;
 			
     /** Called when the activity is first created. */
 	@Override
@@ -76,60 +83,19 @@ public class CameraActivity extends Activity
 	    super.onCreate(savedInstanceState);
 	    requestWindowFeature(Window.FEATURE_NO_TITLE);
 	 
-	    // See http://stackoverflow.com/questions/6448856/android-camera-intent-how-to-get-full-sized-photo
-//	    File photo;
-//	    try
-//	    {
-//	        // place where to store camera taken picture
-//	        photo = this.createTemporaryFile("picture", ".jpg");
-//	        photo.delete();
-//	    }
-//	    catch(Exception e)
-//	    {
-//	        Log.v(TAG, "Can't create file to take picture!");
-//	        Toast.makeText(this, "Please check SD card! Image shot is impossible!", 10000);
-//	        return;
-//	    }
-//	    mImageUri = Uri.fromFile(photo);    
-//	    mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-//	    activity.startActivityForResult(this, intent, MenuShootImage);
+	   // mImageUri = getFullSizeImage();
 	    
-		// Launches the camera through an intent.
-	    Log.i(TAG, "Starting Camera from Intent");
-		Intent pictureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-		pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString());
-		startActivityForResult(pictureIntent, TAKE_CAMERA_REQUEST);
+	    if (mIntent.getAction().equals(PHOTO_MENU)) {
+	    	Log.i(TAG, "Starting Camera from Intent");
+	    	Intent pictureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+	    	pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString());
+	    	startActivityForResult(pictureIntent, TAKE_CAMERA_REQUEST);
+	    } else {
+	    	
+	    }
 	}
 	
-	
-//	public static File createTemporaryFile(String part, String ext) throws Exception  {
-//		File tempDir= Environment.getExternalStorageDirectory();
-//		tempDir=new File(tempDir.getAbsolutePath()+"/.temp/");
-//		if(!tempDir.exists()) {
-//			tempDir.mkdir();
-//		}
-//		return File.createTempFile(part, ext, tempDir);
-//	}
-
-	
-//	public Bitmap grabImage(Uri uri)  {
-//		Log.i(TAG, "Uri " + uri);
-//	    this.getContentResolver().notifyChange(uri, null);
-//	    ContentResolver cr = this.getContentResolver();
-//	    Bitmap bitmap;
-//	    try
-//	    {
-//	        bitmap = android.provider.MediaStore.Images.Media.getBitmap(cr, uri);
-//	        return bitmap;
-//	    }
-//	    catch (Exception e)
-//	    {
-//	        Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT).show();
-//	        Log.d(TAG, "Failed to load", e);
-//	    }
-//	    return null;
-//	}
-	
+ 	
 	/**
 	 * Handles the picture that was taken
 	 */
@@ -142,36 +108,12 @@ public class CameraActivity extends Activity
 			if(resultCode == Activity.RESULT_CANCELED){
 			}
 			else if(resultCode == Activity.RESULT_OK){
-				// Uncomment this to display image (e.g., to test quality rcvd from Camera)
-//				Bitmap cameraPic = grabImage(mImageUri);
-//				Intent intent = new Intent(this, FullScreenImageViewer.class);
-//				intent.setData(mImageUri);
-//				startActivity(intent);
 				
 				//handle photo taken
 				Bitmap cameraPic = (Bitmap) data.getExtras().get("data");
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				cameraPic.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 				byte[] b = baos.toByteArray();
-				
-				// Uncomment this to save the image (not a string) to a file
-				// An image saved in this way will be viewable in the Gallery
-//				ContentValues cv = new ContentValues();
-//				cv.put(Images.Media.TITLE, "TestImage1");
-//				cv.put(Images.Media.DATE_ADDED, System.currentTimeMillis());
-//				cv.put(Images.Media.MIME_TYPE, "image/jpg");				
-//				Uri uri = getContentResolver().insert(Images.Media.EXTERNAL_CONTENT_URI, cv);
-//				
-//				try {
-//					OutputStream os = getContentResolver().openOutputStream(uri);
-//					os.write(b);
-//					os.flush();
-//					os.close();
-//					Toast.makeText(this, "Image Saved", Toast.LENGTH_LONG);
-//	 	
-//				} catch (IOException e) {
-//					Toast.makeText(this, "Error saving picture", Toast.LENGTH_LONG);
-//				}
 				
 				//encode to base64 string -- Does this compress it?
 				img_str = Base64.encodeToString(b, Base64.DEFAULT);
@@ -211,7 +153,7 @@ public class CameraActivity extends Activity
 	 */
 	public void menuItemSelectedCallback(Context context, Find find, View view,
 			Intent intent) {
-		// TODO Auto-generated method stub
+		mIntent = intent;
 		
 	}
 	/**
@@ -258,20 +200,28 @@ public class CameraActivity extends Activity
 	
 	/**
 	 * If this Find's camera image was clicked, display a full sized view of it.
+	 * NOTE: This method is currently not being called.  See FindActivity. 
+	 * It generates an error when you try to start the activity.
 	 */
 	public void onClickCallback (Context context, Find find, View view) {
-		Log.i(TAG, "onClickCallback");
-		
-		String path = Camera.getPhotoPath(context, find.getGuid());
+		Log.i(TAG, "onClickCallback " + this.toString() + " " + context.toString());
+		mContext = context;
+		mFind = find;
+		mView = view;
+	}
+	
+	private void displayPhoto() {
+		String path = Camera.getPhotoPath(mContext, mFind.getGuid());
 		Log.i(TAG, "Path = " + path);
 		
 		Uri.Builder builder = new Uri.Builder();
 		builder.path(path);
 		Uri uri = builder.build();
 		
-		Intent intent = new Intent(context,FullScreenImageViewer.class);
+		Intent intent = new Intent(this,FullScreenImageViewer.class);
 		intent.setData(uri);
-		startActivity(intent); 			
+		if (intent != null)
+			this.startActivity(intent); 			
 	}
 
 	/**
@@ -302,6 +252,84 @@ public class CameraActivity extends Activity
 	public void finishCallback(Context context, Find find, View view) {
 		img_str = null;
 	}
+	
+	   // See http://stackoverflow.com/questions/6448856/android-camera-intent-how-to-get-full-sized-photo
+//	private Uri get FullSizeImage() {
+//	    File photo;
+//	    try
+//	    {
+//	        // place where to store camera taken picture
+//	        photo = this.createTemporaryFile("picture", ".jpg");
+//	        photo.delete();
+//	    }
+//	    catch(Exception e)
+//	    {
+//	        Log.v(TAG, "Can't create file to take picture!");
+//	        Toast.makeText(this, "Please check SD card! Image shot is impossible!", 10000);
+//	        return;
+//	    }
+//	    mImageUri = Uri.fromFile(photo);    
+//	    mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+//	    activity.startActivityForResult(this, intent, MenuShootImage);
+//	}
+	
+//	public static File createTemporaryFile(String part, String ext) throws Exception  {
+//		File tempDir= Environment.getExternalStorageDirectory();
+//		tempDir=new File(tempDir.getAbsolutePath()+"/.temp/");
+//		if(!tempDir.exists()) {
+//			tempDir.mkdir();
+//		}
+//		return File.createTempFile(part, ext, tempDir);
+//	}
+
+	
+//	public Bitmap grabImage(Uri uri)  {
+//		Log.i(TAG, "Uri " + uri);
+//	    this.getContentResolver().notifyChange(uri, null);
+//	    ContentResolver cr = this.getContentResolver();
+//	    Bitmap bitmap;
+//	    try
+//	    {
+//	        bitmap = android.provider.MediaStore.Images.Media.getBitmap(cr, uri);
+//	        return bitmap;
+//	    }
+//	    catch (Exception e)
+//	    {
+//	        Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT).show();
+//	        Log.d(TAG, "Failed to load", e);
+//	    }
+//	    return null;
+//	}
+	
+	// Uncomment and call this to display image (e.g., to test quality rcvd from Camera)
+//	private void displayImage(Uri imageUri) {
+//		Bitmap cameraPic = grabImage(mImageUri);
+//		Intent intent = new Intent(this, FullScreenImageViewer.class);
+//		intent.setData(mImageUri);
+//		startActivity(intent);	
+//	}
+	
+	// Uncomment and call this to save the image (not a string) to a file
+	// An image saved in this way will be viewable in the Gallery
+//	private void saveImageToFile(byte[] bytes) {
+//		ContentValues cv = new ContentValues();
+//		cv.put(Images.Media.TITLE, "TestImage1");
+//		cv.put(Images.Media.DATE_ADDED, System.currentTimeMillis());
+//		cv.put(Images.Media.MIME_TYPE, "image/jpg");				
+//		Uri uri = getContentResolver().insert(Images.Media.EXTERNAL_CONTENT_URI, cv);
+//		
+//		try {
+//			OutputStream os = getContentResolver().openOutputStream(uri);
+//			os.write(b);
+//			os.flush();
+//			os.close();
+//			Toast.makeText(this, "Image Saved", Toast.LENGTH_LONG);
+//	
+//		} catch (IOException e) {
+//			Toast.makeText(this, "Error saving picture", Toast.LENGTH_LONG);
+//		}		
+//	}
+
 	
 	
 	

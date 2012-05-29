@@ -152,43 +152,11 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		Bundle extras = getIntent().getExtras();
 
 		if (extras != null) {
-			
-//			//Find stored in bar-code format. The intent action is "BARCODE"
-//	        if(getIntent().getAction().equals("BARCODE")){
-//					
-//	            	String result = getIntent().getStringExtra("message");
-//	        		String[] findValues = result.split("\\*");
-//	        		
-//	        		String guid = findValues[1];
-//	        		
-//	        		SimpleDateFormat dateFormat = new SimpleDateFormat(
-//	        				"yyyy/MM/dd HH:mm:ss");
-//	        		
-//	        		Date time = new Date();
-//	        		
-//	        		String name = findValues[3];
-//	        		String description = findValues[4];
-//	        		double latitude = Double.parseDouble(findValues[5]);
-//	        		double longitude = Double.parseDouble(findValues[6]);
-//	        		
-//	        		Find decodedFind = new Find();
-//	        		decodedFind.setGuid(guid);
-//	        		decodedFind.setName(name);
-//	        		decodedFind.setDescription(description);
-//	        		decodedFind.setTime(time);
-//	        		decodedFind.setLatitude(latitude);
-//	        		decodedFind.setLongitude(longitude);
-//	        		
-//	        		mFind = decodedFind;
-//	        		displayContentInView(mFind);
-//				
-//			}
 	           
 			// Existing Find
 			if (getIntent().getAction().equals(Intent.ACTION_EDIT)) { 
 				int id = extras.getInt(Find.ORM_ID);
 				Log.i(TAG, "ORM_id = " + id);
-//				Find find = getHelper().getFindById(id);
 				mFind = getHelper().getFindById(id);
 				Log.i(TAG, "Updating: " + mFind);
 				displayContentInView(mFind);
@@ -377,7 +345,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	 * @see android.view.View.OnClickListener#onClick(android.view.View)
 	 */
 	public void onClick(View v) {
-		Log.i(TAG, "onClick()");
+		Log.i(TAG, "onClick(), view = " + v.getId());
 		if (v.getId() == R.id.saveButton) {
 			if (saveFind()) {
 				finish();
@@ -385,6 +353,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			return;
 		}  
 		// NOTE: This should be refactored as a True plugin
+		// This handles clicks on Find's photo
 		else if (v.getId() == R.id.photo) {
 			if (mFind == null) 
 				return;
@@ -401,35 +370,41 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			return;
 		}
 		
-		// All other clicks
-		
-		/**
-		 * For each plugin, call its onClickCallback.
-		 */
-		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
-			Log.i(TAG, "plugin=" + plugin);
-			Class<AddFindPluginCallback> callbackClass = null;
-			Object o;
-			try {
-				View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
-				String className = plugin.getAddFindCallbackClass();
-				if (className != null) {
-					callbackClass = (Class<AddFindPluginCallback>) Class.forName(className);
-					o = (AddFindPluginCallback) callbackClass.newInstance();
-					((AddFindPluginCallback) o).onClickCallback(
-							this.getApplication(),
-							mFind,
-							view);
-				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			}
-		}
-
+//		// All other clicks
+//		
+//		/**
+//		 * For each plugin, call its onClickCallback.
+//		 */
+//		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
+//			Log.i(TAG, "plugin=" + plugin);
+//			Class<AddFindPluginCallback> callbackClass = null;
+//			Object o;
+//			try {
+//				View view = ((ViewGroup)findViewById(android.R.id.content)).getChildAt(0);
+//				String className = plugin.getAddFindCallbackClass();
+//				if (className != null) {
+//					callbackClass = (Class<AddFindPluginCallback>) Class.forName(className);
+//					o = (AddFindPluginCallback) callbackClass.newInstance();
+//					((AddFindPluginCallback) o).onClickCallback(
+//							this.getApplication(),
+//							mFind,
+//							view);
+//				}
+//			} catch (ClassNotFoundException e) {
+//				e.printStackTrace();
+//			} catch (IllegalAccessException e) {
+//				e.printStackTrace();
+//			} catch (InstantiationException e) {
+//				e.printStackTrace();
+//			}
+//			
+//			Intent intent = new Intent(this, plugin.getmMenuActivity());
+//			if (plugin.getActivityReturnsResult())
+//				startActivityForResult(intent, plugin
+//						.getActivityResultAction());
+//			else
+//				startActivity(intent);
+//		}
 	}
 
 	/**
@@ -449,11 +424,16 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 		for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 				// For all other function plug-ins
 				MenuItem item = menu.add(plugin.getmMenuTitle());
-				if (plugin.getmMenuTitle2() != null)
-					menu.add(plugin.getmMenuTitle2());
 				int resId = getResources().getIdentifier(plugin.getmMenuIcon(),
 						"drawable", getPackageName());
 				item.setIcon(resId);
+				
+				if (plugin.getmMenuTitle2() != null) {
+					item = menu.add(plugin.getmMenuTitle2());
+					resId = getResources().getIdentifier(plugin.getmMenuIcon2(),
+							"drawable", getPackageName());
+					item.setIcon(resId);
+				}
 		}
 
 		return true;
@@ -471,6 +451,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		Log.i(TAG, "onMenuItemSelected, item = " + item.getTitle());
 		switch (item.getItemId()) {
 		case R.id.save_find_menu_item:
 			if (saveFind()) {
@@ -483,6 +464,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			break;
 
 		default:
+			// Note: The activity is started AFTER the callback is called.
 			for (FunctionPlugin plugin : mAddFindMenuPlugins) {
 				if (plugin.hasMenuItem((String)item.getTitle())) {
 					Intent intent = new Intent(this, plugin.getmMenuActivity());
@@ -500,9 +482,6 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 						String className = plugin.getAddFindCallbackClass();
 						if (className != null) {
 							callbackClass = (Class<AddFindPluginCallback>) Class.forName(className);
-//							Intent i = new Intent(this, callbackClass);
-//							startActivity(i);
-
 							o = (AddFindPluginCallback) callbackClass.newInstance();							
 							((AddFindPluginCallback) o).menuItemSelectedCallback(
 									this,
