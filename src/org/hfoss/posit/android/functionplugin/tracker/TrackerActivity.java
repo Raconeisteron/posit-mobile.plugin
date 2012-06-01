@@ -983,7 +983,7 @@ GpsStatus.Listener, LocationListener {
 
 		setExecutionState(TrackerSettings.RUNNING);
 		Toast.makeText(this, "Starting background tracking.", Toast.LENGTH_SHORT).show();
-		postNotification(); 
+		//postNotification(); 
 
 		mTrackerStartStopButton.setText("Stop");
 		mTrackerStartStopButton.setCompoundDrawablesWithIntrinsicBounds(
