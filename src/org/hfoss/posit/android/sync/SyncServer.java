@@ -296,18 +296,24 @@ public class SyncServer extends SyncMedium{
 	 */
 	private String createActionBasedUrl( Find find ){
 		String url = "";
-		String action = find.getAction();
-		
-		if( action.equals( FindHistory.ACTION_CREATE ) ){
-			url = mServer + "/api/createFind?authKey=" + mAuthKey;
+		try {
+			String action = find.getAction();
+
+			if( action.equals( FindHistory.ACTION_CREATE ) ){
+				url = mServer + "/api/createFind?authKey=" + mAuthKey;
+			}
+			else if( action.equals( FindHistory.ACTION_UPDATE ) ){
+				url = mServer + "/api/updateFind?authKey=" + mAuthKey;
+			}
+			else{
+				Log.e(TAG, "Find object does not contain an appropriate action: " + find);
+			}
+		} catch(NullPointerException e) {
+			Log.e(TAG, "Shouldn't happen but Find is null");
+			e.printStackTrace();
+			return url;
 		}
-		else if( action.equals( FindHistory.ACTION_UPDATE ) ){
-			url = mServer + "/api/updateFind?authKey=" + mAuthKey;
-		}
-		else{
-			Log.e(TAG, "Find object does not contain an appropriate action: " + find);
-		}
-		
+
 		return url;
 	}
 	
