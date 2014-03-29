@@ -21,8 +21,8 @@
  */
 package org.hfoss.posit.android.functionplugin.tracker;
 
-import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.database.DbManager;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -32,7 +32,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;

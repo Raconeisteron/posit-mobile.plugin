@@ -3,6 +3,7 @@
 	<string name="app_name">POSITx</string>
 	<string name="version">0.6 beta</string>
 	<string name="posit_package_name">org.hfoss.posit.android</string>
+	<string name="powered_by_hfoss">Powered by HFOSS</string>
 	
 	<string name="open_helper_classname">org.hfoss.posit.android.api.database.DbManager</string>
 		
@@ -63,8 +64,7 @@
 	<string name="backToMain">Return To Main</string>
 	<string name="projects">Projects</string>
 <!-- 	<string name="aboutCopyright1">POSIT</string> -->
-<!-- 	<string name="aboutCopyright2">Portable Open Search and Identification Tool\n -->
-<!-- 	</string> -->
+<string name="aboutCopyright2">Portable Open Search and Identification Tool\n</string>
 	<string name="aboutDescription">A project of Trinity College HFOSS</string> 
 <!-- 	<string name="acdivocaDescription1">ACDI/ VOCA Mobile Phone-Based Beneficiary Registration and Update System</string> -->
 <!-- 	<string name="acdivocaDescription2">(POSIT-Haiti)</string> -->
@@ -187,7 +187,8 @@
 	<string name="viewSightingsLabel">View Sightings</string>
 	<string name="defaultInstanceLabel">Entry</string>
 	<string name="okLabel">OK</string>
-<!-- 	<string name="cancelLabel">Cancel</string> -->
+    <string name="cancelLabel">Cancel</string>
+    <string name="exitTitle">Confirm Exit</string>
 	<string name="latitude">Latitude:</string>
 	<string name="longitude">Longitude:</string>
 	<string name="button_scanner">Scan</string>
@@ -268,6 +269,7 @@
 	<string name="nativeActivity">Native Activity</string>
 	<string name="idAddProjButton">+ Add New Project</string>
 	<string name="login">Login</string>
+	<string name="login_cancel">Cancel</string>
 	<string name="idTutorial">Tutorial</string>
 	<string name="local_service_started">Tracker Started</string>
 	<string name="local_service_stopped">Tracker Stopped</string>
@@ -292,7 +294,8 @@
 	<string name="admin_login">Admin Login</string>
 	<string name="getting_longitude">Getting longitude...</string>
 	<string name="getting_latitude">Getting latitude...</string>
-	
+	<string name="admin_menu">Admin Menu</string>
+		
 	
 	<!-- Authentication -->
 	<string name="accountType">org.hfoss.posit.account</string>
@@ -321,7 +324,7 @@
 	<string name="geotaggingPref">Geotagging</string>
     <string name="geotaggingSummary">Geotag all finds</string>
     <string name="geotaggingKey">geotagKey</string>	
-    <string name="LocaleKey">locale</string>
+    <string name="localeKey">locale</string>
     <string name="LocaleTitle">Locale</string>
     <string name="LocaleSummary">English</string>
     <string name="CancelLabel">Cancel</string>
@@ -341,4 +344,9 @@
   <string name="msg_default_status">Place a barcode inside the viewfinder rectangle to scan it.</string>
   <string name="msg_default_time">Time</string>
   <string name="msg_default_type">Type</string>
+  
+  
+  <!--  Toasts -->
+  <string name="toast_thankyou">Thank you!</string>
+  <string name="toast_adminuser">Sorry, you have to be an admin user to do this.</string>
 </resources>

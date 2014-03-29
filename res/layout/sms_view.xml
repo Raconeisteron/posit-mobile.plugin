@@ -5,25 +5,25 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent">
 		
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		<LinearLayout 
 			android:layout_width="match_parent"	android:layout_height="wrap_content"
 			android:orientation="vertical" android:layout_marginRight="4dp">
 		
     		<TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
-    			<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    			<TextView 
   					android:id="@+id/smsSenderView"
   					android:layout_width="wrap_content"
   					android:layout_height="wrap_content" />
     		</TableRow>
     		<TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
-    			<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    			<TextView 
   					android:id="@+id/smsFindInfoLabel"
   					android:layout_width="fill_parent"
   					android:layout_height="wrap_content"
   					android:text="@string/smsFindLabel" />
     		</TableRow>
 			<TableRow android:layout_height="wrap_content" android:layout_width="match_parent">
-				<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+				<TextView 
   					android:id="@+id/smsFindView" android:background="@color/white_color"
   					android:layout_height="wrap_content" android:layout_width="wrap_content"
   					android:textColor="@color/black_color" />

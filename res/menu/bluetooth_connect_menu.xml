@@ -3,5 +3,5 @@
           android:icon="@android:drawable/ic_menu_search"
           android:title="@string/bt_button_scan" />
     <item android:id="@+id/bt_scan_cancel"
-          android:title="@string/cancel" />
+          android:title="@string/bt_title_cancel" />
 </menu>

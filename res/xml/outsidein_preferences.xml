@@ -6,7 +6,7 @@
 		<PreferenceScreen android:title="@string/outsideinprefs">
 		
 			<Preference android:key="oiAboutKey" 
-				android:title="@string/aboutItem"
+				android:title="@string/outsideInAboutDescription"
 				activity_class="org.hfoss.posit.android.plugin.outsidein.OutsideInAboutActivity"
 				android:summary="" />
 	

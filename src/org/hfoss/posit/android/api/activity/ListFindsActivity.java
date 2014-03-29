@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.api.plugin.FindPlugin;
@@ -33,7 +34,6 @@ import org.hfoss.posit.android.api.plugin.FunctionPlugin;
 import org.hfoss.posit.android.api.plugin.ListFindPluginCallback;
 //import org.hfoss.posit.android.functionplugin.camera.Camera;
 //import org.hfoss.posit.android.functionplugin.reminder.ToDoReminderService;
-import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.sync.SyncActivity;
 
 import android.app.AlertDialog;
@@ -268,14 +268,14 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		case CONFIRM_DELETE_DIALOG:
 			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon)
 					.setTitle(R.string.confirm_delete)
-					.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+					.setPositiveButton(R.string.okLabel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// User clicked OK so do some stuff
 							if (deleteAllFind()) {
 								finish();
 							}
 						}
-					}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+					}).setNegativeButton(R.string.cancelLabel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// User clicked cancel so do nothing
 						}
@@ -369,10 +369,12 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				tv.setText(find.getStatusAsString());
 				tv = (TextView) v.findViewById(R.id.description_id);
 				String description = find.getDescription();
-				if (description.length() <= 50) {
-					tv.setText(description);
-				} else {
-					tv.setText(description.substring(0,49)+" ...");
+				if (description != null) {
+					if (description.length() <= 50) {
+						tv.setText(description);
+					} else {
+						tv.setText(description.substring(0,49)+" ...");
+					}
 				}
 
 				ArrayList<FunctionPlugin> plugins = FindPluginManager.getFunctionPlugins();

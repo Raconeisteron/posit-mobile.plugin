@@ -22,9 +22,10 @@
 
 package org.hfoss.posit.android.plugin.outsidein;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.FindActivity;
-import org.hfoss.posit.android.R;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;

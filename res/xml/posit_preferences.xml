@@ -3,7 +3,7 @@
  
  <!-- The preferences that begin with "Preference" must have activities associated with them. -->
 			<Preference android:key="@string/aboutPref" 
-				android:title="@string/aboutItem"
+				android:title="@string/aboutDescription"
 				activity_class="org.hfoss.posit.android.AboutActivity"
 				android:summary="Display information about POSITx" />
 				
@@ -23,13 +23,13 @@
 				android:defaultValue="@string/defaultServer" />
 				
 			<ListPreference 
-				android:key="@string/LocaleKey"
+				android:key="@string/localeKey"
 				android:title="@string/LocaleTitle" 
 				android:persistent="true"
 				android:defaultValue="en" 
-				android:summary="@string/LocaleSummary"
-				android:entries="@array/locales" 
-				android:entryValues="@array/locale_values"
+				android:summary="@string/LocaleSummary" />
+<!-- 				android:entries="@array/locales"  -->
+<!-- 				android:entryValues="@array/locale_values" -->
 				android:negativeButtonText="@string/CancelLabel" />
   <!-- 
 			<Preference android:key="regDevice" 

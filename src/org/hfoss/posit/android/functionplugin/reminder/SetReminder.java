@@ -35,11 +35,11 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.api.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.api.plugin.ListFindPluginCallback;
-import org.hfoss.posit.android.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -486,8 +486,8 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager>
 			Bundle bundle = new Bundle();
 			Intent newIntent = new Intent();
 			bundle.putString("Date", date);
-			Double lng = new Double(0);
-			Double lat = new Double(0);
+			Double lng = Double.valueOf(0);
+			Double lat = Double.valueOf(0);
 			// Get the user selected location coordinates
 			try {
 				lng = addressArray.getJSONObject(item)
@@ -606,8 +606,8 @@ public class SetReminder extends OrmLiteBaseActivity<DbManager>
 			Bundle bundle = new Bundle();
 			Intent newIntent = new Intent();
 			bundle.putString(Find.TIME, date);
-			Double lng = new Double(0);
-			Double lat = new Double(0);
+			Double lng = Double.valueOf(0);
+			Double lat = Double.valueOf(0);
 			// Parse the JSONObject to get the longitude and latitude
 			try {
 				lng = addressArray.getJSONObject(0)

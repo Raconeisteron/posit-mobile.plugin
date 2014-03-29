@@ -24,10 +24,10 @@ package org.hfoss.posit.android.plugin.outsidein;
 
 import java.util.List;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
-import org.hfoss.posit.android.R;
 
 import android.content.Context;
 import android.os.Bundle;

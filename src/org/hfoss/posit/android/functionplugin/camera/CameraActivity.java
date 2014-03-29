@@ -165,6 +165,8 @@ public class CameraActivity extends Activity
 			// do we get an image back?
 			if (intent.getStringExtra("Photo") != null) {
 				ImageView photo = (ImageView) view.findViewById(R.id.photo);
+				if (photo == null)
+					return;
 				
 				String img_str = intent.getStringExtra("Photo");
 				byte[] c = Base64.decode(img_str, Base64.DEFAULT);

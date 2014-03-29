@@ -31,10 +31,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.database.DbManager;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
+
 
 import android.content.Context;
 import android.util.Log;
@@ -209,7 +210,7 @@ public class User {
 			case ADMIN:
 				if (userType != rqdUserType.ordinal()) {
 					Log.i(TAG, "Sorry you must be ADMIN USER to do this.");
-					Toast.makeText(context, context.getString(R.string.toast_adminuser), Toast.LENGTH_SHORT);
+					Toast.makeText(context, context.getString(R.string.toast_adminuser), Toast.LENGTH_SHORT).show();
 					result = -1;
 				}
 				break;

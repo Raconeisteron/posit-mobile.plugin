@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="trackerprefs">Tracker Preferences</string>    
+    <string name="trackerprefs">Tracker Preferences</string>   
+    <string name="trackerGeneral">General</string> 
 </resources>

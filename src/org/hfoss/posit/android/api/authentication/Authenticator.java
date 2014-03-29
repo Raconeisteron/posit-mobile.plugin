@@ -42,8 +42,8 @@ import android.util.Log;
  * returns an Intent that the system will use to display the login dialog 
  * to the user. 
  * 
- * This implementation below will launch our app’s main launcher activity 
- * with an action of “fm.last.android.sync.LOGIN” and an extra containing the 
+ * This implementation below will launch our app's main launcher activity 
+ * with an action of 'fm.last.android.sync.LOGIN' and an extra containing the 
  * AccountAuthenticatorResponse object we use to pass data back to 
  * the system after the user has logged in.
 

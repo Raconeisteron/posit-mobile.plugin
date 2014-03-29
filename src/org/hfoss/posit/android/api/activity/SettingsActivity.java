@@ -311,7 +311,7 @@ public class SettingsActivity extends PreferenceActivity implements
 		p.setSummary(sp.getString(getString(R.string.projectNamePref), "None"));
 		p = manager.findPreference(getString(R.string.serverPref));
 		p.setSummary(sp.getString(getString(R.string.serverPref), getString(R.string.defaultServer)));
-		p = manager.findPreference(getString(R.string.localePref));
+		p = manager.findPreference(getString(R.string.localeKey));
 		updatePrefSummary(p);			
 	}
 

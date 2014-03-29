@@ -8,10 +8,9 @@
 	android:orientation="vertical">
 	<ImageView
 		android:id="@+id/Logo"
+		android:contentDescription="Logo"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true"
-		android:layout_centerHorizontal="true"
 		android:src="@drawable/posit"/>
 		
 	<include android:layout_width="fill_parent" layout="@layout/main_notabs_buttons"/>

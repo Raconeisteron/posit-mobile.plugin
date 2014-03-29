@@ -22,12 +22,12 @@
 package org.hfoss.posit.android.functionplugin.login;
 
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.AppControlManager;
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.User;
 import org.hfoss.posit.android.api.User.UserType;
 import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.R;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
@@ -143,7 +143,7 @@ public class LoginActivity extends OrmLiteBaseActivity<DbManager> implements OnC
 		case INVALID_LOGIN:
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.alert_dialog_icon).setTitle(R.string.password_alert_message)
-					.setPositiveButton(R.string.alert_dialog_ok,
+					.setPositiveButton(R.string.okLabel,
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
 								int whichButton) {

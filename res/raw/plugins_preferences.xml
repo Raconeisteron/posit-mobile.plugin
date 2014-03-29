@@ -45,27 +45,6 @@ picture associated with it."
 			main_extra_button_label2="" 
 			main_icon="posit_museum" />
 
-		<!--  SecondHelpings is a plugin for a nonprofit in SC -->
-		<Plugin type="find" name="Second Helpings Find" user_can_select="true"
-			default_find_plugin="false"
-			description="Second Helpings is a nonprofit in South Carolina."
-			package="org.hfoss.posit.android.plugin.sh"
-			find_class="org.hfoss.posit.android.plugin.sh.ShFind"
-			find_factory="org.hfoss.posit.android.api.FindFactory"
-			find_activity_class="org.hfoss.posit.android.plugin.sh.ShFindActivity"
-			extra_activity_class="" 
-			extra_activity_class2=""
-			list_finds_activity_class="org.hfoss.posit.android.plugin.sh.ShListFindsActivity"
-			find_data_manager="org.hfoss.posit.android.api.database.DbManager"
-			preferences_xml="sh_preferences" 
-			add_find_layout="sh_add_find"
-			list_find_layout="list_row" 
-			main_list_button_label="listStops"
-			main_add_button_label="addStop" 
-			main_extra_button_label=""
-			main_extra_button_label2="" 
-			main_icon="secondhelpings_logo" />
-
 		<!-- Proof-of-concept prototype for CL&P -->
 		<Plugin type="find" name="Clp Find" user_can_select="false"
 			default_find_plugin="false"
@@ -141,15 +120,6 @@ picture associated with it."
 			activity_returns_result="true"
 			activity_result_action="0" />							
 
-<!-- 		Map Plugin displays finds on a map  -->
-<!-- 		<Plugin active="false"  -->
-<!-- 			type="function"  -->
-<!-- 			extensionPoint="mainMenu" -->
-<!-- 			name="map"  -->
-<!-- 			menuIcon="ic_menu_mapmode"  -->
-<!-- 			menuTitle="Map Finds" -->
-<!-- 			menuActivity="org.hfoss.posit.android.api.activity.MapFindsActivity" /> -->
-
        <!-- Two extra buttons in PositMain -->
        <Plugin active_by_default="false"
             type="function"
@@ -200,7 +170,7 @@ picture associated with it."
 			menuActivity="org.hfoss.posit.android.functionplugin.fileviewer.FileViewActivity" />
 			
 		<!-- SMS Plugin sends and receives Finds as SMS messages. -->
-		<Plugin active_by_default="false"
+		<Plugin active_by_default="true"
 			type="function"
 			extensionPoint="addFindMenu"
 			name="Send SMS"
@@ -211,18 +181,6 @@ picture associated with it."
 			preferences_xml="sms_preferences"
 			menuActivity="org.hfoss.posit.android.functionplugin.sms.SmsActivity" />
 
-		<!--  Twitter Poster posts Finds on Twitter -->
-		<Plugin active_by_default="false" 
-			type="function" 
-			extensionPoint="addFindMenu"
-			name="Twitter Poster"
-			user_can_select="false"
-			description="Lets you to share Finds through Twitter.."
-			preferences_xml="twitter_preferences" 
-			menuIcon="ic_twitter_48" menuTitle="Twit Find"
-			activity_returns_result="true"
-			activity_result_action="0" 
-			menuActivity="org.hfoss.posit.android.functionplugin.twitter.TwitFindsActivity" />
 			
 		<!--  Log plugin logs Find data to a log file on the SdCard. -->	
 		<Plugin active_by_default="true" 
@@ -270,39 +228,6 @@ picture associated with it."
             menuTitle="Bluetooth Sync"
             menuActivity="org.hfoss.posit.android.functionplugin.bluetooth.BluetoothSyncActivity" />
 
-		<!-- <Plugin active="true" name="AcdiVocaFind" -->
-		<!-- package="org.hfoss.posit.android.plugin.acdivoca" -->
-		<!-- find_factory="AcdiVocaFindFactory" -->
-		<!-- find_activity_class="AcdiVocaMchnFindActivity" -->
-		<!-- extra_activity_class="AcdiVocaUpdateFindActivity" -->
-		<!-- extra_activity_class2="AcdiVocaAgriFindActivity" -->
-		<!-- list_finds_activity_class="AcdiVocaListFindsActivity" -->
-		<!-- login_activity_class="LoginActivity" -->
-		<!-- find_data_manager="AcdiVocaDbManager" -->
-		<!-- preferences_xml="acdivoca_preferences" -->
-		<!-- main_list_button_label="send_sms_label" -->
-		<!-- main_add_button_label="add_beneficiary_label" -->
-		<!-- main_extra_button_label="update_beneficiary_label" -->
-		<!-- main_extra_button_label2="new_agri_beneficiary_label" -->
-		<!-- main_icon="acdivoca_logo_lg" /> -->
-
-		<!-- list_finds_activity_class="AcdiVocaSendSmsActivity" -->
-
-		<!-- <Plugin active="true" name="AcdiVocaFind2" -->
-		<!-- package="org.hfoss.posit.android.plugin.acdivoca" -->
-		<!-- find_factory="AcdiVocaFindFactory" -->
-		<!-- find_activity_class="AcdiVocaFindActivity" -->
-		<!-- extra_activity_class="AcdiVocaUpdateActivity" -->
-		<!-- list_finds_activity_class="AcdiVocaListFindsActivity" -->
-		<!-- login_activity_class="LoginActivity" -->
-		<!-- extra_activity_class2="AcdiVocaNewAgriActivity" -->
-		<!-- find_data_manager="AcdiVocaFindDataManager" -->
-		<!-- preferences_xml="acdivoca_preferences2" -->
-		<!-- main_list_button_label="list_beneficiary_label" -->
-		<!-- main_add_button_label="add_beneficiary_label" -->
-		<!-- main_extra_button_label="update_beneficiary_label" -->
-		<!-- main_extra_button_label2="new_agri_beneficiary_label" -->
-		<!-- main_icon="acdivoca_logo" /> -->
 	</FindPlugins>
 </PluginsPreferences>
 

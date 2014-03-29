@@ -21,15 +21,15 @@
   <SurfaceView android:id="@+id/preview_view"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent"
-               android:layout_centerInParent="true">
+               >
   </SurfaceView>
 
-  <org.hfoss.posit.android.functionplugin.barcode.ViewfinderView
-      android:id="@+id/viewfinder_view"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:background="@color/transparent">
-  </org.hfoss.posit.android.functionplugin.barcode.ViewfinderView>
+<!--   <org.hfoss.posit.android.functionplugin.barcode.ViewfinderView -->
+<!--       android:id="@+id/viewfinder_view" -->
+<!--       android:layout_width="fill_parent" -->
+<!--       android:layout_height="fill_parent" -->
+<!--       android:background="@color/transparent"> -->
+<!--   </org.hfoss.posit.android.functionplugin.barcode.ViewfinderView> -->
 
   <TextView android:id="@+id/status_view"
             android:layout_width="wrap_content"

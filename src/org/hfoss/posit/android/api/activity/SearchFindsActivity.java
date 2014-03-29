@@ -22,9 +22,10 @@
  */
 package org.hfoss.posit.android.api.activity;
 
-import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.LocaleManager;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
+
 
 import android.app.Activity;
 import android.content.Intent;
@@ -77,7 +78,7 @@ public class SearchFindsActivity extends Activity implements OnClickListener, Te
 		
 		LocaleManager.setDefaultLocale(this);  // Locale Manager should be in API
 
-		setContentView(R.layout.acdivoca_search_finds);  // Should be done after locale configuration
+		setContentView(R.layout.search_finds);  // Should be done after locale configuration
 				
 		((Button)findViewById(R.id.search_finds_ok_button)).setOnClickListener(this);
 		((Button)findViewById(R.id.search_finds_cancel_button)).setOnClickListener(this);

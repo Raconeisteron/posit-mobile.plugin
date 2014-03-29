@@ -3,9 +3,9 @@
  */
 package org.hfoss.posit.android.plugin.csv;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.FindActivity;
-import org.hfoss.posit.android.R;
 
 import android.os.Bundle;
 import android.text.util.Linkify;

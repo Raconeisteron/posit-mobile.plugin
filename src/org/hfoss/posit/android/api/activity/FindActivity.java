@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.database.DbManager;
@@ -37,7 +38,6 @@ import org.hfoss.posit.android.api.plugin.FunctionPlugin;
 import org.hfoss.posit.android.functionplugin.camera.Camera;
 import org.hfoss.posit.android.functionplugin.camera.FullScreenImageViewer;
 import org.hfoss.posit.android.plugin.csv.CsvListFindsActivity;
-import org.hfoss.posit.android.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -746,10 +746,12 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			mCurrentLocation = location;
 			// if we are creating a new find update the location as we get updates
 			if (getIntent().getAction().equals(Intent.ACTION_INSERT)) {
-				mLongitudeTV.setText(String.valueOf(mCurrentLocation
-						.getLongitude()));
-				mLatitudeTV.setText(String.valueOf(mCurrentLocation
-						.getLatitude()));
+				if (mLongitudeTV != null)
+					mLongitudeTV.setText(String.valueOf(mCurrentLocation
+							.getLongitude()));
+				if (mLatitudeTV != null)
+					mLatitudeTV.setText(String.valueOf(mCurrentLocation
+							.getLatitude()));
 				
 			}
 			Log.i(TAG, "Got a new location: " + mCurrentLocation.getLatitude()
@@ -782,7 +784,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			return new AlertDialog.Builder(this).setIcon(
 					R.drawable.alert_dialog_icon).setTitle(
 					R.string.alert_dialog_2).setPositiveButton(
-					R.string.alert_dialog_ok,
+					R.string.okLabel,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
 								int whichButton) {
@@ -791,7 +793,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 								finish();
 							}
 						}
-					}).setNegativeButton(R.string.alert_dialog_cancel,
+					}).setNegativeButton(R.string.cancelLabel,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
 								int whichButton) {
@@ -817,18 +819,21 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 			return false;
 		}
 
-		// A name is not always required in derived classes
-		String name = find.getName();
-		String description = find.getDescription();
-		// Make sure name isn't full of just white spaces
-		if (name.trim().length() == 0) {
-			// Make sure description isn't full of just white spaces
-			if(description.trim().length() == 0){
-				Toast.makeText(this, "You must provide a name or description for this Find.",
-					Toast.LENGTH_LONG).show();
-				return false;
-			}
-		}
+//		// A name is not always required in derived classes
+//		// Not all finds have a name
+//		String name = find.getName();
+//		String description = find.getDescription();
+//		if (name == null || description == null) {
+//		// Make sure name isn't full of just white spaces
+//			if (name.trim().length() == 0) {
+//				// Make sure description isn't full of just white spaces
+//				if(description.trim().length() == 0){
+//					Toast.makeText(this, "You must provide a name or description for this Find.",
+//							Toast.LENGTH_LONG).show();
+//					return false;
+//				}
+//			}
+//		}
 
 		// Create a new Find
 		// NOTE that FindActivity can have ACTION_INSERT, but if the user

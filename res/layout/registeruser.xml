@@ -38,12 +38,14 @@
 
 		<EditText android:id="@+id/password" android:layout_height="40dp"
 			android:layout_width="fill_parent" android:layout_gravity="fill_horizontal"
-			android:password="true" android:imeOptions="actionNext"
+			android:inputType="textPassword"
+			android:imeOptions="actionNext"
 			android:hint="@string/passwordLabelText" />
 
 		<EditText android:id="@+id/passCheck" android:layout_height="40dp"
 			android:layout_width="fill_parent" android:layout_gravity="fill_horizontal"
-			android:password="true" android:hint="@string/passCheckLabelText" />
+			android:inputType="textPassword"
+			android:hint="@string/passCheckLabelText" />
 
 		<Button android:id="@+id/submitInfo" android:layout_width="150dp"
 			android:layout_height="40dp" android:layout_gravity="center"

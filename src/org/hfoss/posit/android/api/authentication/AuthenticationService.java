@@ -16,7 +16,6 @@
 
 package org.hfoss.posit.android.api.authentication;
 
-
 import org.hfoss.posit.android.R;
 
 import android.app.Service;
@@ -29,7 +28,7 @@ import android.util.Log;
 
 /**
  * The authenticator service is expected to return Authenticator, a subclass of 
- * AbstractAccountAuthenticator, from the onBind method — if you don’t, 
+ * AbstractAccountAuthenticator, from the onBind method  if you dont, 
  * Android will crash and reboot when you try to add a new account to the 
  * system. 
  * 
