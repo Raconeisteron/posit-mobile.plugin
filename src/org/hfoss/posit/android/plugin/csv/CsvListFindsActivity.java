@@ -29,13 +29,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.ListFindsActivity;
 import org.hfoss.posit.android.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
-import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.functionplugin.sms.ObjectCoder;
 
 import android.content.Context;

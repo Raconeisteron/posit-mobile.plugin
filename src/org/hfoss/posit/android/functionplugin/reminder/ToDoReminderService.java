@@ -25,10 +25,10 @@ package org.hfoss.posit.android.functionplugin.reminder;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.database.DbHelper;
 import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.R;
 
 import android.app.Notification;
 import android.app.NotificationManager;

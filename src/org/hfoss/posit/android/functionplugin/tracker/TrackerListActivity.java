@@ -23,9 +23,12 @@
 package org.hfoss.posit.android.functionplugin.tracker;
 
 import java.util.List;
-import org.hfoss.posit.android.api.database.DbManager;
+
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.database.DbManager;
+
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

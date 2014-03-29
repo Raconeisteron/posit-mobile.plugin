@@ -8,6 +8,7 @@
 		android:clickable="true"
 		android:apiKey="0bvEMJ9m96_f2aZjGvtIo0gbAxAloau3umkde5g" />
 	<LinearLayout android:id="@+id/zoomView"
+	    android:orientation="horizontal"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:layout_alignBottom="@id/mapView"
 		android:layout_centerHorizontal="true" />

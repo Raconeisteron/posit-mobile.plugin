@@ -26,6 +26,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hfoss.posit.android.R;
+
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -37,8 +39,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import org.hfoss.posit.android.R;
 
 /**
  * Simple file chooser allows the user to browse the file system.  Returns 
@@ -87,8 +87,8 @@ public class FilePickerActivity extends ListActivity {
 		currentDir = dir;
 		List<String> datafiles = getFileNames(dir);
 		if (datafiles.size() == 0) 
-			setContentView(R.layout.acdivoca_list_files);
-        adapter = new FileArrayAdapter(this, R.layout.acdivoca_list_files, datafiles );
+			setContentView(R.layout.list_files);
+        adapter = new FileArrayAdapter(this, R.layout.list_files, datafiles );
         this.setListAdapter(adapter);		
 	}
 	
@@ -183,7 +183,7 @@ public class FilePickerActivity extends ListActivity {
 			View v = convertView;
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater)c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.acdivoca_list_files_row, null);
+				v = vi.inflate(R.layout.list_files_row, null);
 			}
 			final String filename = items.get(position);
 			if (filename != null) {

@@ -28,7 +28,6 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical"
             android:paddingTop="5dip"
             android:paddingBottom="13dip"
@@ -60,9 +59,8 @@
                 android:layout_height="wrap_content"
                 android:minWidth="250dip"
                 android:scrollHorizontally="true"
-                android:capitalize="none"
-                android:autoText="false"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress" 
+                />
             <TextView
                 android:id="@+id/username_fixed"
                 android:textAppearance="?android:attr/textAppearanceSmall"
@@ -85,10 +83,8 @@
                 android:layout_height="wrap_content"
                 android:minWidth="250dip"
                 android:scrollHorizontally="true"
-                android:capitalize="none"
-                android:autoText="false"
-                android:password="true"
-                android:inputType="textPassword" />
+                android:inputType="textPassword" 
+                />
             <TextView
                 android:id="@+id/message_bottom"
                 android:textAppearance="?android:attr/textAppearanceSmall"

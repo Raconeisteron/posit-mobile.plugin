@@ -5,16 +5,20 @@
 	android:paddingRight="8dp">
 
 	<ListView android:id="@+id/android:list" android:layout_width="fill_parent"
-		android:layout_height="fill_parent" android:background="#ff000000"
-		android:layout_weight="1" android:drawSelectorOnTop="false" />
+		android:layout_height="0dip" 
+		android:background="#ff000000"
+		android:layout_weight="1" 
+		android:drawSelectorOnTop="false" />
 
 	<ScrollView android:id="@android:id/empty"
 		android:layout_width="fill_parent" android:layout_height="fill_parent"
 		android:fillViewport="true">
 
 		<TextView android:id="@+id/android:empty"
-			android:layout_width="fill_parent" android:layout_height="fill_parent"
-			android:background="#ff000000" android:textSize="20dp" android:text="No data" />
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:background="#ff000000" 
+			android:textSize="20sp" 
+			android:text="No data" />
 	</ScrollView>
 </LinearLayout> 
 

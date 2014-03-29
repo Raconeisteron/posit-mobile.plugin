@@ -16,4 +16,6 @@
 	<string name="smsSenderLabel">SMS Received from: </string>                                                                                                                                                   
 	<string name="smsContentsLabel">SMS contents:</string>                                                                                                                                                      
 	<string name="smsNumMessagesLabel"># of messages to send:</string>     
+	<string name="smsPhoneKey">SMSPhoneKey</string>
+	<string name="smsDefaultPhoneNumber">111-222-3333</string>
 </resources>

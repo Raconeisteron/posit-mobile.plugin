@@ -847,7 +847,9 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 			Date lastSync = getTimeOfLastSync();
 
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-			String lastSyncString = formatter.format(lastSync);
+			String lastSyncString = "";
+			if (formatter != null)
+				lastSyncString = formatter.format(lastSync);
 						
 			// Query taken from old POSIT DbHelper.java.. not sure it works
 			// properly.

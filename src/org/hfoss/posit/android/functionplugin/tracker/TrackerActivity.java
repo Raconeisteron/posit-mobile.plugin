@@ -25,9 +25,9 @@ package org.hfoss.posit.android.functionplugin.tracker;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.activity.OrmLiteBaseMapActivity;
 import org.hfoss.posit.android.api.database.DbManager;
-import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.functionplugin.tracker.TrackerState.PointAndTime;
 import org.hfoss.posit.android.sync.Communicator;
 
@@ -433,7 +433,7 @@ GpsStatus.Listener, LocationListener {
 				else  {
 					mSettingsSyncRegisterButton.setText("Register");
 					Toast.makeText(this, "This expedition needs to be registered with the server. " +
-							"Please click the register button", Toast.LENGTH_SHORT);
+							"Please click the register button", Toast.LENGTH_SHORT).show();
 					mSettingsSyncRegisterButton.setVisibility(View.VISIBLE);
 
 				}

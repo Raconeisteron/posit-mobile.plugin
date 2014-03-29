@@ -34,7 +34,6 @@ import org.hfoss.posit.android.api.plugin.ActiveFuncPluginChangeEventListener;
 import org.hfoss.posit.android.api.plugin.FindActivityProvider;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
-import org.hfoss.posit.android.R;
 //import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
@@ -113,7 +112,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			String phone = mSharedPrefs.getString(getString(R.string.smsPhoneKey), "");
 			if (phone.equals("")) {
 				mSpEditor = mSharedPrefs.edit();
-				mSpEditor.putString(getString(R.string.smsPhoneKey), getString(R.string.default_phone));
+				mSpEditor.putString(getString(R.string.smsPhoneKey), getString(R.string.smsDefaultPhoneNumber));
 				mSpEditor.commit();
 			}
 			String server = mSharedPrefs.getString(getString(R.string.serverPref), "");
@@ -484,13 +483,13 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_EXIT:
-			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon).setTitle(R.string.exit)
-					.setPositiveButton(R.string.alert_dialog_ok, new DialogInterface.OnClickListener() {
+			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon).setTitle(R.string.exitTitle)
+					.setPositiveButton(R.string.okLabel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// User clicked OK so do some stuff
 							finish();
 						}
-					}).setNegativeButton(R.string.alert_dialog_cancel, new DialogInterface.OnClickListener() {
+					}).setNegativeButton(R.string.cancelLabel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							/* User clicked Cancel so do nothing */
 						}
@@ -509,7 +508,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		switch (id) {
 		case CONFIRM_EXIT:
-			d.setTitle(R.string.exit);
+			d.setTitle(R.string.exitTitle);
 			// d.setButton(DialogInterface.BUTTON_POSITIVE,
 			// getString(R.string.alert_dialog_ok), new
 			// DialogInterface.OnClickListener() {
@@ -528,11 +527,11 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			// }
 			// } );
 			needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
-			needsabutton.setText(R.string.alert_dialog_ok);
+			needsabutton.setText(R.string.okLabel);
 			needsabutton.invalidate();
 
 			needsabutton = d.getButton(DialogInterface.BUTTON_NEGATIVE);
-			needsabutton.setText(R.string.alert_dialog_cancel);
+			needsabutton.setText(R.string.cancelLabel);
 			needsabutton.invalidate();
 
 			break;

@@ -18,7 +18,7 @@
             <TextView
             	android:layout_width="0dp" android:layout_height="wrap_content"
             	android:id="@+id/nameValueText" android:layout_marginLeft="4dp" 
-            	android:textSize="24dp" 
+            	android:textSize="24sp" 
             	android:layout_marginTop="4dp"> <requestFocus/>
             </TextView>
         </TableRow>
@@ -28,7 +28,7 @@
             	android:id="@+id/descriptionTextView" android:text="Address:"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp" 
-            	android:textSize="16dp" 
+            	android:textSize="16sp" 
             	android:visibility="visible">
             </TextView>
             <TextView
@@ -36,7 +36,7 @@
             	android:autoLink="map"
             	android:layout_width="0dp" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="16dp" 
+            	android:textSize="16sp" 
             	android:maxLines='10'>
             </TextView>
         </TableRow>   
@@ -46,21 +46,21 @@
             	android:id="@+id/guidTextView" android:text="@string/idLabel"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="12dp" 
+            	android:textSize="12sp" 
             	android:visibility="gone">
             </TextView>
             <TextView
             	android:id="@+id/guidValueTextView"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="12dp"
+            	android:textSize="12sp"
             	android:visibility="gone" >
             </TextView>
             <TextView
             	android:id="@+id/guidRealValueTextView"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="12dp"
+            	android:textSize="12sp"
             	android:visibility="gone" >
             </TextView>
         </TableRow>
@@ -71,14 +71,14 @@
             	android:id="@+id/latitudeTextView" android:text="@string/latitude"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="12dp" 
+            	android:textSize="12sp" 
             	android:visibility="gone">           
             	</TextView>
             <TextView
             	android:id="@+id/latitudeValueTextView" android:text="@string/getting_latitude"
             	android:layout_width="wrap_content"  android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="12dp" 
+            	android:textSize="12sp" 
             	android:visibility="gone" >           
             </TextView>
         </TableRow>
@@ -88,14 +88,14 @@
             	android:id="@+id/longitudeTextView" android:text="@string/longitude"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="12dp" 
+            	android:textSize="12sp" 
             	android:visibility="gone">
             </TextView>
             <TextView
             	android:id="@+id/longitudeValueTextView" android:text="@string/getting_longitude"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="12dp" 
+            	android:textSize="12sp" 
             	android:visibility="gone">
             </TextView>
         </TableRow>
@@ -105,14 +105,15 @@
             	android:id="@+id/urlTextView" android:text="Web: "
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="16dp">
+            	android:textSize="16sp">
             </TextView>
             <TextView
-            	android:id="@+id/urlValueTextView" android:text="http://www.google.com"
+            	android:id="@+id/urlValueTextView" 
+            	android:text="http://www.google.com"
             	android:autoLink="web"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="16dp">
+            	android:textSize="16sp">
             </TextView>
         </TableRow>
   
@@ -121,15 +122,16 @@
             	android:id="@+id/phoneTextView" android:text="Phone: "
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
-            	android:textSize="16dp">
+            	android:textSize="16sp">
             </TextView>
             <TextView
-            	android:id="@+id/phoneValueTextView" android:text="111-222-3333"
+            	android:id="@+id/phoneValueTextView" 
+            	android:text="111-222-3333"
             	android:autoLink="phone"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="10dp"
             	android:layout_marginBottom="10dp"
-            	android:textSize="16dp">
+            	android:textSize="16sp">
             </TextView>
         </TableRow>
   
@@ -138,6 +140,7 @@
     
 	<ImageView 
 	    android:id="@+id/photo"
+	    android:contentDescription="Photo"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
     />

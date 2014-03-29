@@ -1,7 +1,7 @@
 package org.hfoss.posit.android.sync;
 
-import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.api.database.DbManager;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -9,7 +9,6 @@ import android.content.ContentResolver;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 

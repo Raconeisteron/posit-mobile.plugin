@@ -39,19 +39,19 @@
             	android:id="@+id/guidTextView" android:text="@string/idLabel"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-            	android:textSize="12dp">
+            	android:textSize="12sp">
             </TextView>
             <TextView
             	android:id="@+id/guidValueTextView"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-            	android:textSize="12dp">
+            	android:textSize="12sp">
             	</TextView>
             <TextView
             	android:id="@+id/guidRealValueTextView" android:visibility="gone"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-            	android:textSize="12dp">
+            	android:textSize="12sp">
             </TextView>
         </TableRow>
         
@@ -60,13 +60,13 @@
             	android:id="@+id/timeTextView" android:text="@string/timeLabel"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-				android:textSize="12dp">
+				android:textSize="12sp">
             </TextView>
             <TextView
             	android:id="@+id/timeValueTextView"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-            	android:textSize="12dp">
+            	android:textSize="12sp">
             </TextView>
         </TableRow>
         
@@ -75,13 +75,13 @@
             	android:id="@+id/latitudeTextView" android:text="@string/latitude"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-            	android:textSize="12dp">
+            	android:textSize="12sp">
             </TextView>
             <TextView
             	android:id="@+id/latitudeValueTextView" android:text="@string/getting_latitude"
             	android:layout_width="wrap_content"  android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-            	android:textSize="12dp">
+            	android:textSize="12sp">
             </TextView>
         </TableRow>
         
@@ -90,13 +90,13 @@
             	android:id="@+id/longitudeTextView" android:text="@string/longitude"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-            	android:textSize="12dp">
+            	android:textSize="12sp">
             </TextView>
             <TextView
             	android:id="@+id/longitudeValueTextView" android:text="@string/getting_longitude"
             	android:layout_width="wrap_content" android:layout_height="wrap_content"
             	android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-            	android:textSize="12dp">
+            	android:textSize="12sp">
             </TextView>
         </TableRow>
         
@@ -104,6 +104,7 @@
     
 	<ImageView 
 	    android:id="@+id/photo"
+	    android:contentDescription="Photo"
 	    android:clickable="true"
 	    android:onClick="onClick"
 	    android:layout_width="fill_parent"
@@ -121,10 +122,11 @@
     
     <!--  Some hidden elements. Used by plugins to set Find data -->
     <TextView
-       android:id="@+id/isAdhocTextView" android:text="0"
+       android:id="@+id/isAdhocTextView" 
+       android:text="0"
        android:layout_width="wrap_content" android:layout_height="wrap_content"
        android:layout_marginLeft="4dp" android:layout_marginTop="3dp"
-       android:textSize="12dp"
+       android:textSize="12sp"
        android:visibility="gone">
     </TextView>
     

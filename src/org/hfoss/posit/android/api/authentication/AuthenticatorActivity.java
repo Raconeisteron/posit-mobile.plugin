@@ -266,7 +266,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
      * request. See onAuthenticationResult(). 
      * 
      * When the user has successfully been authenticated, we create an Account object 
-     * for the user’s credentials. An account has an account name, such as the username 
+     * for the users credentials. An account has an account name, such as the username 
      * or email address, and an account type, which is defined in the xml file next. 
      * 
      * Sets the AccountAuthenticatorResult which 

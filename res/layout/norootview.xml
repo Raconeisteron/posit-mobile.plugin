@@ -14,14 +14,14 @@
 		<LinearLayout
 		    android:orientation="vertical"
 		    android:layout_width="fill_parent"
-		    android:layout_height="fill_parent">
+		    android:layout_height="wrap_content">
 		    
 			<TextView 
 				android:text="Sorry, but root privileges are needed to run this application."
 				android:layout_width="fill_parent" 
 				android:layout_height="wrap_content"
-				android:paddingTop="15px"
-				android:paddingLeft="15px"
+				android:paddingTop="15dp"
+				android:paddingLeft="15dp"
 				android:textStyle="bold"
 				android:gravity="center_vertical|center_horizontal"
 				android:textColor="#ffffff" />

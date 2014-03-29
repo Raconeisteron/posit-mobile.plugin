@@ -21,30 +21,33 @@
   <SurfaceView android:id="@+id/preview_view"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent"
-               android:layout_centerInParent="true"/>
+               />
 
-  <org.hfoss.posit.android.functionplugin.barcode.ViewfinderView
-      android:id="@+id/viewfinder_view"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
-      android:background="@color/transparent"/>
+<!--   <org.hfoss.posit.android.functionplugin.barcode.ViewfinderView -->
+<!--       android:id="@+id/viewfinder_view" -->
+<!--       android:layout_width="fill_parent" -->
+<!--       android:layout_height="fill_parent" -->
+<!--       android:background="@color/transparent"/> -->
 
   <!-- vertical -->
-  <LinearLayout android:id="@+id/result_view"
-                android:orientation="horizontal" 
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@color/result_view"
-                android:visibility="gone"
-                android:padding="4dip">
+  <LinearLayout 
+      android:id="@+id/result_view"
+      android:orientation="horizontal" 
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:background="@color/result_view"
+      android:visibility="gone"
+      android:baselineAligned="false"
+      android:padding="4dip">
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:padding="12dip">
+        android:padding="12dip"
+        >
 
         <!--  vertical -->
       <LinearLayout

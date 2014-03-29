@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
@@ -218,7 +217,7 @@ public class ListProjectsActivity extends ListActivity implements OnClickListene
 			.setIcon(R.drawable.icon)
 			.setTitle("You have changed your project to: " 
 					+ (String) mProjectList.get(mClickedPosition).get("name"))
-					.setPositiveButton(R.string.alert_dialog_ok, 
+					.setPositiveButton(R.string.okLabel, 
 							new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(
