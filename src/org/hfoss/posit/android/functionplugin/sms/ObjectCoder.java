@@ -29,9 +29,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.Scanner;
-
 import android.util.Base64;
 
 /**
@@ -49,7 +46,7 @@ abstract public class ObjectCoder {
 	public static final char[] RESERVED_CHARS = { '\\', ',', '!' };
 	public static final char ESCAPE_CHAR = '\\';
 	public static final char NULL_CHAR = '!';
-	public static final Class[] TOSTRING_TYPES = { Byte.class, Byte[].class,
+	public static final Class<?>[] TOSTRING_TYPES = { Byte.class, Byte[].class,
 			Integer.class, Float.class, Short.class, String.class,
 			Double.class, Long.class, Boolean.class };
 	private static final String CHAR_SET = "utf-8";
@@ -66,7 +63,7 @@ abstract public class ObjectCoder {
 	 *         false otherwise.
 	 */
 	private static Boolean isToStringType(Object o) {
-		for (Class c : TOSTRING_TYPES) {
+		for (Class<?> c : TOSTRING_TYPES) {
 			if (c.isInstance(o)) {
 				return true;
 			}
@@ -210,8 +207,8 @@ abstract public class ObjectCoder {
 	 * @return True if the class implements Serializable, false otherwise.
 	 */
 	static final private Boolean isSerializable(Class<Object> type) {
-		Class[] interfaces = type.getInterfaces();
-		for (Class c : interfaces) {
+		Class<?>[] interfaces = type.getInterfaces();
+		for (Class<?> c : interfaces) {
 			if (c == Serializable.class) {
 				return true;
 			}

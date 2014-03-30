@@ -311,7 +311,7 @@ public class SettingsActivity extends PreferenceActivity implements
 		p.setSummary(sp.getString(getString(R.string.projectNamePref), "None"));
 		p = manager.findPreference(getString(R.string.serverPref));
 		p.setSummary(sp.getString(getString(R.string.serverPref), getString(R.string.defaultServer)));
-		p = manager.findPreference(getString(R.string.localeKey));
+		p = manager.findPreference(getString(R.string.LocaleKey));
 		updatePrefSummary(p);			
 	}
 
@@ -515,7 +515,7 @@ public class SettingsActivity extends PreferenceActivity implements
 			
 			updatePrefSummary(findPreference(key));	
 			
-			if (p!= null && key.equals(getString(R.string.localeKey))) {
+			if (p!= null && key.equals(getString(R.string.LocaleKey))) {
 				LocaleManager.setDefaultLocale(this);
 			}
 			

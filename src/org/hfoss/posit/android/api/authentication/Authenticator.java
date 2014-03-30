@@ -16,9 +16,6 @@
 
 package org.hfoss.posit.android.api.authentication;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
 
@@ -164,8 +161,7 @@ class Authenticator extends AbstractAccountAuthenticator {
 	/**
 	 * Handles messages and results received from the background thread.
 	 */
-	final Handler handler = new Handler() { 
-		@SuppressWarnings("unchecked")
+	final static Handler handler = new Handler() { 
 		public void handleMessage(Message msg) { 
 			if (msg.what == Communicator.SUCCESS) {
 				Log.i(TAG, "Handler: login success");

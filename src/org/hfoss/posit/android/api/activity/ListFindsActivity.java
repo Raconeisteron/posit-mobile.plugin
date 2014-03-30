@@ -275,7 +275,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 								finish();
 							}
 						}
-					}).setNegativeButton(R.string.cancelLabel, new DialogInterface.OnClickListener() {
+					}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// User clicked cancel so do nothing
 						}

@@ -23,7 +23,7 @@
 				android:defaultValue="@string/defaultServer" />
 				
 			<ListPreference 
-				android:key="@string/localeKey"
+				android:key="@string/LocaleKey"
 				android:title="@string/LocaleTitle" 
 				android:persistent="true"
 				android:defaultValue="en" 

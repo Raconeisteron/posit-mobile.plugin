@@ -61,7 +61,7 @@
 				android:layout_height="wrap_content" />
 
 			<Button 
-			    android:text="@string/login_cancel" 
+			    android:text="@string/cancel" 
 			    android:id="@+id/cancel_login_button"
 				android:hapticFeedbackEnabled="true" 
 				android:minWidth="75dp"

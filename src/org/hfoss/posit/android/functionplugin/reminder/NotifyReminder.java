@@ -31,9 +31,7 @@ import android.app.Dialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
