@@ -27,7 +27,7 @@ import java.util.List;
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.activity.ListFindsActivity;
-import org.hfoss.posit.android.api.plugin.FindPluginManager;
+import org.hfoss.posit.android.api.plugin.FindPlugin;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -57,7 +57,7 @@ public class OutsideInListFindsActivity extends ListFindsActivity {
 
 		List<? extends Find> list = this.getHelper().getAllFinds();
 
-		int resId = getResources().getIdentifier(FindPluginManager.mFindPlugin.mListFindLayout,
+		int resId = getResources().getIdentifier(FindPlugin.mListFindLayout,
 			    "layout", getPackageName());
 		
 		OutsideInFindsListAdapter adapter = new OutsideInFindsListAdapter(this,
@@ -74,7 +74,7 @@ public class OutsideInListFindsActivity extends ListFindsActivity {
 	private class OutsideInFindsListAdapter extends FindsListAdapter{
 
 		public OutsideInFindsListAdapter(Context context, int textViewResourceId,
-				List list) {
+				List<?> list) {
 			super(context, textViewResourceId, list);
 		}
 

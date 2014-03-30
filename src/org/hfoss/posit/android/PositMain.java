@@ -22,7 +22,6 @@
 package org.hfoss.posit.android;
 
 import java.util.ArrayList;
-import java.util.EventObject;
 
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.User;
@@ -32,9 +31,9 @@ import org.hfoss.posit.android.api.activity.SettingsActivity;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.api.plugin.ActiveFuncPluginChangeEventListener;
 import org.hfoss.posit.android.api.plugin.FindActivityProvider;
+import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
-//import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
 import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
@@ -48,11 +47,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ScaleDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -62,7 +57,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -192,21 +186,20 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		setContentView(R.layout.main);
 
 		// Install the app's custom icon, based on the active plugin.
-		if (FindPluginManager.mFindPlugin.mMainIcon != null) {
+		if (FindPlugin.mMainIcon != null) {
 			Log.i(TAG, "Installing custom icon");
 			final ImageView mainLogo = (ImageView) findViewById(R.id.Logo);
-			int resID = getResources().getIdentifier(FindPluginManager.mFindPlugin.mMainIcon, "drawable", this.getPackageName());
+			int resID = getResources().getIdentifier(FindPlugin.mMainIcon, "drawable", this.getPackageName());
 			mainLogo.setImageResource(resID);
 		}
 
 		Log.i(TAG, "Installing Add button");
 		// Create and customize the AddButton.  A plugin can make this button go
 		// away by setting its label to "invisible".
-		if (FindPluginManager.mFindPlugin.mAddButtonLabel != null 
-				&& !FindPluginManager.mFindPlugin.mAddButtonLabel.equals(getString(R.string.invisible))) {
+		if (FindPlugin.mAddButtonLabel != null && !FindPlugin.mAddButtonLabel.equals(getString(R.string.invisible))) {
 			final Button addFindButton = (Button)findViewById(R.id.addFindButton);
 			int resid = this.getResources()
-					.getIdentifier(FindPluginManager.mFindPlugin.mAddButtonLabel, "string", getPackageName());
+					.getIdentifier(FindPlugin.mAddButtonLabel, "string", getPackageName());
 
 			if (addFindButton != null) {
 				addFindButton.setTag(resid);
@@ -226,11 +219,11 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		Log.i(TAG, "Installing List button");
 		// Create and customize the ListButton.  A plugin can make this button go
 		// away by setting its label to "invisible".
-		if (FindPluginManager.mFindPlugin.mListButtonLabel != null
-				&& !FindPluginManager.mFindPlugin.mListButtonLabel.equals(getString(R.string.invisible))) {
+		if (FindPlugin.mListButtonLabel != null
+				&& !FindPlugin.mListButtonLabel.equals(getString(R.string.invisible))) {
 			final Button listFindButton = (Button) findViewById(R.id.listFindButton);
 			//final ImageButton listFindButton = (ImageButton) findViewById(R.id.listFindButton);
-			int resid = this.getResources().getIdentifier(FindPluginManager.mFindPlugin.mListButtonLabel, "string",
+			int resid = this.getResources().getIdentifier(FindPlugin.mListButtonLabel, "string",
 					getPackageName());
 			if (listFindButton != null) {
 				listFindButton.setTag(resid);
@@ -398,22 +391,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 			}
 		}
 		inflater.inflate(R.menu.positmain_menu, menu);
-
-        // TODO: This is AcdiVoca stuff that eventually needs to go
-		// into a plugin.
-//		MenuItem adminMenu = menu.findItem(R.id.admin_menu_item);
-//		 Log.i(TAG, "UserType = " + AppControlManager.getUserType());
-//		 Log.i(TAG, "distribution stage = " +
-//		 AppControlManager.getDistributionStage());
-//		 // Hide the ADMIN menu from regular users
-//		 if (AppControlManager.isRegularUser() ||
-//		 AppControlManager.isAgriUser())
-//		 adminMenu.setVisible(false);
-//		 else
-//		 adminMenu.setVisible(true);
-
 		return super.onPrepareOptionsMenu(menu);
-
 	}
 
 	/**
@@ -432,9 +410,6 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		case R.id.map_finds_menu_item:
 			startActivity(new Intent(this, MapFindsActivity.class));
 			break;
-		// case R.id.admin_menu_item:
-		// startActivity(new Intent(this, AcdiVocaAdminActivity.class));
-		// break;
 		case R.id.about_menu_item:
 			startActivity(new Intent(this, AboutActivity.class));
 			break;
@@ -483,13 +458,13 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case CONFIRM_EXIT:
-			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon).setTitle(R.string.exitTitle)
+			return new AlertDialog.Builder(this).setIcon(R.drawable.alert_dialog_icon).setTitle(R.string.exit)
 					.setPositiveButton(R.string.okLabel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							// User clicked OK so do some stuff
 							finish();
 						}
-					}).setNegativeButton(R.string.cancelLabel, new DialogInterface.OnClickListener() {
+					}).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							/* User clicked Cancel so do nothing */
 						}
@@ -508,30 +483,14 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		switch (id) {
 		case CONFIRM_EXIT:
-			d.setTitle(R.string.exitTitle);
-			// d.setButton(DialogInterface.BUTTON_POSITIVE,
-			// getString(R.string.alert_dialog_ok), new
-			// DialogInterface.OnClickListener() {
-			// public void onClick(DialogInterface dialog,
-			// int whichButton) {
-			// // User clicked OK so do some stuff
-			// finish();
-			// }
-			// } );
-			// d.setButton(DialogInterface.BUTTON_NEGATIVE,
-			// getString(R.string.alert_dialog_cancel), new
-			// DialogInterface.OnClickListener() {
-			// public void onClick(DialogInterface dialog,
-			// int whichButton) {
-			// /* User clicked Cancel so do nothing */
-			// }
-			// } );
+			d.setTitle(R.string.exit);
+
 			needsabutton = d.getButton(DialogInterface.BUTTON_POSITIVE);
 			needsabutton.setText(R.string.okLabel);
 			needsabutton.invalidate();
 
 			needsabutton = d.getButton(DialogInterface.BUTTON_NEGATIVE);
-			needsabutton.setText(R.string.cancelLabel);
+			needsabutton.setText(R.string.cancel);
 			needsabutton.invalidate();
 
 			break;

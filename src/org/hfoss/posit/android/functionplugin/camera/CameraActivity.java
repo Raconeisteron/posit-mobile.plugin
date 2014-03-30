@@ -23,36 +23,26 @@
 package org.hfoss.posit.android.functionplugin.camera;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+
 
 import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.Find;
-import org.hfoss.posit.android.api.activity.FindActivity;
-import org.hfoss.posit.android.api.activity.ListFindsActivity;
-import org.hfoss.posit.android.api.activity.SettingsActivity;
 import org.hfoss.posit.android.api.plugin.AddFindPluginCallback;
 import org.hfoss.posit.android.api.plugin.ListFindPluginCallback;
 
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 /**
  * This class calls the camera application and returns the Base64 string representation of the image
@@ -212,19 +202,19 @@ public class CameraActivity extends Activity
 		mView = view;
 	}
 	
-	private void displayPhoto() {
-		String path = Camera.getPhotoPath(mContext, mFind.getGuid());
-		Log.i(TAG, "Path = " + path);
-		
-		Uri.Builder builder = new Uri.Builder();
-		builder.path(path);
-		Uri uri = builder.build();
-		
-		Intent intent = new Intent(this,FullScreenImageViewer.class);
-		intent.setData(uri);
-		if (intent != null)
-			this.startActivity(intent); 			
-	}
+//	private void displayPhoto() {
+//		String path = Camera.getPhotoPath(mContext, mFind.getGuid());
+//		Log.i(TAG, "Path = " + path);
+//		
+//		Uri.Builder builder = new Uri.Builder();
+//		builder.path(path);
+//		Uri uri = builder.build();
+//		
+//		Intent intent = new Intent(this,FullScreenImageViewer.class);
+//		intent.setData(uri);
+//		if (intent != null)
+//			this.startActivity(intent); 			
+//	}
 
 	/**
 	 * Called from FindActivity after a Find has been saved. Saves the

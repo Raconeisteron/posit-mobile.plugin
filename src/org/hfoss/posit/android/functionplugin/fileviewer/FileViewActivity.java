@@ -140,6 +140,7 @@ public class FileViewActivity extends OrmLiteBaseListActivity<DbManager> {
 				text.append(line);
 				text.append(lineseparator);
 			}
+			br.close();
 		} catch (IOException e) {
 			Log.e(TAG, "IO Exception reading from file "
 					+ e.getMessage());

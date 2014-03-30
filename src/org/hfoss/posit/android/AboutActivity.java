@@ -24,9 +24,7 @@ package org.hfoss.posit.android;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.TextView;
-
 
 /**
  * Displays basic information about POSIT, including name,

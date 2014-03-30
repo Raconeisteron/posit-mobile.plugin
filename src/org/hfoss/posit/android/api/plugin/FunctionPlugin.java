@@ -30,7 +30,6 @@ import org.w3c.dom.Node;
 
 import android.app.Activity;
 import android.app.Service;
-import android.util.Log;
 
 /**
  * Function plugins implement various functions and are

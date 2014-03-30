@@ -793,7 +793,7 @@ public class FindActivity extends OrmLiteBaseActivity<DbManager> // Activity
 								finish();
 							}
 						}
-					}).setNegativeButton(R.string.cancelLabel,
+					}).setNegativeButton(R.string.cancel,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
 								int whichButton) {

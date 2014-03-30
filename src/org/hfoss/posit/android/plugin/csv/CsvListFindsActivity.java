@@ -220,7 +220,6 @@ public class CsvListFindsActivity extends ListFindsActivity {
 	 */
 	protected List<CsvFind> readFindsFromFile(File file) {
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(file));
 			String line;
 
 			FindPlugin plugin = FindPluginManager.mFindPlugin;
@@ -230,7 +229,8 @@ public class CsvListFindsActivity extends ListFindsActivity {
 			}
 
 			int project_id = PreferenceManager.getDefaultSharedPreferences(this).getInt(this.getString(R.string.projectPref), 0);
-			
+
+			BufferedReader br = new BufferedReader(new FileReader(file));
 			String formatStr = br.readLine().toLowerCase();                  // Header Line #1
 			formatStr = formatStr.substring(1);			
 
@@ -243,6 +243,7 @@ public class CsvListFindsActivity extends ListFindsActivity {
 					finds.add(f);
 				}
 			}
+			br.close();
 		} catch (IOException e) {
 			Log.e(TAG, "IO Exception reading from file "
 					+ e.getMessage());
@@ -250,6 +251,7 @@ public class CsvListFindsActivity extends ListFindsActivity {
 			Toast.makeText(this, "Error occurred reading from file",
 					Toast.LENGTH_LONG).show();
 			finish();
+		} finally {
 		}
 		return finds;
 	}
@@ -362,10 +364,10 @@ public class CsvListFindsActivity extends ListFindsActivity {
 		protected List<? extends Find> items;
 		Context context;
 
-		public CsvListAdapter(Context context, int textViewResourceId, List list) {
-			super(context, textViewResourceId, list);
+		public CsvListAdapter(Context context, int textViewResourceId, List<?> list) {
+			super(context, textViewResourceId);
 			Log.i(TAG, "FileViewListAdapter constructor");
-			this.items = list;
+			this.items = (List<? extends Find>) list;
 			this.context = context;
 		}
 

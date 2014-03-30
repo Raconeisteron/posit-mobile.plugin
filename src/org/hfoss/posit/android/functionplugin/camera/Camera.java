@@ -53,7 +53,7 @@ public class Camera {
 	 * Returns the full path for a Find's photo.
 	 */
 	public static String getPhotoPath(Context context, String guid) {
-	    return "/data/data/" + context.getPackageName() + "/files/" + guid;
+	    return context.getFilesDir().getPath() + "/" + guid;
 	}
 	
 	/**
@@ -128,9 +128,6 @@ public class Camera {
 				    Log.i(TAG, "Returning bitmap");
 				    return bmp;
 				}
-				else{
-					return null;
-				}
 		    } catch (FileNotFoundException e) {
 		    	e.printStackTrace();
 		    } catch (IOException e) {
@@ -152,8 +149,9 @@ public class Camera {
 	public static String getPhotoAsString(String guid, Context context){
 	    FileInputStream fis;
 	    String content = "";
-	    String filename_fullpath = "/data/data/" + context.getPackageName() + "/files/" + guid;
-//	    Log.i(TAG, "fullpath=" + filename_fullpath);
+	    String filename_fullpath = context.getFilesDir().getPath() + "/" + guid;    
+	    Log.i(TAG, "fullpath=" + filename_fullpath);
+	    Log.i(TAG, "files dir= " + context.getFilesDir().getPath());
 	    File file = new File(filename_fullpath);
 	    if (file.exists()){
 		    try {
@@ -206,7 +204,7 @@ public class Camera {
 	 * @return True if photo is synced, false if not
 	 */
 	public static boolean isPhotoSynced(Find find, Context context){
-	    String filename_fullpath = "/data/data/" + context.getPackageName() + "/files/" + find.getGuid();
+	    String filename_fullpath = context.getFilesDir().getPath() + "/" + find.getGuid();
 	    File file = new File(filename_fullpath);
 	    Date imageLastModified = new Date(file.lastModified());
 	    Date findLastSynced = DbHelper.getDbManager(context).getTimeOfLastSync();
