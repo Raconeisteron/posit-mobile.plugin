@@ -8,8 +8,9 @@
 		
 <!-- 	<string name="defaultServer">http://www.posit-project.org/sandbox</string> -->
 <!-- 	<string name="defaultServer">http://www.cs.trincoll.edu/~rfoeckin/positweb3</string> -->
-	<string name="defaultServer">http://www.cs.trincoll.edu/~ram/positweb</string>
-
+<!-- 	<string name="defaultServer">http://www.cs.trincoll.edu/~ram/positweb</string> -->
+	<string name="defaultServer">http://appinventor.cs.trincoll.edu/positweb</string>
+	
 	<string name="addFind">Add find</string>
 	<string name="viewFinds">View finds</string>
 	<string name="invisible">invisible</string> <!--  Label to hide the button -->

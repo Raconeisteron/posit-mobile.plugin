@@ -537,6 +537,7 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	 * @return
 	 */
 	public List<Find> getFindsByProjectId(int projectId) {
+		Log.i(TAG, "getFindsByProjectId, id = " + projectId);
 		List<Find> list = null;
 		try {
 			QueryBuilder<Find, Integer> builder = getFindDao().queryBuilder();
@@ -670,11 +671,21 @@ public class DbManager extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Updates the Db for the given find.
 	 * 
+	 * PROBLEM:  For finds synced by Bluetooth, the update supposedly
+	 * succeeds, but when the finds have different Ids, the find on th
+	 * receiving device does not get updated. 
+	 * 
 	 * @param find, the updated Find object
 	 * @return the number of rows updated.
 	 */
 	public int update(Find find) {
 		int rows = 0;
+		
+		// When updating from Bluetooth the update find may have
+		//  a different row Id.
+		Find existingFind = this.getFindByGuid(find.getGuid());
+		find.setId(existingFind.getId());
+
 		try {
 			Log.i(TAG, "Updating: " + find);
 			if (find.getStatus() == Constants.SUCCEEDED)
