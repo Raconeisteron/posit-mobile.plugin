@@ -22,10 +22,10 @@
  */
 package org.hfoss.posit.android.api.activity;
 
-import org.hfoss.posit.android.R;
 import org.hfoss.posit.android.api.LocaleManager;
 //import org.hfoss.posit.android.plugin.acdivoca.AcdiVocaUser.UserType;
 
+import org.hfoss.posit.android.R;
 
 import android.app.Activity;
 import android.content.Intent;
