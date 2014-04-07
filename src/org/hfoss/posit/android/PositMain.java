@@ -160,6 +160,7 @@ public class PositMain extends OrmLiteBaseActivity<DbManager> implements android
 		Log.i(TAG, "Resolving Posit Account");
 		AccountManager accountManager = AccountManager.get(this);
 		final int numAccount = (accountManager.getAccountsByType(SyncAdapter.ACCOUNT_TYPE)).length;
+		Log.i(TAG, "Number of accounts found = " + numAccount);
 		
 		if (numAccount == 0) {
 			Intent i = new Intent(this, AuthenticatorActivity.class);

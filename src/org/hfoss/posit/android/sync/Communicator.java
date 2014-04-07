@@ -204,10 +204,10 @@ public class Communicator {
 			return authkey;
 		} 
 		
-//		if (sAuthKey != null) {
-//			Log.i(TAG, "getAuthKey(), Returning cached authkey = " + sAuthKey);
-//			return sAuthKey;
-//		}
+		if (sAuthKey != null) {
+			Log.i(TAG, "getAuthKey(), Returning cached authkey = " + sAuthKey);
+			return sAuthKey;
+		}
 		
 		Log.i(TAG, "getAuthKey, retrieving authkey from AccountManager");
 		AuthKeyGetter getter = new AuthKeyGetter(context);
@@ -246,6 +246,7 @@ public class Communicator {
 			if (responseString.contains("[Error] ")) {
 				return false;
 			} else {
+				Log.i(TAG, "isreachable response = " + responseString);
 				ResponseParser parser = new ResponseParser(responseString);
 				responseMap = parser.parseObject();
 			}
@@ -257,13 +258,14 @@ public class Communicator {
 		
 		// Return true or false based on whether the response contains an error code
 		try {
+			Log.i(TAG, "responseMap " + responseMap.toString());
 			if (responseMap.containsKey(ERROR_CODE)) {
 				return false;
 			} else if (responseMap.containsKey(MESSAGE_CODE)  
 					&& responseMap.get(MESSAGE_CODE).equals(Constants.AUTHN_OK)) {
 				return true;
 			} else {
-				return false;
+				return false;  
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "isServerReachable " + e.getMessage() + " ");

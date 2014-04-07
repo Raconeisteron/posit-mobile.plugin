@@ -516,8 +516,9 @@ public class SyncServer extends SyncMedium{
 		Log.i(TAG, "getRemoteFindById = " + rawFind);
 		try {
 			JSONObject jobj = new JSONObject(rawFind);
-			String findJson = jobj.getString("find");
-			JSONObject find = new JSONObject(findJson);
+			JSONObject find = new JSONObject(rawFind);
+			//String findJson = jobj.getString("find");
+			//JSONObject find = new JSONObject(findJson);
 			
 			fillCvWithBasicData( cv, find );
 			fillCvWithExtendedData( cv, jobj );

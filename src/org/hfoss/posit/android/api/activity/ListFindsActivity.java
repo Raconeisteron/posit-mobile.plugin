@@ -122,6 +122,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int projectId = prefs.getInt(getString(R.string.projectPref), 0);
 		
+		Log.i(TAG, "Getting finds from Db");
 		finds = this.getHelper().getFindsByProjectId(projectId);
 		
 		int resId = getResources().getIdentifier(
@@ -173,6 +174,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 	 * Puts the items from the DB table into the rows of the view.
 	 */
 	private void fillList(ListAdapter adapter) {
+		Log.i(TAG, "fillList");
 		setListAdapter(adapter);
 
 		ListView lv = getListView();
@@ -328,10 +330,15 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 		}
 
 
+		/**
+		 * Called repeatedly to construct rows in the list. It's okay that the
+		 * same position is called repeatedly. 
+		 */
 		@SuppressWarnings("unchecked")
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
+			Log.i(TAG,"getView, position = " + position);
 			
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -381,7 +388,7 @@ public class ListFindsActivity extends OrmLiteBaseListActivity<DbManager> {
 				
 				// Call each plugin's callback method to update view
 				for (FunctionPlugin plugin: plugins) {
-//					Log.i(TAG, "Call back for plugin=" + plugin);
+					Log.i(TAG, "Call back for plugin=" + plugin);
 					Class<ListFindPluginCallback> callbackClass = null;
 					Object o;
 					try {
