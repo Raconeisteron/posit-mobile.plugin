@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	android:versionCode="1" android:versionName="@string/version"
 	package="org.hfoss.posit.android">
-	<uses-sdk android:minSdkVersion="8" />
+	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19" />
 	<supports-screens android:resizeable="true"
 		android:smallScreens="true"
         android:normalScreens="true"

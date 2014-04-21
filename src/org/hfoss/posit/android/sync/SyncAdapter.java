@@ -16,6 +16,16 @@ package org.hfoss.posit.android.sync;
  * the License.
  */
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.http.ParseException;
+import org.hfoss.posit.android.api.Find;
+import org.hfoss.posit.android.background.BackgroundListener;
+import org.hfoss.posit.android.background.BackgroundManager;
+import org.hfoss.posit.android.background.SyncCallable;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
@@ -23,24 +33,9 @@ import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
-import org.apache.http.ParseException;
-import org.apache.http.auth.AuthenticationException;
-import org.hfoss.posit.android.api.Find;
-import org.hfoss.posit.android.api.FindHistory;
-import org.hfoss.posit.android.api.SyncHistory;
-import org.hfoss.posit.android.api.database.DbHelper;
-import org.hfoss.posit.android.R;
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 
 /**
  * SyncAdapter implementation for syncing sample SyncAdapter contacts to the
@@ -77,8 +72,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 	
 
 	@Override
-	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
-			SyncResult syncResult) {
+	public void onPerformSync(Account account, Bundle extras, String authority,
+	        ContentProviderClient provider, SyncResult syncResult) {
 
 		List<Find> finds;
 		Log.i(TAG, "In onPerformSync()");
@@ -86,12 +81,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		boolean success;
 		
 		try {
-			// use the account manager to request the credentials
-			authToken = mAccountManager.blockingGetAuthToken(account, AUTHTOKEN_TYPE, true /* notifyAuthFailure */);
-			Log.i(TAG, "auth token: " + authToken);
-
-			SyncServer syncServer = new SyncServer( mContext );
-			syncServer.sync( authToken );
+		    BackgroundManager.runTask(
+		            new SyncCallable(mContext, account, mAccountManager),
+		            new BackgroundListener<Void>() {
+                public void onBackgroundResult(Void response) {}
+		    });
 			
 /*			
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -186,14 +180,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //			return;
 		
 			
-		} catch (final AuthenticatorException e) {
-			syncResult.stats.numParseExceptions++;
-			Log.e(TAG, "AuthenticatorException", e);
-		} catch (final OperationCanceledException e) {
-			Log.e(TAG, "OperationCanceledExcetpion", e);
-		} catch (final IOException e) {
-			Log.e(TAG, "IOException", e);
-			syncResult.stats.numIoExceptions++;
 		} catch (final ParseException e) {
 			syncResult.stats.numParseExceptions++;
 			Log.e(TAG, "ParseException", e);

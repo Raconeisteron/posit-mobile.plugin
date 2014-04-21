@@ -18,6 +18,13 @@
 package org.hfoss.posit.android.api.authentication;
 
 
+import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.background.BackgroundListener;
+import org.hfoss.posit.android.background.BackgroundManager;
+import org.hfoss.posit.android.background.IsServerReachableCallable;
+import org.hfoss.posit.android.sync.Communicator;
+import org.hfoss.posit.android.sync.SyncAdapter;
+
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -40,12 +47,7 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
-import org.hfoss.posit.android.R;
 //import org.hfoss.posit.android.api.authentication.NetworkUtilities;
-import org.hfoss.posit.android.sync.Communicator;
-import org.hfoss.posit.android.sync.SyncAdapter;
 
 /**
  * Activity which displays login screen to the user.
@@ -147,11 +149,19 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
         	finish();
         }
         
-        if (!Communicator.isServerReachable(this))  {
-        	Toast.makeText(this, "Sorry, server is not reachable.", Toast.LENGTH_LONG).show();
-        	finish();        	
-        }
-        
+        BackgroundManager.runTask(new IsServerReachableCallable(this),
+                new BackgroundListener<Boolean>() {
+            @Override
+            public void onBackgroundResult(Boolean response)
+            {
+                if (!response) {
+                    Toast.makeText(AuthenticatorActivity.this,
+                            "Sorry, server is not reachable.",
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            }
+        });
     }
 
     /*
