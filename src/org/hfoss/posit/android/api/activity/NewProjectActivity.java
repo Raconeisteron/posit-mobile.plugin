@@ -23,11 +23,14 @@
 package org.hfoss.posit.android.api.activity;
 
 import org.hfoss.posit.android.R;
+import org.hfoss.posit.android.background.BackgroundListener;
+import org.hfoss.posit.android.background.BackgroundManager;
+import org.hfoss.posit.android.background.GetAuthKeyCallable;
+import org.hfoss.posit.android.background.IsServerReachableCallable;
 import org.hfoss.posit.android.sync.Communicator;
 
-import com.actionbarsherlock.app.SherlockActivity;
-
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -36,6 +39,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockActivity;
 
 /**
  * Creates a new project and registers it on the server. 
@@ -50,12 +55,20 @@ public class NewProjectActivity extends SherlockActivity implements OnClickListe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		if (!Communicator.isServerReachable(this)) {
-		    Log.i(TAG, "Can't add new project. The server not reachable");
-		    Toast.makeText(this, "Can't add new project. The server not reachable.", Toast.LENGTH_LONG).show();
-		    finish();
-		    return;
-		}
+		BackgroundManager.runTask(new IsServerReachableCallable(this),
+		        new BackgroundListener<Boolean>() {
+		    @Override
+            public void onBackgroundResult(Boolean response)
+            {
+		        if (!response) {
+                    Log.i(TAG, "Can't add new project. The server not reachable");
+                    Toast.makeText(NewProjectActivity.this,
+                            "Can't add new project. The server not reachable.",
+                            Toast.LENGTH_LONG).show();
+                    finish();
+		        }
+            }
+		});
 
 		setContentView(R.layout.new_project);
 		mCreateProject = (Button) this.findViewById(R.id.createProject);
@@ -65,30 +78,73 @@ public class NewProjectActivity extends SherlockActivity implements OnClickListe
 	public void onClick(View v) {
 		switch(v.getId()){
 		case R.id.createProject:
-			String projectName = (((TextView) findViewById(R.id.projectName)).getText()).toString();
-			String projectDescription = (((TextView) findViewById(R.id.projectDescription)).getText()).toString(); 
+            TextView tv = (TextView) findViewById(R.id.projectName);
+			String projectName = tv.getText().toString();
 			if(projectName.equals("")){
 				Toast.makeText(this, "Please enter a name for your project", Toast.LENGTH_LONG).show();
 				break;
 			}
-			SharedPreferences prefManager = PreferenceManager.getDefaultSharedPreferences(this);
-			String authkey = Communicator.getAuthKey(this);
-//			String server = prefManager.getString("SERVER_PREF", null);
-			String server = prefManager.getString(getString(R.string.serverPref), null);
-			if (server == null) 
-				server = getString(R.string.defaultServer);
-			Communicator com = new Communicator();
-			String response = com.createProject(this, server, projectName, projectDescription, authkey);
-			Log.i(TAG, response);
+			
+			BackgroundManager.runTask(new GetAuthKeyCallable(this),
+			        new BackgroundListener<String>() {
+                @Override
+                public void onBackgroundResult(String authkey)
+                {
+                    SharedPreferences prefManager =
+                        PreferenceManager
+                        .getDefaultSharedPreferences(NewProjectActivity.this);
+                    TextView tv = (TextView) findViewById(R.id.projectName);
+                    String projectName = tv.getText().toString();
+                    tv = (TextView) findViewById(R.id.projectDescription);
+                    String projectDescription = tv.getText().toString(); 
+                    
+//      			String server = prefManager.getString("SERVER_PREF", null);
+        			String server = 
+        			    prefManager.
+        			    getString(getString(R.string.serverPref), null);
+        			if (server == null) 
+        				server = getString(R.string.defaultServer);
+        			
+        			AsyncTask<String, Void, String> task = new NewProjectTask();
+        			task.execute(server, projectName,
+        			    projectDescription, authkey);
+                }
+			});
+			
+			break;
+		}
+	}
+	
+	private class NewProjectTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params)
+        {
+            String server = params[0];
+            String projectName = params[1];
+            String projectDescription = params[2];
+            String authkey = params[3];
+            Communicator com = new Communicator();
+            String response =
+                com.createProject(NewProjectActivity.this, server,
+                    projectName, projectDescription, authkey);
+            Log.i(TAG, response);
+            
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response)
+        {
 			if(response.contains("success")){
-				Toast.makeText(this,response,Toast.LENGTH_SHORT).show();
+				Toast.makeText(NewProjectActivity.this, response,
+				    Toast.LENGTH_SHORT).show();
 				setResult(ListProjectsActivity.NEW_PROJECT);
 				finish();
 			}
 			else
-				Toast.makeText(this,response,Toast.LENGTH_SHORT).show();
-			break;
-		}
+				Toast.makeText(NewProjectActivity.this, response,
+				    Toast.LENGTH_SHORT).show();
+        }
 	}
 }
 

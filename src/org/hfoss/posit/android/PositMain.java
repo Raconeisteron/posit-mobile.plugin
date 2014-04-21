@@ -22,28 +22,28 @@
 package org.hfoss.posit.android;
 
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.HashMap;
 import java.util.List;
 
-import org.hfoss.posit.android.api.Find;
 import org.hfoss.posit.android.api.LocaleManager;
 import org.hfoss.posit.android.api.User;
 import org.hfoss.posit.android.api.activity.ListProjectsActivity;
 import org.hfoss.posit.android.api.activity.MapFindsActivity;
 import org.hfoss.posit.android.api.activity.OrmLiteBaseFragmentActivity;
 import org.hfoss.posit.android.api.activity.SettingsActivity;
+import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
 import org.hfoss.posit.android.api.database.DbManager;
 import org.hfoss.posit.android.api.plugin.ActiveFuncPluginChangeEventListener;
 import org.hfoss.posit.android.api.plugin.FindActivityProvider;
-import org.hfoss.posit.android.api.plugin.FindPlugin;
 import org.hfoss.posit.android.api.plugin.FindPluginManager;
 import org.hfoss.posit.android.api.plugin.FunctionPlugin;
-//import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
+import org.hfoss.posit.android.background.BackgroundListener;
+import org.hfoss.posit.android.background.BackgroundManager;
+import org.hfoss.posit.android.background.GetAuthKeyCallable;
+import org.hfoss.posit.android.background.GetProjectsCallable;
+import org.hfoss.posit.android.background.SetProjectCallable;
 import org.hfoss.posit.android.sync.Communicator;
 import org.hfoss.posit.android.sync.SyncAdapter;
-import org.hfoss.posit.android.sync.SyncServer;
-import org.hfoss.posit.android.api.authentication.AuthenticatorActivity;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -61,19 +61,20 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+//import org.hfoss.posit.android.plugin.acdivoca.AttributeManager;
 
 /**
  * Implements the main activity and the main screen for the POSIT application.
@@ -171,10 +172,25 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
     	String projectName = (String) projectsHash.get(itemPosition).get("name");
     	
-        SyncServer service = new SyncServer(this);
-        if (service.setProject(projectsHash.get(itemPosition))) {
-        	Toast.makeText(this, "Project changed to " + projectName, Toast.LENGTH_LONG).show();
-        }
+        BackgroundListener<Boolean> bkgListener
+        = new BackgroundListener<Boolean>() {
+            @Override
+            public void onBackgroundResult(Boolean response)
+            {
+                if (response) {
+                    String projectName = (String)getExtra(0);
+                    Toast.makeText(PositMain.this,
+                            "Project changed to " + projectName,
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        bkgListener.putExtra(projectName);
+        
+        BackgroundManager.runTask(
+                new SetProjectCallable(this, projectsHash, itemPosition),
+                bkgListener);
+        
         return true;
     }
     
@@ -232,26 +248,38 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 		//resolveAccount();
 		startPOSIT();
 		
-		//Add spinner to actionbar
-		Context context = getSupportActionBar().getThemedContext();
-		SyncServer service = new SyncServer(this);
-		projectsHash = service.getProjects();
-		if (projectsHash != null) {
-			int selectedProj = mSharedPrefs.getInt(this.getString(R.string.projectPref),0);
-			int selectedIndex = 0;
-			
-			for (int i=0; i<projectsHash.size(); i++) {
-				if (Integer.parseInt((String) projectsHash.get(i).get("id")) == selectedProj) {
-					selectedIndex = i;
-				}
-			}
-			
-	        projectsList = new ProjectsListAdapter(context, R.layout.sherlock_spinner_item, projectsHash);
-	        projectsList.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
-	        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-	        getSupportActionBar().setListNavigationCallbacks(projectsList, this);
-	        getSupportActionBar().setSelectedNavigationItem(selectedIndex);
-		}
+		BackgroundManager.runTask(new GetProjectsCallable(this),
+		        new BackgroundListener<List<HashMap<String, Object>>>() {
+		    @Override
+            public void onBackgroundResult(List<HashMap<String, Object>> res)
+            {
+                projectsHash = res;
+                if (projectsHash != null) {
+                    int selectedProj = mSharedPrefs.getInt(
+                            PositMain.this.getString(R.string.projectPref), 0);
+                    int selectedIndex = 0;
+                    
+                    for (int i = 0; i < projectsHash.size(); i++) {
+                        if (Integer.parseInt((String) projectsHash.get(i)
+                                .get("id")) == selectedProj) {
+                            selectedIndex = i;
+                        }
+                    }
+                    
+                    //Add spinner to actionbar
+                    Context context = getSupportActionBar().getThemedContext();
+                    projectsList = new ProjectsListAdapter(context,
+                            R.layout.sherlock_spinner_item, projectsHash);
+                    projectsList.setDropDownViewResource(
+                            R.layout.sherlock_spinner_dropdown_item);
+                    ActionBar ab = getSupportActionBar();
+                    ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+                    ab.setListNavigationCallbacks(projectsList, PositMain.this);
+                    ab.setSelectedNavigationItem(selectedIndex);
+                }
+            }
+		});
+		
 	}
 
 	/**
@@ -381,57 +409,81 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 	 * Handles clicks on PositMain's buttons.
 	 */
 	public void onClick(View view) {
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+		BackgroundListener<String> bkgListener =
+            new BackgroundListener<String>() {
+            @Override
+            public void onBackgroundResult(String authKey)
+            {
+                SharedPreferences sp =
+                  PreferenceManager.getDefaultSharedPreferences(PositMain.this);
+                View view = (View)getExtra(0);
+                
+        		if (authKey == null) {
+        			Toast.makeText(PositMain.this,
+                        "You must go to Android > Settings > Accounts " +
+        			    "& Sync to set up an account before you use POSIT.",
+        			    Toast.LENGTH_LONG).show();
+        			return;
+        		}
+        		
+        		if (sp.getString(getString(R.string.projectNamePref), "").equals("")) {
+        			Toast.makeText(PositMain.this,
+                        "To get started, you must choose a project.",
+                        Toast.LENGTH_LONG).show();
+        			Intent i =
+        			    new Intent(PositMain.this, ListProjectsActivity.class);
+        			startActivity(i);
+        		} else {
+        			Intent intent = new Intent();
+        
+        			switch (view.getId()) {
+        			case R.id.addFindButton:
+        				intent.setClass(PositMain.this,
+        				    FindActivityProvider.getFindActivityClass());
+        				intent.setAction(Intent.ACTION_INSERT);
+        				startActivity(intent);
+        				break;
+        			case R.id.listFindButton:
+        				intent = new Intent();
+        				intent.setClass(PositMain.this,
+        				    FindActivityProvider.getListFindsActivityClass());
+        				startActivity(intent);
+        				break;
+        				
+        			// The default case handles all Function plugins
+        			default:
+        				for (FunctionPlugin plugin: mMainButtonPlugins) {
+        					int buttonID =
+        					    getResources().getIdentifier(plugin.getName(),
+        					        "id", getPackageName());
+        					if (view.getId() == buttonID) {
+        						intent = new Intent(PositMain.this,
+        						    plugin.getmMenuActivity());
+        						/* Add specific info based on each button */
+        						String menuTitle = plugin.getmMenuTitle();
+        						if (menuTitle.equals("Extra Button")) {
+        							intent.setAction(Intent.ACTION_INSERT);
+        						} else if (menuTitle.equals("Extra Button 2")) {
+        							intent.setAction(Intent.ACTION_SEND);
+        						}
+        						/* Start the Activity */
+        						if (plugin.getActivityReturnsResult())
+        							startActivityForResult(intent,
+        							    plugin.getActivityResultAction());
+        						else
+        							startActivity(intent);
+        					}
+        				}
+        				break;
+        			}
+        		}
+            }
+		};
 		
-		String authKey = Communicator.getAuthKey(this);
-		if (authKey == null) {
-			Toast.makeText(this, "You must go to Android > Settings > Accounts & Sync to " +
-					" set up an account before you use POSIT.", Toast.LENGTH_LONG).show();
-			return;
-		}
+		bkgListener.putExtra(view);
 		
-		if (sp.getString(getString(R.string.projectNamePref), "").equals("")) {
-			Toast.makeText(this, "To get started, you must choose a project.", Toast.LENGTH_LONG).show();
-			Intent i = new Intent(this, ListProjectsActivity.class);
-			startActivity(i);
-		} else {
-
-			Intent intent = new Intent();
-
-			switch (view.getId()) {
-			case R.id.addFindButton:
-				intent.setClass(this, FindActivityProvider.getFindActivityClass());
-				intent.setAction(Intent.ACTION_INSERT);
-				startActivity(intent);
-				break;
-			case R.id.listFindButton:
-				intent = new Intent();
-				intent.setClass(this, FindActivityProvider.getListFindsActivityClass());
-				startActivity(intent);
-				break;
-				
-			// The default case handles all Function plugins
-			default:
-				for (FunctionPlugin plugin: mMainButtonPlugins) {
-					int buttonID = getResources().getIdentifier(plugin.getName(), "id", getPackageName());
-					if (view.getId() == buttonID) {
-						intent = new Intent(this, plugin.getmMenuActivity());
-						/* Add specific info based on each button */
-						if (plugin.getmMenuTitle().equals("Extra Button")) {
-							intent.setAction(Intent.ACTION_INSERT);
-						} else if (plugin.getmMenuTitle().equals("Extra Button 2")) {
-							intent.setAction(Intent.ACTION_SEND);
-						}
-						/* Start the Activity */
-						if (plugin.getActivityReturnsResult())
-							startActivityForResult(intent, plugin.getActivityResultAction());
-						else
-							startActivity(intent);
-					}
-				}
-				break;
-			}
-		}
+		BackgroundManager.runTask(new GetAuthKeyCallable(this), bkgListener);
+		
 	}
 
 	/**
@@ -509,23 +561,37 @@ public class PositMain extends OrmLiteBaseFragmentActivity<DbManager> implements
 			break;
 			
 		default:
-			
-			// An AuthKey is required.  Nothing can be done until the phone
-			// sets up a POSITx account using the Android settings.  This is
-			// like setting up a Gmail account.
-			String authKey = Communicator.getAuthKey(this);
-			if (authKey == null) {
-				Toast.makeText(this, "You must go to Android > Settings > Accounts & Sync to " +
-						" set up an account before you use POSIT.", Toast.LENGTH_LONG).show();
-				return false;
-			}
-			
-			if (mMainMenuPlugins.size() > 0){
-				for (FunctionPlugin plugin: mMainMenuPlugins) {
-					if (item.getTitle().equals(plugin.getmMenuTitle()))
-						startActivity(new Intent(this, plugin.getmMenuActivity()));
-				}
-			}
+		    BackgroundListener<String> bkgListener =
+		            new BackgroundListener<String>() {
+                @Override
+                public void onBackgroundResult(String authKey)
+                {
+                    MenuItem item = (MenuItem)getExtra(0);
+                    
+                    // An AuthKey is required.  Nothing can be done until the
+                    // phone sets up a POSITx account using the Android
+                    // settings.  This is like setting up a Gmail account.
+                    if (authKey == null) {
+                        Toast.makeText(PositMain.this,
+                            "You must go to Android > Settings > Accounts & " + 
+                            "Sync to set up an account before you use POSIT.",
+                            Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    
+                    if (mMainMenuPlugins.size() > 0){
+                        for (FunctionPlugin plugin: mMainMenuPlugins) {
+                            if (item.getTitle().equals(plugin.getmMenuTitle()))
+                                startActivity(new Intent(PositMain.this,
+                                    plugin.getmMenuActivity()));
+                        }
+                    }
+                }
+            };
+            
+            bkgListener.putExtra(item);
+		    
+			BackgroundManager.runTask(new GetAuthKeyCallable(this), bkgListener);
 			break;
 		}
 		return true;

@@ -527,7 +527,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements
 					p.setSummary(server);
 					
 					// Changing the server invalidates the account.
-					boolean success = Communicator.removeAccount(this, SyncAdapter.ACCOUNT_TYPE);
+					Communicator.removeAccount(this, SyncAdapter.ACCOUNT_TYPE);
 
 					Toast.makeText(this, "You must authenticate on the new server.", Toast.LENGTH_LONG).show();
 					Log.i(TAG, "Server change invalidates the account");
