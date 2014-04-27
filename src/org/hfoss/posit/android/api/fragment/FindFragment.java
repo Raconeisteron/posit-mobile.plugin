@@ -378,6 +378,10 @@ public class FindFragment extends OrmLiteFragment<DbManager>
 				int resId = getResources().getIdentifier(plugin.getmMenuIcon(),
 						"drawable", getActivity().getPackageName());
 				item.setIcon(resId);
+				if (resId != 0) // icon found; display it on the action bar
+				    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+				else // icon not found
+				    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 		}
 	}
 

@@ -124,7 +124,7 @@ picture associated with it."
 			description="The Capture Media plugin allows you to use your device's camera to take a 
 picture for a find. While editing or creating a find you can access this functionality by bringing 
 up the menu and selecting 'Capture Media'."
-			menuIcon="ic_menu_camera" 
+			menuIcon="ic_action_camera" 
 			menuTitle="Capture Media"
 			menuActivity="org.hfoss.posit.android.functionplugin.camera.CameraActivity" 
 			add_find_callback = "org.hfoss.posit.android.functionplugin.camera.CameraActivity"
