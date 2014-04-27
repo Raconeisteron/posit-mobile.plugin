@@ -81,7 +81,8 @@ public abstract class SyncMedium {
 		List<Find> changedFinds = getChangedFinds();
 
 		for( Find find : changedFinds ){
-			sendFind( find );
+		    if (find != null)
+		        sendFind( find );
 		}
 		
 		postSendTasks();
