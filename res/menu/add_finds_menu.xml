@@ -2,7 +2,8 @@
 	<item 
 		android:id="@+id/save_find_menu_item" 
 		android:title="@string/save" 
-		android:icon="@drawable/content_save"></item>
+		android:icon="@drawable/content_save"
+        android:showAsAction="ifRoom"></item>
 <!-- 	<item  -->
 <!-- 		android:id="@+id/discard_changes_menu_item"  -->
 <!-- 		android:title="@string/discard_changes"  -->
@@ -14,7 +15,9 @@
 	<item 
 		android:id="@+id/delete_find_menu_item"
 		android:title="@string/delete"
-		android:icon="@drawable/content_discard" ></item>
+		android:icon="@drawable/content_discard"
+        android:menuCategory="secondary"
+        android:showAsAction="ifRoom"></item>
 	<item 
 		android:id="@+id/sync_finds_menu_item"
 		android:visible="false"
