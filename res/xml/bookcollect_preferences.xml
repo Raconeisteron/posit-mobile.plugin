@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:key="@string/bookcollectprefs"
+        android:title="@string/bookcollectprefs">
+
+        <PreferenceScreen android:title="@string/bookcollectprefs">
+        
+            <Preference android:key="oiAboutKey" 
+                android:title="@string/bookCollectAboutDescription"
+                activity_class="org.hfoss.posit.android.plugin.bookcollect.BookCollectAboutActivity"
+                android:summary="" />
+    
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+</PreferenceScreen>
