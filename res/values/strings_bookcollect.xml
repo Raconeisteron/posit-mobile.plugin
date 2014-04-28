@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bookcollectprefs">BookCollect Preferences</string>
+    <string name="bookCollectAboutDescription">This plugin help catalog a personal book library.</string> 
+    
+    <string name="title">Title</string>
+    <string name="author">Author(s)</string>
+    <string name="isbn">ISBN</string>
+</resources>

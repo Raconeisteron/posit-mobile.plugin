@@ -3,7 +3,7 @@
 	<FindPlugins>
 	    <!-- BasicFind is the original POSIT: name, desc, lat, long,  -->
 		<Plugin type="find" name="Basic Find" user_can_select="true"
-			default_find_plugin="true" 
+			default_find_plugin="false" 
 			description="The basic find is a general purpose find. It will store information about 
 a find's name, description, time recorded, latitude, and longitude. A basic find can also have a 
 picture associated with it."
@@ -112,6 +112,28 @@ picture associated with it."
 			main_extra_button_label=""
 			main_extra_button_label2="" 
 			main_icon="outsidein_logo" />
+        
+        <!--  Proof-of-concept prototype of a personal library catalog -->
+        <Plugin type="find" name="BookCollect Find" user_can_select="false"
+            default_find_plugin="true"
+            description="This plugin help catalog a personal book library."
+            package="org.hfoss.posit.android.plugin.bookcollect"
+            find_class="org.hfoss.posit.android.plugin.bookcollect.BookCollectFind"
+            find_factory="org.hfoss.posit.android.api.FindFactory"
+            find_activity_class="org.hfoss.posit.android.plugin.bookcollect.BookCollectFindActivity"
+            find_fragment_class="org.hfoss.posit.android.plugin.bookcollect.BookCollectFindFragment"
+            extra_activity_class="" 
+            extra_activity_class2=""
+            list_finds_activity_class="org.hfoss.posit.android.plugin.bookcollect.BookCollectListFindsActivity"
+            find_data_manager="org.hfoss.posit.android.api.database.DbManager"
+            preferences_xml="bookcollect_preferences" 
+            add_find_layout="bookcollect_add_find"
+            list_find_layout="bookcollect_list_row" 
+            main_list_button_label="viewFinds"
+            main_add_button_label="addFind" 
+            main_extra_button_label=""
+            main_extra_button_label2="" 
+            main_icon="bookcollect_logo" />
 
 <!-- Function Plugins can co-exist. Make active those that you want accessible in the app. -->
 
