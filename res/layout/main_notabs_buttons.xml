@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"	android:layout_height="wrap_content"
+	android:layout_gravity="center" android:orientation="vertical">
+
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical" android:layout_width="200dp"
+		android:layout_height="wrap_content" android:layout_marginTop="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+			
+			<Button android:id="@+id/addFindButton" android:layout_width="0dp"
+				android:text="Add Find"
+				android:layout_height="70dp"
+				android:textSize="20dp"
+				android:layout_weight="1"/>
+				
+			<Button android:id="@+id/listFindButton" android:layout_width="0dp"
+				android:text="List Finds"
+				android:layout_height="70dp"
+				android:textSize="20dp"
+				android:layout_weight="1"/>
+
+			<Button android:id="@+id/extraButton" android:layout_width="0dp"
+				android:layout_height="70dp" android:visibility="gone"
+				android:text="Extra Button"
+				android:textSize="20dp"
+				android:layout_weight="1"/>
+				
+			<Button android:id="@+id/extraButton2" android:layout_width="0dp"
+				android:layout_height="70dp" android:visibility="gone"
+				android:text="Extra Button2"
+				android:textSize="20dp"
+				android:layout_weight="1"/>
+
+	</TableLayout>
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+			<TextView android:id="@+id/website" 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content"
+			android:textSize="16sp"
+			android:textColor="#ffffff"
+			android:text="@string/powered_by_hfoss"
+			android:autoLink="web" />
+
+	</LinearLayout>
+
+</RelativeLayout>

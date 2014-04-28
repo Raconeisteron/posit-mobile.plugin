@@ -1,0 +1,13 @@
+syntax: regexp
+^.+~$
+^.+R.java$
+^bin$
+^.+swp$
+^.+swo$
+
+syntax: regexp
+^lint\.xml$
+^project\.properties$
+^\.classpath
+syntax: regexp
+^project\.properties$
