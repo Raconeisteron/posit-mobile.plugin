@@ -170,6 +170,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.Sherlock" />
         <activity
             android:name="org.hfoss.posit.android.plugin.bookcollect.BookCollectListFindsActivity"
