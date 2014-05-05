@@ -6,4 +6,6 @@
     <string name="title">Title</string>
     <string name="author">Author(s)</string>
     <string name="isbn">ISBN</string>
+    <string name="scan_barcode">Scan a barcode</string>
+    <string name="apikey">AIzaSyD9zK6I99mEJjYArASXUvIzbGxn0ANbEb4</string>
 </resources>
