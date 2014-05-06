@@ -178,7 +178,7 @@
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.Sherlock" />
         <activity
-            android:name="org.hfoss.posit.android.plugin.bookcollectaw.BookCollectAboutActivity"
+            android:name="org.hfoss.posit.android.plugin.bookcollect.BookCollectAboutActivity"
             android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/Theme.Sherlock" />
